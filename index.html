@@ -100,7 +100,7 @@
                 
                 <nav>
                     <ul>
-                        <li><a href="#all-games">All</a></li>
+                        <li><a href="#all-games" class="active">All</a></li>
                         <li><a href="#live-games">Live</a></li>
                         <li><a href="#finished-games">Finished</a></li>
                         <li><a href="#scheduled-games">Scheduled</a></li>
@@ -298,6 +298,15 @@ if ('serviceWorker' in navigator) {
             document.querySelectorAll('.main-nav a').forEach(link => {
                 link.addEventListener('click', async event => {
                     event.preventDefault();
+
+                    // Remove 'active' class from all links
+                    document.querySelectorAll('.main-nav a').forEach(navLink => {
+                        navLink.classList.remove('active');
+                    });
+
+                    // Add 'active' class to the clicked link
+                    link.classList.add('active');
+
                     const filterType = link.getAttribute('href').replace('#', '');
 
                     let startDate = today;
