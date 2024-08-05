@@ -66,20 +66,45 @@
 }
      ul li a { 
     background: none;
-    border: none; 
-    cursor: pointer; 
+    border: none;
+    cursor: pointer;
     font-weight: normal;
-    color: #333; /* Dark gray text */
-    border-bottom: 3px solid transparent; /* Transparent border by default */
+    color: #333;
+    border-bottom: 3px solid transparent;
     transition: all 0.3s ease;
-text-decoration: none;}
+    text-decoration: none;
+    display: flex;
+    width: 100%;}
+ 
+
+ .team-names {
+    float: left;
+    flex: 1;
+}
+
+ .odds {
+    float: right;
+    flex: 0.4;
+    justify-content: center;
+    display: flex;
+}
+ .odds span{
+    text-align: center;
+    flex: 1;
+}
     </style>
 </head>
 <body>
     <div id="events-container"></div>
     <script>
         const baseURL = 'https://api.sofascore.com/api/v1';
-
+    
+        // Utility Function to convert fractional odds to decimal odds
+        const fractionalToDecimal = (fractional) => {
+            const [numerator, denominator] = fractional.split('/').map(Number);
+            return (numerator / denominator + 1).toFixed(2);
+        };
+    
         const fetchJson = async (url) => {
             try {
                 const response = await fetch(url);
@@ -93,87 +118,101 @@ text-decoration: none;}
                 return null;
             }
         };
-
+    
         const displayCategoryEvents = async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryId = urlParams.get('categoryId');
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryId = urlParams.get('categoryId');
     
-    // Define the date for today
-    const today = new Date().toISOString().split('T')[0];
+            // Define the date for today
+            const today = new Date().toISOString().split('T')[0];
     
-    // Define URLs for fetching scheduled events
-    const scheduledEventsUrls = [
-        `${baseURL}/sport/football/scheduled-events/${today}`,
-        `${baseURL}/sport/football/scheduled-events/${today}/inverse`
-    ];
-
-    // Fetch the scheduled events data from all URLs
-    const scheduledEventsPromises = scheduledEventsUrls.map(url => fetchJson(url));
-    const scheduledEventsResponses = await Promise.all(scheduledEventsPromises);
-
-    // Combine data from all responses
-    let events = [];
-    scheduledEventsResponses.forEach(response => {
-        if (response && response.events) {
-            events = [...events, ...response.events];
-        }
-    });
-
-    // Filter events to include only those occurring today
-    events = events.filter(event => {
-        const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
-        return eventDate === today;
-    });
-
-    if (events.length > 0) {
-        // Group events by category and tournament
-        const tournamentsInCategory = new Map();
-
-        events.forEach(event => {
-            const category = event.tournament.category;
-            if (category.id === parseInt(categoryId)) {
-                const tournamentId = event.tournament.id;
-                if (!tournamentsInCategory.has(tournamentId)) {
-                    tournamentsInCategory.set(tournamentId, {
-                        name: event.tournament.name,
-                        events: []
-                    });
-                }
-                tournamentsInCategory.get(tournamentId).events.push(event);
-            }
-        });
-
-        const container = document.getElementById('events-container');
-        container.innerHTML = '';
-
-        tournamentsInCategory.forEach((tournament, tournamentId) => {
-            const tournamentSection = document.createElement('div');
-            tournamentSection.classList.add('tournament');
-            
-            const tournamentHeader = document.createElement('h3');
-            tournamentHeader.textContent = tournament.name;
-            tournamentSection.appendChild(tournamentHeader);
-
-            if (tournament.events.length > 0) {
-                const eventsList = document.createElement('ul');
-                tournament.events.forEach(event => {
-                    const listItem = document.createElement('li');
-                    const eventLink = document.createElement('a');
-                    eventLink.href = `event.html?eventId=${event.id}`;
-                    eventLink.textContent = `${event.homeTeam.shortName} vs ${event.awayTeam.shortName}`;
-                    listItem.appendChild(eventLink);
-                    eventsList.appendChild(listItem);
+            // Fetch scheduled events and odds for the given date
+            const [scheduledResponse, inverseResponse, oddsResponse] = await Promise.all([
+                fetchJson(`${baseURL}/sport/football/scheduled-events/${today}`),
+                fetchJson(`${baseURL}/sport/football/scheduled-events/${today}/inverse`),
+                fetchJson(`${baseURL}/sport/football/odds/1/${today}`)
+            ]);
+    
+            // Combine events from both responses
+            const events = [...(scheduledResponse?.events || []), ...(inverseResponse?.events || [])];
+            const odds = oddsResponse?.odds || {};
+    
+            // Filter events occurring today and those with odds
+            let filteredEvents = events.filter(event => {
+                const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
+                return eventDate === today;
+            });
+    
+            filteredEvents = filteredEvents.filter(event => odds[event.id]);
+    
+            if (filteredEvents.length > 0) {
+                // Group events by category and tournament
+                const tournamentsInCategory = new Map();
+    
+                filteredEvents.forEach(event => {
+                    const category = event.tournament.category;
+                    if (category.id === parseInt(categoryId)) {
+                        const tournamentId = event.tournament.id;
+                        if (!tournamentsInCategory.has(tournamentId)) {
+                            tournamentsInCategory.set(tournamentId, {
+                                name: event.tournament.name,
+                                events: []
+                            });
+                        }
+                        tournamentsInCategory.get(tournamentId).events.push(event);
+                    }
                 });
-                tournamentSection.appendChild(eventsList);
+    
+                const container = document.getElementById('events-container');
+                container.innerHTML = '';
+    
+                tournamentsInCategory.forEach((tournament, tournamentId) => {
+                    const tournamentSection = document.createElement('div');
+                    tournamentSection.classList.add('tournament');
+    
+                    const tournamentHeader = document.createElement('h3');
+                    tournamentHeader.textContent = tournament.name;
+                    tournamentSection.appendChild(tournamentHeader);
+    
+                    if (tournament.events.length > 0) {
+                        const eventsList = document.createElement('ul');
+                        tournament.events.forEach(event => {
+                            const listItem = document.createElement('li');
+                            const eventLink = document.createElement('a');
+                            eventLink.href = `event.html?eventId=${event.id}`;
+    
+                            // Get the odds data for this event
+                            const oddsData = odds[event.id] || {};
+                            const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.fractionalValue;
+                            const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.fractionalValue;
+                            const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.fractionalValue;
+    
+                            // Convert fractional odds to decimal
+                            const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
+                            const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
+                            const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
+    
+                            eventLink.innerHTML = `
+                            <span class="team-names">${event.homeTeam.shortName} vs ${event.awayTeam.shortName}</span>
+                            <span class="odds" style="float:right">
+                                <span>${homeOdds}</span>
+                                <span>${drawOdds}</span>
+                                <span>${awayOdds}</span>
+                            </span>
+                            `;
+                            listItem.appendChild(eventLink);
+                            eventsList.appendChild(listItem);
+                        });
+                        tournamentSection.appendChild(eventsList);
+                    }
+    
+                    container.appendChild(tournamentSection);
+                });
             }
-
-            container.appendChild(tournamentSection);
-        });
-    }
-};
-
-
+        };
+    
         displayCategoryEvents();
     </script>
+    
 </body>
 </html>
