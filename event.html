@@ -407,10 +407,11 @@
 .tab-content {
     display: none;
     padding: 0 10px;
-    overflow-y: auto; /* Enable vertical scrolling */
-    height: 100vh; /* Set the height to the full viewport height */
 }
-
+#form, #results, #overview { 
+    overflow-y: auto; /* Enable vertical scrolling */
+    height: 75vh; /* Set the height to the full viewport height */
+}
 .tab-content.active {
     display: block;
 }
