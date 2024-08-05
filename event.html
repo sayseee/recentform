@@ -132,16 +132,15 @@
 
 .event__row {
     display: grid;
-    grid-template-columns: 1fr 2fr 0.7fr 2fr;
-    grid-template-areas: "time homeParticipant score awayParticipant";
+    grid-template-columns: 0.3fr 1fr 2fr 0.7fr 2fr;
+    grid-template-areas: "league time homeParticipant score awayParticipant";
     align-items: center;
     border-bottom: 1px solid var(--color-support-1);
     cursor: pointer;
     transition: all .4s ease;
     margin: 5px 0;
     padding: 0;
-    color: #c8cdcd;
-    font-weight: bold;
+    color: #979b9b;
 }
 .event__row .score {
     padding: 0 4px;
@@ -283,28 +282,27 @@
 } 
 .time {
     grid-area: time;
-    margin-right: 5px;
+    margin: 0 5px;
 }
 
 .homeParticipant {
     grid-area: homeParticipant;
     flex: 1;
     color: #333;
+    margin-right: 10px;
+    text-align: right;
+}
+
+.event__row .homeParticipant { 
+    justify-self:flex-end;
 }
 
 .awayParticipant {
     grid-area: awayParticipant;
     flex: 1;
-    color: #333
-}
-
-.homeParticipant {
-    margin-right: 10px;
-    text-align: right;
-}
-.awayParticipant {
     margin-left: 10px;
-}
+    color: #333
+}  
 
 .teamStats.away .time, .teamStats.away .time {    
     margin-right: 0;
@@ -495,15 +493,12 @@
             container.innerHTML = '';
 
             const teamItems = [
-                { name: 'Wins', value: teamStats.winsPercentage.toFixed(1) + '%' },
-                { name: 'Draws', value: teamStats.drawsPercentage.toFixed(1) + '%' },
-                { name: 'Losses', value: teamStats.lossesPercentage.toFixed(1) + '%' },
-                { name: 'Clean Sheets', value: teamStats.cleanSheetsPercentage.toFixed(1) + '%' },
-                { name: 'Failed to Score', value: teamStats.failedToScorePercentage.toFixed(1) + '%' },
-                { name: 'BTTS', value: teamStats.bttsPercentage.toFixed(1) + '%' },
-                { name: 'Over 1.5 Goals', value: teamStats.over1_5Percentage.toFixed(1) + '%' },
-                { name: 'Over 2.5 Goals', value: teamStats.over2_5Percentage.toFixed(1) + '%' },
-                { name: 'Over 3.5 Goals', value: teamStats.over3_5Percentage.toFixed(1) + '%' }
+                { name: 'Clean Sheets', value: teamStats.cleanSheetsPercentage.toFixed(0) + '%' },
+                { name: 'Failed to Score', value: teamStats.failedToScorePercentage.toFixed(0) + '%' },
+                { name: 'BTTS', value: teamStats.bttsPercentage.toFixed(0) + '%' },
+                { name: 'Over 1.5 Goals', value: teamStats.over1_5Percentage.toFixed(0) + '%' },
+                { name: 'Over 2.5 Goals', value: teamStats.over2_5Percentage.toFixed(0) + '%' },
+                { name: 'Over 3.5 Goals', value: teamStats.over3_5Percentage.toFixed(0) + '%' }
             ];
 
             teamItems.forEach(item => {
@@ -523,16 +518,9 @@
             events.forEach(event => {
                 const eventElem = document.createElement('div');
                 eventElem.className = 'event-row'; // Updated class name to match HTML/CSS
-                eventElem.innerHTML = ` 
-                            <div class="category-group">
-                                <div>
-                                    <img class="tourn" src="${baseURL}/unique-tournament/${event.uniqueTournamentId}/image" alt="${event.uniqueTournamentName}" width="20" height="20" loading="lazy">
-                                </div> 
-                                <div class="category-tournament" style="display: flex;">
-                                    <span class="category-name">${event.uniqueTournamentName}</span>
-                                </div> 
-                            </div>
+                eventElem.innerHTML = `  
                             <div class="event__row">
+                                <img class="tourn" src="${baseURL}/unique-tournament/${event.uniqueTournamentId}/image" alt="${event.uniqueTournamentName}" width="20" height="20" loading="lazy">
                                 <span class="event-date time">${new Date(event.timeStamp).toLocaleDateString('en-GB', {
                                         day: 'numeric',
                                         month: '2-digit',
