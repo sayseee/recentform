@@ -66,6 +66,70 @@
         table th, table td { border: 1px solid #ddd; padding: 8px; }
         table th { background-color: #f4f4f4; }
         .highlight { background-color: yellow; }
+        .match-event {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.match-status {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.match-status .live {
+  color: green;
+}
+
+.team-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.team img {
+  width: 50px; /* Adjust size as needed */
+  height: 50px; /* Adjust size as needed */
+  margin-bottom: 5px;
+}
+
+.team-name {
+  font-weight: bold;
+  text-align: center;
+}
+ 
+.team .score {
+  font-size: 1.5em;
+}
+
+.vs {
+  font-size: 1.2em;
+  margin: 0 10px;
+}
+
+.goal-scorers {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.stadium-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9em;
+  color: #666;
+}
+
 .event__row {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr 2fr;
@@ -157,6 +221,7 @@
 .team {
     display: flex;
     align-items: center;
+    flex: 1;
 }
 .team-name {
     color: #000;
@@ -294,38 +359,7 @@
                 return null;
             }
         };
-
-        /* const fetchAndDisplayPerformance = async (teamId, containerId) => {
-            try {
-                const response = await fetch(`${baseURL}/team/${teamId}/performance`);
-                const data = await response.json();
-                const container = document.getElementById(containerId);
-                container.innerHTML = '';
-                data.events.reverse().forEach(event => {
-                    const eventId = event.id;
-                    const points = data.points[eventId] || 0;
-                    const isHomeTeam = event.homeTeam.id === teamId;
-                    const homeScore = event.homeScore.current;
-                    const awayScore = event.awayScore.current;
-                    let resultClass = 'draw';
-
-                    if (homeScore > awayScore) {
-                        resultClass = isHomeTeam ? 'win' : 'loss';
-                    } else if (homeScore < awayScore) {
-                        resultClass = isHomeTeam ? 'loss' : 'win';
-                    }
-
-                    const bar = document.createElement('div');
-                    bar.className = `bar ${resultClass}`;
-                    bar.style.height = `${points * 16.2}px`;
-                    bar.innerHTML = `<div class="bar-content"><span class="bar-score" style="font-size:10px; width:30px;">${homeScore} - ${awayScore}</span></div>`;
-                    container.appendChild(bar);
-                });
-            } catch (error) {
-                console.error('Error fetching or displaying performance data:', error);
-            }
-        }; */
-
+ 
         const fetchH2HEvents = async (customId, currentMatchId, teamId) => {
             const url = `${baseURL}/event/${customId}/h2h/events`;
             try {
@@ -590,11 +624,38 @@
             const eventData = eventDetails.event;
             const eventContainer = document.getElementById('event-container');
             eventContainer.innerHTML = `
-                <div class="event-details">
-                    <h2>${eventData.homeTeam.shortName} vs ${eventData.awayTeam.shortName}</h2>
-                    <p>${new Date(eventData.startTimestamp * 1000).toLocaleString()}</p>
-                    <p>Status: ${eventData.status.type}</p>
-                </div>                
+                <div class="match-event"> 
+                    <div class="team-details">
+                        <div class="team home-team">
+                            <img src="${baseURL}/team/${eventData.homeTeam.id}/image" width="16" height="16" alt="${eventData.homeTeam.shortName}" loading="lazy" class="team-logo">
+                         </div>
+                        <div class="match-status">
+                            <span class="${eventData.status.type === 'inprogress' ? 'live' : ''}">
+                            ${eventData.status.type === 'inprogress' ? 'Live' : eventData.status.type === 'finished' ? 'FT' : new Date(eventData.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        </div>
+                        <div class="team">
+                            <img src="${baseURL}/team/${eventData.awayTeam.id}/image" width="16" height="16" alt="${eventData.awayTeam.shortName}" loading="lazy" class="team-logo">
+                         </div>
+                    </div>
+                    
+                    <div class="team-details">
+                        <div class="team home-team">
+                        <span class="team-name">${eventData.homeTeam.shortName}</span>
+                        <span class="score">${eventData.homeScore?.current?? ''}</span>
+                        </div>
+                        <span class="vs"></span>
+                        <div class="team away-team">
+                        <span class="team-name">${eventData.awayTeam.shortName}</span>
+                        <span class="score">${eventData.awayScore?.current?? ''}</span>
+                        </div>
+                    </div>
+                    <div class="stadium-details">
+                        <span class="stadium"></span>
+                        <span class="competition"></span>
+                    </div>
+                </div>
+              
                 <div class="h2h">
                     <h3>Head-to-Head Results</h3>
                     <div id="h2h-results"></div>
