@@ -40,13 +40,15 @@
         .category { margin-bottom: 20px; }
         a { text-decoration: none; color: #007BFF; }
         a:hover { text-decoration: underline; }
-        header { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #e0e0e0; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;margin-bottom: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
         .main-nav { margin-top: 20px; }
-        .filter-bar { margin-bottom: 20px; }
+        .filter-bar { margin-bottom: 20px; display: flex; flex-direction: column;gap: 10px;}
+        .filter-bar>div { display: flex; flex-direction: row;justify-content: space-between;}
         .filter-bar label { margin-right: 10px; }
-        .filter-bar input, .filter-bar select {
-    margin-right: 10px;
+        .filter-bar input, .filter-bar select { 
     background-color: var(--blue-5);
     border: 0;
     padding: 3px 5px;
@@ -54,20 +56,22 @@
         nav ul { list-style: none; padding: 0; }
         nav ul li { display: inline; margin-right: 15px; }
         #filter-btn {
-            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
-            color: white;
-            border: none;
-            border-radius: 15px !important;
-            padding: 5px 10px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            border-radius: 10px;
+    background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    color: white;
+    border: none;
+    border-radius: 15px !important;
+    padding: 5px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border-radius: 10px;
+    width: 105px;
         }
 
         #filter-btn:hover {
             background: linear-gradient(to right, var(--gradient-end), var(--gradient-start));
         }
+        .cat-img { margin-right: 10px; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -78,16 +82,19 @@
         <div class="main-nav">
             <div class="container">
                 <div class="filter-bar">
-                    <input type="date" id="start-date" name="start-date">
-                    <input type="date" id="end-date" name="end-date"> 
-                    <label for="time-range">By Time:</label>
-                    <select id="time-range">
-                        <option value="">Select Time</option>
-                        <option value="3">3 Hours</option>
-                        <option value="6">6 Hours</option>
-                        <option value="12">12 Hours</option>
-                    </select>
-                    <button id="filter-btn">Filter</button>
+                    <div>                        
+                        <input type="date" id="start-date" name="start-date">
+                        <input type="date" id="end-date" name="end-date"> 
+                    </div>
+                    <div>
+                        <select id="time-range">
+                            <option value="">Select Time</option>
+                            <option value="3">3 Hours</option>
+                            <option value="6">6 Hours</option>
+                            <option value="12">12 Hours</option>
+                        </select>
+                        <button id="filter-btn">Filter</button>
+                    </div> 
                 </div>
                 
                 <nav>
@@ -131,16 +138,19 @@
         };
 
         const displayCategories = async (startDate, endDate, hours, status) => {
-            const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
+            const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`; 
             const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`;
+            const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}/inverse`;
 
+            // Fetch data from both URLs
             const topTournamentsData = await fetchJson(topTournamentsUrl);
             const scheduledEventsData = await fetchJson(scheduledEventsUrl);
+            const scheduledEventsData2 = await fetchJson(scheduledEventsUrl2);
 
-            if (topTournamentsData && scheduledEventsData) {
+            if (topTournamentsData && scheduledEventsData && scheduledEventsData2) {
                 const topTournaments = topTournamentsData.uniqueTournaments;
-                let events = scheduledEventsData.events;
-                
+                let events = [...scheduledEventsData.events, ...scheduledEventsData2.events]; // Combine both event arrays
+                 
                 // Filter by date
                 if (startDate && endDate) {
                     events = events.filter(event => {
@@ -187,6 +197,7 @@
                 // Display top tournament categories first
                 topTournaments.forEach(tournament => {
                     const categoryName = tournament.category.name;
+                    const categoryImage = events[0].tournament.category.alpha2 ? events[0].tournament.category.alpha2.toLowerCase() : events[0].tournament.category.flag;
                     const categoryId = tournament.category.id;
                     const categoryEvents = filteredEvents.filter(event => event.tournament.id === tournament.id);
                     const eventCount = categoryEventCounts.get(categoryName) || 0;
@@ -197,7 +208,18 @@
 
                         const categoryLink = document.createElement('a');
                         categoryLink.href = `category.html?categoryId=${categoryId}`;
-                        categoryLink.textContent = `${categoryName} (${eventCount})`;
+
+                        const img = document.createElement('img');
+                        img.src = `https://www.sofascore.com/static/images/flags/${categoryImage}.png`;
+                        img.alt = categoryName;
+                        img.width = 20;
+                        img.height = 20;
+                        img.classList.add('cat-img');
+                        img.loading = 'lazy';
+
+                        categoryLink.appendChild(img);
+                        categoryLink.appendChild(document.createTextNode(` ${categoryName} (${eventCount})`));
+
                         categoryItem.appendChild(categoryLink);
 
                         container.appendChild(categoryItem);
@@ -207,7 +229,7 @@
                 // Display other categories
                 const otherCategories = new Map();
                 filteredEvents.forEach(event => {
-                    const categoryName = event.tournament.category.name;
+                    const categoryName = event.tournament.category.name; 
                     if (!topTournaments.some(tournament => tournament.id === event.tournament.id)) {
                         if (!otherCategories.has(categoryName)) {
                             otherCategories.set(categoryName, []);
@@ -218,13 +240,25 @@
 
                 otherCategories.forEach((events, categoryName) => {
                     const categoryId = events[0].tournament.category.id;
+                    const categoryImage = events[0].tournament.category.alpha2 ? events[0].tournament.category.alpha2.toLowerCase() : events[0].tournament.category.flag;
                     const eventCount = categoryEventCounts.get(categoryName) || 0;
                     const categoryItem = document.createElement('div');
                     categoryItem.classList.add('category');
 
                     const categoryLink = document.createElement('a');
                     categoryLink.href = `category.html?categoryId=${categoryId}`;
-                    categoryLink.textContent = `${categoryName} (${eventCount})`;
+
+                    const img = document.createElement('img');
+                    img.src = `https://www.sofascore.com/static/images/flags/${categoryImage}.png`;
+                    img.alt = categoryName;
+                    img.width = 20;
+                    img.height = 20;
+                    img.classList.add('cat-img');
+                    img.loading = 'lazy';
+
+                    categoryLink.appendChild(img);
+                    categoryLink.appendChild(document.createTextNode(` ${categoryName} (${eventCount})`));
+
                     categoryItem.appendChild(categoryLink);
 
                     container.appendChild(categoryItem);
