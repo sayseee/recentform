@@ -183,9 +183,9 @@
     
                             // Get the odds data for this event
                             const oddsData = odds[event.id] || {};
-                            const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.fractionalValue;
-                            const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.fractionalValue;
-                            const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.fractionalValue;
+                            const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.initialFractionalValue;
+                            const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.initialFractionalValue;
+                            const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.initialFractionalValue;
     
                             // Convert fractional odds to decimal
                             const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
