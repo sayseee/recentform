@@ -43,7 +43,8 @@
   font-weight: 400;
   font-style: normal;
   font-size: 12px;
-  margin:0;
+    margin: 0;
+    overflow: hidden; /* Prevent body from scrolling */
 }
         .event-details { margin-bottom: 20px; }
         .event-details h2 { margin: 0; }
@@ -383,10 +384,29 @@
     color: #000; /* Black text for the active tab */
     border-bottom: 3px solid #f4c002; /* Yellow border for the active tab */
 }
+.tab-content::-webkit-scrollbar {
+    width: 4px; /* Set the width of the scrollbar */
+}
 
+.tab-content::-webkit-scrollbar-track {
+    background: transparent; /* Color of the track */
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+    background: #fff; /* Color of the thumb */
+    border-radius: 5px; 
+    height: 66px;
+}
+
+.tab-content::-webkit-scrollbar-thumb:hover {
+    background: #fff; /* Color of the thumb on hover */
+    width: 11px;
+}
 .tab-content {
     display: none;
     padding: 0 10px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    height: 100vh; /* Set the height to the full viewport height */
 }
 
 .tab-content.active {
@@ -603,9 +623,9 @@
                 eventElem.className = 'h2h__row';
                 eventElem.innerHTML = `  
                     <span class="time">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
-                    <span class="homeParticipant">${event.homeTeam.name}</span>
+                    <span class="homeParticipant">${event.homeTeam.shortName}</span>
                     <span class="score">${event.homeScore.current} - ${event.awayScore.current}</span> 
-                    <span class="awayParticipant">${event.awayTeam.name}</span> 
+                    <span class="awayParticipant">${event.awayTeam.shortName}</span> 
                 `;
                 container.appendChild(eventElem);
             });
