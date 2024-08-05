@@ -4,12 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Events</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&display=swap" rel="stylesheet"> <style>
+        :root {
+            /* Blue Palette */
+        --blue-100: #051DA0; /* Blue (100) */
+        --blue-80: #374A83;  /* Blue (80) */
+        --blue-60: #6977C6;  /* Blue (60) */
+        --blue-40: #9BA5D9;  /* Blue (40) */
+        --blue-20: #CDD2EC;  /* Blue (20) */
+        --blue-10: #E6E9F6;  /* Blue (10) */
+        --blue-5:  #F2F3FA;  /* Blue (5) */
 
-    <style>
-        body { font-family: 'Lato', sans-serif}
+        /* Gradient Colors */
+        --gradient-start: #051DA0;
+        --gradient-end: #3049e1;
+
+        /* Additional Colors */
+        --color-1: #0F1928; /* Darker shade */
+        --color-2: #27303E; /* Dark shade */
+        --color-3: #3F4753; /* Medium dark shade */
+        --color-4: #6F757E; /* Medium shade */
+        --color-5: #9FA3A9;  /* Medium light shade */
+        --color-6: #CFD1D4; /* Light shade */
+        --color-7: #E7E8E9; /* Lighter shade */
+    }
+        body {
+  font-family: "Lato", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 12px;
+}
         .tournament { margin-bottom: 20px; }
         .event a { text-decoration: none; color: #007BFF; }
         .event a:hover { text-decoration: underline; }
@@ -38,10 +66,13 @@
     const urlParams = new URLSearchParams(window.location.search);
     const categoryId = urlParams.get('categoryId');
     
+    // Define the date for today
+    const today = new Date().toISOString().split('T')[0];
+    
     // Define URLs for fetching scheduled events
     const scheduledEventsUrls = [
-        `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`,
-        `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}/inverse`
+        `${baseURL}/sport/football/scheduled-events/${today}`,
+        `${baseURL}/sport/football/scheduled-events/${today}/inverse`
     ];
 
     // Fetch the scheduled events data from all URLs
@@ -54,6 +85,12 @@
         if (response && response.events) {
             events = [...events, ...response.events];
         }
+    });
+
+    // Filter events to include only those occurring today
+    events = events.filter(event => {
+        const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
+        return eventDate === today;
     });
 
     if (events.length > 0) {
