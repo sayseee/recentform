@@ -79,7 +79,7 @@
                             const listItem = document.createElement('li');
                             const eventLink = document.createElement('a');
                             eventLink.href = `event.html?eventId=${event.id}`;
-                            eventLink.textContent = `${event.homeTeam.name} vs ${event.awayTeam.name}`;
+                            eventLink.textContent = `${event.homeTeam.shortName} vs ${event.awayTeam.shortName}`;
                             listItem.appendChild(eventLink);
                             eventsList.appendChild(listItem);
                         });

@@ -291,7 +291,7 @@
                         result,
                         timeStamp: event.startTimestamp,
                         uniqueTournamentId: event.tournament.uniqueTournament.id,
-                        uniqueTournamentName: event.tournament.name,
+                        uniqueTournamentName: event.tournament.uniqueTournament.name,
                         categoryName: event.tournament.category.name,
                         homeTeam: event.homeTeam.shortName,
                         awayTeam: event.awayTeam.shortName,
@@ -397,7 +397,7 @@
                                     <img class="tourn" src="${baseURL}/unique-tournament/${event.uniqueTournamentId}/image" alt="${event.uniqueTournamentName}" width="20" height="20" loading="lazy">
                                 </div> 
                                 <div class="category-tournament" style="display: flex;">
-                                    <span class="category-name">${event.categoryName} ${event.uniqueTournamentName}</span>
+                                    <span class="category-name">${event.uniqueTournamentName}</span>
                                 </div> 
                             </div> 
                             <span class="event-date">${new Date(event.timeStamp).toLocaleDateString('en-GB', {
@@ -424,7 +424,7 @@
                 const eventElem = document.createElement('div');
                 eventElem.className = 'h2h__row';
                 eventElem.innerHTML = `  
-                    <span class="time">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: '2-digit', year: '2-digit' }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
+                    <span class="time">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
                     <span class="homeParticipant">${event.homeTeam.name}</span>
                     <span class="score">${event.homeScore.current} - ${event.awayScore.current}</span> 
                     <span class="awayParticipant">${event.awayTeam.name}</span> 
