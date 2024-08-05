@@ -4,15 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Category Events</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: Arial, sans-serif; }
-        .event { margin-bottom: 20px; }
+        body { font-family: 'Lato', sans-serif}
+        .tournament { margin-bottom: 20px; }
         .event a { text-decoration: none; color: #007BFF; }
         .event a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <div id="events-container"></div>
-    <script src="category.js"></script>
+    <script>
+        const baseURL = 'https://api.sofascore.com/api/v1';
+
+        const fetchJson = async (url) => {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error ${response.status}: ${errorData.message}`);
+                }
+                return response.json();
+            } catch (error) {
+                console.error('Fetch error:', error.message);
+                return null;
+            }
+        };
+
+        const displayCategoryEvents = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryId = urlParams.get('categoryId');
+            const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`;
+            
+            // Fetch the scheduled events
+            const scheduledEventsData = await fetchJson(scheduledEventsUrl);
+
+            if (scheduledEventsData) {
+                const events = scheduledEventsData.events;
+
+                // Group events by category and tournament
+                const tournamentsInCategory = new Map();
+
+                events.forEach(event => {
+                    const category = event.tournament.category;
+                    if (category.id === parseInt(categoryId)) {
+                        const tournamentId = event.tournament.id;
+                        if (!tournamentsInCategory.has(tournamentId)) {
+                            tournamentsInCategory.set(tournamentId, {
+                                name: event.tournament.name,
+                                events: []
+                            });
+                        }
+                        tournamentsInCategory.get(tournamentId).events.push(event);
+                    }
+                });
+
+                const container = document.getElementById('events-container');
+                container.innerHTML = '';
+
+                tournamentsInCategory.forEach((tournament, tournamentId) => {
+                    const tournamentSection = document.createElement('div');
+                    tournamentSection.classList.add('tournament');
+                    
+                    const tournamentHeader = document.createElement('h3');
+                    tournamentHeader.textContent = tournament.name;
+                    tournamentSection.appendChild(tournamentHeader);
+
+                    if (tournament.events.length > 0) {
+                        const eventsList = document.createElement('ul');
+                        tournament.events.forEach(event => {
+                            const listItem = document.createElement('li');
+                            const eventLink = document.createElement('a');
+                            eventLink.href = `event.html?eventId=${event.id}`;
+                            eventLink.textContent = `${event.homeTeam.name} vs ${event.awayTeam.name}`;
+                            listItem.appendChild(eventLink);
+                            eventsList.appendChild(listItem);
+                        });
+                        tournamentSection.appendChild(eventsList);
+                    }
+
+                    container.appendChild(tournamentSection);
+                });
+            }
+        };
+
+        displayCategoryEvents();
+    </script>
 </body>
 </html>

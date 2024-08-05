@@ -4,12 +4,669 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: Arial, sans-serif; }
+        :root {             
+    --win-color: #18c876; /* Wins */
+    --draw-color: rgba(109, 109, 110, 0.9);/* Draws */
+    --loss-color: #c7361f;/* Losses */
+}
+        body { font-family: 'Lato', sans-serif;font-size: 12px;}
+        .event-details { margin-bottom: 20px; }
+        .event-details h2 { margin: 0; }
+        .event-details p { margin: 5px 0; }
+        .performance-container { margin-bottom: 20px; }
+        .performance { display: flex; }
+        .performance .bar { width: 30px; margin: 0 5px; background: #ddd; }
+        .performance .win { background: green; }
+        .performance .loss { background: red; }
+        .performance .draw { background: grey; }
+        .team-stats { margin-bottom: 20px; }
+        .side-stat-container { display: flex; }
+        .side-result-stat { flex: 1; }
+        .side-stat { margin: 5px; }
+        .team-item { margin-bottom: 20px; }
+        .formGrid { display: flex; }
+        .team-item { flex: 1; }
+        .h2h { margin-top: 20px; }
+        .h2h__row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .h2h-results { border-top: 1px solid #ddd; }
+        .next-match { margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        table th, table td { border: 1px solid #ddd; padding: 8px; }
+        table th { background-color: #f4f4f4; }
+        .highlight { background-color: yellow; }
+      
+.category-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    font-size: 13px;
+}
+
+.category-tournament {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.category-tournament .category-name { 
+    color: rgba(34, 34, 38, 0.45);
+}
+.category-tournament .tournament-name { 
+    font-weight: 700;
+}   
+.nextMatch {  
+    justify-content: space-evenly;
+} 
+.nextMatch>div { 
+    padding: 10px;
+    margin-bottom: 20px;
+    width: 30%;
+  }
+    
+.performance-container {
+    display: column;
+    flex-direction: row;
+  }
+#home-performance, #away-performance {
+    display: flex; 
+    gap: 1px; /* Space between bars */
+    padding: 10px; 
+    margin-bottom: 20px; /* Space between containers */
+    flex: 1;
+  }
+  .match-card {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 5px 0;
+    width: 100%;
+    cursor: pointer;
+}
+.match-time-status {
+    display: flex;
+    flex-direction: column;
+    margin-right: 8px;
+    padding-right: 8px;
+    text-align: center;
+    flex: 0 0 40px;
+    -webkit-box-flex: 0;
+    font-size: 12px;
+    color: #555;
+    border-right: 1px solid rgba(34, 34, 38, 0.15);
+}
+.team-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: calc(100% - 35px);
+    margin-left: auto;
+}
+.teams-info {
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
+    min-width: 0px;
+    margin-left: auto;
+    flex: 1 1 140px;
+    gap: 5px;
+}
+.team {
+    display: flex;
+    align-items: center;
+}
+.team-name {
+    color: #000;
+    display: flex;
+    gap: 5px; 
+    font-size: 14px;
+    color: #333;
+} 
+  .bar {
+    width: 30px; /* Width of each bar */
+    box-sizing: border-box;
+    color: white;
+    text-align: center;
+    padding: 5px;
+    margin: 0;
+  }
+  
+  .bar-content {
+    font-size: 12px; /* Text size inside bars */
+    overflow: hidden; /* Hide overflow text */
+    white-space: nowrap; /* Prevent text wrapping */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+  }
+  
+  /* Styling for different results */
+  .bar.win {
+    background-color: #4CAF50; /* Green for wins */
+  }
+  
+  .bar.draw {
+    background-color: #FFC107; /* Yellow for draws */
+  }
+  
+  .bar.loss {
+    background-color: #F44336; /* Red for losses */
+  }
+  
+.W, .D, .L { 
+    border-radius: 2px; 
+    color: #fff;
+    align-items: center; 
+    display: flex;
+    height: 20px;
+    justify-content: center;
+    overflow: hidden;
+    position: relative; 
+}
+.W {
+    background-color: var(--win-color);
+}
+.D {
+    background-color: var(--draw-color);
+}
+.L {
+    background-color: var(--loss-color);
+}
+
     </style>
 </head>
 <body>
-    <div id="event-details-container"></div>
-    <script src="event.js"></script>
+    <div id="event-container"></div> 
+
+    <script>
+        const baseURL = 'https://api.sofascore.com/api/v1';
+
+        const fetchJson = async (url) => {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error ${response.status}: ${errorData.message}`);
+                }
+                return response.json();
+            } catch (error) {
+                console.error('Fetch error:', error.message);
+                return null;
+            }
+        };
+
+        /* const fetchAndDisplayPerformance = async (teamId, containerId) => {
+            try {
+                const response = await fetch(`${baseURL}/team/${teamId}/performance`);
+                const data = await response.json();
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+                data.events.reverse().forEach(event => {
+                    const eventId = event.id;
+                    const points = data.points[eventId] || 0;
+                    const isHomeTeam = event.homeTeam.id === teamId;
+                    const homeScore = event.homeScore.current;
+                    const awayScore = event.awayScore.current;
+                    let resultClass = 'draw';
+
+                    if (homeScore > awayScore) {
+                        resultClass = isHomeTeam ? 'win' : 'loss';
+                    } else if (homeScore < awayScore) {
+                        resultClass = isHomeTeam ? 'loss' : 'win';
+                    }
+
+                    const bar = document.createElement('div');
+                    bar.className = `bar ${resultClass}`;
+                    bar.style.height = `${points * 16.2}px`;
+                    bar.innerHTML = `<div class="bar-content"><span class="bar-score" style="font-size:10px; width:30px;">${homeScore} - ${awayScore}</span></div>`;
+                    container.appendChild(bar);
+                });
+            } catch (error) {
+                console.error('Error fetching or displaying performance data:', error);
+            }
+        }; */
+
+        const fetchH2HEvents = async (customId, currentMatchId, teamId) => {
+            const url = `${baseURL}/event/${customId}/h2h/events`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();  
+                if (data && data.events) {
+                    const finishedEvents = data.events
+                        .filter(event => event.status && event.status.type === 'finished' && event.id !== currentMatchId && event.homeTeam.id === teamId)
+                        .sort((a, b) => a.startTimestamp - b.startTimestamp);
+                    return finishedEvents;
+                } else {
+                    return [];
+                }
+            } catch (error) {
+                console.error('Error fetching H2H events:', error.message);
+                return [];
+            }
+        };
+
+        const fetchTeamStats = async (teamId, currentMatchId, currentMatchTimestamp) => {
+            const teamEventsUrl = `${baseURL}/team/${teamId}/events/last/0`;
+            const teamEventsData = await fetchJson(teamEventsUrl);
+            if (!teamEventsData || !teamEventsData.events) return {};
+
+            const last5Events = teamEventsData.events.slice(-5).reverse();
+            const stats = {
+                wins: 0,
+                draws: 0,
+                losses: 0,
+                cleanSheets: 0,
+                failedToScore: 0,
+                btts: 0,
+                over1_5: 0,
+                over2_5: 0,
+                over3_5: 0,
+                results: [],
+                totalGoalsScored: 0,
+                totalGoalsConceded: 0,
+                fatigue: 0,
+                avgDaysBetweenMatches: 0,
+            };
+
+            last5Events.forEach(event => {
+                if ((event.homeTeam.id === teamId || event.awayTeam.id === teamId) && event.status.type === 'finished' && event.id !== currentMatchId) {
+                    const isHome = event.homeTeam.id === teamId;
+                    const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
+                    const opponentScore = isHome ? event.awayScore.current : event.homeScore.current;
+                    let result;
+                    if (teamScore > opponentScore) {
+                        stats.wins++;
+                        result = 'W';
+                    } else if (teamScore < opponentScore) {
+                        stats.losses++;
+                        result = 'L';
+                    } else {
+                        stats.draws++;
+                        result = 'D';
+                    }
+
+                    stats.results.push({
+                        result,
+                        timeStamp: event.startTimestamp,
+                        uniqueTournamentId: event.tournament.uniqueTournament.id,
+                        uniqueTournamentName: event.tournament.name,
+                        categoryName: event.tournament.category.name,
+                        homeTeam: event.homeTeam.shortName,
+                        awayTeam: event.awayTeam.shortName,
+                        homeScore: event.homeScore.current,
+                        awayScore: event.awayScore.current
+                    });
+
+                    if (teamScore === 0) stats.failedToScore++;
+                    if (opponentScore === 0) stats.cleanSheets++;
+
+                    if (teamScore > 0 && opponentScore > 0) stats.btts++;
+                    if (teamScore + opponentScore >= 2) stats.over1_5++;
+                    if (teamScore + opponentScore >= 3) stats.over2_5++;
+                    if (teamScore + opponentScore >= 4) stats.over3_5++;
+
+                    stats.totalGoalsScored += teamScore;
+                    stats.totalGoalsConceded += opponentScore;
+                }
+            });
+
+            if (last5Events.length >= 2) {
+                const recentTwoEvents = last5Events.slice(0, 2);
+                let totalDays = 0;
+                let prevEventDate = null;
+
+                recentTwoEvents.forEach(event => {
+                    const eventDate = new Date(event.startTimestamp * 1000);
+                    if (prevEventDate) {
+                        const daysBetweenMatches = (eventDate - prevEventDate) / (1000 * 3600 * 24);
+                        totalDays += Math.abs(daysBetweenMatches);
+                    }
+                    prevEventDate = eventDate;
+                });
+
+                const currentEventDate = new Date(currentMatchTimestamp * 1000);
+                if (prevEventDate) {
+                    const daysToCurrentMatch = (currentEventDate - prevEventDate) / (1000 * 3600 * 24);
+                    totalDays += Math.abs(daysToCurrentMatch);
+                }
+
+                stats.avgDaysBetweenMatches = totalDays / (recentTwoEvents.length + 1);
+                stats.fatigue = Math.min(1, Math.max(0, 1 - (stats.avgDaysBetweenMatches / 5)));
+            }
+
+            const totalGames = last5Events.length;
+            if (totalGames > 0) {
+                stats.winsPercentage = (stats.wins / totalGames) * 100;
+                stats.drawsPercentage = (stats.draws / totalGames) * 100;
+                stats.lossesPercentage = (stats.losses / totalGames) * 100;
+                stats.cleanSheetsPercentage = (stats.cleanSheets / totalGames) * 100;
+                stats.failedToScorePercentage = (stats.failedToScore / totalGames) * 100;
+                stats.bttsPercentage = (stats.btts / totalGames) * 100;
+                stats.over1_5Percentage = (stats.over1_5 / totalGames) * 100;
+                stats.over2_5Percentage = (stats.over2_5 / totalGames) * 100;
+                stats.over3_5Percentage = (stats.over3_5 / totalGames) * 100;
+            } else {
+                stats.winsPercentage = stats.drawsPercentage = stats.lossesPercentage = 
+                stats.cleanSheetsPercentage = stats.failedToScorePercentage = 
+                stats.bttsPercentage = stats.over1_5Percentage = stats.over2_5Percentage = 
+                stats.over3_5Percentage = 0;
+            }
+
+            return stats;
+        };
+
+
+        const displayTeamStats = (teamStats, containerId) => {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            const teamItems = [
+                { name: 'Wins', value: teamStats.winsPercentage.toFixed(1) + '%' },
+                { name: 'Draws', value: teamStats.drawsPercentage.toFixed(1) + '%' },
+                { name: 'Losses', value: teamStats.lossesPercentage.toFixed(1) + '%' },
+                { name: 'Clean Sheets', value: teamStats.cleanSheetsPercentage.toFixed(1) + '%' },
+                { name: 'Failed to Score', value: teamStats.failedToScorePercentage.toFixed(1) + '%' },
+                { name: 'BTTS', value: teamStats.bttsPercentage.toFixed(1) + '%' },
+                { name: 'Over 1.5 Goals', value: teamStats.over1_5Percentage.toFixed(1) + '%' },
+                { name: 'Over 2.5 Goals', value: teamStats.over2_5Percentage.toFixed(1) + '%' },
+                { name: 'Over 3.5 Goals', value: teamStats.over3_5Percentage.toFixed(1) + '%' }
+            ];
+
+            teamItems.forEach(item => {
+                const statElem = document.createElement('div');
+                statElem.className = 'team-item';
+                statElem.innerHTML = `<strong>${item.name}:</strong> ${item.value}`;
+                container.appendChild(statElem);
+            });
+        };
+
+        const displayLast5Events = (teamStats, containerId) => {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            const events = teamStats.results.slice(0, 5); // Get the last 5 events
+            console.log(events);
+            events.forEach(event => {
+                const eventElem = document.createElement('div');
+                eventElem.className = 'event-row'; // Updated class name to match HTML/CSS
+                eventElem.innerHTML = ` 
+                            <div class="category-group">
+                                <div>
+                                    <img class="tourn" src="${baseURL}/unique-tournament/${event.uniqueTournamentId}/image" alt="${event.uniqueTournamentName}" width="20" height="20" loading="lazy">
+                                </div> 
+                                <div class="category-tournament" style="display: flex;">
+                                    <span class="category-name">${event.categoryName} ${event.uniqueTournamentName}</span>
+                                </div> 
+                            </div> 
+                            <span class="event-date">${new Date(event.timeStamp).toLocaleDateString('en-GB', {
+                                day: 'numeric',
+                                month: '2-digit',
+                                year: '2-digit'
+                            }).replace('/', '.').replace('/', '.')}</span>
+                        <span class="team-name">${event.homeTeam}</span>
+                        <span class="score ${event.result}">${event.homeScore} - ${event.awayScore}</span>
+                        <span class="team-name">${event.awayTeam}</span> 
+        `;
+        container.appendChild(eventElem);
+    });
+};
+
+
+
+
+        const displayH2H = (h2hData, containerId) => {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            h2hData.reverse().forEach(event => {
+                const eventElem = document.createElement('div');
+                eventElem.className = 'h2h__row';
+                eventElem.innerHTML = `  
+                    <span class="time">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: '2-digit', year: '2-digit' }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
+                    <span class="homeParticipant">${event.homeTeam.name}</span>
+                    <span class="score">${event.homeScore.current} - ${event.awayScore.current}</span> 
+                    <span class="awayParticipant">${event.awayTeam.name}</span> 
+                `;
+                container.appendChild(eventElem);
+            });
+        };
+
+        const fetchNextMatch = async (teamId) => {
+            const nextMatchUrl = `${baseURL}/team/${teamId}/events/next/0`;
+            const nextMatchData = await fetch(nextMatchUrl).then(response => response.json());
+            if (!nextMatchData || !nextMatchData.events || nextMatchData.events.length === 0) return null;
+            return nextMatchData.events[1]; // Get the next match
+        };
+
+        const displayNextMatch = async (teamId, containerId) => {
+            const match = await fetchNextMatch(teamId);
+            if (!match) {
+                document.getElementById(containerId).innerHTML = '<p>No upcoming matches.</p>';
+                return;
+            }
+
+            // Extract relevant details from the match data
+            const { homeTeam, awayTeam, startTimestamp, status, tournament } = match;
+            const { uniqueTournament, category } = tournament;
+            
+            const matchInfoHtml = `    
+                <div class="category-group">
+                    <div>
+                        <img class="tourn" src="${baseURL}/unique-tournament/${uniqueTournament.id}/image" alt="${uniqueTournament.name}" width="20" height="20" loading="lazy">
+                    </div> 
+                    <div class="category-tournament" style="display: flex;">
+                        <span class="category-name">${category.name}</span>
+                        <span class="tournament-name">${uniqueTournament.name}</span>
+                    </div> 
+                </div> 
+                <div class="match-card">
+                    <div class="match-time-status">
+                        <span class="match-time">${new Date(startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).replace(',', ' ').replace('/', ' ')}</span>
+                        <span class="match-status">${status.type === 'inprogress' ? 'LIVE' : new Date(startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <div class="team-info">
+                        <div class="teams-info">
+                            <div class="team">
+                                <img src="${baseURL}/team/${homeTeam.id}/image" width="16" height="16" alt="${homeTeam.shortName}" loading="lazy" class="team-logo">
+                                <span class="team-name">${homeTeam.shortName}</span>
+                            </div>
+                            <div class="team">
+                                <img src="${baseURL}/team/${awayTeam.id}/image" width="16" height="16" alt="${awayTeam.shortName}" loading="lazy" class="team-logo">
+                                <span class="team-name">${awayTeam.shortName}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById(containerId).innerHTML = matchInfoHtml;
+        };
+
+        const displayEventDetails = async (eventId) => {
+            const eventDetails = await fetchJson(`${baseURL}/event/${eventId}`);
+            if (!eventDetails) return;
+            const eventData = eventDetails.event;
+            const eventContainer = document.getElementById('event-container');
+            eventContainer.innerHTML = `
+                <div class="event-details">
+                    <h2>${eventData.homeTeam.shortName} vs ${eventData.awayTeam.shortName}</h2>
+                    <p>${new Date(eventData.startTimestamp * 1000).toLocaleString()}</p>
+                    <p>Status: ${eventData.status.type}</p>
+                </div>                
+                <div class="h2h">
+                    <h3>Head-to-Head Results</h3>
+                    <div id="h2h-results"></div>
+                </div>
+                <div class="team-stats">
+                    <h3>Recent form</h3>
+                    <div class="side-stat-container">
+                        <div class="side-result-stat">
+                            <h3>${eventData.homeTeam.shortName}</h3>
+                            <div id="home-team-form"></div> 
+                        </div>
+                        <div class="side-result-stat">
+                            <h3>${eventData.awayTeam.shortName}</h3>
+                            <div id="away-team-form"></div> 
+                        </div>
+                    </div>
+                </div>
+                <div class="team-stats">
+                    <h3>Recent form Stats</h3>
+                    <div class="side-stat-container">
+                        <div class="side-result-stat"> 
+                            <div id="home-team-stats"></div> 
+                        </div>
+                        <div class="side-result-stat"> 
+                            <div id="away-team-stats"></div> 
+                        </div>
+                    </div>
+                </div>
+                <div class="team-stats">
+                    <h3>Next Match</h3>
+                    <div class="side-stat-container">
+                        <div class="side-result-stat">  
+                            <div id="home-next-match" class="next-match"></div>
+                        </div>
+                        <div class="side-result-stat">  
+                            <div id="away-next-match" class="next-match"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="results-table"></div> <!-- Add this container to display results table -->
+            `;
+
+            const homeTeamId = eventData.homeTeam.id;
+            const awayTeamId = eventData.awayTeam.id;
+            const currentMatchId = eventData.id;
+            const currentMatchTimestamp = eventData.startTimestamp;
+
+            /* await fetchAndDisplayPerformance(homeTeamId, 'home-performance');
+            await fetchAndDisplayPerformance(awayTeamId, 'away-performance'); */
+
+            const homeTeamStats = await fetchTeamStats(homeTeamId, currentMatchId, currentMatchTimestamp);
+            const awayTeamStats = await fetchTeamStats(awayTeamId, currentMatchId, currentMatchTimestamp);
+
+            displayTeamStats(homeTeamStats, 'home-team-stats');
+            displayTeamStats(awayTeamStats, 'away-team-stats');
+
+            displayLast5Events(homeTeamStats, 'home-team-form');
+            displayLast5Events(awayTeamStats, 'away-team-form');
+
+            const h2hEvents = await fetchH2HEvents(eventData.customId, currentMatchId, homeTeamId);
+            // Fetch and integrate H2H events for the last 3 years 
+            const filteredH2HEvents = h2hEvents.filter(h2hEvent => { 
+                const eventDate = new Date(h2hEvent.startTimestamp * 1000);
+                const threeYearsAgo = new Date();
+                threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 5);
+                return eventDate >= threeYearsAgo;
+            });
+            displayH2H(filteredH2HEvents, 'h2h-results');
+
+            await displayNextMatch(homeTeamId, 'home-next-match');
+            await displayNextMatch(awayTeamId, 'away-next-match');
+
+            const tournamentId = eventData.tournament.id;
+            const seasonId = eventData.season.id;
+            fetchAndDisplayResults(tournamentId, seasonId, homeTeamId, awayTeamId, 'results-table');
+        };
+
+        const fetchAndDisplayResults = async (tournamentId, seasonId, currentHomeTeamId, currentAwayTeamId, containerId) => {
+  try {
+    const response = await fetch(`${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`);
+    const data = await response.json();
+    const events = data.events.filter(event => event.status.type === 'finished');
+
+    const teams = {};
+
+    events.forEach(event => {
+      if (!teams[event.homeTeam.id]) {
+        teams[event.homeTeam.id] = { id: event.homeTeam.id, name: event.homeTeam.name, points: 0, results: [] };
+      }
+      if (!teams[event.awayTeam.id]) {
+        teams[event.awayTeam.id] = { id: event.awayTeam.id, name: event.awayTeam.name, points: 0, results: [] };
+      }
+
+      const homeResultClass = event.homeScore.current > event.awayScore.current ? 'W' 
+                             : event.homeScore.current < event.awayScore.current ? 'L' 
+                             : 'D';
+
+      const awayResultClass = event.awayScore.current > event.homeScore.current ? 'W' 
+                             : event.awayScore.current < event.homeScore.current ? 'L' 
+                             : 'D';
+
+      const addResult = (isHome, event, teamScore, opponentScore, homeResultClass, awayResultClass, teams) => {
+        const result = {
+          location: isHome ? 'home' : 'away',
+          opponent: isHome ? event.awayTeam.id : event.homeTeam.id,
+          score: isHome ? `${teamScore} - ${opponentScore}` : `${opponentScore} - ${teamScore}`,
+          resultClass: isHome ? awayResultClass : homeResultClass
+        };
+        teams[isHome ? event.homeTeam.id : event.awayTeam.id].results.push(result);
+      };
+
+      addResult(true, event, event.homeScore.current, event.awayScore.current, homeResultClass, awayResultClass, teams);
+      addResult(false, event, event.awayScore.current, event.homeScore.current, homeResultClass, awayResultClass, teams);
+
+      if (event.homeScore.current > event.awayScore.current) {
+        teams[event.homeTeam.id].points += 3;
+      } else if (event.homeScore.current < event.awayScore.current) {
+        teams[event.awayTeam.id].points += 3;
+      } else {
+        teams[event.homeTeam.id].points += 1;
+        teams[event.awayTeam.id].points += 1;
+      }
+    });
+
+    const sortedTeams = Object.values(teams).sort((a, b) => b.points - a.points);
+
+    let tableHTML = `<table width="100%">
+      <thead>
+        <tr>
+          <th>Home</th> 
+          <th style="text-align:center;">Opponent</th>
+          <th>Away</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    sortedTeams.forEach(team => {
+      const highlightClass = (team.id === currentHomeTeamId || team.id === currentAwayTeamId) ? 'highlight' : '';
+
+      tableHTML += `<tr>
+        <td>${team.results
+          .filter(result => result.opponent === currentHomeTeamId && result.location === 'away')
+          .map(result => `<div class="${result.resultClass}">${result.score}</div>`).join('<br>')}</td> 
+        <td class="${highlightClass}" style="text-align:center;">${team.name}</td> 
+        <td>${team.results
+          .filter(result => result.opponent === currentAwayTeamId && result.location === 'home')
+          .map(result => `<div class="${result.resultClass}">${result.score}</div>`).join('<br>')}</td>
+      </tr>`;
+    });
+
+    tableHTML += `</tbody></table>`;
+
+    // Update the container with the generated table HTML
+    const container = document.getElementById(containerId);
+    container.innerHTML = tableHTML;
+
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    const container = document.getElementById(containerId);
+    container.innerHTML = '<p>Error fetching results data.</p>';
+  }
+};
+
+
+        // Get eventId from URL and display event details
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('eventId');
+        if (eventId) {
+            displayEventDetails(eventId);
+        } else {
+            document.getElementById('event-container').innerHTML = '<p>No event ID provided in the URL.</p>';
+        }
+    </script>
 </body>
 </html>

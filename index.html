@@ -3,9 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Categories</title>
+    <title>Soccer Trading Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: Arial, sans-serif; }
+        body { font-family: 'Lato', sans-serif}
         .category { margin-bottom: 20px; }
         a { text-decoration: none; color: #007BFF; }
         a:hover { text-decoration: underline; }
@@ -13,6 +17,95 @@
 </head>
 <body>
     <div id="categories-container"></div>
-    <script src="main.js"></script>
+    <script>
+        const baseURL = 'https://api.sofascore.com/api/v1';
+
+        const fetchJson = async (url) => {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error ${response.status}: ${errorData.message}`);
+                }
+                return response.json();
+            } catch (error) {
+                console.error('Fetch error:', error.message);
+                return null;
+            }
+        };
+
+        const filterEventsByTime = (events, hours) => {
+            const now = new Date().getTime();
+            const timeRange = hours * 60 * 60 * 1000; // Convert hours to milliseconds
+
+            return events.filter(event => {
+                const eventTime = new Date(event.startTimestamp * 1000).getTime();
+                return eventTime >= now && eventTime <= now + timeRange;
+            });
+        };
+
+        const displayCategories = async () => {
+            const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
+            const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`;
+
+            const topTournamentsData = await fetchJson(topTournamentsUrl);
+            const scheduledEventsData = await fetchJson(scheduledEventsUrl);
+
+            if (topTournamentsData && scheduledEventsData) {
+                const topTournaments = topTournamentsData.uniqueTournaments;
+                const events = scheduledEventsData.events;
+                const filteredEvents = filterEventsByTime(events, 24);
+
+                const container = document.getElementById('categories-container');
+                container.innerHTML = '';
+
+                // Display top tournament categories first
+                topTournaments.forEach(tournament => {
+                    const categoryName = tournament.category.name;
+                    const categoryId = tournament.category.id;
+                    const categoryEvents = filteredEvents.filter(event => event.tournament.id === tournament.id);
+
+                    if (categoryEvents.length > 0) {
+                        const categoryItem = document.createElement('div');
+                        categoryItem.classList.add('category');
+
+                        const categoryLink = document.createElement('a');
+                        categoryLink.href = `category.html?categoryId=${categoryId}`;
+                        categoryLink.textContent = categoryName;
+                        categoryItem.appendChild(categoryLink);
+
+                        container.appendChild(categoryItem);
+                    }
+                });
+
+                // Display other categories
+                const otherCategories = new Map();
+                filteredEvents.forEach(event => {
+                    const categoryName = event.tournament.category.name;
+                    if (!topTournaments.some(tournament => tournament.id === event.tournament.id)) {
+                        if (!otherCategories.has(categoryName)) {
+                            otherCategories.set(categoryName, []);
+                        }
+                        otherCategories.get(categoryName).push(event);
+                    }
+                });
+
+                otherCategories.forEach((events, categoryName) => {
+                    const categoryId = events[0].tournament.category.id;
+                    const categoryItem = document.createElement('div');
+                    categoryItem.classList.add('category');
+
+                    const categoryLink = document.createElement('a');
+                    categoryLink.href = `category.html?categoryId=${categoryId}`;
+                    categoryLink.textContent = categoryName;
+                    categoryItem.appendChild(categoryLink);
+
+                    container.appendChild(categoryItem);
+                });
+            }
+        };
+
+        displayCategories();
+    </script>
 </body>
 </html>

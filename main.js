@@ -32,33 +32,54 @@ const displayCategories = async () => {
     const scheduledEventsData = await fetchJson(scheduledEventsUrl);
 
     if (topTournamentsData && scheduledEventsData) {
-        const uniqueTournaments = topTournamentsData.uniqueTournaments;
+        const topTournaments = topTournamentsData.uniqueTournaments;
         const events = scheduledEventsData.events;
-
-        const status = 'live'; // Example status, can be 'live', 'finished', 'scheduled', or null
         const filteredEvents = filterEventsByTime(events, 24);
 
         // Create a list of categories with scheduled events
         const container = document.getElementById('categories-container');
         container.innerHTML = '';
 
-        uniqueTournaments.forEach(tournament => {
-            const tournamentEvents = filteredEvents.filter(event => event.tournament.id === tournament.id);
+        // Display top tournament categories first
+        topTournaments.forEach(tournament => {
+            const categoryName = tournament.category.name;
+            const categoryEvents = filteredEvents.filter(event => event.tournament.id === tournament.id);
 
-            if (tournamentEvents.length > 0) {
+            if (categoryEvents.length > 0) {
                 const categoryItem = document.createElement('div');
                 categoryItem.classList.add('category');
                 
                 const categoryLink = document.createElement('a');
-                categoryLink.href = `category.html?tournamentId=${tournament.id}`;
-                categoryLink.textContent = tournament.name;
+                categoryLink.href = `category.html?categoryName=${encodeURIComponent(categoryName)}`;
+                categoryLink.textContent = categoryName; // Use category name for the link text
                 categoryItem.appendChild(categoryLink);
                 
                 container.appendChild(categoryItem);
             }
         });
+
+        // Then, display other categories
+        const otherCategories = new Map();
+        filteredEvents.forEach(event => {
+            const categoryName = event.tournament.category.name;
+            if (!topTournaments.some(tournament => tournament.id === event.tournament.id)) {
+                if (!otherCategories.has(categoryName)) {
+                    otherCategories.set(categoryName, []);
+                }
+                otherCategories.get(categoryName).push(event);
+            }
+        });
+
+        otherCategories.forEach((events, categoryName) => {
+            const categoryItem = document.createElement('div');
+            categoryItem.classList.add('category');
+            
+            const categoryLink = document.createElement('a');
+            categoryLink.href = `category.html?categoryName=${encodeURIComponent(categoryName)}`;
+            categoryLink.textContent = categoryName; // Use category name for the link text
+            categoryItem.appendChild(categoryLink);
+            
+            container.appendChild(categoryItem);
+        });
     }
 };
-
-// Run the initialization function
-displayCategories();
