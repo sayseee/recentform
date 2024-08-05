@@ -40,18 +40,52 @@
   margin: 0;
   overflow: hidden; /* Prevent body from scrolling */
 }
-        .category { margin-bottom: 20px; }
-        a { text-decoration: none; color: #007BFF; }
-        a:hover { text-decoration: underline; }
+        .category {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;}
+    .category a {
+    display: flex;
+    width: 100%;
+    }
+    .category a>span {
+    width: calc(100% - 20px);
+    margin-left: auto;
+    display: flex;
+    }
+    .category span.cat-name {
+        width: calc(100% - 20px);
+    }
+    .category span span:last-child {
+    width: 20px;
+    margin-left: auto;
+    text-align: center;
+    margin-right: 10px;
+    color: var(--color-5);
+    font-size: 11px;
+    } 
+        .category:nth-child(even) { background-color: var(--blue-5);}
+        a, a:visited { text-decoration: none; color: var(--color-1); }
+        a:hover { text-decoration: none; }
+        a.active {
+    font-weight: bold; 
+    border-bottom: 3px solid #f4c002; /* Yellow border for the active tab */}
         header {
     background: #f8f9fa;
-    border-bottom: 1px solid #e0e0e0;margin-bottom: 20px; }
+    border-bottom: 1px solid #e0e0e0;}
+    header h1 {
+        font-size: 20px;
+        text-align: center;
+    }
     #categories-container {
         overflow-y: auto;
-        height: 65vh;
+        height: 68vh;
     }
         .container { max-width: 1200px; margin: 0 auto; }
-        .main-nav { margin-top: 20px; }
+        .main-nav { 
+    margin-top: 20px;
+    padding: 0 15px;}
         .filter-bar { margin-bottom: 20px; display: flex; flex-direction: column;gap: 10px;}
         .filter-bar>div { display: flex; flex-direction: row;justify-content: space-between;}
         .filter-bar label { margin-right: 10px; }
@@ -60,8 +94,21 @@
     border: 0;
     padding: 3px 5px;
     border-radius: 10px; border: 1px solid var(--blue-10); font-size: 11px;}
-        nav ul { list-style: none; padding: 0; }
-        nav ul li { display: inline; margin-right: 15px; }
+        nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-height: 25px; display: flex; justify-content: space-between;}
+        nav ul li { display: inline; }
+        nav ul li a { 
+    background: none;
+    border: none;
+    padding: 7px 15px;
+    cursor: pointer; 
+    font-weight: normal;
+    color: #333; /* Dark gray text */
+    border-bottom: 3px solid transparent; /* Transparent border by default */
+    transition: all 0.3s ease;}
         #filter-btn {
     background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
     color: white;
@@ -232,13 +279,13 @@ if ('serviceWorker' in navigator) {
                         const img = document.createElement('img');
                         img.src = `https://www.sofascore.com/static/images/flags/${categoryImage}.png`;
                         img.alt = categoryName;
-                        img.width = 20;
-                        img.height = 20;
+                        img.width = 16;
+                        img.height = 16;
                         img.classList.add('cat-img');
                         img.loading = 'lazy';
 
                         categoryLink.appendChild(img);
-                        categoryLink.appendChild(document.createTextNode(` ${categoryName} (${eventCount})`));
+                        categoryLink.innerHTML += ` <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span>`;
 
                         categoryItem.appendChild(categoryLink);
 
@@ -271,13 +318,13 @@ if ('serviceWorker' in navigator) {
                     const img = document.createElement('img');
                     img.src = `https://www.sofascore.com/static/images/flags/${categoryImage}.png`;
                     img.alt = categoryName;
-                    img.width = 20;
-                    img.height = 20;
+                    img.width = 16;
+                    img.height = 16;
                     img.classList.add('cat-img');
                     img.loading = 'lazy';
 
                     categoryLink.appendChild(img);
-                    categoryLink.appendChild(document.createTextNode(` ${categoryName} (${eventCount})`));
+                    categoryLink.innerHTML += ` <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span>`;
 
                     categoryItem.appendChild(categoryLink);
 
