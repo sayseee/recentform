@@ -5,18 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soccer Trading Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lexend:wght@100..900&display=swap" rel="stylesheet"> <style>
+        :root {
+            /* Blue Palette */
+        --blue-100: #051DA0; /* Blue (100) */
+        --blue-80: #374A83;  /* Blue (80) */
+        --blue-60: #6977C6;  /* Blue (60) */
+        --blue-40: #9BA5D9;  /* Blue (40) */
+        --blue-20: #CDD2EC;  /* Blue (20) */
+        --blue-10: #E6E9F6;  /* Blue (10) */
+        --blue-5:  #F2F3FA;  /* Blue (5) */
 
-    <style>
-        body { font-family: 'Lato', sans-serif}
+        /* Gradient Colors */
+        --gradient-start: #051DA0;
+        --gradient-end: #3049e1;
+
+        /* Additional Colors */
+        --color-1: #0F1928; /* Darker shade */
+        --color-2: #27303E; /* Dark shade */
+        --color-3: #3F4753; /* Medium dark shade */
+        --color-4: #6F757E; /* Medium shade */
+        --color-5: #9FA3A9;  /* Medium light shade */
+        --color-6: #CFD1D4; /* Light shade */
+        --color-7: #E7E8E9; /* Lighter shade */
+    }
+        body {
+  font-family: "Lato", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 12px;
+}
         .category { margin-bottom: 20px; }
         a { text-decoration: none; color: #007BFF; }
         a:hover { text-decoration: underline; }
+        header { background: #f8f9fa; padding: 20px; border-bottom: 1px solid #e0e0e0; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .main-nav { margin-top: 20px; }
+        .filter-bar { margin-bottom: 20px; }
+        .filter-bar label { margin-right: 10px; }
+        .filter-bar input, .filter-bar select {
+    margin-right: 10px;
+    background-color: var(--blue-5);
+    border: 0;
+    padding: 3px 5px;
+    border-radius: 10px; border: 1px solid var(--blue-10); font-size: 11px;}
+        nav ul { list-style: none; padding: 0; }
+        nav ul li { display: inline; margin-right: 15px; }
+        #filter-btn {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            border-radius: 15px !important;
+            padding: 5px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            border-radius: 10px;
+        }
+
+        #filter-btn:hover {
+            background: linear-gradient(to right, var(--gradient-end), var(--gradient-start));
+        }
     </style>
 </head>
 <body>
-    <div id="categories-container"></div>
+    <header>
+        <div class="container">
+            <h1>Soccer Trading Platform</h1>
+        </div>
+        <div class="main-nav">
+            <div class="container">
+                <div class="filter-bar">
+                    <input type="date" id="start-date" name="start-date">
+                    <input type="date" id="end-date" name="end-date"> 
+                    <label for="time-range">By Time:</label>
+                    <select id="time-range">
+                        <option value="">Select Time</option>
+                        <option value="3">3 Hours</option>
+                        <option value="6">6 Hours</option>
+                        <option value="12">12 Hours</option>
+                    </select>
+                    <button id="filter-btn">Filter</button>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="#all-games">All</a></li>
+                        <li><a href="#live-games">Live</a></li>
+                        <li><a href="#finished-games">Finished</a></li>
+                        <li><a href="#scheduled-games">Scheduled</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div id="categories-container" class="container"></div>
     <script>
         const baseURL = 'https://api.sofascore.com/api/v1';
 
@@ -44,7 +130,7 @@
             });
         };
 
-        const displayCategories = async () => {
+        const displayCategories = async (startDate, endDate, hours, status) => {
             const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
             const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`;
 
@@ -53,17 +139,57 @@
 
             if (topTournamentsData && scheduledEventsData) {
                 const topTournaments = topTournamentsData.uniqueTournaments;
-                const events = scheduledEventsData.events;
-                const filteredEvents = filterEventsByTime(events, 24);
+                let events = scheduledEventsData.events;
+                
+                // Filter by date
+                if (startDate && endDate) {
+                    events = events.filter(event => {
+                        const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
+                        return eventDate >= startDate && eventDate <= endDate;
+                    });
+                }
 
+                // Filter by time
+                if (hours) {
+                    events = filterEventsByTime(events, hours);
+                }
+
+                // Filter by status
+                if (status) {
+                    events = events.filter(event => {
+                        switch (status) {
+                            case 'live':
+                                return event.status.type === 'inprogress';
+                            case 'finished':
+                                return event.status.type === 'finished';
+                            case 'scheduled':
+                                return event.status.type === 'notstarted';
+                            default:
+                                return true;
+                        }
+                    });
+                }
+
+                const filteredEvents = events;
                 const container = document.getElementById('categories-container');
                 container.innerHTML = '';
+
+                // Create a map to hold event counts per category
+                const categoryEventCounts = new Map();
+                filteredEvents.forEach(event => {
+                    const categoryName = event.tournament.category.name;
+                    if (!categoryEventCounts.has(categoryName)) {
+                        categoryEventCounts.set(categoryName, 0);
+                    }
+                    categoryEventCounts.set(categoryName, categoryEventCounts.get(categoryName) + 1);
+                });
 
                 // Display top tournament categories first
                 topTournaments.forEach(tournament => {
                     const categoryName = tournament.category.name;
                     const categoryId = tournament.category.id;
                     const categoryEvents = filteredEvents.filter(event => event.tournament.id === tournament.id);
+                    const eventCount = categoryEventCounts.get(categoryName) || 0;
 
                     if (categoryEvents.length > 0) {
                         const categoryItem = document.createElement('div');
@@ -71,7 +197,7 @@
 
                         const categoryLink = document.createElement('a');
                         categoryLink.href = `category.html?categoryId=${categoryId}`;
-                        categoryLink.textContent = categoryName;
+                        categoryLink.textContent = `${categoryName} (${eventCount})`;
                         categoryItem.appendChild(categoryLink);
 
                         container.appendChild(categoryItem);
@@ -92,12 +218,13 @@
 
                 otherCategories.forEach((events, categoryName) => {
                     const categoryId = events[0].tournament.category.id;
+                    const eventCount = categoryEventCounts.get(categoryName) || 0;
                     const categoryItem = document.createElement('div');
                     categoryItem.classList.add('category');
 
                     const categoryLink = document.createElement('a');
                     categoryLink.href = `category.html?categoryId=${categoryId}`;
-                    categoryLink.textContent = categoryName;
+                    categoryLink.textContent = `${categoryName} (${eventCount})`;
                     categoryItem.appendChild(categoryLink);
 
                     container.appendChild(categoryItem);
@@ -105,7 +232,51 @@
             }
         };
 
-        displayCategories();
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('start-date').value = today;
+            document.getElementById('end-date').value = today;
+
+            // Initial data load
+            displayCategories(today, today, '', '');
+
+            document.getElementById('filter-btn').addEventListener('click', () => {
+                const startDate = document.getElementById('start-date').value;
+                const endDate = document.getElementById('end-date').value;
+                const hours = document.getElementById('time-range').value;
+                displayCategories(startDate, endDate, hours, '');
+            });
+
+            document.querySelectorAll('.main-nav a').forEach(link => {
+                link.addEventListener('click', async event => {
+                    event.preventDefault();
+                    const filterType = link.getAttribute('href').replace('#', '');
+
+                    let startDate = today;
+                    let endDate = today;
+                    let hours = '';
+                    let status = '';
+
+                    switch (filterType) {
+                        case 'all-games':
+                            displayCategories(startDate, endDate, hours, status);
+                            break; // Default case already handles all games
+                        case 'live-games':
+                            displayCategories(startDate, endDate, hours, 'live');
+                            break;
+                        case 'finished-games':
+                            displayCategories(startDate, endDate, hours, 'finished');
+                            break;
+                        case 'scheduled-games':
+                            displayCategories(startDate, endDate, hours, 'scheduled');
+                            break;
+                        default:
+                            displayCategories(startDate, endDate, hours, status);
+                            break;
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
