@@ -25,7 +25,8 @@
         .performance .loss { background: red; }
         .performance .draw { background: grey; }
         .team-stats { margin-bottom: 20px; }
-        .side-stat-container { display: flex; }
+        .side-stat-container { display: flex; flex-direction: column;}
+        .side-stat-container2 { display: flex; flex-direction: row;}
         .side-result-stat { flex: 1; }
         .side-stat { margin: 5px; }
         .team-item { margin-bottom: 20px; }
@@ -39,7 +40,19 @@
         table th, table td { border: 1px solid #ddd; padding: 8px; }
         table th { background-color: #f4f4f4; }
         .highlight { background-color: yellow; }
-      
+.event__row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 2fr;
+    grid-template-areas: "time homeParticipant score awayParticipant";
+    align-items: center;
+    border-bottom: 1px solid var(--color-support-1);
+    cursor: pointer;
+    transition: all .4s ease;
+    margin: 5px 0;
+    padding: 0;
+    color: #c8cdcd;
+    font-weight: bold;
+}
 .category-group {
     display: flex;
     align-items: center;
@@ -174,7 +187,66 @@
 .L {
     background-color: var(--loss-color);
 }
+.h2h-teams img { 
+    margin-right: 5px;
+} 
+.time {
+    grid-area: time;
+    margin-right: 5px;
+}
 
+.homeParticipant {
+    grid-area: homeParticipant;
+    flex: 1;
+    color: #333;
+}
+
+.awayParticipant {
+    grid-area: awayParticipant;
+    flex: 1;
+    color: #333
+}
+
+.homeParticipant {
+    margin-right: 10px;
+    text-align: right;
+}
+.awayParticipant {
+    margin-left: 10px;
+}
+
+.teamStats.away .time, .teamStats.away .time {    
+    margin-right: 0;
+    margin-left: 5px;
+}
+
+.home-result { 
+    grid-area: homeResult;
+    text-align: center;
+    font-weight: bold;
+    color: #eee;
+}
+.away-result {
+    font-weight: bold;
+    grid-area: awayResult;
+    text-align: center;
+    color: #eee;
+}
+
+.resultFulltime {
+    grid-area: resultFulltime;
+}
+
+.result, .resultFulltime {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    justify-self: stretch;
+    line-height: 24px;
+    text-align: center;
+} 
     </style>
 </head>
 <body>
@@ -399,15 +471,17 @@
                                 <div class="category-tournament" style="display: flex;">
                                     <span class="category-name">${event.uniqueTournamentName}</span>
                                 </div> 
+                            </div>
+                            <div class="event__row">
+                                <span class="event-date time">${new Date(event.timeStamp).toLocaleDateString('en-GB', {
+                                        day: 'numeric',
+                                        month: '2-digit',
+                                        year: '2-digit'
+                                    }).replace('/', '.').replace('/', '.')}</span>
+                                <span class="team-name homeParticipant">${event.homeTeam}</span>
+                                <span class="score ${event.result}">${event.homeScore} - ${event.awayScore}</span>
+                                <span class="team-name awayParticipant">${event.awayTeam}</span>
                             </div> 
-                            <span class="event-date">${new Date(event.timeStamp).toLocaleDateString('en-GB', {
-                                day: 'numeric',
-                                month: '2-digit',
-                                year: '2-digit'
-                            }).replace('/', '.').replace('/', '.')}</span>
-                        <span class="team-name">${event.homeTeam}</span>
-                        <span class="score ${event.result}">${event.homeScore} - ${event.awayScore}</span>
-                        <span class="team-name">${event.awayTeam}</span> 
         `;
         container.appendChild(eventElem);
     });
@@ -514,7 +588,7 @@
                 </div>
                 <div class="team-stats">
                     <h3>Recent form Stats</h3>
-                    <div class="side-stat-container">
+                    <div class="side-stat-container2">
                         <div class="side-result-stat"> 
                             <div id="home-team-stats"></div> 
                         </div>
@@ -525,7 +599,7 @@
                 </div>
                 <div class="team-stats">
                     <h3>Next Match</h3>
-                    <div class="side-stat-container">
+                    <div class="side-stat-container2">
                         <div class="side-result-stat">  
                             <div id="home-next-match" class="next-match"></div>
                         </div>
