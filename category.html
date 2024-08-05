@@ -35,61 +35,74 @@
         };
 
         const displayCategoryEvents = async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryId = urlParams.get('categoryId');
-            const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`;
-            
-            // Fetch the scheduled events
-            const scheduledEventsData = await fetchJson(scheduledEventsUrl);
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get('categoryId');
+    
+    // Define URLs for fetching scheduled events
+    const scheduledEventsUrls = [
+        `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`,
+        `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}/inverse`
+    ];
 
-            if (scheduledEventsData) {
-                const events = scheduledEventsData.events;
+    // Fetch the scheduled events data from all URLs
+    const scheduledEventsPromises = scheduledEventsUrls.map(url => fetchJson(url));
+    const scheduledEventsResponses = await Promise.all(scheduledEventsPromises);
 
-                // Group events by category and tournament
-                const tournamentsInCategory = new Map();
+    // Combine data from all responses
+    let events = [];
+    scheduledEventsResponses.forEach(response => {
+        if (response && response.events) {
+            events = [...events, ...response.events];
+        }
+    });
 
-                events.forEach(event => {
-                    const category = event.tournament.category;
-                    if (category.id === parseInt(categoryId)) {
-                        const tournamentId = event.tournament.id;
-                        if (!tournamentsInCategory.has(tournamentId)) {
-                            tournamentsInCategory.set(tournamentId, {
-                                name: event.tournament.name,
-                                events: []
-                            });
-                        }
-                        tournamentsInCategory.get(tournamentId).events.push(event);
-                    }
-                });
+    if (events.length > 0) {
+        // Group events by category and tournament
+        const tournamentsInCategory = new Map();
 
-                const container = document.getElementById('events-container');
-                container.innerHTML = '';
-
-                tournamentsInCategory.forEach((tournament, tournamentId) => {
-                    const tournamentSection = document.createElement('div');
-                    tournamentSection.classList.add('tournament');
-                    
-                    const tournamentHeader = document.createElement('h3');
-                    tournamentHeader.textContent = tournament.name;
-                    tournamentSection.appendChild(tournamentHeader);
-
-                    if (tournament.events.length > 0) {
-                        const eventsList = document.createElement('ul');
-                        tournament.events.forEach(event => {
-                            const listItem = document.createElement('li');
-                            const eventLink = document.createElement('a');
-                            eventLink.href = `event.html?eventId=${event.id}`;
-                            eventLink.textContent = `${event.homeTeam.shortName} vs ${event.awayTeam.shortName}`;
-                            listItem.appendChild(eventLink);
-                            eventsList.appendChild(listItem);
-                        });
-                        tournamentSection.appendChild(eventsList);
-                    }
-
-                    container.appendChild(tournamentSection);
-                });
+        events.forEach(event => {
+            const category = event.tournament.category;
+            if (category.id === parseInt(categoryId)) {
+                const tournamentId = event.tournament.id;
+                if (!tournamentsInCategory.has(tournamentId)) {
+                    tournamentsInCategory.set(tournamentId, {
+                        name: event.tournament.name,
+                        events: []
+                    });
+                }
+                tournamentsInCategory.get(tournamentId).events.push(event);
             }
-        };
+        });
+
+        const container = document.getElementById('events-container');
+        container.innerHTML = '';
+
+        tournamentsInCategory.forEach((tournament, tournamentId) => {
+            const tournamentSection = document.createElement('div');
+            tournamentSection.classList.add('tournament');
+            
+            const tournamentHeader = document.createElement('h3');
+            tournamentHeader.textContent = tournament.name;
+            tournamentSection.appendChild(tournamentHeader);
+
+            if (tournament.events.length > 0) {
+                const eventsList = document.createElement('ul');
+                tournament.events.forEach(event => {
+                    const listItem = document.createElement('li');
+                    const eventLink = document.createElement('a');
+                    eventLink.href = `event.html?eventId=${event.id}`;
+                    eventLink.textContent = `${event.homeTeam.shortName} vs ${event.awayTeam.shortName}`;
+                    listItem.appendChild(eventLink);
+                    eventsList.appendChild(listItem);
+                });
+                tournamentSection.appendChild(eventsList);
+            }
+
+            container.appendChild(tournamentSection);
+        });
+    }
+};
+
 
         displayCategoryEvents();
     </script>
