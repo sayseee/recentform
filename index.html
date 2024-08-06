@@ -30,6 +30,10 @@
         --color-5: #9FA3A9;  /* Medium light shade */
         --color-6: #CFD1D4; /* Light shade */
         --color-7: #E7E8E9; /* Lighter shade */
+        --match-strip--bg: url(images/backgroundDark02L.jpg);
+        --match-strip--bg-size: cover;
+        --pk-background--dark: rgb(0, 0, 64);
+        --lv1-background-color: linear-gradient(93.5deg, #0232ff 0.59%, #010056 94.82%);
     }
         body {
   font-family: "Lato", sans-serif;
@@ -39,7 +43,85 @@
   font-size: 13px;
   margin: 0;
   overflow: hidden; /* Prevent body from scrolling */
+}/* Accordion styles */
+.category {
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
 }
+
+.category-header {
+    background-color: #f1f1f1;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.category-header:hover {
+    background-color: #e1e1e1;
+}
+
+.category-header img {
+    margin-right: 10px;
+}
+
+.category-header .cat-name {
+    font-weight: bold;
+}
+
+.category-header span {
+    flex: 1;
+}
+
+.category-header .count {
+    background-color: #ddd;
+    border-radius: 12px;
+    padding: 2px 6px;
+    margin-left: 10px;
+}
+
+.events-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    display: none;
+}
+
+.events-list li {
+    margin: 5px 0;
+    padding: 5px 0;
+}
+
+.events-list li a {
+    display: flex;
+    justify-content: space-between;
+    text-decoration: none;
+    color: #333;
+}
+
+.events-list li a:hover {
+    text-decoration: underline;
+}
+
+.tournament {
+    margin-bottom: 20px;
+}
+
+.tournament h3 {
+    margin-bottom: 10px;
+}
+
+.odds span {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.active .events-list {
+    display: block;
+}
+
         .category {
     height: 30px;
     display: flex;
@@ -71,9 +153,41 @@
         a.active {
     font-weight: bold; 
     border-bottom: 3px solid #f4c002; /* Yellow border for the active tab */}
-        header {
-    background: #f8f9fa;
-    border-bottom: 1px solid #e0e0e0;}
+    header {
+    position: relative;
+    background-size: cover;
+    background-position: right center;
+    overflow: hidden;
+    padding: 20px;
+    min-height: 110px;
+
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+    background: var(--match-strip--bg, var(--lv1-background-color, var(--pk-background--dark)));
+    background-size: var(--match-strip--bg-size, auto);
+  z-index: 1;
+  pointer-events: none; /* Ensure the overlay does not block interactions */
+  opacity: 0.9345;
+}
+header .header-wrapper {
+    z-index: 2;
+    color: #fff;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
     header h1 {
         font-size: 20px;
         text-align: center;
@@ -83,9 +197,6 @@
         height: 68vh;
     }
         .container { max-width: 1200px; margin: 0 auto; }
-        .main-nav { 
-    margin-top: 20px;
-    padding: 0 15px;}
         .filter-bar { margin-bottom: 20px; display: flex; flex-direction: column;gap: 10px;}
         .filter-bar>div { display: flex; flex-direction: row;justify-content: space-between;}
         .filter-bar label { margin-right: 10px; }
@@ -106,12 +217,12 @@
     padding: 7px 15px;
     cursor: pointer; 
     font-weight: normal;
-    color: #333; /* Dark gray text */
+    color: var(--color-6); /* Dark gray text */
     border-bottom: 3px solid transparent; /* Transparent border by default */
     transition: all 0.3s ease;}
         #filter-btn {
-    background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
-    color: white;
+    background: var(--color-7);
+    color: var(--blue-100);
     border: none;
     border-radius: 15px !important;
     padding: 5px 10px;
@@ -126,10 +237,94 @@
             background: linear-gradient(to right, var(--gradient-end), var(--gradient-start));
         }
         .cat-img { margin-right: 10px; vertical-align: middle; }
+        .category.active .tournaments-container {
+    max-height: none;
+    padding: 10px;
+}/* Base styles for categories and tournaments */
+.category {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.category-header {
+    background-color: #f7f7f7;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.tournaments-container {
+    display: none;
+    padding: 10px;
+}
+
+.tournament {
+    margin-bottom: 10px;
+}
+
+.tournament h3 {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.tournament ul {
+    list-style: none;
+    padding: 0;
+}
+
+.tournament li {
+    margin-bottom: 5px;
+}
+
+.tournament a {
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tournament .team-names {
+    font-weight: bold;
+}
+
+.tournament .odds span {
+    margin-left: 10px;
+}
+
+/* Styling for the active state of the category */
+.category.active .category-header {
+    background-color: #e2e2e2;
+}
+
+
+.category-header .cat-name {
+    font-weight: bold;
+}  
+#categories-container::-webkit-scrollbar {
+    width: 4px; /* Set the width of the scrollbar */
+}
+
+#categories-container::-webkit-scrollbar-track {
+    background: transparent; /* Color of the track */
+}
+
+#categories-container::-webkit-scrollbar-thumb {
+    background: #fff; /* Color of the thumb */
+    border-radius: 5px; 
+    height: 66px;
+}
+
+#categories-container::-webkit-scrollbar-thumb:hover {
+    background: #fff; /* Color of the thumb on hover */
+    width: 11px;
+}
     </style>
 </head>
 <body>
     <header>
+        <div class="header-wrapper">
         <div class="container">
             <h1>Soccer Trading Platform</h1>
         </div>
@@ -161,6 +356,7 @@
                 </nav>
             </div>
         </div>
+        </div>
     </header>
 
     <div id="categories-container" class="container"></div>
@@ -177,216 +373,278 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
+const baseURL = 'https://api.sofascore.com/api/v1';
 
-        const baseURL = 'https://api.sofascore.com/api/v1';
+const fetchJson = async (url) => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error ${response.status}: ${errorData.message}`);
+        }
+        return response.json();
+    } catch (error) {
+        console.error('Fetch error:', error.message);
+        return null;
+    }
+};
 
-        const fetchJson = async (url) => {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Error ${response.status}: ${errorData.message}`);
+const filterEventsByTime = (events, hours) => {
+    const now = new Date().getTime();
+    const timeRange = hours * 60 * 60 * 1000; // Convert hours to milliseconds
+
+    return events.filter(event => {
+        const eventTime = new Date(event.startTimestamp * 1000).getTime();
+        return eventTime >= now && eventTime <= now + timeRange;
+    });
+};
+
+const displayCategories = async (startDate, endDate, hours, status) => {
+    const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
+    const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`;
+    const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}/inverse`;
+    const oddsResponse = `${baseURL}/sport/football/odds/1/${new Date().toISOString().split('T')[0]}`;
+
+    const topTournamentsData = await fetchJson(topTournamentsUrl);
+    const scheduledEventsData = await fetchJson(scheduledEventsUrl);
+    const scheduledEventsData2 = await fetchJson(scheduledEventsUrl2);
+
+    if (topTournamentsData && scheduledEventsData && scheduledEventsData2) {
+        const topTournaments = topTournamentsData.uniqueTournaments;
+        let events = [...scheduledEventsData.events, ...scheduledEventsData2.events];
+        const odds = (await fetchJson(oddsResponse))?.odds || {};
+
+        // Filter by date
+        if (startDate && endDate) {
+            events = events.filter(event => {
+                const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
+                return eventDate >= startDate && eventDate <= endDate;
+            });
+        }
+
+        // Filter by time
+        if (hours) {
+            events = filterEventsByTime(events, hours);
+        }
+
+        // Filter by status
+        if (status) {
+            events = events.filter(event => {
+                switch (status) {
+                    case 'live':
+                        return event.status.type === 'inprogress';
+                    case 'finished':
+                        return event.status.type === 'finished';
+                    case 'scheduled':
+                        return event.status.type === 'notstarted';
+                    default:
+                        return true;
                 }
-                return response.json();
-            } catch (error) {
-                console.error('Fetch error:', error.message);
-                return null;
+            });
+        }
+
+        const filteredEvents = events.filter(event => odds[event.id]);
+        const container = document.getElementById('categories-container');
+        container.innerHTML = '';
+
+        // Group events by category and tournament
+        const categories = new Map();
+        filteredEvents.forEach(event => {
+            const categoryName = event.tournament.category.name;
+            if (!categories.has(categoryName)) {
+                categories.set(categoryName, new Map());
             }
-        };
 
-        const filterEventsByTime = (events, hours) => {
-            const now = new Date().getTime();
-            const timeRange = hours * 60 * 60 * 1000; // Convert hours to milliseconds
+            const tournaments = categories.get(categoryName);
+            const tournamentName = event.tournament.name;
 
-            return events.filter(event => {
-                const eventTime = new Date(event.startTimestamp * 1000).getTime();
-                return eventTime >= now && eventTime <= now + timeRange;
-            });
-        };
-
-        const displayCategories = async (startDate, endDate, hours, status) => {
-            const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`; 
-            const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`;
-            const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}/inverse`;
-
-            // Fetch data from both URLs
-            const topTournamentsData = await fetchJson(topTournamentsUrl);
-            const scheduledEventsData = await fetchJson(scheduledEventsUrl);
-            const scheduledEventsData2 = await fetchJson(scheduledEventsUrl2);
-
-            if (topTournamentsData && scheduledEventsData && scheduledEventsData2) {
-                const topTournaments = topTournamentsData.uniqueTournaments;
-                let events = [...scheduledEventsData.events, ...scheduledEventsData2.events]; // Combine both event arrays
-                 
-                // Filter by date
-                if (startDate && endDate) {
-                    events = events.filter(event => {
-                        const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
-                        return eventDate >= startDate && eventDate <= endDate;
-                    });
-                }
-
-                // Filter by time
-                if (hours) {
-                    events = filterEventsByTime(events, hours);
-                }
-
-                // Filter by status
-                if (status) {
-                    events = events.filter(event => {
-                        switch (status) {
-                            case 'live':
-                                return event.status.type === 'inprogress';
-                            case 'finished':
-                                return event.status.type === 'finished';
-                            case 'scheduled':
-                                return event.status.type === 'notstarted';
-                            default:
-                                return true;
-                        }
-                    });
-                }
-
-                const filteredEvents = events;
-                const container = document.getElementById('categories-container');
-                container.innerHTML = '';
-
-                // Create a map to hold event counts per category
-                const categoryEventCounts = new Map();
-                filteredEvents.forEach(event => {
-                    const categoryName = event.tournament.category.name;
-                    if (!categoryEventCounts.has(categoryName)) {
-                        categoryEventCounts.set(categoryName, 0);
-                    }
-                    categoryEventCounts.set(categoryName, categoryEventCounts.get(categoryName) + 1);
-                });
-
-                // Display top tournament categories first
-                topTournaments.forEach(tournament => {
-                    const categoryName = tournament.category.name;
-                    const categoryImage = events[0].tournament.category.alpha2 ? events[0].tournament.category.alpha2.toLowerCase() : events[0].tournament.category.flag;
-                    const categoryId = tournament.category.id;
-                    const categoryEvents = filteredEvents.filter(event => event.tournament.id === tournament.id);
-                    const eventCount = categoryEventCounts.get(categoryName) || 0;
-
-                    if (categoryEvents.length > 0) {
-                        const categoryItem = document.createElement('div');
-                        categoryItem.classList.add('category');
-
-                        const categoryLink = document.createElement('a');
-                        categoryLink.href = `category.html?categoryId=${categoryId}`;
-
-                        const img = document.createElement('img');
-                        img.src = `https://www.sofascore.com/static/images/flags/${categoryImage}.png`;
-                        img.alt = categoryName;
-                        img.width = 16;
-                        img.height = 16;
-                        img.classList.add('cat-img');
-                        img.loading = 'lazy';
-
-                        categoryLink.appendChild(img);
-                        categoryLink.innerHTML += ` <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span>`;
-
-                        categoryItem.appendChild(categoryLink);
-
-                        container.appendChild(categoryItem);
-                    }
-                });
-
-                // Display other categories
-                const otherCategories = new Map();
-                filteredEvents.forEach(event => {
-                    const categoryName = event.tournament.category.name; 
-                    if (!topTournaments.some(tournament => tournament.id === event.tournament.id)) {
-                        if (!otherCategories.has(categoryName)) {
-                            otherCategories.set(categoryName, []);
-                        }
-                        otherCategories.get(categoryName).push(event);
-                    }
-                });
-
-                otherCategories.forEach((events, categoryName) => {
-                    const categoryId = events[0].tournament.category.id;
-                    const categoryImage = events[0].tournament.category.alpha2 ? events[0].tournament.category.alpha2.toLowerCase() : events[0].tournament.category.flag;
-                    const eventCount = categoryEventCounts.get(categoryName) || 0;
-                    const categoryItem = document.createElement('div');
-                    categoryItem.classList.add('category');
-
-                    const categoryLink = document.createElement('a');
-                    categoryLink.href = `category.html?categoryId=${categoryId}`;
-
-                    const img = document.createElement('img');
-                    img.src = `https://www.sofascore.com/static/images/flags/${categoryImage}.png`;
-                    img.alt = categoryName;
-                    img.width = 16;
-                    img.height = 16;
-                    img.classList.add('cat-img');
-                    img.loading = 'lazy';
-
-                    categoryLink.appendChild(img);
-                    categoryLink.innerHTML += ` <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span>`;
-
-                    categoryItem.appendChild(categoryLink);
-
-                    container.appendChild(categoryItem);
-                });
+            if (!tournaments.has(tournamentName)) {
+                tournaments.set(tournamentName, []);
             }
-        };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('start-date').value = today;
-            document.getElementById('end-date').value = today;
-
-            // Initial data load
-            displayCategories(today, today, '', '');
-
-            document.getElementById('filter-btn').addEventListener('click', () => {
-                const startDate = document.getElementById('start-date').value;
-                const endDate = document.getElementById('end-date').value;
-                const hours = document.getElementById('time-range').value;
-                displayCategories(startDate, endDate, hours, '');
-            });
-
-            document.querySelectorAll('.main-nav a').forEach(link => {
-                link.addEventListener('click', async event => {
-                    event.preventDefault();
-
-                    // Remove 'active' class from all links
-                    document.querySelectorAll('.main-nav a').forEach(navLink => {
-                        navLink.classList.remove('active');
-                    });
-
-                    // Add 'active' class to the clicked link
-                    link.classList.add('active');
-
-                    const filterType = link.getAttribute('href').replace('#', '');
-
-                    let startDate = today;
-                    let endDate = today;
-                    let hours = '';
-                    let status = '';
-
-                    switch (filterType) {
-                        case 'all-games':
-                            displayCategories(startDate, endDate, hours, status);
-                            break; // Default case already handles all games
-                        case 'live-games':
-                            displayCategories(startDate, endDate, hours, 'live');
-                            break;
-                        case 'finished-games':
-                            displayCategories(startDate, endDate, hours, 'finished');
-                            break;
-                        case 'scheduled-games':
-                            displayCategories(startDate, endDate, hours, 'scheduled');
-                            break;
-                        default:
-                            displayCategories(startDate, endDate, hours, status);
-                            break;
-                    }
-                });
-            });
+            tournaments.get(tournamentName).push(event);
         });
+
+        // Display categories and their tournaments
+        categories.forEach((tournaments, categoryName) => {
+            const categoryItem = document.createElement('div');
+            categoryItem.classList.add('category');
+
+            const categoryHeader = document.createElement('div');
+            categoryHeader.classList.add('category-header');
+            categoryHeader.innerHTML = `
+                <span class="cat-name">${categoryName}</span>
+            `;
+            categoryHeader.addEventListener('click', () => {
+                categoryItem.classList.toggle('active');
+            });
+
+            const tournamentsContainer = document.createElement('div');
+            tournamentsContainer.classList.add('tournaments-container');
+
+            tournaments.forEach((events, tournamentName) => {
+                const tournamentSection = document.createElement('div');
+                tournamentSection.classList.add('tournament');
+
+                const tournamentHeader = document.createElement('h3');
+                tournamentHeader.textContent = tournamentName;
+                tournamentSection.appendChild(tournamentHeader);
+
+                const eventsList = document.createElement('ul');
+                events.forEach(event => {
+                    const listItem = document.createElement('li');
+                    const eventLink = document.createElement('a');
+                    eventLink.href = `event.html?eventId=${event.id}`;
+
+                    // Get the odds data for this event
+                    const oddsData = odds[event.id] || {};
+                    const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.initialFractionalValue;
+                    const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.initialFractionalValue;
+                    const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.initialFractionalValue;
+
+                    // Convert fractional odds to decimal
+                    const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
+                    const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
+                    const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
+
+                    eventLink.innerHTML = `
+                        <span class="team-names">${event.homeTeam.shortName} vs ${event.awayTeam.shortName}</span>
+                        <span class="odds">
+                            <span>${homeOdds}</span>
+                            <span>${drawOdds}</span>
+                            <span>${awayOdds}</span>
+                        </span>
+                    `;
+                    listItem.appendChild(eventLink);
+                    eventsList.appendChild(listItem);
+                });
+
+                tournamentSection.appendChild(eventsList);
+                tournamentsContainer.appendChild(tournamentSection);
+            });
+
+            categoryItem.appendChild(categoryHeader);
+            categoryItem.appendChild(tournamentsContainer);
+            container.appendChild(categoryItem);
+        });
+
+        // Display other categories
+        const otherCategories = new Map();
+        filteredEvents.forEach(event => {
+            const categoryName = event.tournament.category.name;
+            if (!topTournaments.some(tournament => tournament.id === event.tournament.id)) {
+                if (!otherCategories.has(categoryName)) {
+                    otherCategories.set(categoryName, []);
+                }
+                otherCategories.get(categoryName).push(event);
+            }
+        });
+
+        otherCategories.forEach((events, categoryName) => {
+            const categoryItem = document.createElement('div');
+            categoryItem.classList.add('category');
+
+            const categoryHeader = document.createElement('div');
+            categoryHeader.classList.add('category-header');
+            categoryHeader.innerHTML = `
+                <span class="cat-name">${categoryName}</span>
+            `;
+            categoryHeader.addEventListener('click', () => {
+                categoryItem.classList.toggle('active');
+            });
+
+            const tournamentsContainer = document.createElement('div');
+            tournamentsContainer.classList.add('tournaments-container');
+
+            const tournamentSection = document.createElement('div');
+            tournamentSection.classList.add('tournament');
+
+            const eventsList = document.createElement('ul');
+            events.forEach(event => {
+                const listItem = document.createElement('li');
+                const eventLink = document.createElement('a');
+                eventLink.href = `event.html?eventId=${event.id}`;
+
+                // Get the odds data for this event
+                const oddsData = odds[event.id] || {};
+                const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.initialFractionalValue;
+                const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.initialFractionalValue;
+                const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.initialFractionalValue;
+
+                // Convert fractional odds to decimal
+                const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
+                const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
+                const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
+
+                eventLink.innerHTML = `
+                    <span class="team-names">${event.homeTeam.shortName} vs ${event.awayTeam.shortName}</span>
+                    <span class="odds">
+                        <span>${homeOdds}</span>
+                        <span>${drawOdds}</span>
+                        <span>${awayOdds}</span>
+                    </span>
+                `;
+                listItem.appendChild(eventLink);
+                eventsList.appendChild(listItem);
+            });
+
+            tournamentSection.appendChild(eventsList);
+            tournamentsContainer.appendChild(tournamentSection);
+
+            categoryItem.appendChild(categoryHeader);
+            categoryItem.appendChild(tournamentsContainer);
+            container.appendChild(categoryItem);
+        });
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start-date').value = today;
+    document.getElementById('end-date').value = today;
+
+    // Initial data load
+    displayCategories(today, today, '', '');
+
+    document.getElementById('filter-btn').addEventListener('click', () => {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        const hours = document.getElementById('time-range').value;
+        displayCategories(startDate, endDate, hours, '');
+    });
+
+    document.querySelectorAll('.main-nav a').forEach(link => {
+        link.addEventListener('click', async event => {
+            event.preventDefault();
+
+            // Remove 'active' class from all links
+            document.querySelectorAll('.main-nav a').forEach(navLink => {
+                navLink.classList.remove('active');
+            });
+
+            // Add 'active' class to the clicked link
+            event.target.classList.add('active');
+
+            // Get the status from the link's data attribute
+            const status = event.target.getAttribute('data-status');
+
+            // Get the start and end dates from the input fields
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const hours = document.getElementById('time-range').value;
+
+            // Call displayCategories with the new status
+            await displayCategories(startDate, endDate, hours, status);
+        });
+    });
+});
+
+// Helper function to convert fractional odds to decimal
+function fractionalToDecimal(fractionalOdds) {
+    const [numerator, denominator] = fractionalOdds.split('/');
+    return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
+}
+
     </script>
 </body>
 </html>
