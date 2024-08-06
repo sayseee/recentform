@@ -457,6 +457,7 @@ const displayCategories = async (startDate, endDate, hours, status) => {
 
         // Display categories and their tournaments
         categories.forEach((tournaments, categoryName) => {
+         const eventCount = Array.from(tournaments.values()).reduce((acc, events) => acc + events.length, 0);
             const categoryItem = document.createElement('div');
             categoryItem.classList.add('category');
 
@@ -465,11 +466,9 @@ const displayCategories = async (startDate, endDate, hours, status) => {
             const categoryImage = tournaments.values().next().value[0].tournament.category.alpha2
                 ? tournaments.values().next().value[0].tournament.category.alpha2.toLowerCase()
                 : tournaments.values().next().value[0].tournament.category.flag;
-            categoryHeader.innerHTML = `
-                <span class="cat-name">
+            categoryHeader.innerHTML = ` 
                     <img src="https://www.sofascore.com/static/images/flags/${categoryImage}.png" width="16" height="16" loading="lazy" />
-                    ${categoryName}
-                </span>
+                    <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span> 
             `;
             categoryHeader.addEventListener('click', () => {
                 categoryItem.classList.toggle('active');
@@ -543,13 +542,15 @@ const displayCategories = async (startDate, endDate, hours, status) => {
         });
 
         otherCategories.forEach((events, categoryName) => {
+            const eventCount = events.length;
             const categoryItem = document.createElement('div');
             categoryItem.classList.add('category');
 
             const categoryHeader = document.createElement('div');
             categoryHeader.classList.add('category-header');
-            categoryHeader.innerHTML = `
-                <span class="cat-name">${categoryName}</span>
+            categoryHeader.innerHTML = ` 
+                    <img src="https://www.sofascore.com/static/images/flags/${categoryImage}.png" width="16" height="16" loading="lazy" />
+                    <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span> 
             `;
             categoryHeader.addEventListener('click', () => {
                 categoryItem.classList.toggle('active');
