@@ -263,20 +263,18 @@ header .header-wrapper {
     justify-content: space-between;
     flex-direction: column;}
     .tournament ul li {
-    display: flex; 
-    height: 30px;
+    display: flex;  
     align-items: center;
     padding: 0 10px;
 }  .tournament ul li:nth-child(even) {
     background-color: var(--blue-5);
 }
-.tournament ul li a { 
+.tournament ul li a {
     background: none;
     border: none;
     cursor: pointer;
     font-weight: normal;
     color: #333;
-    border-bottom: 3px solid transparent;
     transition: all 0.3s ease;
     text-decoration: none;
     display: flex;
@@ -288,24 +286,87 @@ header .header-wrapper {
     display: flex;
     justify-content: space-between;
 }
-
-.tournament .team-names {
-    float: left;
-    flex: 1;
-}
-
-.tournament .odds {
-    float: right;
-    flex: 0.4;
-    justify-content: center;
+.match-card {
     display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 5px 0; 
+    width: 100%;
+    cursor: pointer;
+} 
+.match-status {
+    color: #888;
 }
 
-.tournament .odds span {
-    text-align: center;
-    flex: 1;
+.team-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: calc(100% - 35px);
+    margin-left: auto;
 }
- 
+.teams-info { 
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
+    min-width: 0px;
+    margin-left: auto;
+    flex: 1 1 140px;
+    gap: 3px;
+}
+.team {
+    display: flex;
+    align-items: center;
+}
+
+.team-logo {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+
+.team-name {
+    font-size: 14px;
+    color: #333;
+}
+
+.match-odds {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    color: #000;
+    width: 105px;
+    border-right: 1px solid rgba(34, 34, 38, 0.15);
+    padding-right: 5px;
+}
+
+.odds {
+    margin: 0 4px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.odd-choice {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+.odd-choice span:first-child {
+    color: rgba(34, 34, 38, 0.45);
+}
+.match-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 8px;
+    flex: 0 0 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;
+    justify-content: space-around;
+    gap: 5px;
+} 
 
 /* Active State for Event List */
 .category-header.active + .events-list {
@@ -515,6 +576,7 @@ const displayCategories = async (startDate, endDate, hours, status) => {
                 tournament.events.forEach(event => {
                     const listItem = document.createElement('li');
                     const eventLink = document.createElement('a');
+                    eventLink.className = ('match-card');
                     eventLink.href = `event.html?eventId=${event.id}`;
 
                     // Get the odds data for this event
@@ -527,14 +589,53 @@ const displayCategories = async (startDate, endDate, hours, status) => {
                     const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
                     const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
                     const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
+                   
+                    const homeScore = event.homeScore?.current ?? 0;
+                    const awayScore = event.awayScore?.current ?? 0;
+
+                    // Determine the winner
+                    const isHomeTeamWinner = homeScore > awayScore;
+                    const isAwayTeamWinner = awayScore > homeScore;
+
+                    // Set bold styling based on the winner
+                    const homeTeamName = isHomeTeamWinner ? `<strong>${event.homeTeam.shortName}</strong>` : event.homeTeam.shortName;
+                    const awayTeamName = isAwayTeamWinner ? `<strong>${event.awayTeam.shortName}</strong>` : event.awayTeam.shortName;
 
                     eventLink.innerHTML = `
-                        <span class="team-names">${event.homeTeam.shortName} vs ${event.awayTeam.shortName}</span>
-                        <span class="odds">
-                            <span>${homeOdds}</span>
-                            <span>${drawOdds}</span>
-                            <span>${awayOdds}</span>
-                        </span>
+                    <div class="match-time-status">
+                            <span class="match-time">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).replace(',', ' ').replace('/', ' ')}</span>
+                            <span class="match-status">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                        <div class="team-info">
+                            <div class="teams-info">
+                                <div class="team">
+                                    <img src="${baseURL}/team/${event.homeTeam.id}/image" width="16" height="16" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
+                                    <span class="team-name">${homeTeamName}</span>
+                                </div>
+                                <div class="team">
+                                    <img src="${baseURL}/team/${event.awayTeam.id}/image" width="16" height="16" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
+                                    <span class="team-name">${awayTeamName}</span>
+                                </div>
+                            </div>
+                            <div class="match-odds">
+                                <div class="odd-choice" display="flex" direction="column">
+                                    <span class="odds">1</span>
+                                    <span class="odds">${homeOdds}</span>
+                                </div>
+                                <div class="odd-choice" display="flex" direction="column">
+                                    <span class="odds">X</span>
+                                    <span class="odds">${drawOdds}</span>
+                                </div>
+                                <div class="odd-choice" display="flex" direction="column">
+                                    <span class="odds">2</span>
+                                    <span class="odds">${awayOdds}</span>
+                                </div>
+                            </div>
+                            <div class="match-score">
+                                <span class="score">${event.homeScore?.current ?? ''}</span>
+                                <span class="score">${event.awayScore?.current ?? ''}</span>
+                            </div>
+                        </div> 
                     `;
                     listItem.appendChild(eventLink);
                     eventsList.appendChild(listItem);
