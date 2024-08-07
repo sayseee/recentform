@@ -426,6 +426,9 @@ h3 {
 #standings-tabs .tab-content.active {
     display: block;
 }
+#standings-tabs  {
+    position: relative;
+}
 .tab-content#standings {
     font-size: 12px;
 }
@@ -449,18 +452,16 @@ table th {
 }
 #standings .tab-menu { 
     display: flex;
-    border-bottom: 1px solid #e0e0e0;
-    position: fixed;
+    border-bottom: 1px solid #e0e0e0; 
     background: #fff;
     width: 100%;
 }
 #standings .tab-button { 
     padding: 10px;
 }
-#form, #results, #overview, #standings { 
+#form, #results, #overview, #standings .tab-content { 
     overflow-y: auto; /* Enable vertical scrolling */
-    height: 65vh; /* Set the height to the full viewport height */
-    position: relative;
+    height: 65vh; /* Set the height to the full viewport height */ 
 }
 .tab-content::-webkit-scrollbar {
     width: 4px; /* Set the width of the scrollbar */
