@@ -429,11 +429,18 @@ table th, table td {
     padding: 2px 4px;
 }
 
+table th:first-child, table td:first-child { 
+    text-align: center;
+}
+
 table th {
     background-color: var(--color-4);
     text-align: left;
 }
-
+#form, #results, #overview, #standings { 
+    overflow-y: auto; /* Enable vertical scrolling */
+    height: 65vh; /* Set the height to the full viewport height */
+}
 .tab-content::-webkit-scrollbar {
     width: 4px; /* Set the width of the scrollbar */
 }
