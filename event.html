@@ -416,7 +416,9 @@ h3 {
 #standings-tabs .tab-content.active {
     display: block;
 }
-
+.tab-content#standings {
+    font-size: 12px;
+}
 /* Additional CSS for table styling */
 table {
     width: 100%;
@@ -981,7 +983,7 @@ const displayEventDetails = async (eventId) => {
 
     const generateStandingsTable = (data, teamForm) => {
         if (!data || !data.standings || !data.standings.length) return 'No data available';
-console.log(teamForm);
+console.log(data);
         let html = `
         <table>
             <thead>
