@@ -695,10 +695,10 @@
 
     events.forEach(event => {
       if (!teams[event.homeTeam.id]) {
-        teams[event.homeTeam.id] = { id: event.homeTeam.id, name: event.homeTeam.name, points: 0, results: [] };
+        teams[event.homeTeam.id] = { id: event.homeTeam.id, name: event.homeTeam.shortName, points: 0, results: [] };
       }
       if (!teams[event.awayTeam.id]) {
-        teams[event.awayTeam.id] = { id: event.awayTeam.id, name: event.awayTeam.name, points: 0, results: [] };
+        teams[event.awayTeam.id] = { id: event.awayTeam.id, name: event.awayTeam.shortName, points: 0, results: [] };
       }
 
       const homeResultClass = event.homeScore.current > event.awayScore.current ? 'W' 
@@ -751,7 +751,7 @@
         <td>${team.results
           .filter(result => result.opponent === currentHomeTeamId && result.location === 'away')
           .map(result => `<div class="${result.resultClass}">${result.score}</div>`).join('<br>')}</td> 
-        <td class="${highlightClass}" style="text-align:center;">${team.name}</td> 
+        <td class="${highlightClass}" style="text-align:center;">${team.shortName}</td> 
         <td>${team.results
           .filter(result => result.opponent === currentAwayTeamId && result.location === 'home')
           .map(result => `<div class="${result.resultClass}">${result.score}</div>`).join('<br>')}</td>
