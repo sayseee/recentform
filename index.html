@@ -611,61 +611,63 @@ const displayCategories = async (startDate, endDate, hours, status) => {
         console.error('Error fetching or displaying data:', error);
     }
 };
+ 
 
 document.addEventListener('DOMContentLoaded', () => {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('start-date').value = today;
-    document.getElementById('end-date').value = today;
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('start-date').value = today;
+        document.getElementById('end-date').value = today;
 
-    // Initial data load
-    displayCategories(today, today, '');
+        // Initial data load
+        displayCategories(today, today, '');
 
-    document.getElementById('filter-btn').addEventListener('click', () => {
-        const startDate = document.getElementById('start-date').value;
-        const endDate = document.getElementById('end-date').value;
-        const hours = document.getElementById('time-range').value;
-        displayCategories(startDate, endDate, hours);
-    });
+        document.getElementById('filter-btn').addEventListener('click', () => {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const hours = document.getElementById('time-range').value;
+            displayCategories(startDate, endDate, hours);
+        });
 
-    document.querySelectorAll('.main-nav a').forEach(link => {
-        link.classList.remove('active');
-        link.addEventListener('click', async event => {
-            event.preventDefault();
-            const filterType = link.getAttribute('href').replace('#', '');
+        document.querySelectorAll('.main-nav a').forEach(link => {
+            link.addEventListener('click', async event => {
+                event.preventDefault();
+                const filterType = link.getAttribute('href').replace('#', '');
 
-            let startDate = today;
-            let endDate = today;
-            let hours = '';
+                let startDate = today;
+                let endDate = today;
+                let hours = '';
 
-            switch (filterType) {
-                case 'all-games':
-                    displayCategories(startDate, endDate, hours);
-                    break; // Default case already handles all games
-                case 'live-games':
-                    displayCategories(startDate, endDate, hours, 'live');
-                    break;
-                case 'finished-games':
-                    displayCategories(startDate, endDate, hours, 'finished');
-                    break;
-                case 'scheduled-games':
-                    displayCategories(startDate, endDate, hours, 'scheduled');
-                    break;
-                default:
-                    displayCategories(startDate, endDate, hours);
-                    break;
-            }
-            
+                switch (filterType) {
+                    case 'all-games':
+                        displayCategories(startDate, endDate, hours);
+                        break; // Default case already handles all games
+                    case 'live-games':
+                        displayCategories(startDate, endDate, hours, 'live');
+                        break;
+                    case 'finished-games':
+                        displayCategories(startDate, endDate, hours, 'finished');
+                        break;
+                    case 'scheduled-games':
+                        displayCategories(startDate, endDate, hours, 'scheduled');
+                        break;
+                    default:
+                        displayCategories(startDate, endDate, hours);
+                        break;
+                }
+
+                 // Remove 'active' class from all links
+            document.querySelectorAll('.main-nav a').forEach(link => {
+                link.classList.remove('active');
+            });
+
             // Add 'active' class to the clicked link
             event.target.classList.add('active');
 
             // Get the status from the link's data attribute
             const status = event.target.getAttribute('data-status');
-
-            // Call displayCategories with the new status
-            await displayCategories(startDate, endDate, hours, status);
+            });
         });
     });
-});
 
 // Helper function to convert fractional odds to decimal
 function fractionalToDecimal(fractionalOdds) {
