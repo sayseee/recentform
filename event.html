@@ -68,7 +68,12 @@
         .formGrid { display: flex; }
         .team-item { flex: 1; }
         .h2h { margin-top: 20px; }
-        .h2h__row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .h2h__row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    min-height: 35px;
+    align-items: center; }
         .h2h-results { border-top: 1px solid #ddd; }
         .next-match { margin-top: 20px; }
         table { width: 100%; border-collapse: collapse; }
@@ -690,7 +695,8 @@ h3 {
 
             document.getElementById(containerId).innerHTML = matchInfoHtml;
         };
-        const fetchAndDisplayResults = async (tournamentId, seasonId, currentHomeTeamId, currentAwayTeamId, containerId) => {
+
+const fetchAndDisplayResults = async (tournamentId, seasonId, currentHomeTeamId, currentAwayTeamId, containerId) => {
   try {
     const response = await fetch(`${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`);
     const data = await response.json();
@@ -756,7 +762,7 @@ h3 {
         <td>${team.results
           .filter(result => result.opponent === currentHomeTeamId && result.location === 'away')
           .map(result => `<div class="${result.resultClass}">${result.score}</div>`).join('<br>')}</td> 
-        <td class="${highlightClass}" style="text-align:center;">${team.shortName}</td> 
+        <td class="${highlightClass}" style="text-align:center;">${team.name}</td> 
         <td>${team.results
           .filter(result => result.opponent === currentAwayTeamId && result.location === 'home')
           .map(result => `<div class="${result.resultClass}">${result.score}</div>`).join('<br>')}</td>
