@@ -402,6 +402,36 @@ h3 {
     color: #000; /* Black text for the active tab */
     border-bottom: 3px solid #f4c002; /* Yellow border for the active tab */
 }
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+#main-tabs .tab-content.active {
+    display: block;
+}
+  
+#standings-tabs .tab-content.active {
+    display: block;
+}
+
+/* Additional CSS for table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td { 
+    padding: 2px 4px;
+}
+
+table th {
+    background-color: var(--color-4);
+    text-align: left;
+}
+
 .tab-content::-webkit-scrollbar {
     width: 4px; /* Set the width of the scrollbar */
 }
@@ -419,17 +449,6 @@ h3 {
 .tab-content::-webkit-scrollbar-thumb:hover {
     background: #fff; /* Color of the thumb on hover */
     width: 11px;
-}
-.tab-content {
-    display: none;
-    padding: 0 10px;
-}
-#form, #results, #overview { 
-    overflow-y: auto; /* Enable vertical scrolling */
-    height: 65vh; /* Set the height to the full viewport height */
-}
-.tab-content.active {
-    display: block;
 }
     </style>
 </head>
@@ -782,14 +801,25 @@ const fetchAndDisplayResults = async (tournamentId, seasonId, currentHomeTeamId,
     container.innerHTML = '<p>Error fetching results data.</p>';
   }
 };
+const fetchStandings = async (tournamentId, seasonId, type) => {
+    const url = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/standings/${type}`;
+    return await fetchJson(url);
+};
+
+const fetchTeamEvents = async (tournamentId, seasonId, type) => {
+    const url = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/team-events/${type}`;
+    return await fetchJson(url);
+};
 const displayEventDetails = async (eventId) => {
     const eventDetails = await fetchJson(`${baseURL}/event/${eventId}`);
     if (!eventDetails) return;
     const eventData = eventDetails.event;
     const eventContainer = document.getElementById('event-container');
+    
+    // Insert event details into the HTML
     eventContainer.innerHTML = `
-       <div class="match-event" style="background: url('${baseURL}/unique-tournament/${eventData.tournament.uniqueTournament.id}/image'); background-position: right; background-repeat: no-repeat;">
-         <!-- Event Details -->
+        <div class="match-event" style="background: url('${baseURL}/unique-tournament/${eventData.tournament.uniqueTournament.id}/image'); background-position: right; background-repeat: no-repeat;">
+            <!-- Event Details -->
             <div class="team-details">
                 <div class="team home-team">
                     <img src="${baseURL}/team/${eventData.homeTeam.id}/image" width="16" height="16" alt="${eventData.homeTeam.shortName}" loading="lazy" class="team-logo">
@@ -806,13 +836,13 @@ const displayEventDetails = async (eventId) => {
             
             <div class="team-details">
                 <div class="team home-team">
-                <span class="team-name">${eventData.homeTeam.shortName}</span>
-                <span class="score">${eventData.homeScore?.current ?? ''}</span>
+                    <span class="team-name">${eventData.homeTeam.shortName}</span>
+                    <span class="score">${eventData.homeScore?.current ?? ''}</span>
                 </div>
                 <span class="vs"></span>
                 <div class="team away-team">
-                <span class="team-name">${eventData.awayTeam.shortName}</span>
-                <span class="score">${eventData.awayScore?.current ?? ''}</span>
+                    <span class="team-name">${eventData.awayTeam.shortName}</span>
+                    <span class="score">${eventData.awayScore?.current ?? ''}</span>
                 </div>
             </div>
             <div class="stadium-details">
@@ -820,58 +850,63 @@ const displayEventDetails = async (eventId) => {
                 <span class="competition"></span>
             </div>
         </div>
-    <div class="tab-contentContainer">
+        <div id="main-tabs" class="tab-contentContainer">
             <div class="tab-menu">
                 <button class="tab-button active" data-tab="overview">Overview</button>
                 <button class="tab-button" data-tab="form">Form</button>
                 <button class="tab-button" data-tab="results">Results</button>
+                <button class="tab-button" data-tab="standings">Standings</button>
             </div>
-    <div class="tab-content active" id="overview">
-        <div class="h2h">
-            <h3>Head-to-Head Results</h3>
-            <div id="h2h-results"></div>
-        </div>
-        
-        <div class="team-stats">
-            <h3>Next Match</h3>
-            <div class="side-stat-container">
-                <div class="side-result-stat">  
-                    <div id="home-next-match" class="next-match"></div>
+            <div class="tab-content active" id="overview">
+                <div class="h2h">
+                    <h3>Head-to-Head Results</h3>
+                    <div id="h2h-results"></div>
                 </div>
-                <div class="side-result-stat">  
-                    <div id="away-next-match" class="next-match"></div>
-                </div>
-            </div>
-        </div>
-        </div>
-        <div class="tab-content" id="form">
-        <div class="team-stats"> 
-            <div class="side-stat-container">
-                <div class="side-result-stat">
-                    <h3>${eventData.homeTeam.shortName}</h3>
-                    <div id="home-team-form"></div> 
-                </div>
-                <div class="side-result-stat">
-                    <h3>${eventData.awayTeam.shortName}</h3>
-                    <div id="away-team-form"></div> 
+                <div class="team-stats">
+                    <h3>Next Match</h3>
+                    <div class="side-stat-container">
+                        <div class="side-result-stat">
+                            <div id="home-next-match" class="next-match"></div>
+                        </div>
+                        <div class="side-result-stat">
+                            <div id="away-next-match" class="next-match"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="team-stats"> 
-            <div class="side-stat-container2">
-                <div class="side-result-stat"> 
-                    <div id="home-team-stats"></div> 
+            <div class="tab-content" id="form">
+                <div class="team-stats">
+                    <div class="side-stat-container">
+                        <div class="side-result-stat">
+                            <h3>${eventData.homeTeam.shortName}</h3>
+                            <div id="home-team-form"></div>
+                        </div>
+                        <div class="side-result-stat">
+                            <h3>${eventData.awayTeam.shortName}</h3>
+                            <div id="away-team-form"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="side-result-stat"> 
-                    <div id="away-team-stats"></div> 
+                <div class="team-stats">
+                    <div class="side-stat-container2">
+                        <div class="side-result-stat">
+                            <div id="home-team-stats"></div>
+                        </div>
+                        <div class="side-result-stat">
+                            <div id="away-team-stats"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="results">
+                <div id="results-table"></div>
+            </div>
+            <div class="tab-content" id="standings">
+                <div id="standings-container">
+                    <!-- Standings content will be added here -->
                 </div>
             </div>
         </div>
-        </div>
-        <div class="tab-content" id="results">
-        <div id="results-table"></div> 
-        </div>  
-        </div>  
     `;
 
     const homeTeamId = eventData.homeTeam.id;
@@ -879,6 +914,7 @@ const displayEventDetails = async (eventId) => {
     const currentMatchId = eventData.id;
     const currentMatchTimestamp = eventData.startTimestamp;
 
+    // Fetch and display stats and forms
     const homeTeamStats = await fetchTeamStats(homeTeamId, currentMatchId, currentMatchTimestamp);
     const awayTeamStats = await fetchTeamStats(awayTeamId, currentMatchId, currentMatchTimestamp);
 
@@ -889,7 +925,7 @@ const displayEventDetails = async (eventId) => {
     displayLast5Events(awayTeamStats, 'away-team-form');
 
     const h2hEvents = await fetchH2HEvents(eventData.customId, currentMatchId, homeTeamId);
-    const filteredH2HEvents = h2hEvents.filter(h2hEvent => { 
+    const filteredH2HEvents = h2hEvents.filter(h2hEvent => {
         const eventDate = new Date(h2hEvent.startTimestamp * 1000);
         const threeYearsAgo = new Date();
         threeYearsAgo.setFullYear(threeYearsAgo.getFullYear() - 5);
@@ -904,19 +940,156 @@ const displayEventDetails = async (eventId) => {
     const seasonId = eventData.season.id;
     fetchAndDisplayResults(tournamentId, seasonId, homeTeamId, awayTeamId, 'results-table');
 
-    // Tab switching logic
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
+    // Fetch and display standings
+    const [totalStandings, homeStandings, awayStandings] = await Promise.all([
+        fetchStandings(tournamentId, seasonId, 'total'),
+        fetchStandings(tournamentId, seasonId, 'home'),
+        fetchStandings(tournamentId, seasonId, 'away')
+    ]);
 
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const tabId = button.dataset.tab;
-            tabButtons.forEach(button => button.classList.remove('active'));
-            button.classList.add('active');
-            tabContents.forEach(content => content.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+    // Fetch and process team events
+    const [totalTeamEvents, homeTeamEvents, awayTeamEvents] = await Promise.all([
+        fetchTeamEvents(tournamentId, seasonId, 'total'),
+        fetchTeamEvents(tournamentId, seasonId, 'home'),
+        fetchTeamEvents(tournamentId, seasonId, 'away')
+    ]);
+
+    const processTeamEvents = (events) => {
+        const teamForm = {};
+        if (events && events.tournamentTeamEvents) {
+            Object.values(events.tournamentTeamEvents).forEach(matches => {
+                matches.forEach(match => {
+                    const homeTeam = match.homeTeam.shortName;
+                    const awayTeam = match.awayTeam.shortName;
+                    const homeScore = match.homeScore.current;
+                    const awayScore = match.awayScore.current;
+
+                    if (!teamForm[homeTeam]) teamForm[homeTeam] = '';
+                    if (!teamForm[awayTeam]) teamForm[awayTeam] = '';
+
+                    teamForm[homeTeam] += homeScore > awayScore ? 'W' : homeScore === awayScore ? 'D' : 'L';
+                    teamForm[awayTeam] += awayScore > homeScore ? 'W' : awayScore === homeScore ? 'D' : 'L';
+                });
+            });
+        }
+        return teamForm;
+    };
+
+    const totalTeamForm = processTeamEvents(totalTeamEvents);
+    const homeTeamForm = processTeamEvents(homeTeamEvents);
+    const awayTeamForm = processTeamEvents(awayTeamEvents);
+
+    const generateStandingsTable = (data, teamForm) => {
+        if (!data || !data.standings || !data.standings.length) return 'No data available';
+
+        let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Team</th>
+                    <th>GP</th>
+                    <th>W</th>
+                    <th>D</th>
+                    <th>L</th>
+                    <th>GF</th>
+                    <th>GA</th>
+                    <th>Pts</th>
+                    <th>F</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+        data.standings[0].rows.forEach(row => {
+            const teamName = row.team.name;
+            const form = teamForm[teamName] || '';
+            html += `<tr>
+                <td>${row.position}</td>
+                <td>${teamName}</td>
+                <td>${row.matches}</td>
+                <td>${row.wins}</td>
+                <td>${row.draws}</td>
+                <td>${row.losses}</td>
+                <td>${row.scoresFor}</td>
+                <td>${row.scoresAgainst}</td>
+                <td>${row.points}</td>
+                <td>${form}</td>
+            </tr>`;
         });
+
+        html += '</tbody></table>';
+        return html;
+    };
+
+    const totalStandingsTable = generateStandingsTable(totalStandings, totalTeamForm);
+    const homeStandingsTable = generateStandingsTable(homeStandings, homeTeamForm);
+    const awayStandingsTable = generateStandingsTable(awayStandings, awayTeamForm);
+
+    document.getElementById('standings-container').innerHTML = `
+        <div id="standings-tabs" class="tab-contentContainer">
+            <div class="tab-menu">
+                <button class="tab-button active" data-tab="total-standings">Total</button>
+                <button class="tab-button" data-tab="home-standings">Home</button>
+                <button class="tab-button" data-tab="away-standings">Away</button>
+            </div>
+            <div class="tab-content active" id="total-standings">${totalStandingsTable}</div>
+            <div class="tab-content" id="home-standings">${homeStandingsTable}</div>
+            <div class="tab-content" id="away-standings">${awayStandingsTable}</div>
+        </div>
+    `;
+// Function to handle tab switching
+const handleTabClick = (event, tabContainer) => {
+    const buttons = tabContainer.querySelectorAll('.tab-button');
+    const contents = tabContainer.querySelectorAll('.tab-content');
+
+    buttons.forEach(button => button.classList.remove('active'));
+    contents.forEach(content => content.classList.remove('active'));
+
+    const tabButton = event.target;
+    const tabContent = tabContainer.querySelector(`#${tabButton.getAttribute('data-tab')}`);
+
+    tabButton.classList.add('active');
+    tabContent.classList.add('active');
+};
+
+// Add event listeners for main tabs
+const mainTabsContainer = document.getElementById('main-tabs');
+const mainTabButtons = mainTabsContainer.querySelectorAll('.tab-button');
+mainTabButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+        handleTabClick(event, mainTabsContainer);
+        if (event.target.getAttribute('data-tab') === 'standings') {
+            // Make the Total standings tab and content active by default
+            const standingsTabsContainer = document.getElementById('standings-tabs');
+            const totalTabButton = standingsTabsContainer.querySelector('.tab-button[data-tab="total-standings"]');
+            const totalTabContent = standingsTabsContainer.querySelector('.tab-content#total-standings');
+
+            totalTabButton.classList.add('active');
+            totalTabContent.classList.add('active');
+        }
     });
+});
+
+// Add event listeners for standings tabs
+const standingsTabsContainer = document.getElementById('standings-tabs');
+const standingsTabButtons = standingsTabsContainer.querySelectorAll('.tab-button');
+standingsTabButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+        // Ensure that the main "Standings" tab remains active
+        const mainStandingsTabButton = mainTabsContainer.querySelector('.tab-button[data-tab="standings"]');
+        const mainStandingsTabContent = mainTabsContainer.querySelector('.tab-content#standings');
+
+        mainStandingsTabButton.classList.add('active');
+        mainStandingsTabContent.classList.add('active');
+
+        handleTabClick(event, standingsTabsContainer);
+    });
+});
+
+// Initialize the main "Standings" tab as active
+const mainStandingsTabButton = mainTabsContainer.querySelector('.tab-button[data-tab="standings"]');
+const mainStandingsTabContent = mainTabsContainer.querySelector('.tab-content#standings');
+ 
 };
 
 // Get eventId from URL and display event details
