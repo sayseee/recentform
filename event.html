@@ -605,11 +605,7 @@
                 eventElem.innerHTML = `  
                             <div class="event__row">
                                 <img class="tourn" src="${baseURL}/unique-tournament/${event.uniqueTournamentId}/image" alt="${event.uniqueTournamentName}" width="20" height="20" loading="lazy">
-                                <span class="event-date time">${new Date(event.timeStamp).toLocaleDateString('en-GB', {
-                                        day: 'numeric',
-                                        month: '2-digit',
-                                        year: '2-digit'
-                                    }).replace('/', '.').replace('/', '.')}</span>
+                                <span class="event-date time">${new Date(event.timeStamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
                                 <span class="team-name homeParticipant">${event.homeTeam}</span>
                                 <span class="score ${event.result}">${event.homeScore} - ${event.awayScore}</span>
                                 <span class="team-name awayParticipant">${event.awayTeam}</span>
