@@ -82,6 +82,10 @@
         table tr:nth-child(even) { background-color:var(--blue-5);}
         table th { background-color: #f4f4f4; }
         .highlight { background-color: yellow; }
+        
+.our-team {
+    background-color: var(--color-4) !important;
+}
         .match-event {
     position: relative;
     background-size: cover;
@@ -391,6 +395,7 @@ h3 {
     color: #333; /* Dark gray text */
     border-bottom: 3px solid transparent; /* Transparent border by default */
     transition: all 0.3s ease;
+    flex: 1;
 }
 
 .tab-button:hover {
@@ -437,9 +442,20 @@ table th {
     background-color: var(--color-4);
     text-align: left;
 }
+#standings .tab-menu { 
+    display: flex;
+    border-bottom: 1px solid #e0e0e0;
+    position: fixed;
+    background: #fff;
+    width: 100%;
+}
+#standings .tab-button { 
+    padding: 5px 15px;
+}
 #form, #results, #overview, #standings { 
     overflow-y: auto; /* Enable vertical scrolling */
     height: 65vh; /* Set the height to the full viewport height */
+    position: relative;
 }
 .tab-content::-webkit-scrollbar {
     width: 4px; /* Set the width of the scrollbar */
@@ -989,46 +1005,47 @@ const displayEventDetails = async (eventId) => {
     const awayTeamForm = processTeamEvents(awayTeamEvents);
 
     const generateStandingsTable = (data, teamForm) => {
-        if (!data || !data.standings || !data.standings.length) return 'No data available';
-console.log(data);
-        let html = `
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Team</th>
-                    <th>GP</th>
-                    <th>W</th>
-                    <th>D</th>
-                    <th>L</th>
-                    <th>GF</th>
-                    <th>GA</th>
-                    <th>Pts</th>
-                    <th>F</th>
-                </tr>
-            </thead>
-            <tbody>
-        `;
-        data.standings[0].rows.forEach(row => {
-            const teamName = row.team.shortName;
-            const form = teamForm[teamName] || '';
-            html += `<tr>
-                <td>${row.position}</td>
-                <td>${teamName}</td>
-                <td>${row.matches}</td>
-                <td>${row.wins}</td>
-                <td>${row.draws}</td>
-                <td>${row.losses}</td>
-                <td>${row.scoresFor}</td>
-                <td>${row.scoresAgainst}</td>
-                <td>${row.points}</td>
-                <td>${form}</td>
-            </tr>`;
-        });
+    if (!data || !data.standings || !data.standings.length) return 'No data available'; 
+    let html = `
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Team</th>
+                <th>GP</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>GF</th>
+                <th>GA</th>
+                <th>Pts</th>
+                <th>F</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+    data.standings[0].rows.forEach(row => {
+        const teamName = row.team.shortName;
+        const form = teamForm[teamName] || '';
+        const rowClass = (row.team.id === homeTeamId || row.team.id === awayTeamId) ? 'our-team' : '';
+        html += `<tr class="${rowClass}">
+            <td>${row.position}</td>
+            <td>${teamName}</td>
+            <td>${row.matches}</td>
+            <td>${row.wins}</td>
+            <td>${row.draws}</td>
+            <td>${row.losses}</td>
+            <td>${row.scoresFor}</td>
+            <td>${row.scoresAgainst}</td>
+            <td>${row.points}</td>
+            <td>${form}</td>
+        </tr>`;
+    });
 
-        html += '</tbody></table>';
-        return html;
-    };
+    html += '</tbody></table>';
+    return html;
+};
+
 
     const totalStandingsTable = generateStandingsTable(totalStandings, totalTeamForm);
     const homeStandingsTable = generateStandingsTable(homeStandings, homeTeamForm);
