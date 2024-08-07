@@ -399,35 +399,33 @@ const filterEventsByTime = (events, hours) => {
 
 const displayCategories = async (startDate, endDate, hours, status) => {
     const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
-    const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}`;
-    const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${new Date().toISOString().split('T')[0]}/inverse`;
-    const oddsResponse = `${baseURL}/sport/football/odds/1/${new Date().toISOString().split('T')[0]}`;
+    const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${startDate}`;
+    const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${startDate}/inverse`;
+    const oddsResponse = `${baseURL}/sport/football/odds/1/${startDate}`;
 
-    const topTournamentsData = await fetchJson(topTournamentsUrl);
-    const scheduledEventsData = await fetchJson(scheduledEventsUrl);
-    const scheduledEventsData2 = await fetchJson(scheduledEventsUrl2);
+    try {
+        const topTournamentsData = await fetchJson(topTournamentsUrl);
+        const scheduledEventsData = await fetchJson(scheduledEventsUrl);
+        const scheduledEventsData2 = await fetchJson(scheduledEventsUrl2);
+        const oddsData = await fetchJson(oddsResponse);
 
-    if (topTournamentsData && scheduledEventsData && scheduledEventsData2) {
-        const topTournaments = topTournamentsData.uniqueTournaments;
-        let events = [...scheduledEventsData.events, ...scheduledEventsData2.events];
-        const odds = (await fetchJson(oddsResponse))?.odds || {};
+        const events = [...scheduledEventsData.events, ...scheduledEventsData2.events];
+        const odds = oddsData?.odds || {};
 
         // Filter by date
-        if (startDate && endDate) {
-            events = events.filter(event => {
-                const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
-                return eventDate >= startDate && eventDate <= endDate;
-            });
-        }
+        let filteredEvents = events.filter(event => {
+            const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
+            return eventDate >= startDate && eventDate <= endDate;
+        });
 
         // Filter by time
         if (hours) {
-            events = filterEventsByTime(events, hours);
+            filteredEvents = filterEventsByTime(filteredEvents, hours);
         }
 
         // Filter by status
         if (status) {
-            events = events.filter(event => {
+            filteredEvents = filteredEvents.filter(event => {
                 switch (status) {
                     case 'live':
                         return event.status.type === 'inprogress';
@@ -441,7 +439,7 @@ const displayCategories = async (startDate, endDate, hours, status) => {
             });
         }
 
-        const filteredEvents = events.filter(event => odds[event.id]);
+        const topTournaments = topTournamentsData.uniqueTournaments;
         const container = document.getElementById('categories-container');
         container.innerHTML = '';
 
@@ -465,7 +463,7 @@ const displayCategories = async (startDate, endDate, hours, status) => {
 
         // Display categories and their tournaments
         categories.forEach((tournaments, categoryName) => {
-         const eventCount = Array.from(tournaments.values()).reduce((acc, events) => acc + events.length, 0);
+            const eventCount = Array.from(tournaments.values()).reduce((acc, events) => acc + events.length, 0);
             const categoryItem = document.createElement('div');
             categoryItem.classList.add('category');
 
@@ -475,17 +473,13 @@ const displayCategories = async (startDate, endDate, hours, status) => {
                 ? tournaments.values().next().value[0].tournament.category.alpha2.toLowerCase()
                 : tournaments.values().next().value[0].tournament.category.flag;
             categoryHeader.innerHTML = ` 
-                    <img src="https://www.sofascore.com/static/images/flags/${categoryImage}.png" width="16" height="16" loading="lazy" />
-                    <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span> 
+                <img src="https://www.sofascore.com/static/images/flags/${categoryImage}.png" width="16" height="16" loading="lazy" />
+                <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span> 
             `;
             categoryHeader.addEventListener('click', () => {
                 categoryItem.classList.toggle('active');
                 const tournamentsContainer = categoryItem.querySelector('.tournaments-container');
-                if (categoryItem.classList.contains('active')) {
-                    tournamentsContainer.style.display = 'block';
-                } else {
-                    tournamentsContainer.style.display = 'none';
-                }
+                tournamentsContainer.style.display = categoryItem.classList.contains('active') ? 'block' : 'none';
             });
 
             const tournamentsContainer = document.createElement('div');
@@ -556,18 +550,17 @@ const displayCategories = async (startDate, endDate, hours, status) => {
 
             const categoryHeader = document.createElement('div');
             categoryHeader.classList.add('category-header');
+            const categoryImage = events[0].tournament.category.alpha2
+                ? events[0].tournament.category.alpha2.toLowerCase()
+                : events[0].tournament.category.flag;
             categoryHeader.innerHTML = ` 
-                    <img src="https://www.sofascore.com/static/images/flags/${categoryImage}.png" width="16" height="16" loading="lazy" />
-                    <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span> 
+                <img src="https://www.sofascore.com/static/images/flags/${categoryImage}.png" width="16" height="16" loading="lazy" />
+                <span><span class="cat-name">${categoryName}</span> <span>${eventCount}</span></span> 
             `;
             categoryHeader.addEventListener('click', () => {
                 categoryItem.classList.toggle('active');
                 const tournamentsContainer = categoryItem.querySelector('.tournaments-container');
-                if (categoryItem.classList.contains('active')) {
-                    tournamentsContainer.style.display = 'block';
-                } else {
-                    tournamentsContainer.style.display = 'none';
-                }
+                tournamentsContainer.style.display = categoryItem.classList.contains('active') ? 'block' : 'none';
             });
 
             const tournamentsContainer = document.createElement('div');
@@ -612,42 +605,60 @@ const displayCategories = async (startDate, endDate, hours, status) => {
             categoryItem.appendChild(tournamentsContainer);
             container.appendChild(categoryItem);
         });
+
+    } catch (error) {
+        console.error('Error fetching or displaying data:', error);
     }
 };
+
 document.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('start-date').value = today;
     document.getElementById('end-date').value = today;
 
     // Initial data load
-    displayCategories(today, today, '', '');
+    displayCategories(today, today, '');
 
     document.getElementById('filter-btn').addEventListener('click', () => {
         const startDate = document.getElementById('start-date').value;
         const endDate = document.getElementById('end-date').value;
         const hours = document.getElementById('time-range').value;
-        displayCategories(startDate, endDate, hours, '');
+        displayCategories(startDate, endDate, hours);
     });
 
     document.querySelectorAll('.main-nav a').forEach(link => {
+        link.classList.remove('active');
         link.addEventListener('click', async event => {
             event.preventDefault();
+            const filterType = link.getAttribute('href').replace('#', '');
 
-            // Remove 'active' class from all links
-            document.querySelectorAll('.main-nav a').forEach(navLink => {
-                navLink.classList.remove('active');
-            });
+            let startDate = today;
+            let endDate = today;
+            let hours = '';
 
+            switch (filterType) {
+                case 'all-games':
+                    displayCategories(startDate, endDate, hours);
+                    break; // Default case already handles all games
+                case 'live-games':
+                    displayCategories(startDate, endDate, hours, 'live');
+                    break;
+                case 'finished-games':
+                    displayCategories(startDate, endDate, hours, 'finished');
+                    break;
+                case 'scheduled-games':
+                    displayCategories(startDate, endDate, hours, 'scheduled');
+                    break;
+                default:
+                    displayCategories(startDate, endDate, hours);
+                    break;
+            }
+            
             // Add 'active' class to the clicked link
             event.target.classList.add('active');
 
             // Get the status from the link's data attribute
             const status = event.target.getAttribute('data-status');
-
-            // Get the start and end dates from the input fields
-            const startDate = document.getElementById('start-date').value;
-            const endDate = document.getElementById('end-date').value;
-            const hours = document.getElementById('time-range').value;
 
             // Call displayCategories with the new status
             await displayCategories(startDate, endDate, hours, status);
