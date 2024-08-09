@@ -11,40 +11,29 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="">
         <style>
-:root {   
-    --bg-color-1: #010a0f; 
-    --bg-color-2: #00141d;   
-    --bg-active: #555e61;
-    --color-highlight: #01203e;
-    --color-support-1: #b9b9b9;
-    --color-support-2-rgb: 200, 205, 205;
-    --color-support-3: #001e28;
-    --color-support-4: #555e61;
+:root {    
     --color-support-5: #fff;
+    --color-support-1: #eee;
+    --color-support-4: #555e61;
+    --color-support-2-rgb: 200, 205, 205;
     --color-4: #ddf1fc; /* Medium shade */
     --win-color: #18c876; /* Wins */
     --draw-color: rgba(109, 109, 110, 0.9);/* Draws */
     --loss-color: #c7361f;/* Losses */
     --blue-5:  #F2F3FA;  /* Blue (5) */
     --blue-100: #020F2A; /* Blue (100) */
-    --color-tabs-secondary-background-base: #0f2d37;
-    --color-tabs-secondary-background-active: #c80037;
-    --color-tabs-secondary-fill-active: #fff;
-    --color-tabs-secondary-fill-base: #c8cdcd;
-    --color-combination-8: #0f2d37;
 }
 body {
-    font-family: "Poppins", sans-serif; 
+    font-family: "Poppins", sans-serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 13px; 
+    font-size: 12px; 
     line-height: 1.5;
-    color: var(--color-support-1);
+    color: #212529;
     text-align: left;
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: var(--bg-color-1);
 }
 
 .W, .D, .L {  
@@ -101,15 +90,15 @@ body {
     flex: 3;
 }
 a {
-    color: var(--color-support-1);
+    color: #212529;
     text-decoration: none;
 }
 a:hover {
-    color: var(--color-support-5);
+    color: #0056b3;
     text-decoration: none;
 }
 header#superheader {
-    background: var(--bg-color-2);
+    background: #020F2A;
     padding: 20px 0;
     display: flex;
 }
@@ -129,33 +118,18 @@ header .logo {
 /* Ensure the parent container is a flex container if using align-self */
 .filter-bar input[type=date], .filter-bar input[type=select], button, .filter-bar select {    
     height: 30px;
-    border: 0; 
-    background-color:#000;
-    color: var(--color-support-1);
-    padding: 0 10px;
-    border-radius: 4px;
 }
 /* Ensure the parent container is a flex container if using align-self */
 .filter-bar input[type=date] {
-    background-color:#000;
-    border: 1px solid var(--color-support-3); 
+    background-color: var(--color-support-1);
+    border: 1px solid var(--color-support-4); 
     box-sizing: border-box;
-    color: var(--color-support-1);
-    padding: 10px;
+    color: var(--color-support-4);
     
     /* Remove align-self if not used within a flex container */
     /* align-self: flex-start; */
 }
-.filter-bar button {
-    background-color: var(--color-support-4);
-    color: var(--color-tabs-secondary-fill-base);
-    font-weight: bold;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-.filter-bar button:hover {
-    background-color: var(--color-combination-8);
-}
+
 /* Categories container */
 main {
     height: calc(100vh - 76px); /* Fill the viewport height minus 76px */  
@@ -172,12 +146,13 @@ main {
     height: 100%; /* Fill the viewport height minus 76px */
     overflow-y: auto; /* Enable vertical scrolling */
     padding: 5px; /* Optional padding */ 
-    border-right: var(--color-support-3) 1px solid;
-    padding-top: 20px; 
+    border-right: #e3e4e7 1px solid;
+    padding-top: 20px;
+    background-color: #E6E9F640;
 }
 
 .categories::-webkit-scrollbar, .tab-content::-webkit-scrollbar, .sideRight::-webkit-scrollbar {
-    width: 2px; /* Set the width of the scrollbar */
+    width: 1px; /* Set the width of the scrollbar */
 }
 
 .categories::-webkit-scrollbar-track, .tab-content::-webkit-scrollbar-track, .sideRight::-webkit-scrollbar-track {
@@ -185,7 +160,7 @@ main {
 }
 
 .categories::-webkit-scrollbar-thumb, .tab-content::-webkit-scrollbar-thumb, .sideRight::-webkit-scrollbar-thumb {
-    background: var(--color-support-3); /* Color of the thumb */
+    background: #fff; /* Color of the thumb */
     border-radius: 1px; 
     height: 40px;
 }
@@ -193,15 +168,16 @@ main {
     font-size: 13px; 
 }
 .category-header {
-    padding: 10px; 
+    padding: 15px 10px;
+    color: var(--blue-100);
     font-weight: 700;
-    font-size: 14px;
-    background-color: var(--color-support-3); 
+    font-size: 14px; 
 }
 .tournament h3 {
     margin: 0;
+    font-size: 12px;
     padding: 10px;
-    background-color: var(--bg-color-2);
+    background-color: var(--color-4);
     display: flex;
     align-items: center;
 }
@@ -220,14 +196,15 @@ main {
     display: flex;
     align-items: center;
     padding: 0 5px;
-}  .tournament ul li:not(:first-child) {
-    border-top: var(--color-support-3) 1px solid;   
-} 
+}  .tournament ul li:nth-child(even) {
+    background-color: var(--blue-5);
+}
 .tournament ul li a {
     background: none;
     border: none;
     cursor: pointer;
-    font-weight: normal; 
+    font-weight: normal;
+    color: #333;
     transition: all 0.3s ease;
     text-decoration: none;
     display: flex;
@@ -257,8 +234,9 @@ main {
     margin-right: 8px;
     padding-right: 8px;
     text-align: center;
-    flex: 0 0 45px;
+    flex: 0 0 40px;
     -webkit-box-flex: 0;
+    font-size: 12px; 
     color: #555;
     border-right: 1px solid rgba(34, 34, 38, 0.15);
 }
@@ -290,13 +268,15 @@ main {
 }
 
 .team-name {
-    font-size: 13px; 
+    font-size: 13px;
+    color: #333;
 }
 
 .match-odds {
     display: flex;
     justify-content: space-between;
-    align-items: center;  
+    align-items: center; 
+    color: #000;
     width: 105px;
     border-right: 1px solid rgba(34, 34, 38, 0.15);
     padding-right: 5px;
@@ -316,7 +296,7 @@ main {
     flex: 1;
 }
 .odd-choice span:first-child {
-    color: rgb(74, 72, 72, 70%);
+    color: rgba(34, 34, 38, 0.45);
 }
 .match-score {
     display: flex;
@@ -326,59 +306,18 @@ main {
     flex: 0 0 20px;
     font-size: 14px;
     font-weight: 600;
-    color: var(--color-tabs-secondary-fill-base);
+    color: #000;
     justify-content: space-around;
     gap: 5px;
 } 
 .mainAnalysis {
     grid-area: mainAnalysis;
-    border-right: var(--color-support-3) 1px solid;
+    border-right: #e3e4e7 1px solid;
     height: 100vh; /* Fill the viewport height minus 76px */ 
-    border-top: 1px solid var(--bg-color-1);
-    background-color: #000;
+    padding-top: 20px;
+    background-color: #E6E9F670;
 }
-nav {    
-    align-items: center;
-    display: flex;
-    overflow-x: auto;
-    width: 100%;
-    background-color: var(--color-support-3);
-    margin-bottom: 16px;
-}
-nav ul {    
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    align-items: center;
-    display: flex;
-    overflow-x: auto;
-    width: 100%;
-    padding: 10px;
-}
-nav li {    
-    font-weight: 700;
-    letter-spacing: .4px;
-    line-height: 12px;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-nav li a {    
-    align-items: center;
-    background-color: var(--color-combination-8);
-    border-radius: 5px;
-    color: var(--color-tabs-secondary-fill-base);
-    cursor: pointer;
-    display: flex;
-    font-size: 12px;
-    height: 28px;
-    margin-right: 8px;
-    padding: 0 12px;
-}
-nav li a.active {    
-    align-items: center;
-    background-color: var(--color-tabs-secondary-background-active);
-    color: var(--color-tabs-secondary-fill-active);
-}
+
 .duelParticipant {
     --spacer: 17px;
     display: grid;
@@ -388,7 +327,8 @@ nav li a.active {
         ". . . " 5px / var(--width, minmax(110px, 250px)) var(--width, minmax(80px, 180px)) var(--width, minmax(110px, 250px));
     justify-content: center;
     padding: 0 10px; 
-    text-align: center; 
+    text-align: center;
+    border-bottom: #e3e4e7 1px solid;
 }
 .duelParticipant__home { 
     display: flex;
@@ -437,17 +377,19 @@ nav li a.active {
     padding-top: 0; 
     justify-content: center;
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
+    color: #666;
 }
-#next-match .category-group { 
+#next-match .category-group {
+    color: #000;
     font-weight: 500;
 }
 #next-match h3 {
     text-align: center;
-    font-size: 0.675rem;
-    text-transform: uppercase;
-    background-color: var(--color-support-3);
-    padding: 10px;     
+    border-bottom: #e3e4e7 1px solid;
+    padding: 5px 0;
+    margin: 0;
+    font-size: 12px;
 }
 #home-next-match, #away-next-match {
     flex: 1;
@@ -455,35 +397,24 @@ nav li a.active {
 }
 .form-container h3, .h2h h3 {
     text-align: left;
-    font-size: 0.675rem;
+    font-size: 14px;
     text-transform: uppercase;
-    background-color: var(--color-support-3);
-    padding: 10px;    
-    margin: 0;
 }
-.h2h strong {
-    color: var(--color-support-1);
-    line-height: 16px;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 .home-form, .away-form, .atHome-form, .atAway-form {
     flex: 1;
 } 
+.event__row .team-name {
+    font-size: 12px;
+}
 
 .event__row .tourn {
     width: 22px;
 }
 
 .event-row {padding:2px 5px; border-top: 1px solid #E6E9F695;}
-.event-row:first-child {padding:4px; border-top: 0;}
+.event-row:first-child {padding:2px 5px; border-top: 0;}
 
-.event-row:not(:first-child) {
-    border-top: var(--color-support-3) 1px solid;   
-} 
+.event-row:nth-child(even) {background-color:var(--color-support-5);}
 
 .event__row .score span {
     width: 16px;
@@ -513,55 +444,47 @@ nav li a.active {
     grid-area: sideRight;
     height: 100%; /* Fill the viewport height minus 76px */
     overflow-y: auto; /* Enable vertical scrolling */
-    padding: 0 5px; 
-    border-top: 1px solid var(--bg-color-1); /* Light gray border */
+    padding-top: 20px;
+    background-color: #E6E9F690;
 } 
 
 .tab-menu {
     display: flex;
-    border-bottom: 1px solid var(--bg-color-1); /* Light gray border */ 
-    background-color: var(--color-support-3);
-    padding: 10px;
+    border-bottom: 1px solid #e0e0e0; /* Light gray border */ 
 }
- 
+
+#main-tabs .tab-menu {
+    background-color: #dedee1;
+}
 
 .tab-button {
-    text-transform: uppercase;
-    align-items: center;
-    background-color: var(--color-tabs-secondary-background-base);
-    border-radius: 6px;
-    color: var(--color-tabs-secondary-fill-base);
-    display: flex;
-    gap: 8px;
-    height: 28px;
-    padding: 0 12px;
-    font-weight: 600;
-    border: 0;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-
-.tab-button:not(:first-child) {
-    margin-left: 10px;
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer; 
+    font-weight: normal;
+    color: #333; /* Dark gray text */
+    border-bottom: 3px solid transparent; /* Transparent border by default */
+    transition: all 0.3s ease; 
 }
 
 .tab-button:hover {
-    background-color: var(--color-tabs-secondary-background-base);
+    color: #000; /* Darker text on hover */
 }
 
-.tab-button.active { 
-    background-color: var(--color-tabs-secondary-background-active); 
-    color: var(--color-tabs-secondary-fill-active);
+.tab-button.active {
+    font-weight: bold;
+    color: #000; /* Black text for the active tab */
+    border-bottom: 3px solid #f4c002; /* Yellow border for the active tab */
 }
 .tab-content {
     display: none;
 }
 
 #events-tabs .tab-content {
-    height: 55vh;
+    height: 60vh;
     overflow-y: auto;
-    padding: 0 5px;
+    padding: 0 15px;
 }
 
 .tab-content.active {
@@ -577,21 +500,22 @@ nav li a.active {
 #standings-tabs  {
     position: relative;
 }
-
+.tab-content#standings {
+    font-size: 12px;
+}
 .our-team {
-    background-color: var(--color-highlight) !important;
+    background-color: var(--color-4) !important;
     font-weight: 600;
 }
 /* Additional CSS for table styling */
 table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 12px;
 }
 
 table th, table td { 
-    border-bottom: 1px solid hsla(180,5%,79%,.25); 
-    height: 29px;
-    align-items: center;
+    padding: 2px 4px;
 }
 
 table th:first-child, table td:first-child { 
@@ -614,6 +538,24 @@ table th {
 #standings .tab-content { 
     overflow-y: auto; /* Enable vertical scrolling */
     height: 60vh; /* Set the height to the full viewport height */ 
+}
+.tab-content::-webkit-scrollbar {
+    width: 4px; /* Set the width of the scrollbar */
+}
+
+.tab-content::-webkit-scrollbar-track {
+    background: transparent; /* Color of the track */
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+    background: #fff; /* Color of the thumb */
+    border-radius: 5px; 
+    height: 66px;
+}
+
+.tab-content::-webkit-scrollbar-thumb:hover {
+    background: #fff; /* Color of the thumb on hover */
+    width: 11px;
 }
 
      </style>
@@ -640,20 +582,7 @@ table th {
         </header>
         <main>            
             <div id="categories-container" class="categories"></div>
-            <div class="mainAnalysis">                                     
-                <div class="main-nav"> 
-                    <nav class="filters">
-                        <ul class="filters__group">
-                            <li><a href="#all-games" data-status="all" class="active">All</a></li>
-                            <li><a href="#live-games" data-status="live">LIVE</a></li>
-                            <li><a href="#finished-games" data-status="finished">Results</a></li>
-                            <li><a href="#scheduled-games" data-status="scheduled">Upcoming</a></li>
-                        </ul>
-                    </nav> 
-                </div>
-
-                <div id="details-container"></div>
-            </div>
+            <div id="details-container" class="mainAnalysis"></div>
             <div id="standings-container" class="sideRight"></div>
         </main>
         
@@ -713,7 +642,6 @@ table th {
                 // Filter by status
                 if (status) {
                     filteredEvents = filteredEvents.filter(event => {
-                        console.log(event.status.type);  // Debugging
                         switch (status) {
                             case 'live':
                                 return event.status.type === 'inprogress';
@@ -726,7 +654,6 @@ table th {
                         }
                     });
                 }
-
         
                 // Filter by events that have odds
                 filteredEvents = filteredEvents.filter(event => odds[event.id]);
@@ -954,7 +881,7 @@ table th {
                     <div class="match-card">
                         <div class="match-time-status">
                             <span class="match-time">${new Date(startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).replace(',', ' ').replace('/', ' ')}</span>
-                            <span class="match-status">${new Date(startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+                            <span class="match-status">${status.type === 'inprogress' ? 'LIVE' : new Date(startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                         <div class="team-info">
                             <div class="teams-info">
@@ -1191,7 +1118,8 @@ table th {
                         const eventData = eventDetails.event;
                         const eventContainer = document.getElementById('details-container');
                         
-                        eventContainer.innerHTML = `   
+                        eventContainer.innerHTML = `
+                                
                                 <div class="duelParticipant"> 
                                     <div class="match-time"> <span">
                                         ${new Date(eventData.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace(',', ' ').replace('/', ' ')}
@@ -1437,69 +1365,62 @@ table th {
                 return await fetchJson(url);
             };
                 
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('start-date').value = today;
+            document.getElementById('end-date').value = today;
         
-
-            document.addEventListener('DOMContentLoaded', () => {
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('start-date').value = today;
-                document.getElementById('end-date').value = today;
-
-                // Initial data load
-                displayCategories(today, today, '');
-
-                document.getElementById('filter-btn').addEventListener('click', () => {
-                    const startDate = document.getElementById('start-date').value;
-                    const endDate = document.getElementById('end-date').value;
-                    const hours = document.getElementById('time-range').value;
-                    displayCategories(startDate, endDate, hours);
-                });
-
-                document.querySelectorAll('.main-nav a').forEach(link => {
-                    link.addEventListener('click', async event => {
-                        event.preventDefault();
-                        const filterType = link.getAttribute('href').replace('#', '');
-
-                        let startDate = today;
-                        let endDate = today;
-                        let hours = '';
-
-                        switch (filterType) {
-                            case 'all-games':
-                                displayCategories(startDate, endDate, hours);
-                                break;
-                            case 'live-games':
-                                displayCategories(startDate, endDate, hours, 'live');
-                                break;
-                            case 'finished-games':
-                                displayCategories(startDate, endDate, hours, 'finished');
-                                break;
-                            case 'scheduled-games':
-                                displayCategories(startDate, endDate, hours, 'scheduled');
-                                break;
-                            default:
-                                displayCategories(startDate, endDate, hours);
-                                break;
-                        }
-
-                        // Remove 'active' class from all links
-                        document.querySelectorAll('.main-nav a').forEach(link => {
-                            link.classList.remove('active');
-                        });
-
-                        // Add 'active' class to the clicked link
-                        event.target.classList.add('active');
-                    });
-                });
-
+            // Initial data load
+            displayCategories(today, today, '');
+        
+            document.getElementById('filter-btn').addEventListener('click', () => {
+                const startDate = document.getElementById('start-date').value;
+                const endDate = document.getElementById('end-date').value;
+                const hours = document.getElementById('time-range').value;
+                displayCategories(startDate, endDate, hours);
             });
-
-
-// Helper function to convert fractional odds to decimal
-function fractionalToDecimal(fractionalOdds) {
-    const [numerator, denominator] = fractionalOdds.split('/');
-    return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
-}
-
+        
+            document.querySelectorAll('.main-nav a').forEach(link => {
+                link.addEventListener('click', async event => {
+                    event.preventDefault();
+                    const filterType = link.getAttribute('href').replace('#', '');
+        
+                    let startDate = today;
+                    let endDate = today;
+                    let hours = '';
+        
+                    switch (filterType) {
+                        case 'all-games':
+                            displayCategories(startDate, endDate, hours);
+                            break; // Default case already handles all games
+                        case 'live-games':
+                            displayCategories(startDate, endDate, hours, 'live');
+                            break;
+                        case 'finished-games':
+                            displayCategories(startDate, endDate, hours, 'finished');
+                            break;
+                        case 'scheduled-games':
+                            displayCategories(startDate, endDate, hours, 'scheduled');
+                            break;
+                        default:
+                            displayCategories(startDate, endDate, hours);
+                            break;
+                    }
+        
+                    document.querySelectorAll('.main-nav a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+        
+                    event.target.classList.add('active');
+                });
+            });
+        });
+        
+        // Helper function to convert fractional odds to decimal
+        function fractionalToDecimal(fractionalOdds) {
+            const [numerator, denominator] = fractionalOdds.split('/');
+            return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
+        }
         </script> 
     </body>
 </html>
