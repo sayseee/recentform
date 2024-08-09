@@ -133,8 +133,10 @@ header .logo {
 main {
     height: calc(100vh - 76px); /* Fill the viewport height minus 76px */  
     display: grid;
-    grid-template:
-        " categories mainAnalysis sideRight " minmax(calc(100vh - 310px), 1fr) / 320px 710px 402px; 
+    grid-template-areas:
+        "categories mainAnalysis sideRight";
+    grid-template-columns: 22.22% 49.31% 28.47%;
+    grid-template-rows: minmax(calc(100vh - 310px), 1fr);
     position: relative;
 }
 
