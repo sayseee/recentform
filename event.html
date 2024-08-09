@@ -675,13 +675,10 @@ table th {
                                 <span class="score ${event.result}">${event.homeScore} - ${event.awayScore}</span>
                                 <span class="team-name awayParticipant">${event.awayTeam}</span>
                             </div> 
-        `;
-        container.appendChild(eventElem);
-    });
-};
-
-
-
+                `;
+                container.appendChild(eventElem);
+            });
+        };
 
         const displayH2H = (h2hData, containerId) => {
             const container = document.getElementById(containerId);
