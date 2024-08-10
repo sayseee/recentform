@@ -1029,8 +1029,8 @@ table th {
                             stats.results.push({
                                 result,
                                 timeStamp: event.startTimestamp,
-                                uniqueTournamentId: event.tournament.uniqueTournament.id,
-                                uniqueTournamentName: event.tournament.uniqueTournament.name,
+                                uniqueTournamentId: event.tournament.uniqueTournament?.id,
+                                uniqueTournamentName: event.tournament.uniqueTournament?.name,
                                 categoryName: event.tournament.category.name,
                                 homeTeam: event.homeTeam.shortName,
                                 awayTeam: event.awayTeam.shortName,
