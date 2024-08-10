@@ -1087,7 +1087,12 @@ table th {
                             eventElem.innerHTML = `  
                                         <div class="event__row flex _F_r gT10 _F_ac">
                                             <span class="event-date time">${new Date(event.timeStamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
-                                            <span class="tourn"><img src="${baseURL}/unique-tournament/${event.uniqueTournamentId}/image" alt="${event.uniqueTournamentName}" width="20" height="20" loading="lazy"></span>
+                                            <span class="tourn"><img src="${baseURL}/unique-tournament/${event.uniqueTournamentId}/image" alt="${event.uniqueTournamentName}"
+                                                width="20" 
+                                                height="20" 
+                                                loading="lazy"
+                                                onerror="this.onerror=null;this.src='https://www.sofascore.com/static/images/placeholders/tournament.svg';">
+                                            </span>
                                             <span class="teamNames flex _F_c _F1">
                                                 <span class="team-name homeParticipant">${homeTeamName}</span>
                                                 <span class="team-name awayParticipant">${awayTeamName}</span> 
@@ -1167,7 +1172,12 @@ table th {
                             eventElem.innerHTML = `
                                 <div class="event__row flex _F_r gT10 _F_ac">
                                     <span class="event-date time">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
-                                    <span class="tourn"><img src="${baseURL}/unique-tournament/${event.tournament.uniqueTournament.id}/image" alt="${event.tournament.uniqueTournament.name}" width="20" height="20" loading="lazy"></span>
+                                    <span class="tourn"><img src="${baseURL}/unique-tournament/${event.tournament.uniqueTournament.id}/image" alt="${event.tournament.uniqueTournament.name}"
+                                                width="20" 
+                                                height="20" 
+                                                loading="lazy"
+                                                onerror="this.onerror=null;this.src='https://www.sofascore.com/static/images/placeholders/tournament.svg';">
+                                            </span>
                                     <span class="teamNames flex _F_c _F1">
                                         <span class="team-name homeParticipant">${homeTeamName}</span>
                                         <span class="team-name awayParticipant">${awayTeamName}</span> 
