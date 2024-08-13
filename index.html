@@ -183,7 +183,7 @@ main {
 
 /* Categories container */
 .categories {
-    height: 100%; /* Fill the viewport height minus 76px */
+    height: calc(100vh - 95px); /* Fill the viewport height minus 76px */
     overflow-y: auto; /* Enable vertical scrolling */
     padding: 5px; /* Optional padding */ 
     border-right: var(--color-support-3) 1px solid;
@@ -1398,9 +1398,9 @@ table th {
 
                             // Generate HTML rows with conditional class
                             const rows = teams.map((team, index) => {
-                                const rowClass = (team.teamId === homeTeamId || team.teamId === awayTeamId) ? 'our-team' : '';
+                                const rowClass = (team.teamId === homeTeamId || team.teamId === awayTeamId) ? ' class="our-team"' : '';
                                 return `
-                                <tr class="${rowClass} ${team.teamId}">
+                                <tr${rowClass}>
                                     <td>${index + 1}</td>
                                     <td>${team.teamName}</td>
                                     <td>${team.GP}</td>
@@ -1454,9 +1454,9 @@ table th {
 
                             // Generate HTML rows with conditional class
                             const rows = teams.map((team, index) => {
-                                const rowClass = (team.teamId === homeTeamId || team.teamId === awayTeamId) ? 'our-team' : '';
+                                const rowClass = (team.teamId === homeTeamId || team.teamId === awayTeamId) ? ' class="our-team"' : '';
                                 return `
-                                    <tr class="${rowClass} ${team.teamId}">
+                                    <tr${rowClass}>
                                         <td>${index + 1}</td>
                                         <td>${team.teamName}</td>
                                         <td>${team.GP}</td>
