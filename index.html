@@ -67,7 +67,7 @@ body {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    margin-right: 1px;
+    margin-right: 2px;
     border-radius: 2px;
     float: right;
 }
@@ -1546,44 +1546,45 @@ table th {
                                 const [ouAway05, ouAway15, ouAway25, ouAway35] = await formOverUnderHTML(awayEvents);
 
  
-                const generateStandingsTable = (data) => {
-                    if (!data || !data.standings || !data.standings.length) return 'No data available'; 
-                    let html = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Team</th>
-                                <th>GP</th>
-                                <th>W</th>
-                                <th>D</th>
-                                <th>L</th>
-                                <th>GF</th>
-                                <th>GA</th>
-                                <th>Pts</th> 
-                            </tr>
-                        </thead>
-                        <tbody>
-                    `;
-                    data.standings[0].rows.forEach(row => {
-                        const teamName = row.team.shortName;
-                        const rowClass = (row.team.id === homeTeamId || row.team.id === awayTeamId) ? 'our-team' : '';
-                        html += `<tr class="${rowClass}">
-                            <td>${row.position}</td>
-                            <td>${teamName}</td>
-                            <td>${row.matches}</td>
-                            <td>${row.wins}</td>
-                            <td>${row.draws}</td>
-                            <td>${row.losses}</td>
-                            <td>${row.scoresFor}</td>
-                            <td>${row.scoresAgainst}</td>
-                            <td>${row.points}</td> 
-                        </tr>`;
-                    });
+                                const generateStandingsTable = (data) => {
+                                    if (!data || !data.standings || !data.standings.length) return '<p>No standings available</p>';
+                                    let html = `
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Team</th>
+                                                <th>GP</th>
+                                                <th>W</th>
+                                                <th>D</th>
+                                                <th>L</th>
+                                                <th>GF</th>
+                                                <th>GA</th>
+                                                <th>Pts</th> 
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                    `;
+                                    data.standings[0].rows.forEach(row => {
+                                        const teamName = row.team.shortName;
+                                        const rowClass = (row.team.id === homeTeamId || row.team.id === awayTeamId) ? 'our-team' : '';
+                                        html += `<tr class="${rowClass}">
+                                            <td>${row.position}</td>
+                                            <td>${teamName}</td>
+                                            <td>${row.matches}</td>
+                                            <td>${row.wins}</td>
+                                            <td>${row.draws}</td>
+                                            <td>${row.losses}</td>
+                                            <td>${row.scoresFor}</td>
+                                            <td>${row.scoresAgainst}</td>
+                                            <td>${row.points}</td> 
+                                        </tr>`;
+                                    });
 
-                    html += '</tbody></table>';
-                    return html;
-                }; 
+                                    html += '</tbody></table>';
+                                    return html;
+                                };
+
 
                 
 
@@ -1796,10 +1797,12 @@ table th {
         };
 
                     
-            const fetchStandings = async (tournamentId, seasonId, type) => {
-                const url = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/standings/${type}`;
-                return await fetchJson(url);
-            };
+        const fetchStandings = async (tournamentId, seasonId, type) => {
+            const url = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/standings/${type}`;
+            console.log(`Fetching standings from: ${url}`); // Debugging output
+            return await fetchJson(url);
+        };
+
  
             document.addEventListener('DOMContentLoaded', () => {
                 const today = new Date().toISOString().split('T')[0];
