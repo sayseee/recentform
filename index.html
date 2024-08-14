@@ -1335,10 +1335,10 @@ table th {
                                 const homeScoreElement = document.getElementById(`homeScores-${eventId}`);
                                 const awayScoreElement = document.getElementById(`awayScores-${eventId}`);
                                 if (homeScoreElement) {
-                                    homeScoreElement.textContent = updatedEventData.homeScore?.current ?? '0';
+                                    homeScoreElement.textContent = updatedEventData.homeScore?.current ?? '';
                                 }
                                 if (awayScoreElement) {
-                                    awayScoreElement.textContent = updatedEventData.awayScore?.current ?? '0';
+                                    awayScoreElement.textContent = updatedEventData.awayScore?.current ?? '';
                                 }
 
                             } catch (error) {
