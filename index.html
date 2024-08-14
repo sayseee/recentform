@@ -912,7 +912,7 @@ table th {
 
     const updateScores = async () => {
         try {
-            const updatedScores = await fetchJson(`${baseURL}/sport/football/scheduled-events/${startDate}/scores`); // Adjust URL if needed
+            const updatedScores = await fetchJson(`${baseURL}/sport/football/events/live`); // Adjust URL if needed
 
             filteredEvents.forEach(event => {
                 const updatedEvent = updatedScores.find(updated => updated.id === event.id);
@@ -920,10 +920,10 @@ table th {
                     const homeScoreElement = document.getElementById(`homeScore-${event.id}`);
                     const awayScoreElement = document.getElementById(`awayScore-${event.id}`);
                     if (homeScoreElement) {
-                        homeScoreElement.textContent = updatedEvent.homeScore?.current ?? '0';
+                        homeScoreElement.textContent = updatedEvent.homeScore?.current ?? '';
                     }
                     if (awayScoreElement) {
-                        awayScoreElement.textContent = updatedEvent.awayScore?.current ?? '0';
+                        awayScoreElement.textContent = updatedEvent.awayScore?.current ?? '';
                     }
                 }
             });
