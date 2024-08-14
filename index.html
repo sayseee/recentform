@@ -1251,9 +1251,9 @@ table th {
                                         <div class="duelParticipant__score score">
                                             <div class="detailScore__matchInfo">
                                                 <div class="detailScore__wrapper" id="${eventData.status.type}">
-                                                    <span class="score" id="homeScore-${eventData.id}">${eventData.homeScore?.current ?? ''}</span>
+                                                    <span class="score" id="homeScores-${eventData.id}">${eventData.homeScore?.current ?? ''}</span>
                                                     <span class="detailScore__divider">-</span>
-                                                    <span class="score" id="awayScore-${eventData.id}">${eventData.awayScore?.current ?? ''}</span>
+                                                    <span class="score" id="awayScores-${eventData.id}">${eventData.awayScore?.current ?? ''}</span>
                                                 </div>
                                                 <div class="detailScore__status">
                                                     <span class="${eventData.status.type === 'inprogress' ? 'live' : '_detailStatus'}">
@@ -1332,8 +1332,8 @@ table th {
                                 if (!updatedEventDetails) return;
                                 const updatedEventData = updatedEventDetails.event;
 
-                                const homeScoreElement = document.getElementById(`homeScore-${eventId}`);
-                                const awayScoreElement = document.getElementById(`awayScore-${eventId}`);
+                                const homeScoreElement = document.getElementById(`homeScores-${eventId}`);
+                                const awayScoreElement = document.getElementById(`awayScores-${eventId}`);
                                 if (homeScoreElement) {
                                     homeScoreElement.textContent = updatedEventData.homeScore?.current ?? '0';
                                 }
