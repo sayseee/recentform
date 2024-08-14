@@ -543,7 +543,6 @@ nav li a.active {
  
 
 .tab-button {
-    text-transform: uppercase;
     align-items: center;
     background-color: var(--color-tabs-secondary-background-base);
     border-radius: 6px;
@@ -553,9 +552,14 @@ nav li a.active {
     height: 28px;
     padding: 0 12px;
     font-weight: 600;
-    border: 0;
     font-size: 12px;
     cursor: pointer;
+    border: unset;
+    font-family: inherit;
+    line-height: 16px;
+    outline: inherit;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
 
@@ -605,14 +609,43 @@ table {
     border-collapse: collapse;
 }
 
+table tr {
+    display: flex;
+    width: 100%;
+}
 table th, table td { 
     border-bottom: 1px solid rgba(34, 34, 38, 0.5); 
-    height: 29px;
     align-items: center;
+    align-self: center;
+    display: inline-flex;
+    height: 32px;
+    width: 32px;
+    justify-content: center;
+} 
+
+table th, table td { 
+    text-align: center;
 }
 
-table th:first-child, table td:first-child { 
-    text-align: center;
+table th.--participant, table td.--participant { 
+    flex-grow: 1;
+    flex-shrink: 0;
+    left: 32px;
+    padding: 0 10px;
+    width: 100px;
+    justify-content: left;
+}
+table th.--form, table td.--form {
+    align-items: center;
+    display: inline-flex;
+    justify-content: flex-start;
+    line-height: 14px;
+    padding: 0 10px;
+    width: 140px;
+    justify-content: center;
+} 
+table th:nth-child(2), table td:nth-child(2) { 
+    text-align: left;
 }
 
 table th {
@@ -1390,13 +1423,13 @@ table th {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Team</th>
+                                        <th class="--participant">Team</th>
                                         <th>GP</th>
                                         <th>W</th>
                                         <th>D</th>
                                         <th>L</th>
                                         <th>PTS</th>
-                                        <th>FORM</th>
+                                        <th class="--form">FORM</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1437,13 +1470,13 @@ table th {
                                 return `
                                 <tr${rowClass}>
                                     <td>${index + 1}</td>
-                                    <td>${team.teamName}</td>
+                                    <td class="--participant">${team.teamName}</td>
                                     <td>${team.GP}</td>
                                     <td>${team.W}</td>
                                     <td>${team.D}</td>
                                     <td>${team.L}</td>
                                     <td>${team.PTS}</td>
-                                    <td>${team.form}</td>
+                                    <td class="--form">${team.form}</td>
                                 </tr>
                              `;
                             });
@@ -1494,12 +1527,12 @@ table th {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Team</th>
+                                        <th class="--participant">Team</th>
                                         <th>GP</th>
                                         <th>O</th>
                                         <th>U</th>
                                         <th>G/M</th> 
-                                        <th>Last 5</th>
+                                        <th class="--form">Last 5</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1527,12 +1560,12 @@ table th {
                                 return `
                                     <tr${rowClass}>
                                         <td>${index + 1}</td>
-                                        <td>${team.teamName}</td>
+                                        <td class="--participant">${team.teamName}</td>
                                         <td>${team.GP}</td>
                                         <td>${team.oversCount}</td>
                                         <td>${team.undersCount}</td>
                                         <td>${(team.goalsPerMatch).toFixed(2)}</td>
-                                        <td>${team.overs}</td>
+                                        <td class="--form">${team.overs}</td>
                                     </tr>
                                 `;
                             });
@@ -1575,11 +1608,11 @@ table th {
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Team</th>
+                                        <th class="--participant">Team</th>
                                         <th>GP</th>
                                         <th>Yes</th>
                                         <th>No</th>
-                                        <th>Last 5</th>
+                                        <th class="--form">Last 5</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1607,11 +1640,11 @@ table th {
                                 return `
                                     <tr${rowClass}>
                                         <td>${index + 1}</td>
-                                        <td>${team.teamName}</td>
+                                        <td class="--participant">${team.teamName}</td>
                                         <td>${team.GP}</td>
                                         <td>${team.yesCount}</td>
                                         <td>${team.noCount}</td>
-                                        <td>${team.last5Matches}</td>
+                                        <td class="--form">${team.last5Matches}</td>
                                     </tr>
                                 `;
                             });
@@ -1683,7 +1716,7 @@ table th {
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Team</th>
+                                            <th class="--participant">Team</th>
                                             <th>GP</th>
                                             <th>W/W</th>
                                             <th>W/D</th>
@@ -1726,7 +1759,7 @@ table th {
                                 return `
                                     <tr${rowClass}>
                                         <td>${index + 1}</td>
-                                        <td>${team.teamName}</td>
+                                        <td class="--participant">${team.teamName}</td>
                                         <td>${team.GP}</td>
                                         <td>${team.htftResults.WW || 0}</td>
                                         <td>${team.htftResults.WD || 0}</td>
@@ -1843,7 +1876,7 @@ table th {
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Team</th>
+                                                <th class="--participant">Team</th>
                                                 <th>GP</th>
                                                 <th>W</th>
                                                 <th>D</th>
@@ -1860,7 +1893,7 @@ table th {
                                         const rowClass = (row.team.id === homeTeamId || row.team.id === awayTeamId) ? 'our-team' : '';
                                         html += `<tr class="${rowClass}">
                                             <td>${row.position}</td>
-                                            <td>${teamName}</td>
+                                            <td class="--participant">${teamName}</td>
                                             <td>${row.matches}</td>
                                             <td>${row.wins}</td>
                                             <td>${row.draws}</td>
