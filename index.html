@@ -1266,136 +1266,12 @@ table th {
                     };
                     
   
-                    const displayEventDetails = async (eventId) => {
-                        // Function to fetch and display event details
-                        const fetchAndDisplayDetails = async () => {
-                            try {
-                                const eventDetails = await fetchJson(`${baseURL}/event/${eventId}`);
-                                if (!eventDetails) return;
-                                const eventData = eventDetails.event;
-                                const eventContainer = document.getElementById('details-container');
-
-                                eventContainer.innerHTML = `
-                                    <div class="duelParticipant"> 
-                                        <div class="match-time">
-                                            <span>${new Date(eventData.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace(',', ' ').replace('/', ' ')}</span>
-                                        </div>
-                                        <div class="team duelParticipant__home">
-                                            <img src="${baseURL}/team/${eventData.homeTeam.id}/image" width="16" height="16" alt="${eventData.homeTeam.shortName}" loading="lazy" class="team-logo">
-                                            <div class="team-name">${eventData.homeTeam.shortName}</div>
-                                        </div>
-
-                                        <div class="duelParticipant__score score">
-                                            <div class="detailScore__matchInfo">
-                                                <div class="detailScore__wrapper" id="${eventData.status.type}">
-                                                    <span class="score" id="homeScores-${eventData.id}">${eventData.homeScore?.current ?? ''}</span>
-                                                    <span class="detailScore__divider">-</span>
-                                                    <span class="score" id="awayScores-${eventData.id}">${eventData.awayScore?.current ?? ''}</span>
-                                                </div>
-                                                <div class="detailScore__status">
-                                                    <span class="${eventData.status.type === 'inprogress' ? 'live' : '_detailStatus'}">
-                                                        ${eventData.status.type === 'inprogress' ? 'Live' : eventData.status.type === 'finished' ? 'FINISHED' : new Date(eventData.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}    
-                                                    </span>
-                                                </div>
-                                            </div> 
-                                        </div>
-                                        <div class="team duelParticipant__away">
-                                            <img src="${baseURL}/team/${eventData.awayTeam.id}/image" width="16" height="16" alt="${eventData.awayTeam.shortName}" loading="lazy" class="team-logo">
-                                            <div class="team-name">${eventData.awayTeam.shortName}</div>
-                                        </div>
-                                    </div>                    
-                                    <div id="next-match" class="flex _F_r _F_jc">
-                                        <div id="home-next-match" class="next-match"></div>
-                                        <div id="away-next-match" class="next-match"></div>
-                                    </div> 
-                                    <!-- Tabs Navigation -->
-                                    <div id="events-tabs" class="tab-contentContainer">
-                                        <div class="tab-menu">
-                                            <button class="tab-button active" data-tab="overall-events">Overall</button>
-                                            <button class="tab-button" data-tab="home-vs-away-events">Home vs Away</button>
-                                        </div>
-                                        <div class="tab-content active" id="overall-events">
-                                            <!-- Tab content for Overall Events -->
-                                            <div class="form-container flex _F_r _F_jc gT20">
-                                                <div class="home-form">
-                                                    <h3>Last matches: ${eventData.homeTeam.shortName}</h3>
-                                                    <div id="home-team-form"></div>
-                                                </div>
-                                                <div class="away-form">
-                                                    <h3>Last matches: ${eventData.awayTeam.shortName}</h3>
-                                                    <div id="away-team-form"></div>
-                                                </div>
-                                            </div> 
-                                            <div class="h2h">
-                                                <h3>Head-to-head matches</h3>
-                                                <div id="overallH2HContainer"></div>
-                                            </div>
-                                        </div>
-                                        <div class="tab-content" id="home-vs-away-events">
-                                            <!-- Tab content for Home vs Away Events -->
-                                            <div class="form-container flex _F_r _F_jc gT20">
-                                                <div class="atHome-form">
-                                                    <h3>Last Home matches: ${eventData.homeTeam.shortName}</h3>
-                                                    <div id="at-home-form"></div>
-                                                </div>
-                                                <div class="atAway-form">
-                                                    <h3>Last Away matches: ${eventData.awayTeam.shortName}</h3>
-                                                    <div id="at-away-form"></div>
-                                                </div>
-                                            </div>                                        
-                                            <div class="h2h">
-                                                <h3>Head-to-head matches</h3>
-                                                <div id="homeTeamH2HContainer"></div>
-                                            </div>
-                                        </div>
-                                    </div>                  
-                                `;
-
-                                // Update the standings container
-                                updateStandingsContainer(eventData);
-
-                            } catch (error) {
-                                console.error('Error displaying event details:', error);
-                            }
-                        };
-
-                        // Initial display of event details
-                        await fetchAndDisplayDetails();
-
-                        // Function to refresh scores
-                        const refreshScores = async () => {
-                            try {
-                                const updatedEventDetails = await fetchJson(`${baseURL}/event/${eventId}`);
-                                if (!updatedEventDetails) return;
-                                const updatedEventData = updatedEventDetails.event;
-
-                                const homeScoreElement = document.getElementById(`homeScores-${eventId}`);
-                                const awayScoreElement = document.getElementById(`awayScores-${eventId}`);
-                                if (homeScoreElement) {
-                                    homeScoreElement.textContent = updatedEventData.homeScore?.current ?? '';
-                                }
-                                if (awayScoreElement) {
-                                    awayScoreElement.textContent = updatedEventData.awayScore?.current ?? '';
-                                }
-
-                            } catch (error) {
-                                console.error('Error refreshing scores:', error);
-                            }
-                        };
-
-                        // Refresh scores every 5 seconds
-                        const scoreUpdateInterval = setInterval(refreshScores, 5000);
-
-                        // Clear interval when navigating away from the event details
-                        const clearUpdateInterval = () => {
-                            clearInterval(scoreUpdateInterval);
-                        };
-
-                        // Call `clearUpdateInterval` when navigating away or as needed
-                        // For example:
-                        // document.getElementById('details-container').addEventListener('someEvent', clearUpdateInterval);
+                    
+                    const fetchStandings = async (tournamentId, seasonId, type) => {
+                        const url = `${baseURL}/unique-tournament/${tournamentId}/season/${seasonId}/standings/${type}`;
+                        console.log(`Fetching standings from: ${url}`); // Debugging output
+                        return await fetchJson(url);
                     };
-
                     
                     const fetchTeamsAndEvents = async (tournamentId, seasonId, type) => {
                         const url = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/team-events/${type}`;
@@ -1788,7 +1664,8 @@ table th {
 
 
 
-                    const updateStandingsContainer = async (eventData) => { 
+                    const updateStandingsContainer = async (eventData) => {
+                        try { 
     
                             const homeTeamId = eventData.homeTeam.id;
                             const awayTeamId = eventData.awayTeam.id;
@@ -1796,6 +1673,7 @@ table th {
                             const currentMatchTimestamp = eventData.startTimestamp;
 
                             const tournamentId = eventData.tournament.id;
+                            const uniqueTournamentId = eventData.tournament.uniqueTournament.id;
                             const seasonId = eventData.season.id
                             
                             console.log(`Tournament ID`, tournamentId);
@@ -1829,12 +1707,12 @@ table th {
                             // Display only home team at home head-to-head
                             displayH2H(filteredH2HEvents, 'homeTeamH2HContainer', homeTeamId, true); 
 
-                            // Fetch and display standings
+                            // Fetch standings and events
                             const [totalStandings, homeStandings, awayStandings] = await Promise.all([
-                                fetchStandings(tournamentId, seasonId, 'total'),
-                                fetchStandings(tournamentId, seasonId, 'home'),
-                                fetchStandings(tournamentId, seasonId, 'away')
-                            ]); 
+                                fetchStandings(uniqueTournamentId, seasonId, 'total').catch(() => null),
+                                fetchStandings(uniqueTournamentId, seasonId, 'home').catch(() => null),
+                                fetchStandings(uniqueTournamentId, seasonId, 'away').catch(() => null)
+                            ]);
                              
  
                                 const totalEvents = await fetchTeamsAndEvents(tournamentId, seasonId, "total");
@@ -2017,7 +1895,12 @@ table th {
                             <div id="away_htft" class="tab-content">${htftAway}</div>
                         </div>   
                 </div>
-            `; 
+            `;
+
+    } catch (error) {
+        console.error('An error occurred:', error);
+        document.getElementById('standings-container').innerHTML = `<p>No standings</p>`;
+    } 
 
     // Add event listeners for events tabs
  document.querySelectorAll('#events-tabs .tab-button').forEach(button => {
@@ -2148,12 +2031,136 @@ table th {
  
         };
 
-                    
-        const fetchStandings = async (tournamentId, seasonId, type) => {
-            const url = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/standings/${type}`;
-            console.log(`Fetching standings from: ${url}`); // Debugging output
-            return await fetchJson(url);
-        };
+
+        const displayEventDetails = async (eventId) => {
+                        // Function to fetch and display event details
+                        const fetchAndDisplayDetails = async () => {
+                            try {
+                                const eventDetails = await fetchJson(`${baseURL}/event/${eventId}`);
+                                if (!eventDetails) return;
+                                const eventData = eventDetails.event;
+                                const eventContainer = document.getElementById('details-container');
+
+                                eventContainer.innerHTML = `
+                                    <div class="duelParticipant"> 
+                                        <div class="match-time">
+                                            <span>${new Date(eventData.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace(',', ' ').replace('/', ' ')}</span>
+                                        </div>
+                                        <div class="team duelParticipant__home">
+                                            <img src="${baseURL}/team/${eventData.homeTeam.id}/image" width="16" height="16" alt="${eventData.homeTeam.shortName}" loading="lazy" class="team-logo">
+                                            <div class="team-name">${eventData.homeTeam.shortName}</div>
+                                        </div>
+
+                                        <div class="duelParticipant__score score">
+                                            <div class="detailScore__matchInfo">
+                                                <div class="detailScore__wrapper" id="${eventData.status.type}">
+                                                    <span class="score" id="homeScores-${eventData.id}">${eventData.homeScore?.current ?? ''}</span>
+                                                    <span class="detailScore__divider">-</span>
+                                                    <span class="score" id="awayScores-${eventData.id}">${eventData.awayScore?.current ?? ''}</span>
+                                                </div>
+                                                <div class="detailScore__status">
+                                                    <span class="${eventData.status.type === 'inprogress' ? 'live' : '_detailStatus'}">
+                                                        ${eventData.status.type === 'inprogress' ? 'Live' : eventData.status.type === 'finished' ? 'FINISHED' : new Date(eventData.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}    
+                                                    </span>
+                                                </div>
+                                            </div> 
+                                        </div>
+                                        <div class="team duelParticipant__away">
+                                            <img src="${baseURL}/team/${eventData.awayTeam.id}/image" width="16" height="16" alt="${eventData.awayTeam.shortName}" loading="lazy" class="team-logo">
+                                            <div class="team-name">${eventData.awayTeam.shortName}</div>
+                                        </div>
+                                    </div>                    
+                                    <div id="next-match" class="flex _F_r _F_jc">
+                                        <div id="home-next-match" class="next-match"></div>
+                                        <div id="away-next-match" class="next-match"></div>
+                                    </div> 
+                                    <!-- Tabs Navigation -->
+                                    <div id="events-tabs" class="tab-contentContainer">
+                                        <div class="tab-menu">
+                                            <button class="tab-button active" data-tab="overall-events">Overall</button>
+                                            <button class="tab-button" data-tab="home-vs-away-events">Home vs Away</button>
+                                        </div>
+                                        <div class="tab-content active" id="overall-events">
+                                            <!-- Tab content for Overall Events -->
+                                            <div class="form-container flex _F_r _F_jc gT20">
+                                                <div class="home-form">
+                                                    <h3>Last matches: ${eventData.homeTeam.shortName}</h3>
+                                                    <div id="home-team-form"></div>
+                                                </div>
+                                                <div class="away-form">
+                                                    <h3>Last matches: ${eventData.awayTeam.shortName}</h3>
+                                                    <div id="away-team-form"></div>
+                                                </div>
+                                            </div> 
+                                            <div class="h2h">
+                                                <h3>Head-to-head matches</h3>
+                                                <div id="overallH2HContainer"></div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-content" id="home-vs-away-events">
+                                            <!-- Tab content for Home vs Away Events -->
+                                            <div class="form-container flex _F_r _F_jc gT20">
+                                                <div class="atHome-form">
+                                                    <h3>Last Home matches: ${eventData.homeTeam.shortName}</h3>
+                                                    <div id="at-home-form"></div>
+                                                </div>
+                                                <div class="atAway-form">
+                                                    <h3>Last Away matches: ${eventData.awayTeam.shortName}</h3>
+                                                    <div id="at-away-form"></div>
+                                                </div>
+                                            </div>                                        
+                                            <div class="h2h">
+                                                <h3>Head-to-head matches</h3>
+                                                <div id="homeTeamH2HContainer"></div>
+                                            </div>
+                                        </div>
+                                    </div>                  
+                                `;
+
+                                // Update the standings container
+                                updateStandingsContainer(eventData);
+
+                            } catch (error) {
+                                console.error('Error displaying event details:', error);
+                            }
+                        };
+
+                        // Initial display of event details
+                        await fetchAndDisplayDetails();
+
+                        // Function to refresh scores
+                        const refreshScores = async () => {
+                            try {
+                                const updatedEventDetails = await fetchJson(`${baseURL}/event/${eventId}`);
+                                if (!updatedEventDetails) return;
+                                const updatedEventData = updatedEventDetails.event;
+
+                                const homeScoreElement = document.getElementById(`homeScores-${eventId}`);
+                                const awayScoreElement = document.getElementById(`awayScores-${eventId}`);
+                                if (homeScoreElement) {
+                                    homeScoreElement.textContent = updatedEventData.homeScore?.current ?? '';
+                                }
+                                if (awayScoreElement) {
+                                    awayScoreElement.textContent = updatedEventData.awayScore?.current ?? '';
+                                }
+
+                            } catch (error) {
+                                console.error('Error refreshing scores:', error);
+                            }
+                        };
+
+                        // Refresh scores every 5 seconds
+                        const scoreUpdateInterval = setInterval(refreshScores, 5000);
+
+                        // Clear interval when navigating away from the event details
+                        const clearUpdateInterval = () => {
+                            clearInterval(scoreUpdateInterval);
+                        };
+
+                        // Call `clearUpdateInterval` when navigating away or as needed
+                        // For example:
+                        // document.getElementById('details-container').addEventListener('someEvent', clearUpdateInterval);
+                    };
 
  
             document.addEventListener('DOMContentLoaded', () => {
