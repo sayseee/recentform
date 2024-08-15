@@ -942,26 +942,32 @@ table th {
     await fetchData();
 
     const updateScores = async () => {
-        try {
-            const updatedScores = await fetchJson(`${baseURL}/sport/football/events/live`); // Adjust URL if needed
+    try {
+        const updatedScores = await fetchJson(`${baseURL}/sport/football/events/live`);
 
-            filteredEvents.forEach(event => {
-                const updatedEvent = updatedScores.find(updated => updated.id === event.id);
-                if (updatedEvent) {
-                    const homeScoreElement = document.getElementById(`homeScore-${event.id}`);
-                    const awayScoreElement = document.getElementById(`awayScore-${event.id}`);
-                    if (homeScoreElement) {
-                        homeScoreElement.textContent = updatedEvent.homeScore?.current ?? '';
-                    }
-                    if (awayScoreElement) {
-                        awayScoreElement.textContent = updatedEvent.awayScore?.current ?? '';
-                    }
-                }
-            });
-        } catch (error) {
-            console.error('Error updating scores:', error);
+        // Check if updatedScores contains a list of events under a specific property
+        if (!updatedScores || !Array.isArray(updatedScores.events)) {
+            console.error('Updated scores does not contain a list of events:', updatedScores);
+            return;
         }
-    };
+
+        updatedScores.events.forEach(updatedEvent => {
+            const event = filteredEvents.find(event => event.id === updatedEvent.id);
+            if (event) {
+                const homeScoreElement = document.getElementById(`homeScore-${event.id}`);
+                const awayScoreElement = document.getElementById(`awayScore-${event.id}`);
+                if (homeScoreElement) {
+                    homeScoreElement.textContent = updatedEvent.homeScore?.current ?? '';
+                }
+                if (awayScoreElement) {
+                    awayScoreElement.textContent = updatedEvent.awayScore?.current ?? '';
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error updating scores:', error);
+    }
+};
 
     setInterval(updateScores, 5000);
 };
