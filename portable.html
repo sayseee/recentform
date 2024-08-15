@@ -241,6 +241,10 @@ li {
 .filter-bar button:hover {
     background-color: var(--color-combination-8);
 }
+
+.inprogress { 
+    color: #c80037;
+} 
   </style>
 </head>
 <body>
@@ -452,7 +456,7 @@ const displayCategories = async (startDate, endDate, hours, status) => {
                                     <span class="team-name"><img src="${baseURL}/team/${event.homeTeam.id}/image" alt="${event.homeTeam.shortName}" class="flag-icon">${homeTeamName}</span>
                                     <span class="team-name"><img src="${baseURL}/team/${event.awayTeam.id}/image" alt="${event.awayTeam.shortName}" class="flag-icon">${awayTeamName}</span>
                                 </div>
-                                <div class="team-scores">
+                                <div class="team-scores ${event.status.type}">
                                     <span class="score" id="homeScore-${event.id}">${homeScore}</span>
                                     <span class="score" id="awayScore-${event.id}">${awayScore}</span>
                                 </div>
