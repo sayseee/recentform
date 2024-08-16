@@ -657,7 +657,31 @@ table th {
     overflow-y: auto; /* Enable vertical scrolling */
     height: 80vh; /* Set the height to the full viewport height */ 
 }
-
+#results-table table th, #results-table table td {
+    border-bottom: 1px solid rgba(34, 34, 38, 0.5);
+    align-items: center;
+    align-self: center;
+    display: inline-flex; 
+    flex: 0.5;
+    justify-content: center;
+}
+#results-table table th:nth-child(2), #results-table table td:nth-child(2) {
+    border-bottom: 1px solid rgba(34, 34, 38, 0.5);
+    align-items: center;
+    align-self: center;
+    display: inline-flex; 
+    flex: 3;
+    justify-content: center;
+}
+#results-table table td:first-child div, #results-table table td:last-child div {
+    display: flex;
+    width: 100%;
+    height: inherit;
+}
+#results-table .highlight {
+    background-color: var(--color-highlight) !important;
+    font-weight: 600;
+}
      </style>
     </head>
     <body> 
@@ -1662,6 +1686,97 @@ table th {
                             return tableHTML;
                         };
 
+                        const fetchAndDisplayResults = async (tournamentId, seasonId, currentHomeTeamId, currentAwayTeamId, containerId) => {
+                            try {
+                                const response = await fetch(`${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`);
+                                const data = await response.json();
+                                const events = data.events.filter(event => event.status.type === 'finished');
+
+                                const teams = {};
+
+                                events.forEach(event => {
+                                    if (!teams[event.homeTeam.id]) {
+                                        teams[event.homeTeam.id] = { id: event.homeTeam.id, name: event.homeTeam.shortName, points: 0, results: [] };
+                                    }
+                                    if (!teams[event.awayTeam.id]) {
+                                        teams[event.awayTeam.id] = { id: event.awayTeam.id, name: event.awayTeam.shortName, points: 0, results: [] };
+                                    }
+
+                                    const homeResultClass = event.homeScore.current > event.awayScore.current ? 'W' 
+                                                                            : event.homeScore.current < event.awayScore.current ? 'L' 
+                                                                            : 'D';
+
+                                    const awayResultClass = event.awayScore.current > event.homeScore.current ? 'W' 
+                                                                            : event.awayScore.current < event.homeScore.current ? 'L' 
+                                                                            : 'D';
+
+                                    const addResult = (isHome, event, teamScore, opponentScore, homeResultClass, awayResultClass, teams) => {
+                                        const result = {
+                                            location: isHome ? 'home' : 'away',
+                                            opponent: isHome ? event.awayTeam.id : event.homeTeam.id,
+                                            score: isHome ? `${teamScore} - ${opponentScore}` : `${opponentScore} - ${teamScore}`,
+                                            resultClass: isHome ? awayResultClass : homeResultClass
+                                        };
+                                        teams[isHome ? event.homeTeam.id : event.awayTeam.id].results.push(result);
+                                    };
+
+                                    addResult(true, event, event.homeScore.current, event.awayScore.current, homeResultClass, awayResultClass, teams);
+                                    addResult(false, event, event.awayScore.current, event.homeScore.current, homeResultClass, awayResultClass, teams);
+
+                                    if (event.homeScore.current > event.awayScore.current) {
+                                        teams[event.homeTeam.id].points += 3;
+                                    } else if (event.homeScore.current < event.awayScore.current) {
+                                        teams[event.awayTeam.id].points += 3;
+                                    } else {
+                                        teams[event.homeTeam.id].points += 1;
+                                        teams[event.awayTeam.id].points += 1;
+                                    }
+                                });
+
+                                const sortedTeams = Object.values(teams).sort((a, b) => b.points - a.points);
+
+                                let tableHTML = `<table width="100%">
+                                <thead>
+                                    <tr>
+                                    <th>Home</th> 
+                                    <th style="text-align:center;">Opponent</th>
+                                    <th>Away</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+                                sortedTeams.forEach(team => {
+                                    const highlightClass = (team.id === currentHomeTeamId || team.id === currentAwayTeamId) ? 'highlight' : '';
+
+                                    tableHTML += `<tr>
+                                        <td>${team.results
+                                        .filter(result => result.opponent === currentHomeTeamId && result.location === 'away')
+                                        .map(result => `<div class="${result.resultClass}">${result.score}</div>`).join('<br>')}</td> 
+                                        <td class="${highlightClass}" style="text-align:center;">${team.name}</td> 
+                                        <td>${team.results
+                                        .filter(result => result.opponent === currentAwayTeamId && result.location === 'home')
+                                        .map(result => `<div class="${result.resultClass}">${result.score}</div>`).join('<br>')}</td>
+                                    </tr>`;
+                                });
+
+                                tableHTML += `</tbody></table>`;
+
+                                // Update the container with the generated table HTML
+                                const container = document.getElementById(containerId);
+                                if (container) { // Check if container exists
+                                    container.innerHTML = tableHTML;
+                                } else {
+                                    console.error(`Container with ID "${containerId}" not found.`);
+                                }
+
+                            } catch (error) {
+                                console.error('Error fetching events:', error);
+                                const container = document.getElementById(containerId);
+                                if (container) { // Check if container exists
+                                    container.innerHTML = '<p>Error fetching results data.</p>';
+                                }
+                            }
+                        };
 
 
                     const updateStandingsContainer = async (eventData) => {
@@ -1678,6 +1793,7 @@ table th {
                             
                             console.log(`Tournament ID`, tournamentId);
                             console.log(`season ID`, seasonId);
+ 
 
                             await displayNextMatch(homeTeamId, 'home-next-match');
                             await displayNextMatch(awayTeamId, 'away-next-match'); 
@@ -1806,6 +1922,7 @@ table th {
                 <div id="main-tabs" class="tab-contentContainer">                
                         <div class="tab-menu">
                             <div class="tab-button active" data-tab="standings">Standings</div>
+                            <div class="tab-button" data-tab="results">Results</div>
                             <div class="tab-button" data-tab="form">Form</div>
                             <div class="tab-button" data-tab="over-under">Over/Under</div>
                             <div class="tab-button" data-tab="btts">BTTS</div>
@@ -1821,6 +1938,9 @@ table th {
                             <div class="tab-content" id="home-standings">${homeStandingsTable}</div>
                             <div class="tab-content" id="away-standings">${awayStandingsTable}</div>
                         </div>                        
+                        <div class="tab-content" id="results"> 
+                            <div id="results-table"></div>
+                        </div>                   
                         <div class="tab-content" id="form">
                             <div class="tab-menu">
                                 <div class="tab-button" data-tab="form-total-standings">Total</div>
@@ -1897,6 +2017,15 @@ table th {
                 </div>
             `;
 
+   
+ // Add further checks for results-table
+ const resultsTable = document.getElementById('results-table');
+    if (resultsTable) {
+        console.log('Results table found.');
+        fetchAndDisplayResults(tournamentId, seasonId, homeTeamId, awayTeamId, 'results-table');
+    } else {
+        console.error('Results table not found.');
+    }
     } catch (error) {
         console.error('An error occurred:', error);
         document.getElementById('standings-container').innerHTML = `<p>No standings</p>`;
@@ -1939,7 +2068,7 @@ table th {
 
             // Check which main tab is active and ensure the first sub-tab is active
             const activeMainTab = event.target.getAttribute('data-tab');
-            if (activeMainTab === 'standings' || activeMainTab === 'form' || activeMainTab === 'over-under' || activeMainTab === 'btts' || activeMainTab === 'htft') {
+            if (activeMainTab === 'standings' || activeMainTab === 'results' || activeMainTab === 'form' || activeMainTab === 'over-under' || activeMainTab === 'btts' || activeMainTab === 'htft') {
                 activateFirstSubTab(activeMainTab);
             }
         });
@@ -2023,7 +2152,7 @@ table th {
     // Initialize the main tab and its first sub-tab as active on page load
     const initializeTabs = () => {
         activateFirstSubTab('standings'); // Assuming 'standings' is a main tab ID
-        addSubTabListenersForAllTabs(['standings', 'form', 'over-under', 'btts', 'htft']);
+        addSubTabListenersForAllTabs(['standings', 'results', 'form', 'over-under', 'btts', 'htft']);
         addSubTabListenersForSubSubTabs('over-under'); // Initialize nested sub-sub-tabs
     };
 
