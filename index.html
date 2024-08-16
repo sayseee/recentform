@@ -1323,7 +1323,6 @@ table th {
                             }).join('');
                         };
 
-
                         const generateTableHTML = async (teamEvents, homeTeamId, awayTeamId) => {
                             let tableHTML = `
                                 <table>
@@ -1335,6 +1334,8 @@ table th {
                                         <th>W</th>
                                         <th>D</th>
                                         <th>L</th>
+                                        <th>G</th> 
+                                        <th>GD</th>
                                         <th>PTS</th>
                                         <th class="--form">FORM</th>
                                     </tr>
@@ -1352,7 +1353,7 @@ table th {
                                 const form = calculateForm(events, teamId);
                                 const GP = events.length;
 
-                                // Calculate W, D, L, and PTS based on events
+                                // Calculate W, D, L, PTS, G (Goals Scored), GA (Goals Against), and GD (Goal Difference)
                                 const W = events.filter(event => 
                                     (event.winnerCode === 1 && event.homeTeam.id === parseInt(teamId)) || 
                                     (event.winnerCode === 2 && event.awayTeam.id === parseInt(teamId))
@@ -1365,7 +1366,21 @@ table th {
                                 const L = GP - W - D;
                                 const PTS = (W * 3) + D;
 
-                                return { teamId: parseInt(teamId), teamName, GP, W, D, L, PTS, form };
+                                // Calculate Goals Scored (G), Goals Against (GA), and Goal Difference (GD)
+                                let G = 0;
+                                let GA = 0;
+                                events.forEach(event => {
+                                    if (event.homeTeam.id === parseInt(teamId)) {
+                                        G += event.homeScore.current;
+                                        GA += event.awayScore.current;
+                                    } else if (event.awayTeam.id === parseInt(teamId)) {
+                                        G += event.awayScore.current;
+                                        GA += event.homeScore.current;
+                                    }
+                                });
+                                const GD = G - GA;
+
+                                return { teamId: parseInt(teamId), teamName, GP, W, D, L, G, GA, GD, PTS, form };
                             }));
 
                             // Sort teams by points
@@ -1382,10 +1397,12 @@ table th {
                                     <td>${team.W}</td>
                                     <td>${team.D}</td>
                                     <td>${team.L}</td>
+                                    <td>${team.G}:${team.GA}</td> 
+                                    <td>${team.GD}</td>
                                     <td>${team.PTS}</td>
                                     <td class="--form">${team.form}</td>
                                 </tr>
-                             `;
+                            `;
                             });
 
                             tableHTML += rows.join('') + `</tbody></table>`;
