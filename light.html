@@ -1307,7 +1307,61 @@ table th {
                         console.log(`Fetching standings from: ${url}`); // Debugging output
                         return await fetchJson(url);
                     };
-                    
+
+                    const fetchTeamStandings = async (tournamentId, seasonId, type) => {
+                        try {
+                            const response = await fetch(`${baseURL}/unique-tournament/${tournamentId}/season/${seasonId}/standings/${type}`);
+                            const data = await response.json();
+                            return data; // Ensure this data has a 'rows' property
+                        } catch (error) {
+                            console.error("Error fetching standings:", error);
+                            return null;
+                        }
+                    };
+
+                   
+                    const getTeamStandings = async (teamId, tournamentId, seasonId, type) => {
+                        const standingsResponse = await fetchStandings(tournamentId, seasonId, type);
+                        
+                        // Check if the standingsResponse has the expected structure
+                        if (!standingsResponse || !standingsResponse.standings || standingsResponse.standings.length === 0) {
+                            console.error('Unexpected standings data format:', standingsResponse);
+                            return null;
+                        }
+
+                        const standings = standingsResponse.standings[0];
+
+                        // Log all available team IDs
+                        standings.rows.forEach(row => {
+                            console.log('Available team ID:', row.team.id, 'Team Name:', row.team.name);
+                        });
+
+                        // Assuming that `rows` contains the actual team data
+                        const teamData = standings.rows.find(row => row.team.id === teamId);
+
+                        if (!teamData) {
+                            console.error('No matching team found for teamId:', teamId);
+                        } else {
+                            console.log('Found team data:', teamData);
+                        }
+
+
+                        return {
+                            position: teamData.position,
+                            teamName: teamData.team.name,  // Assuming `name` is the team name
+                            GP: teamData.matches,
+                            W: teamData.wins,
+                            D: teamData.draws,
+                            L: teamData.losses,
+                            G: teamData.scoresFor,
+                            GA: teamData.scoresAgainst,
+                            GD: teamData.scoresFor - teamData.scoresAgainst,
+                            PTS: teamData.points, 
+                        };
+                    };
+
+
+
                     const fetchTeamsAndEvents = async (tournamentId, seasonId, type) => {
                         const url = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/team-events/${type}`;
                         const response = await fetch(url);
@@ -2189,6 +2243,29 @@ table th {
  
         };
 
+        const displayTeamStandings = async (teamId, tournamentId, seasonId, type, targetElementId) => {
+            const team = await getTeamStandings(teamId, tournamentId, seasonId, type);
+            if (!team) return;
+
+            const standingsHtml = `
+                <tr>
+                    <td>${team.position}</td>
+                    <td class="--participant">${team.teamName}</td>
+                    <td>${team.GP}</td>
+                    <td>${team.W}</td>
+                    <td>${team.D}</td>
+                    <td>${team.L}</td>
+                    <td>${team.G}:${team.GA}</td> 
+                    <td>${team.GD}</td>
+                    <td>${team.PTS}</td> 
+                </tr>
+            `;
+
+            document.querySelector(`#${targetElementId} tbody`).innerHTML = standingsHtml;
+        };
+
+
+
 
         const displayEventDetails = async (eventId) => {
                         // Function to fetch and display event details
@@ -2198,7 +2275,7 @@ table th {
                                 if (!eventDetails) return;
                                 const eventData = eventDetails.event;
                                 const eventContainer = document.getElementById('details-container');
-
+                               
                                 eventContainer.innerHTML = `
                                     <div class="duelParticipant"> 
                                         <div class="match-time">
@@ -2226,6 +2303,20 @@ table th {
                                         <div class="team duelParticipant__away">
                                             <img src="${baseURL}/team/${eventData.awayTeam.id}/image" width="16" height="16" alt="${eventData.awayTeam.shortName}" loading="lazy" class="team-logo">
                                             <div class="team-name">${eventData.awayTeam.shortName}</div>
+                                        </div>
+                                    </div>                    
+                                    <div id="team-standings" class="flex _F_r _F_jc">                                        
+                                        <div id="home-standings">
+                                            <table id="home-standings-table">
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div id="away-standings">
+                                            <table id="away-standings-table">
+                                                <tbody>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>                    
                                     <div id="next-match" class="flex _F_r _F_jc">
@@ -2274,9 +2365,15 @@ table th {
                                         </div>
                                     </div>                  
                                 `;
-
                                 // Update the standings container
                                 updateStandingsContainer(eventData);
+                                // Display home team standings
+                                await displayTeamStandings(eventData.homeTeam.id, eventData.tournament.uniqueTournament.id, eventData.season.id, 'home', 'home-standings-table');
+
+                                // Display away team standings
+                                await displayTeamStandings(eventData.awayTeam.id, eventData.tournament.uniqueTournament.id, eventData.season.id, 'away', 'away-standings-table');
+
+
 
                             } catch (error) {
                                 console.error('Error displaying event details:', error);
