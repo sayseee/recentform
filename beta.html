@@ -59,7 +59,7 @@
                 align-items: stretch;
             }
             header>div:first-child {
-                flex: 0.882;
+                flex: 0.68;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -97,7 +97,7 @@
             .categories-group {
                 height: 100vh;                
                 overflow-y: auto;
-                width: 15%;
+                width: 12%;
                 box-sizing: border-box; /* Ensure padding and border are included in the width */
             }
             .categories-group ul { 
@@ -155,15 +155,15 @@
                 height: inherit;
             }
             #tournament-data {
-                width: 85%;
+                width: 88%;
                 background-color: var(--color-5);
             }
             #tournament-list {
                 width: 18%;
             }
             #tables { 
-                padding: 20px;
-                height: 95vh;                
+                padding: 5px;
+                height: 93vh;                
                 overflow-y: auto;
                 font-size: 12px;
             }
@@ -175,13 +175,22 @@
             #result-matrix-table {
                 margin: 20px 0;
             }
-            .result-matrix {
-                width: 100%;
+            .result-matrix { 
                 border-collapse: collapse;
+                margin: 0 auto;
             }
             .result-matrix th, .result-matrix td { 
                 text-align: center;
-                padding: 8px;
+                padding: 8px 4px;
+                position: relative
+            } 
+            .result-matrix tr th.rotate div {
+                writing-mode: vertical-lr;
+                transform: rotate(180deg);
+                width: 30px;
+                max-width: 30px;
+                text-align: left;
+                vertical-align: baseline;
             }
             .home-win {
                 background-color: #add8e6; /* Blue for home win */
@@ -190,7 +199,7 @@
                 background-color: #ffff99; /* Yellow for draw */
             }
             .away-win {
-                background-color: #f08080; /* Red for away win */
+                background-color:rgb(243, 121, 190); /* Red for away win */
             }
             .grey-cell {
                 background-color: #444; /* Grey for non-played matches */
@@ -243,6 +252,7 @@
                 flex-direction: column;
                 border: rgb(245, 244, 242) 1px solid;
                 justify-content: space-between;
+                cursor: pointer;
             }
             .teams-info {
                 display: flex;
@@ -298,6 +308,21 @@
                 flex: 1;
                 padding: 2px 4px;
             }
+            /* Add this to your CSS file */
+            .highlight-home {
+                background-color: #a7f7c8 !important; /* Light blue background color */
+                transition: background-color 0.3s ease;
+                font-weight: 600;
+                font-style: italic;
+            }
+            /* Add this to your CSS file */
+            .highlight-away {
+                background-color: #758ae9 !important; /* Light blue background color */
+                transition: background-color 0.3s ease;
+                font-weight: 600;
+                font-style: italic;
+            }
+
         </style>
     </head>
     <body>         
@@ -420,12 +445,10 @@ const fetchEvents = async (startDate, endDate, hours) => {
   }
 };
 
- 
+
 const displayScheduledEvents = (events, odds, tournamentId, teams) => {
     const tournamentEvents = events.filter(event => event.tournament.id === tournamentId);
-
-    console.log(avgHomeGoalsPerMatch);
-console.log(avgAwayGoalsPerMatch);
+ 
     let eventsHTML = '';
     tournamentEvents.forEach(event => {
         // Extract team information
@@ -452,18 +475,6 @@ console.log(avgAwayGoalsPerMatch);
         
         const awayAttackStrength = avgGoalsScoredAway / parseFloat(avgAwayGoalsPerMatch) || 1;
         const awayDefenseStrength = avgGoalsConcededAway / parseFloat(avgHomeGoalsPerMatch) || 1;
-        
-        console.log('avgGoalsScoredHome :', (avgGoalsScoredHome).toFixed(2));
-        console.log('avgGoalsConcededHome :', (avgGoalsConcededHome).toFixed(2));
-        console.log('avgGoalsScoredAway :', (avgGoalsScoredAway).toFixed(2));
-        console.log('avgGoalsConcededAway :', (avgGoalsConcededAway).toFixed(2));
-        console.log('homeAttackStrength :', (homeAttackStrength).toFixed(2));
-        console.log('homeAttackStrength  =', avgGoalsScoredHome, '/', avgHomeGoalsPerMatch);
-        console.log('HomeDefenseStrength :', (homeDefenseStrength).toFixed(2));
-        console.log('awayAttackStrength :', (awayAttackStrength).toFixed(2));
-        console.log('awayDefenseStrength :', (awayDefenseStrength).toFixed(2));
-        console.log('homePowerStrength =', (homeAttackStrength).toFixed(2), '*', (awayDefenseStrength).toFixed(2), '*', avgHomeGoalsPerMatch);
-        console.log('awayPowerStrength =', (awayAttackStrength).toFixed(2), '*', (homeDefenseStrength).toFixed(2), '*', avgAwayGoalsPerMatch);
 
         const homePowerStrength = homeAttackStrength * awayDefenseStrength * avgHomeGoalsPerMatch;
  
@@ -479,7 +490,10 @@ console.log(avgAwayGoalsPerMatch);
         const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
         const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
  
-        eventsHTML += `<div class="fixture">
+        eventsHTML += `
+        <div class="fixture" 
+             data-team-home-id="${homeTeamId}" 
+             data-team-away-id="${awayTeamId}">
           <div class="teams-info">
             <div class="team">
               <img src="${baseURL}/team/${homeTeamId}/image" width="24" height="24" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
@@ -523,7 +537,39 @@ console.log(avgAwayGoalsPerMatch);
     });
 
     document.getElementById('scheduled-tournament-events').innerHTML = eventsHTML;
+
+    // Add event listeners for highlighting
+    document.querySelectorAll('.fixture').forEach(fixture => {
+        fixture.addEventListener('mouseover', handleMouseOver);
+        fixture.addEventListener('mouseout', handleMouseOut);
+    });
 };
+
+function handleMouseOver(event) {
+    const homeId = event.currentTarget.getAttribute('data-team-home-id');
+    const awayId = event.currentTarget.getAttribute('data-team-away-id');
+    
+    // Highlight the rows for the home and away teams with different colors
+    document.querySelectorAll(`tr[data-team-id="${homeId}"]`).forEach(row => {
+        row.classList.add('highlight-home');
+    });
+    document.querySelectorAll(`tr[data-team-id="${awayId}"]`).forEach(row => {
+        row.classList.add('highlight-away');
+    });
+}
+
+function handleMouseOut(event) {
+    const homeId = event.currentTarget.getAttribute('data-team-home-id');
+    const awayId = event.currentTarget.getAttribute('data-team-away-id');
+    
+    // Remove highlight from the rows
+    document.querySelectorAll(`tr[data-team-id="${homeId}"]`).forEach(row => {
+        row.classList.remove('highlight-home');
+    });
+    document.querySelectorAll(`tr[data-team-id="${awayId}"]`).forEach(row => {
+        row.classList.remove('highlight-away');
+    });
+}
 
 const processData = (events) => {
     const teams = {};
@@ -534,8 +580,8 @@ const processData = (events) => {
 
     events.forEach(event => {
         if (event.status.type === 'finished') {
-            const homeTeamId = event.homeTeam.id; // Get the home team ID
-            const awayTeamId = event.awayTeam.id; // Get the away team ID
+            const homeTeamId = event.homeTeam.id;
+            const awayTeamId = event.awayTeam.id;
             const homeTeamName = event.homeTeam.shortName;
             const awayTeamName = event.awayTeam.shortName;
             const homeGoals = event.homeScore?.current ?? 0;
@@ -561,6 +607,7 @@ const processData = (events) => {
                         played: 0,
                         goalsScored: 0,
                         goalsConceded: 0,
+                        points: 0,
                         won: 0,
                         draw: 0,
                         lost: 0
@@ -569,6 +616,7 @@ const processData = (events) => {
                         played: 0,
                         goalsScored: 0,
                         goalsConceded: 0,
+                        points: 0,
                         won: 0,
                         draw: 0,
                         lost: 0
@@ -591,6 +639,7 @@ const processData = (events) => {
                         played: 0,
                         goalsScored: 0,
                         goalsConceded: 0,
+                        points: 0,
                         won: 0,
                         draw: 0,
                         lost: 0
@@ -599,6 +648,7 @@ const processData = (events) => {
                         played: 0,
                         goalsScored: 0,
                         goalsConceded: 0,
+                        points: 0,
                         won: 0,
                         draw: 0,
                         lost: 0
@@ -631,6 +681,8 @@ const processData = (events) => {
                 teams[awayTeamId].lost += 1;
                 teams[awayTeamId].away.lost += 1;
                 teams[homeTeamId].points += 3;
+                teams[homeTeamId].home.points += 3;
+                teams[awayTeamId].away.points += 0;
                 teams[homeTeamId].results[awayTeamId] = `${homeGoals}-${awayGoals}`;
             } else if (homeGoals === awayGoals) {
                 teams[homeTeamId].draw += 1;
@@ -639,6 +691,8 @@ const processData = (events) => {
                 teams[awayTeamId].away.draw += 1;
                 teams[homeTeamId].points += 1;
                 teams[awayTeamId].points += 1;
+                teams[homeTeamId].home.points += 1;
+                teams[awayTeamId].away.points += 1;
                 teams[homeTeamId].results[awayTeamId] = `${homeGoals}-${awayGoals}`;
             } else {
                 teams[homeTeamId].lost += 1;
@@ -646,91 +700,85 @@ const processData = (events) => {
                 teams[awayTeamId].won += 1;
                 teams[awayTeamId].away.won += 1;
                 teams[awayTeamId].points += 3;
+                teams[homeTeamId].home.points += 0;
+                teams[awayTeamId].away.points += 3;
                 teams[homeTeamId].results[awayTeamId] = `${homeGoals}-${awayGoals}`;
             }
         }
     });
+ 
     return { teams, totalGoalsHome, totalGoalsAway, completedMatches, totalMatches };
 }
 
-function generateTable(teams, type) {
-    let table = `<table><tr><th>#</th><th>Team</th><th>P</th><th>W(%)</th><th>D(%)</th><th>L(%)</th><th>GS</th><th>GC</th><th>GD</th><th>Av.S</th><th>Av.C</th><th>Av.T</th><th>AS</th><th>DS</th></tr>`;
-    let index = 1; 
 
-    // Sort teams by points and goal difference
+function generateTable(teams, type) {
+    let table = '';
+    let index = 1;
+
+    if (type === 'overall') {
+        table = `<table><tr><th>#</th><th>Team</th><th>P</th><th>W%</th><th>D%</th><th>L%</th><th>GS</th><th>GC</th><th>GD</th><th>Av.S</th><th>Av.C</th><th>Av.T</th><th>AS</th><th>DS</th><th>Pts</th></tr>`;
+    } else if (type === 'home' || type === 'away') {
+        table = `<table><tr><th>#</th><th>Team</th><th>P</th><th>W%</th><th>D%</th><th>L%</th><th>GS</th><th>GC</th><th>GD</th><th>Av.S</th><th>Av.C</th><th>Av.T</th><th>AS</th><th>DS</th><th>Pts</th></tr>`;
+    }
+
     const sortedTeams = Object.keys(teams).sort((a, b) => {
         const teamA = teams[a];
         const teamB = teams[b];
-        const statsA = type === 'home' ? teamA.home : teamA.away;
-        const statsB = type === 'home' ? teamB.home : teamB.away; 
+        const statsA = type === 'overall' ? teamA : teamA[type];
+        const statsB = type === 'overall' ? teamB : teamB[type];
+
+        if (!statsA || !statsB) return 0;
+
         const goalDifferenceA = statsA.goalsScored - statsA.goalsConceded;
         const goalDifferenceB = statsB.goalsScored - statsB.goalsConceded;
 
-        if (teams[b].points === teams[a].points) {
-            return teams[b].goalDifference - teams[a].goalDifference; // Sort by goal difference if points are equal
+        if (type === 'overall') {
+            if (statsB.points === statsA.points) {
+                return teamB.goalDifference - teamA.goalDifference;
+            }
+            return statsB.points - statsA.points;
+        } else {
+            if (statsB.points === statsA.points) {
+                return goalDifferenceB - goalDifferenceA;
+            }
+            return statsB.points - statsA.points;
         }
-        return teams[b].points - teams[a].points; // Sort by points
     });
 
     sortedTeams.forEach(teamId => {
         const team = teams[teamId];
-        if (type === 'overall') {
-            const played = team.played;
-            const avgGoalsScored = played > 0 ? (team.goalsScored / played) : 0;
-            const avgGoalsConceded = played > 0 ? (team.goalsConceded / played) : 0;
+        const teamStats = type === 'overall' ? team : team[type];
+        if (teamStats) {
+            const played = teamStats.played;
+            const avgGoalsScored = played > 0 ? (teamStats.goalsScored / played) : 0;
+            const avgGoalsConceded = played > 0 ? (teamStats.goalsConceded / played) : 0;
             const totalAvg = (avgGoalsScored + avgGoalsConceded).toFixed(2);
-            const goalDifference = team.goalsScored - team.goalsConceded;
-            // Calculate Win, Draw, and Loss percentages
-            const won = played > 0 ? (team.won / played * 100).toFixed(0) : '0';
-            const draw = played > 0 ? (team.draw / played * 100).toFixed(0) : '0';
-            const lost = played > 0 ? (team.lost / played * 100).toFixed(0) : '0';
-            table += `<tr>
+            const attackStrength = type !== 'overall' ? (avgGoalsScored / parseFloat(avgAwayGoalsPerMatch)).toFixed(2) : '-';
+            const defenseStrength = type !== 'overall' ? (avgGoalsConceded / parseFloat(avgHomeGoalsPerMatch)).toFixed(2) : '-';
+            const goalDifference = teamStats.goalsScored - teamStats.goalsConceded;
+            const won = played > 0 ? (teamStats.won / played * 100).toFixed(0) : '0';
+            const draw = played > 0 ? (teamStats.draw / played * 100).toFixed(0) : '0';
+            const lost = played > 0 ? (teamStats.lost / played * 100).toFixed(0) : '0';
+
+            const points = type === 'overall' ? teamStats.points : (teamStats.points !== undefined ? teamStats.points : 0);
+
+            table += `<tr data-team-id="${teamId}">
                         <td>${index++}</td>
                         <td><div class="teamData"><img src="${baseURL}/team/${teamId}/image" width="14" height="14" alt="${team.name}" loading="lazy" class="team-logo">${team.name}</div></td>
                         <td>${played}</td>
                         <td>${won}</td>
                         <td>${draw}</td>
                         <td>${lost}</td>
-                        <td>${team.goalsScored}</td>
-                        <td>${team.goalsConceded}</td>
+                        <td>${teamStats.goalsScored}</td>
+                        <td>${teamStats.goalsConceded}</td>
                         <td>${goalDifference}</td>
                         <td>${avgGoalsScored.toFixed(2)}</td>
                         <td>${avgGoalsConceded.toFixed(2)}</td>
                         <td>${totalAvg}</td>
-                        <td>-</td>
-                        <td>-</td>
+                        <td>${attackStrength}</td>
+                        <td>${defenseStrength}</td>
+                        <td>${points}</td>
                     </tr>`;
-        } else if (type === 'home' || type === 'away') {
-            const teamStats = team[type];
-            if (teamStats) {
-                const played = teamStats.played;
-                const avgGoalsScored = played > 0 ? (teamStats.goalsScored / played) : 0;
-                const avgGoalsConceded = played > 0 ? (teamStats.goalsConceded / played) : 0;
-                const totalAvg = (avgGoalsScored + avgGoalsConceded).toFixed(2);
-                const attackStrength = (avgGoalsScored / parseFloat(avgAwayGoalsPerMatch)).toFixed(2);
-                const defenseStrength = (avgGoalsConceded / parseFloat(avgHomeGoalsPerMatch)).toFixed(2);
-                const goalDifference = teamStats.goalsScored - teamStats.goalsConceded;
-                // Calculate Win, Draw, and Loss percentages
-                const won = played > 0 ? (teamStats.won / played * 100).toFixed(0) : '0';
-                const draw = played > 0 ? (teamStats.draw / played * 100).toFixed(0) : '0';
-                const lost = played > 0 ? (teamStats.lost / played * 100).toFixed(0) : '0';
-                table += `<tr>
-                            <td>${index++}</td>
-                            <td><div class="teamData"><img src="${baseURL}/team/${teamId}/image" width="14" height="14" alt="${team.name}" loading="lazy" class="team-logo">${team.name}</div></td>
-                            <td>${played}</td>
-                            <td>${won}</td>
-                            <td>${draw}</td>
-                            <td>${lost}</td>
-                            <td>${teamStats.goalsScored}</td>
-                            <td>${teamStats.goalsConceded}</td>
-                            <td>${goalDifference}</td>
-                            <td>${avgGoalsScored.toFixed(2)}</td>
-                            <td>${avgGoalsConceded.toFixed(2)}</td>
-                            <td>${totalAvg}</td>
-                            <td>${attackStrength}</td>
-                            <td>${defenseStrength}</td>
-                        </tr>`;
-            }
         }
     });
 
@@ -738,6 +786,17 @@ function generateTable(teams, type) {
     document.getElementById(type + '-table').innerHTML = table;
     highlightValues();
 }
+
+
+
+
+function renderTables(teams) { 
+    generateTable(teams, 'overall');
+    generateTable(teams, 'home');
+    generateTable(teams, 'away');
+}
+
+
 
 function generateResultMatrixTable(teams) {
     // Sort teams by points and goal difference
@@ -752,7 +811,7 @@ function generateResultMatrixTable(teams) {
     
     // Create table header with sorted teams
     sortedTeams.forEach(teamId => {
-        matrixTable += `<th>${teams[teamId].name}</th>`;
+        matrixTable += `<th class="rotate"><div>${teams[teamId].name}</div></th>`;
     });
     matrixTable += '</tr>';
 
