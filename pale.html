@@ -461,22 +461,22 @@ const filterEventsByTime = (events, hours) => {
         return eventTime >= now && eventTime <= now + timeRange;
     });
 };
-
 const displayCategories = async (startDate, endDate, hours, status) => {
     const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
     const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${startDate}`;
+    const inverseScheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${startDate}/inverse`;
     const oddsResponseUrl = `${baseURL}/sport/football/odds/1/${startDate}`;
 
     try {
-        const topTournamentsData = await fetchJson(topTournamentsUrl);
-        const scheduledEventsData = await fetchJson(scheduledEventsUrl);
-        const oddsData = await fetchJson(oddsResponseUrl);
+        const topTournamentsData = await fetch(topTournamentsUrl).then(response => response.json());
+        const scheduledEventsData = await fetch(scheduledEventsUrl).then(response => response.json());
+        const inverseScheduledEventsData = await fetch(inverseScheduledEventsUrl).then(response => response.json());
+        const oddsData = await fetch(oddsResponseUrl).then(response => response.json());
 
-        const events = scheduledEventsData.events || [];
-        const odds = oddsData.odds || {};
+        const allEvents = [...scheduledEventsData.events, ...inverseScheduledEventsData.events];
+        const odds = oddsData?.odds || {};
 
-        // Filter events based on date, time, and status
-        let filteredEvents = events.filter(event => {
+        let filteredEvents = allEvents.filter(event => {
             const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
             return eventDate >= startDate && eventDate <= endDate;
         });
@@ -500,10 +500,8 @@ const displayCategories = async (startDate, endDate, hours, status) => {
             });
         }
 
-        // Further filter events by available odds
         filteredEvents = filteredEvents.filter(event => odds[event.id]);
 
-        // Process top and other tournaments
         const topTournaments = topTournamentsData.uniqueTournaments || [];
         const topTournamentIds = new Set(topTournaments.map(tournament => tournament.id));
 
@@ -532,7 +530,6 @@ const displayCategories = async (startDate, endDate, hours, status) => {
             tournaments.get(tournamentName).events.push(event);
         });
 
-        // Render categories
         const container = document.getElementById('categories-container');
         container.innerHTML = '';
 
