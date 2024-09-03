@@ -598,8 +598,8 @@ const loadEvents = async (events, odds, eventsContainer) => {
         eventLink.dataset.eventId = event.id;
 
         // Fetch last 15 games for each team
-        const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id);
-        const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id);
+        const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id, event.id);
+        const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id);
 
         // Extract last 5 games overall form
         const homeTeamForm = getLastFiveGamesForm(homeTeamLastEvents, event.homeTeam.id);
@@ -699,17 +699,19 @@ const loadEvents = async (events, odds, eventsContainer) => {
     }
 };
 
-// Function to fetch the last 15 events for a team
-const fetchLastEvents = async (teamId) => {
+const fetchLastEvents = async (teamId, currentMatchId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
     const events = data.events.reverse(); // Reverse to get the most recent events first
     const lastEvents = events.slice(0, 15); // Return only the last 15 games
 
-    // Log the events to the console
-    console.log(`Last 15 events for team ${teamId}:`, lastEvents);
+    // Remove the current event from the list
+    const filteredEvents = lastEvents.filter(event => event.id !== currentMatchId);
 
-    return lastEvents;
+    // Log the events to the console
+    console.log(`Last 15 events for team ${teamId}:`, filteredEvents);
+
+    return filteredEvents;
 };
 
 const calculateWinStats = (events, teamId) => {
