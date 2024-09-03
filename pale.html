@@ -13,7 +13,7 @@
         <style>
 :root {     
     --color-dark-bg: #1F1F24;       /* Dark background for navigation */
-    --color-light-gray-bg: #f3f5f6; /* Light gray background for sections */
+    --color-light-gray-bg: #eaecf1; /* Light gray background for sections */
     --color-primary-blue: #007AFF;  /* Primary blue used in buttons and highlights */
     --color-secondary-blue: #82B1FF;/* Light blue used in progress circles */
     --color-dark-gray-text: #333333;/* Dark gray text */
@@ -23,6 +23,7 @@
     --win-color: #00a83f; /* Wins */
     --draw-color: #f3a000;/* Draws */
     --loss-color: #dc0000;/* Losses */ 
+    --color-support-1: #f5f6f8;
 }
 body {
     font-family: "Poppins", sans-serif; 
@@ -207,12 +208,11 @@ main {
 
 /* Categories container */
 .categories {
-    height: calc(100vh - 95px); /* Fill the viewport height minus 76px */
-    overflow-y: auto; /* Enable vertical scrolling */
-    padding: 5px; /* Optional padding */ 
+    height: calc(100vh - 95px);
+    overflow-y: auto;
     border-right: var(--color-support-3) 1px solid;
-    padding-top: 20px; 
-}
+    padding-top: 5px;
+} 
 
 .categories::-webkit-scrollbar, .tab-content::-webkit-scrollbar, .sideRight::-webkit-scrollbar {
     width: 2px; /* Set the width of the scrollbar */
@@ -285,6 +285,10 @@ main {
     display: flex;
     justify-content: space-between;
 }
+.tournament.show {
+    background-color: var(--color-support-1);
+    padding: 5px;
+} 
  
 /* Add this to your CSS file or inside a <style> tag in the HTML */
     .tournament ul {
@@ -356,6 +360,7 @@ main {
 .match-odds span { 
     flex: 1;
     text-align: center;
+    font-weight: 500;
 }
 
 .match-odds span:nth-child(2) { 
