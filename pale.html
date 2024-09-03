@@ -13,7 +13,7 @@
         <style>
 :root {     
     --color-dark-bg: #1F1F24;       /* Dark background for navigation */
-    --color-light-gray-bg: #F2F2F5; /* Light gray background for sections */
+    --color-light-gray-bg: #f3f5f6; /* Light gray background for sections */
     --color-primary-blue: #007AFF;  /* Primary blue used in buttons and highlights */
     --color-secondary-blue: #82B1FF;/* Light blue used in progress circles */
     --color-dark-gray-text: #333333;/* Dark gray text */
@@ -259,6 +259,9 @@ main {
     .tournament ul li { 
         display: flex;
     align-items: center;
+    background-color: #f8f9fa;
+    border-radius: 8px; 
+    gap: 5px;
 }
 
 .tournament ul li:not(:first-child) {
@@ -299,9 +302,6 @@ main {
     display: flex;
     align-items: center;
     padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 8px; 
-    gap: 5px;
 }
 
 .team-info {
@@ -344,7 +344,24 @@ main {
 .match-status {
     margin-top: 5px;
 }
-  
+.match-odds { 
+    display: flex;   
+    justify-content: space-between;
+    background-color: var(--color-light-gray-bg);
+    margin: 0 20px 5px;
+    padding: 5px;
+    border-radius: 25px;
+}
+
+.match-odds span { 
+    flex: 1;
+    text-align: center;
+}
+
+.match-odds span:nth-child(2) { 
+    border-left: 1px solid #e8eaeb;
+    border-right: 1px solid #e8eaeb;
+}
      </style>
     </head>
     <body> <header id="superheader">
@@ -569,6 +586,11 @@ const displayCategories = async (startDate, endDate, hours, status) => {
                                 </div>
                             </div>
 
+                        <div class="match-odds">
+                            <span class="odds">${homeOdds}</span>
+                            <span class="odds">${drawOdds}</span>
+                            <span class="odds">${awayOdds}</span>
+                        </div>
                         `;
                         listItem.appendChild(eventLink);
                         eventsList.appendChild(listItem);
