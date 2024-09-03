@@ -665,12 +665,12 @@ const loadEvents = async (events, odds, eventsContainer) => {
             </div> 
             <div class="team-wins">
                 <div class="home-team-wins"> 
-                        <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>15</strong>.</span>
-                        <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong>15</strong>.</span> 
+                        <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>${homeTeamStats.totalEvents}</strong>.</span>
+                        <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong> ${homeTeamStats.totalEvents}</strong>.</span> 
                 </div> 
                 <div class="away-team-wins">   
-                        <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong>15</strong>.</span>
-                        <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong>15</strong>.</span> 
+                        <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong> ${awayTeamStats.totalEvents}</strong>.</span>
+                        <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong> ${awayTeamStats.totalEvents}</strong>.</span> 
                 </div>
             </div>
             <div class="team-forms">
@@ -717,18 +717,22 @@ const fetchLastEvents = async (teamId, currentMatchId) => {
 const calculateWinStats = (events, teamId) => {
     let NotWins = 0;
     let Wins = 0;
+    let totalEvents = 0;
 
     events.forEach((event) => {
         if (event.status.type === 'finished') {
             if (event.winnerCode === 3) {
                 NotWins++;
+                totalEvents++;
             } else if (
                 (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
                 (event.winnerCode === 2 && event.awayTeam.id === teamId)
             ) {
                 Wins++;
+                totalEvents++;
             } else {
                 NotWins++;
+                totalEvents++;
             }
         }
     });
@@ -736,6 +740,7 @@ const calculateWinStats = (events, teamId) => {
     return {
         Wins,
         NotWins,
+        totalEvents,
     };
 };
 
