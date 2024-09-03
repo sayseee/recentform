@@ -435,6 +435,7 @@ main {
             <div id="categories-container" class="categories"></div> 
         </main>
         
+        <div id="details-container"></div>
         <script>
         const baseURL = 'https://api.sofascore.com/api/v1';
 
@@ -694,6 +695,7 @@ const loadEvents = async (events, odds, eventsContainer) => {
             </div>
         `;
 
+
         eventListItem.appendChild(eventLink);
         eventsContainer.appendChild(eventListItem);
     }
@@ -703,10 +705,10 @@ const fetchLastEvents = async (teamId, currentMatchId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
     const events = data.events.reverse(); // Reverse to get the most recent events first
-    const lastEvents = events.slice(0, 15); // Return only the last 15 games
-
     // Remove the current event from the list
-    const filteredEvents = lastEvents.filter(event => event.id !== currentMatchId);
+    const lastEvents = events.filter(event => event.id !== currentMatchId && event.status.type === 'finished');
+    const filteredEvents = lastEvents.slice(0, 15); // Return only the last 15 games
+
 
     // Log the events to the console
     console.log(`Last 15 events for team ${teamId}:`, filteredEvents);
@@ -719,8 +721,7 @@ const calculateWinStats = (events, teamId) => {
     let Wins = 0;
     let totalEvents = 0;
 
-    events.forEach((event) => {
-        if (event.status.type === 'finished') {
+    events.forEach((event) => { 
             if (event.winnerCode === 3) {
                 NotWins++;
                 totalEvents++;
@@ -733,8 +734,7 @@ const calculateWinStats = (events, teamId) => {
             } else {
                 NotWins++;
                 totalEvents++;
-            }
-        }
+            } 
     });
 
     return {
@@ -1972,7 +1972,19 @@ const getHomeAwayForm = (events, type, teamId) => {
  
         };
 
+        const fetchEventDetails = async (eventId) => {
+            console.log(eventId);
+    await displayEventDetails(eventId);
+};
 
+const createModal = (eventId) => {
+    const modal = document.createElement('dialog');
+    modal.innerHTML = `
+        <div id="details-container"></div>
+    `;
+    fetchEventDetails(eventId);
+    return modal;
+};
         const displayEventDetails = async (eventId) => {
                         // Function to fetch and display event details
                         const fetchAndDisplayDetails = async () => {
@@ -2055,11 +2067,9 @@ const getHomeAwayForm = (events, type, teamId) => {
                                                 <div id="homeTeamH2HContainer"></div>
                                             </div>
                                         </div>
-                                    </div>                  
+                                    </div>           
                                 `;
-
-                                // Update the standings container
-                                updateStandingsContainer(eventData);
+ 
 
                             } catch (error) {
                                 console.error('Error displaying event details:', error);
@@ -2154,15 +2164,11 @@ const getHomeAwayForm = (events, type, teamId) => {
                         // Add 'active' class to the clicked link
                         event.target.classList.add('active');
                     });
-                });
-
+                }); 
                 
 
             });
-
-
-
-
+ 
 
 // Helper function to convert fractional odds to decimal
 function fractionalToDecimal(fractionalOdds) {
