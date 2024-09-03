@@ -1,0 +1,69 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f3f3;
+    margin: 0;
+    padding: 0;
+}
+
+.football-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.football-table th,
+.football-table td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.football-table th {
+    background-color: #e6e6e6;
+    font-weight: bold;
+}
+
+.football-table tbody td img {
+    width: 20px;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.football-table .form span {
+    display: inline-block;
+    width: 10px;
+    height: 20px;
+    margin-right: 2px;
+}
+
+.football-table .form .green {
+    background-color: green;
+}
+
+.football-table .form .orange {
+    background-color: orange;
+}
+
+.football-table td:nth-child(8),
+.football-table td:nth-child(9) {
+    color: red;
+    font-weight: bold;
+}
+
+.football-table td:nth-child(12) {
+    font-weight: bold;
+}
+
+.football-table td:nth-child(13),
+.football-table td:nth-child(14) {
+    background-color: #d8e4bc;
+}
+
+.football-table td:nth-child(15),
+.football-table td:nth-child(16) {
+    color: green;
+    font-weight: bold;
+}
