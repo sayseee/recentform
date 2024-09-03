@@ -49,6 +49,7 @@ body {
     overflow: hidden;
     position: relative; 
     padding:2px 0;
+    border-radius: 2px;
 } 
 .W, .win, .pos {
     background-color: var(--win-color);
@@ -649,14 +650,14 @@ const loadEvents = async (events, odds, eventsContainer) => {
             </div> 
             <div class="team-wins">
                 <div class="home-team-wins"> 
-                        <span>WON ${homeTeamStats.Wins} in last 15 games.</span>
-                        <span>NOT WON ${homeTeamStats.NotWins} in last 15 games.</span> 
+                        <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>15</strong> games.</span>
+                        <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong>15</strong> games.</span> 
                 </div>
                 <div class="teams-wins-context"> 
                 </div>
                 <div class="away-team-wins">   
-                        <span>WON ${awayTeamStats.Wins} in last 15 games.</span>
-                        <span>NOT WON ${awayTeamStats.NotWins} in last 15 games.</span> 
+                        <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong>15</strong> games.</span>
+                        <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong>15</strong> games.</span> 
                 </div>
             </div>
             <div class="team-forms">
