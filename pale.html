@@ -246,15 +246,18 @@ main {
     flex-direction: column;
     gap: 5px;
 }
+.events-container {  
+        flex-direction: column;
+        gap: 5px;
+        background-color: transparent;
+        margin-bottom: 10px;
+}
     .events-container li { 
-        display: flex;
+    display: flex;
     align-items: center;
-    background-color: #f8f9fa;
-    border-radius: 8px; 
-    gap: 5px;
 }
 
-.tournament ul li:not(:first-child) {
+.events-container  li:not(:first-child) a {
     border-top: var(--color-support-3) 1px solid;   
 } 
 .events-container li a {
@@ -266,8 +269,17 @@ main {
     text-decoration: none;
     display: flex;
     width: 100%;
-    flex-direction: column;
+    flex-direction: column; 
+    background-color: var(--color-white); 
 } 
+
+.events-container li:not(:first-child) a { 
+    border-radius: 8px;  
+}
+.events-container li:first-child a { 
+    border-bottom-left-radius: 8px;  
+    border-bottom-right-radius: 8px;  
+}
 
 .tournament a {
     text-decoration: none;
@@ -296,8 +308,7 @@ main {
 .match-info-container {
     display: flex;
     align-items: center;
-    padding: 15px;
-    background-color: var(--color-white);
+    padding: 15px; 
 }
 
 .team-info {
@@ -568,7 +579,7 @@ const createCategorySection = (tournaments, categoryName, odds) => {
         // Add click event listener to load and display events
         tournamentHeader.addEventListener('click', () => {
             tournamentSection.classList.toggle('show');
-            eventsContainer.style.display = eventsContainer.style.display === 'none' ? 'block' : 'none';
+            eventsContainer.style.display = eventsContainer.style.display === 'none' ? 'flex' : 'none';
             if (eventsContainer.children.length === 0) {
                 loadEvents(tournament.events, odds, eventsContainer);
             }
