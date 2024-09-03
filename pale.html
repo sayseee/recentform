@@ -206,7 +206,7 @@ main {
 
 /* Categories container */
 .categories {
-    height: calc(100vh - 95px);
+    height: calc(100vh - 200px);
     overflow-y: auto;
     border-right: var(--color-support-3) 1px solid;
     padding-top: 5px;
@@ -257,7 +257,7 @@ main {
     flex-direction: column;
     gap: 5px;
 }
-    .tournament ul li { 
+    .events-container li { 
         display: flex;
     align-items: center;
     background-color: #f8f9fa;
@@ -268,7 +268,7 @@ main {
 .tournament ul li:not(:first-child) {
     border-top: var(--color-support-3) 1px solid;   
 } 
-.tournament ul li a {
+.events-container li a {
     background: none;
     border: none;
     cursor: pointer;
@@ -287,7 +287,7 @@ main {
     justify-content: space-between;
 }
 .tournament.show {
-    background-color: var(--color-light-gray-bg);
+    background-color: var(--color-light-gray-bg) !important;
     padding: 5px;
 } 
  
@@ -435,203 +435,202 @@ const filterEventsByTime = (events, hours) => {
 const displayCategories = async (startDate, endDate, hours, status) => {
     const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
     const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${startDate}`;
-    const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${startDate}/inverse`;
-    const oddsResponse = `${baseURL}/sport/football/odds/1/${startDate}`;
+    const oddsResponseUrl = `${baseURL}/sport/football/odds/1/${startDate}`;
 
-    let filteredEvents = [];
-    let odds = {};
+    try {
+        const topTournamentsData = await fetchJson(topTournamentsUrl);
+        const scheduledEventsData = await fetchJson(scheduledEventsUrl);
+        const oddsData = await fetchJson(oddsResponseUrl);
 
-    const fetchData = async () => {
-        try {
-            const topTournamentsData = await fetchJson(topTournamentsUrl);
-            const scheduledEventsData = await fetchJson(scheduledEventsUrl);
-            const scheduledEventsData2 = await fetchJson(scheduledEventsUrl2);
-            const oddsData = await fetchJson(oddsResponse);
+        const events = scheduledEventsData.events || [];
+        const odds = oddsData.odds || {};
 
-            const events = [...scheduledEventsData.events, ...scheduledEventsData2.events];
-            odds = oddsData?.odds || {};
+        // Filter events based on date, time, and status
+        let filteredEvents = events.filter(event => {
+            const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
+            return eventDate >= startDate && eventDate <= endDate;
+        });
 
-            // Filter events
-            filteredEvents = events.filter(event => {
-                const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
-                return eventDate >= startDate && eventDate <= endDate;
-            });
-
-            if (hours) {
-                filteredEvents = filterEventsByTime(filteredEvents, hours);
-            }
-
-            if (status) {
-                filteredEvents = filteredEvents.filter(event => {
-                    switch (status) {
-                        case 'live':
-                            return event.status.type === 'inprogress';
-                        case 'finished':
-                            return event.status.type === 'finished';
-                        case 'scheduled':
-                            return event.status.type === 'notstarted';
-                        default:
-                            return true;
-                    }
-                });
-            }
-
-            filteredEvents = filteredEvents.filter(event => odds[event.id]);
-
-            const topTournaments = topTournamentsData.uniqueTournaments;
-            const topTournamentIds = topTournaments.map(tournament => tournament.id);
-
-            const container = document.getElementById('categories-container');
-            container.innerHTML = '';
-
-            const topTournamentsMap = new Map();
-            const otherCategoriesMap = new Map();
-
-            filteredEvents.forEach(event => {
-                const categoryName = event.tournament.category.name;
-                const tournamentId = event.tournament.uniqueTournament.id;
-                const tournamentName = event.tournament.name;
-
-                const targetMap = topTournamentIds.includes(tournamentId) ? topTournamentsMap : otherCategoriesMap;
-
-                if (!targetMap.has(categoryName)) {
-                    targetMap.set(categoryName, new Map());
-                }
-
-                const tournaments = targetMap.get(categoryName);
-                if (!tournaments.has(tournamentName)) {
-                    tournaments.set(tournamentName, {
-                        id: tournamentId,
-                        events: []
-                    });
-                }
-
-                tournaments.get(tournamentName).events.push(event);
-            });
-
-            const createCategorySection = (tournaments, categoryName) => {
-                const categoryItem = document.createElement('div');
-                categoryItem.classList.add('category');
-
-                const tournamentsContainer = document.createElement('div');
-                tournamentsContainer.classList.add('tournaments-container');
-
-                tournaments.forEach((tournament, tournamentName) => {
-                    const tournamentSection = document.createElement('div');
-                    tournamentSection.classList.add('tournament');
-
-                    const tournamentHeader = document.createElement('h3');
-                    tournamentHeader.classList.add('flex', '_F_ac');
-                    const tournamentImage = `${baseURL}/unique-tournament/${tournament.id}/image`;
-                    tournamentHeader.innerHTML = `
-                        <img class="tourn" src="${tournamentImage}" alt="${tournamentName}" width="16" height="16" loading="lazy" />
-                        ${categoryName} - ${tournamentName}
-                    `;
-                    tournamentSection.appendChild(tournamentHeader);
-
-                    const eventsList = document.createElement('ul');
-                    tournament.events.forEach(event => {
-                        const listItem = document.createElement('li');
-                        const eventLink = document.createElement('a');
-                        eventLink.className = 'match-card';
-                        eventLink.dataset.eventId = event.id;
-
-                        // Get odds data
-                        const oddsData = odds[event.id] || {};
-                        const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.initialFractionalValue;
-                        const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.initialFractionalValue;
-                        const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.initialFractionalValue;
-
-                        const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
-                        const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
-                        const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
-
-                        const homeScore = event.homeScore?.current ?? 0;
-                        const awayScore = event.awayScore?.current ?? 0;
-
-                        const isHomeTeamWinner = homeScore > awayScore;
-                        const isAwayTeamWinner = awayScore > homeScore;
-
-                        const homeTeamName = isHomeTeamWinner ? `<strong>${event.homeTeam.shortName}</strong>` : event.homeTeam.shortName;
-                        const awayTeamName = isAwayTeamWinner ? `<strong>${event.awayTeam.shortName}</strong>` : event.awayTeam.shortName;
-
-                        eventLink.innerHTML = `
-                            <div class="match-info-container">
-                                <div class="team-info">
-                                    <div class="team">
-                                        <img src="${baseURL}/team/${event.homeTeam.id}/image" width="40" height="40" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
-                                        <span class="team-name">${event.homeTeam.shortName}</span>
-                                    </div>
-                                </div>
-
-                               <div class="match-details">
-                                    ${event.status.type === 'inprogress' 
-                                        ? `<div class="detailScore__wrapper">
-                                                <span class="score" id="homeScores-${event.id}">${event.homeScore?.current ?? ''}</span> 
-                                                <span class="score" id="awayScores-${event.id}">${event.awayScore?.current ?? ''}</span>
-                                            </div>` 
-                                        : event.status.type === 'finished' 
-                                            ? `<div class="detailScore__wrapper">
-                                                <span class="score" id="homeScores-${event.id}">${event.homeScore?.current ?? ''}</span> 
-                                                <span class="score" id="awayScores-${event.id}">${event.awayScore?.current ?? ''}</span>
-                                                </div>` 
-                                            : `
-                                                <div class="match-date">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
-                                                <div class="match-time">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
-                                            `
-                                    }
-                                    <div class="match-status">
-                                        ${event.status.type === 'inprogress' ? 'Live' : event.status.type === 'finished' ? 'FT' : ''}
-                                    </div>
-                                </div>
-
-                                <div class="team-info">
-                                    <div class="team">
-                                        <img src="${baseURL}/team/${event.awayTeam.id}/image" width="40" height="40" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
-                                        <span class="team-name">${event.awayTeam.shortName}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                        <div class="match-odds">
-                            <span class="odds">${homeOdds}</span>
-                            <span class="odds">${drawOdds}</span>
-                            <span class="odds">${awayOdds}</span>
-                        </div>
-                        `;
-                        listItem.appendChild(eventLink);
-                        eventsList.appendChild(listItem);
-                    });
-
-                    tournamentSection.appendChild(eventsList);
-                    tournamentsContainer.appendChild(tournamentSection); 
-                    // Add click event listener
-                    tournamentHeader.addEventListener('click', () => {
-                        tournamentSection.classList.toggle('show');
-                    }); 
-                });
-
-                categoryItem.appendChild(tournamentsContainer);
-                return categoryItem;
-            };
-
-            topTournamentsMap.forEach((tournaments, categoryName) => {
-                const categoryItem = createCategorySection(tournaments, categoryName);
-                container.appendChild(categoryItem);
-            });
-
-            otherCategoriesMap.forEach((tournaments, categoryName) => {
-                const categoryItem = createCategorySection(tournaments, categoryName);
-                container.appendChild(categoryItem);
-            });
-        } catch (error) {
-            console.error('Error displaying categories:', error);
+        if (hours) {
+            filteredEvents = filterEventsByTime(filteredEvents, hours);
         }
-    };
 
-    await fetchData();
+        if (status) {
+            filteredEvents = filteredEvents.filter(event => {
+                switch (status) {
+                    case 'live':
+                        return event.status.type === 'inprogress';
+                    case 'finished':
+                        return event.status.type === 'finished';
+                    case 'scheduled':
+                        return event.status.type === 'notstarted';
+                    default:
+                        return true;
+                }
+            });
+        }
+
+        // Further filter events by available odds
+        filteredEvents = filteredEvents.filter(event => odds[event.id]);
+
+        // Process top and other tournaments
+        const topTournaments = topTournamentsData.uniqueTournaments || [];
+        const topTournamentIds = new Set(topTournaments.map(tournament => tournament.id));
+
+        const topTournamentsMap = new Map();
+        const otherCategoriesMap = new Map();
+
+        filteredEvents.forEach(event => {
+            const categoryName = event.tournament.category.name;
+            const tournamentId = event.tournament.uniqueTournament.id;
+            const tournamentName = event.tournament.name;
+
+            const targetMap = topTournamentIds.has(tournamentId) ? topTournamentsMap : otherCategoriesMap;
+
+            if (!targetMap.has(categoryName)) {
+                targetMap.set(categoryName, new Map());
+            }
+
+            const tournaments = targetMap.get(categoryName);
+            if (!tournaments.has(tournamentName)) {
+                tournaments.set(tournamentName, {
+                    id: tournamentId,
+                    events: []
+                });
+            }
+
+            tournaments.get(tournamentName).events.push(event);
+        });
+
+        // Render categories
+        const container = document.getElementById('categories-container');
+        container.innerHTML = '';
+
+        topTournamentsMap.forEach((tournaments, categoryName) => {
+            const categoryItem = createCategorySection(tournaments, categoryName, odds);
+            container.appendChild(categoryItem);
+        });
+
+        otherCategoriesMap.forEach((tournaments, categoryName) => {
+            const categoryItem = createCategorySection(tournaments, categoryName, odds);
+            container.appendChild(categoryItem);
+        });
+    } catch (error) {
+        console.error('Error displaying categories:', error);
+    }
 };
 
+// Function to create category section
+const createCategorySection = (tournaments, categoryName, odds) => {
+    const categoryItem = document.createElement('div');
+    categoryItem.classList.add('category');
+
+    const tournamentsContainer = document.createElement('div');
+    tournamentsContainer.classList.add('tournaments-container');
+
+    tournaments.forEach((tournament, tournamentName) => {
+        const tournamentSection = document.createElement('div');
+        tournamentSection.classList.add('tournament');
+
+        const tournamentHeader = document.createElement('h3');
+        tournamentHeader.classList.add('flex', '_F_ac');
+        const tournamentImage = `${baseURL}/unique-tournament/${tournament.id}/image`;
+        tournamentHeader.innerHTML = `
+            <img class="tourn" src="${tournamentImage}" alt="${tournamentName}" width="16" height="16" loading="lazy" />
+            ${categoryName} - ${tournamentName}
+        `;
+        tournamentSection.appendChild(tournamentHeader);
+
+        const eventsContainer = document.createElement('div');
+        eventsContainer.classList.add('events-container');
+        eventsContainer.style.display = 'none'; // Hidden by default
+        tournamentSection.appendChild(eventsContainer);
+
+        // Add click event listener to load and display events
+        tournamentHeader.addEventListener('click', () => {
+            eventsContainer.style.display = eventsContainer.style.display === 'none' ? 'block' : 'none';
+            if (eventsContainer.children.length === 0) {
+                loadEvents(tournament.events, odds, eventsContainer);
+            }
+        });
+
+        tournamentsContainer.appendChild(tournamentSection);
+    });
+
+    categoryItem.appendChild(tournamentsContainer);
+    return categoryItem;
+};
+
+// Function to load events into a container
+const loadEvents = (events, odds, eventsContainer) => {
+    events.forEach(event => {
+        const eventListItem = document.createElement('li');
+
+        const eventLink = document.createElement('a');
+        eventLink.className = 'match-card';
+        eventLink.dataset.eventId = event.id;
+
+        // Get odds data
+        const oddsData = odds[event.id] || {};
+        const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.initialFractionalValue;
+        const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.initialFractionalValue;
+        const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.initialFractionalValue;
+
+        const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
+        const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
+        const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
+
+        const homeScore = event.homeScore?.current ?? '';
+        const awayScore = event.awayScore?.current ?? '';
+
+        const homeTeamName = homeScore > awayScore ? `<strong>${event.homeTeam.shortName}</strong>` : event.homeTeam.shortName;
+        const awayTeamName = awayScore > homeScore ? `<strong>${event.awayTeam.shortName}</strong>` : event.awayTeam.shortName;
+
+        eventLink.innerHTML = `
+            <div class="match-info-container">
+                <div class="team-info">
+                    <div class="team">
+                        <img src="${baseURL}/team/${event.homeTeam.id}/image" width="40" height="40" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
+                        <span class="team-name">${homeTeamName}</span>
+                    </div>
+                </div>
+                <div class="match-details">
+                    ${event.status.type === 'inprogress' 
+                        ? `<div class="detailScore__wrapper">
+                            <span class="score" id="homeScores-${event.id}">${homeScore}</span> 
+                            <span class="score" id="awayScores-${event.id}">${awayScore}</span>
+                          </div>` 
+                        : event.status.type === 'finished' 
+                            ? `<div class="detailScore__wrapper">
+                                <span class="score" id="homeScores-${event.id}">${homeScore}</span> 
+                                <span class="score" id="awayScores-${event.id}">${awayScore}</span>
+                              </div>` 
+                            : `
+                                <div class="match-date">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
+                                <div class="match-time">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
+                            `}
+                    <div class="match-status">
+                        ${event.status.type === 'inprogress' ? 'Live' : event.status.type === 'finished' ? 'FT' : ''}
+                    </div>
+                </div>
+                <div class="team-info">
+                    <div class="team">
+                        <img src="${baseURL}/team/${event.awayTeam.id}/image" width="40" height="40" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
+                        <span class="team-name">${awayTeamName}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="match-odds">
+                <span class="odds">${homeOdds}</span>
+                <span class="odds">${drawOdds}</span>
+                <span class="odds">${awayOdds}</span>
+            </div>
+        `;
+
+        eventListItem.appendChild(eventLink);
+        eventsContainer.appendChild(eventListItem);
+    });
+};
         
             const fetchNextMatch = async (teamId) => {
                 const nextMatchUrl = `${baseURL}/team/${teamId}/events/next/0`;
