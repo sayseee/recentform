@@ -188,8 +188,9 @@ button#filter-btn:hover {
 
 /* Categories container */
 main {
-    height: calc(100vh - 76px); /* Fill the viewport height minus 76px */   
+    height: calc(100vh - 76px);
     position: relative;
+    padding: 5px;
 }
 
 /* Categories container */
@@ -266,8 +267,7 @@ main {
     display: flex;
     width: 100%;
     flex-direction: column;
-}
- 
+} 
 
 .tournament a {
     text-decoration: none;
@@ -277,6 +277,8 @@ main {
 .tournament.show h3 {
     background-color: var(--color-dark-bg) !important;
     color: var(--color-light-gray-text);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 } 
  
 /* Add this to your CSS file or inside a <style> tag in the HTML */
