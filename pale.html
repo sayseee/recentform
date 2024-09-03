@@ -273,9 +273,10 @@ main {
     display: flex;
     justify-content: space-between;
 }
-.tournament.show {
+.tournament.show h3 {
     background-color: var(--color-light-gray-bg) !important;
-    padding: 5px;
+    border-top: 1px solid var(--color-white);
+    border-bottom: 1px solid var(--color-white);
 } 
  
 /* Add this to your CSS file or inside a <style> tag in the HTML */
@@ -362,10 +363,10 @@ main {
     text-align: center;
 }
 .match-odds { 
-    display: flex;   
+    display: flex;
     justify-content: space-between;
     background-color: var(--color-light-gray-bg);
-    margin: 0 20px 10px;
+    margin: 10px 20px;
     padding: 5px;
     border-radius: 25px;
 }
@@ -559,6 +560,7 @@ const createCategorySection = (tournaments, categoryName, odds) => {
 
         // Add click event listener to load and display events
         tournamentHeader.addEventListener('click', () => {
+            tournamentSection.classList.toggle('show');
             eventsContainer.style.display = eventsContainer.style.display === 'none' ? 'block' : 'none';
             if (eventsContainer.children.length === 0) {
                 loadEvents(tournament.events, odds, eventsContainer);
