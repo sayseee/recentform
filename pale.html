@@ -575,23 +575,10 @@ const displayCategories = async (startDate, endDate, hours, status) => {
                     });
 
                     tournamentSection.appendChild(eventsList);
-                    tournamentsContainer.appendChild(tournamentSection);
-                    // Add tap event listener for mobile devices
-                    tournamentHeader.addEventListener('touchstart', (event) => {
+                    tournamentsContainer.appendChild(tournamentSection); 
+                    // Add click event listener
+                    tournamentHeader.addEventListener('click', () => {
                         tournamentSection.classList.toggle('show');
-                        const touchDuration = 500; 
-                        let startTime, endTime;
-
-                        tournamentHeader.addEventListener('touchstart', (e) => {
-                            startTime = e.timeStamp;
-                        }, { once: true });
-
-                        tournamentHeader.addEventListener('touchend', (e) => {
-                            endTime = e.timeStamp;
-                            if (endTime - startTime <= touchDuration) {
-                                tournamentSection.classList.toggle('show');
-                            }
-                        }, { once: true });
                     }); 
                 });
 
