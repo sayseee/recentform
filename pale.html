@@ -605,6 +605,9 @@ const loadEvents = async (events, odds, eventsContainer) => {
         // Extract last 5 games overall form
         const homeTeamForm = getLastFiveGamesForm(homeTeamLastEvents, event.homeTeam.id);
         const awayTeamForm = getLastFiveGamesForm(awayTeamLastEvents, event.awayTeam.id);
+        // Extract last 5 games overall form
+        const homeTeamPoints = getLastFiveGamesPoints(homeTeamLastEvents, event.homeTeam.id);
+        const awayTeamPoints = getLastFiveGamesPoints(awayTeamLastEvents, event.awayTeam.id);
 
         // Extract last 5 home/away games form
         const homeTeamHomeForm = getHomeAwayForm(homeTeamLastEvents, 'home', event.homeTeam.id);
@@ -613,6 +616,16 @@ const loadEvents = async (events, odds, eventsContainer) => {
         // Calculate home and away win statistics
         const homeTeamStats = calculateWinStats(homeTeamLastEvents, event.homeTeam.id);
         const awayTeamStats = calculateWinStats(awayTeamLastEvents, event.awayTeam.id);
+
+        
+        // Fetch last 15 games for each team
+        const homeTeamWonEvents = await fetchWonEvents(event.homeTeam.id, event.id, homeTeamStats.Wins);
+        const awayTeamWonEvents = await fetchWonEvents(event.awayTeam.id, event.id, awayTeamStats.Wins);
+
+        // Calculate home and away win statistics
+        const homeTeamWonStats = calculateWinStats(homeTeamWonEvents, event.homeTeam.id);
+        const awayTeamWonStats = calculateWinStats(awayTeamWonEvents, event.awayTeam.id);
+
 
         // Get odds data
         const oddsData = odds[event.id] || {};
@@ -666,13 +679,14 @@ const loadEvents = async (events, odds, eventsContainer) => {
             </div> 
             <div class="team-wins">
                 <div class="home-team-wins"> 
-                        <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>${homeTeamStats.totalEvents}</strong>.</span>
-                        <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong> ${homeTeamStats.totalEvents}</strong>.</span> 
+                    <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>${homeTeamStats.totalEvents}</strong> <small>(${(homeTeamStats.goalsScoredWins / homeTeamStats.Wins).toFixed(2)} - ${(homeTeamStats.goalsConcededWins / homeTeamStats.Wins).toFixed(2)})</small></span>
+                    <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong>${homeTeamStats.totalEvents}</strong> <small>(${(homeTeamStats.goalsScoredNotWins / homeTeamStats.NotWins).toFixed(2)} - ${(homeTeamStats.goalsConcededNotWins / homeTeamStats.NotWins).toFixed(2)})</small></span> 
                 </div> 
                 <div class="away-team-wins">   
-                        <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong> ${awayTeamStats.totalEvents}</strong>.</span>
-                        <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong> ${awayTeamStats.totalEvents}</strong>.</span> 
+                    <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong>${awayTeamStats.totalEvents}</strong> <small>(${(awayTeamStats.goalsScoredWins / awayTeamStats.Wins).toFixed(2)} - ${(awayTeamStats.goalsConcededWins / awayTeamStats.Wins).toFixed(2)})</small></span>
+                    <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong>${awayTeamStats.totalEvents}</strong> <small>(${(awayTeamStats.goalsScoredNotWins / awayTeamStats.NotWins).toFixed(2)} - ${(awayTeamStats.goalsConcededNotWins / awayTeamStats.NotWins).toFixed(2)})</small></span> 
                 </div>
+
             </div>
             <div class="team-forms">
                 <div class="home-team-forms">
@@ -715,39 +729,90 @@ const fetchLastEvents = async (teamId, currentMatchId) => {
 
     return filteredEvents;
 };
+const fetchWonEvents = async (teamId, currentMatchId, Wins) => {
+    const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
+    const data = await response.json();
+    const events = data.events.reverse(); // Reverse to get the most recent events first
+    // Remove the current event from the list
+    const lastEvents = events.filter(event => event.id !== currentMatchId && event.status.type === 'finished');
+    const filteredEvents = lastEvents.slice(0, Wins); // Return only the last 15 games 
 
+    return filteredEvents;
+};
 const calculateWinStats = (events, teamId) => {
     let NotWins = 0;
     let Wins = 0;
     let totalEvents = 0;
+    let goalsScoredWins = 0;
+    let goalsConcededWins = 0;
+    let goalsScoredNotWins = 0;
+    let goalsConcededNotWins = 0;
 
     events.forEach((event) => { 
-            if (event.winnerCode === 3) {
-                NotWins++;
-                totalEvents++;
-            } else if (
-                (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
-                (event.winnerCode === 2 && event.awayTeam.id === teamId)
-            ) {
-                Wins++;
-                totalEvents++;
-            } else {
-                NotWins++;
-                totalEvents++;
-            } 
+        const homeScore = event.homeScore.current ?? 0; // Default to 0 if undefined
+        const awayScore = event.awayScore.current ?? 0; // Default to 0 if undefined
+
+        if (event.winnerCode === 3) {
+            // Event is a draw
+            NotWins++;
+            totalEvents++;
+
+            // Check if the team is home or away
+            if (event.homeTeam.id === teamId) {
+                goalsScoredNotWins += homeScore;
+                goalsConcededNotWins += awayScore;
+            } else if (event.awayTeam.id === teamId) {
+                goalsScoredNotWins += awayScore;
+                goalsConcededNotWins += homeScore;
+            }
+        } else if (
+            (event.winnerCode === 1 && event.homeTeam.id === teamId) || // Home win
+            (event.winnerCode === 2 && event.awayTeam.id === teamId)    // Away win
+        ) {
+            // Event is a win
+            Wins++;
+            totalEvents++;
+
+            // Check if the team is home or away
+            if (event.homeTeam.id === teamId) {
+                goalsScoredWins += homeScore;
+                goalsConcededWins += awayScore;
+            } else if (event.awayTeam.id === teamId) {
+                goalsScoredWins += awayScore;
+                goalsConcededWins += homeScore;
+            }
+        } else {
+            // Event is a loss
+            NotWins++;
+            totalEvents++;
+
+            // Check if the team is home or away
+            if (event.homeTeam.id === teamId) {
+                goalsScoredNotWins += homeScore;
+                goalsConcededNotWins += awayScore;
+            } else if (event.awayTeam.id === teamId) {
+                goalsScoredNotWins += awayScore;
+                goalsConcededNotWins += homeScore;
+            }
+        } 
     });
 
     return {
         Wins,
         NotWins,
         totalEvents,
+        goalsScoredWins,
+        goalsConcededWins,
+        goalsScoredNotWins,
+        goalsConcededNotWins,
     };
 };
+
 
 const getLastFiveGamesForm = (events, teamId) => {
     const finishedEvents = events.filter((event) => event.status.type === 'finished');
     const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
-
+ 
     const form = lastFiveFinishedEvents
         .reverse()
         .map((event) => {
@@ -765,6 +830,30 @@ const getLastFiveGamesForm = (events, teamId) => {
         .join('');
 
     return form;
+};
+
+const getLastFiveGamesPoints = (events, teamId) => {
+    const finishedEvents = events.filter((event) => event.status.type === 'finished');
+    const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
+
+    let points = 0;
+    const form = lastFiveFinishedEvents
+        .reverse()
+        .map((event) => {
+            if (event.winnerCode === 3) {
+                points += 1; // Draw
+            } else if (
+                (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
+                (event.winnerCode === 2 && event.awayTeam.id === teamId)
+            ) {
+                points += 3; // Win
+            } else {
+                points += 0; // Win
+            }
+        })
+        .join('');
+
+    return points;
 };
 
 const getHomeAwayForm = (events, type, teamId) => {
