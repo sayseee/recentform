@@ -365,6 +365,21 @@ main {
     text-align: center;
     margin: 15px 0;
 }
+.team-stats {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0 0 20px;
+}
+.team-stats>div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.team-stats>div span {
+    flex: 1;
+    text-align: center;
+}
 .home-team-forms, .away-team-forms, .teams-context, .home-team-wins, .away-team-wins, .teams-wins-context {
     display: flex;
     flex-direction: column; 
@@ -643,6 +658,15 @@ const loadEvents = async (events, odds, eventsContainer) => {
         const homeTeamName = homeScore > awayScore ? `<strong>${event.homeTeam.shortName}</strong>` : event.homeTeam.shortName;
         const awayTeamName = awayScore > homeScore ? `<strong>${event.awayTeam.shortName}</strong>` : event.awayTeam.shortName;
 
+        
+        // Fetch H2H data
+        const h2hResponse = await fetch(`${baseURL}/event/${event.customId}/h2h/events`);
+        const h2hData = await h2hResponse.json();
+        
+        // Calculate H2H stats and other stats
+        const h2hStats = calculateH2HStats(h2hData.events, event.homeTeam.id, event.awayTeam.id);
+        const h2hOtherStats = calculateOtherH2HStats(h2hData.events);
+
         eventLink.innerHTML = `
             <div class="match-info-container">
                 <div class="team-info">
@@ -679,13 +703,43 @@ const loadEvents = async (events, odds, eventsContainer) => {
             </div> 
             <div class="team-wins">
                 <div class="home-team-wins"> 
-                    <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>${homeTeamStats.totalEvents}</strong> <small>(${(homeTeamStats.goalsScoredWins / homeTeamStats.Wins).toFixed(2)} - ${(homeTeamStats.goalsConcededWins / homeTeamStats.Wins).toFixed(2)})</small></span>
-                    <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong>${homeTeamStats.totalEvents}</strong> <small>(${(homeTeamStats.goalsScoredNotWins / homeTeamStats.NotWins).toFixed(2)} - ${(homeTeamStats.goalsConcededNotWins / homeTeamStats.NotWins).toFixed(2)})</small></span> 
+                    <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>${homeTeamStats.totalEvents}</strong> <small>(${homeTeamStats.goalsScoredWins} - ${homeTeamStats.goalsConcededWins})</small></span>
+                    <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong>${homeTeamStats.totalEvents}</strong> <small>(${homeTeamStats.goalsScoredNotWins} - ${homeTeamStats.goalsConcededNotWins})</small></span> 
                 </div> 
                 <div class="away-team-wins">   
-                    <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong>${awayTeamStats.totalEvents}</strong> <small>(${(awayTeamStats.goalsScoredWins / awayTeamStats.Wins).toFixed(2)} - ${(awayTeamStats.goalsConcededWins / awayTeamStats.Wins).toFixed(2)})</small></span>
-                    <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong>${awayTeamStats.totalEvents}</strong> <small>(${(awayTeamStats.goalsScoredNotWins / awayTeamStats.NotWins).toFixed(2)} - ${(awayTeamStats.goalsConcededNotWins / awayTeamStats.NotWins).toFixed(2)})</small></span> 
+                    <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong>${awayTeamStats.totalEvents}</strong> <small>(${awayTeamStats.goalsScoredWins} - ${awayTeamStats.goalsConcededWins})</small></span>
+                    <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong>${awayTeamStats.totalEvents}</strong> <small>(${awayTeamStats.goalsScoredNotWins} - ${awayTeamStats.goalsConcededNotWins})</small></span> 
                 </div>
+
+            </div>
+            <div class="team-stats">
+                <div class="title-team-stats"> 
+                    <span>Wins</span> 
+                    <span>Draws</span> 
+                    <span>Lost</span> 
+                    <span>Btts</span> 
+                    <span>+15</span> 
+                    <span>+25</span> 
+                </div> 
+                <div class="home-team-stats"> 
+                    <span>${homeTeamStats.Wins}</span> 
+                    <span>${homeTeamStats.Draws}</span> 
+                    <span>${homeTeamStats.Lost}</span> 
+                    <span>${homeTeamStats.btts}</span> 
+                    <span>${homeTeamStats.over15}</span> 
+                    <span>${homeTeamStats.over25}</span> 
+                </div> 
+                <div class="away-team-stats">
+                    <span>${awayTeamStats.Wins}</span>
+                    <span>${awayTeamStats.Draws}</span>
+                    <span>${awayTeamStats.Lost}</span>
+                    <span>${awayTeamStats.btts}</span>
+                    <span>${awayTeamStats.over15}</span>
+                    <span>${awayTeamStats.over25}</span>
+                </div>
+            <div class="away-team-stats">
+                ${h2hStats} ${h2hOtherStats}
+            </div>
 
             </div>
             <div class="team-forms">
@@ -742,11 +796,16 @@ const fetchWonEvents = async (teamId, currentMatchId, Wins) => {
 const calculateWinStats = (events, teamId) => {
     let NotWins = 0;
     let Wins = 0;
+    let Draws = 0;
+    let Lost = 0;
     let totalEvents = 0;
     let goalsScoredWins = 0;
     let goalsConcededWins = 0;
     let goalsScoredNotWins = 0;
     let goalsConcededNotWins = 0;
+    let btts = 0;
+    let over15 = 0;
+    let over25 = 0;
 
     events.forEach((event) => { 
         const homeScore = event.homeScore.current ?? 0; // Default to 0 if undefined
@@ -756,6 +815,7 @@ const calculateWinStats = (events, teamId) => {
             // Event is a draw
             NotWins++;
             totalEvents++;
+            Draws++;
 
             // Check if the team is home or away
             if (event.homeTeam.id === teamId) {
@@ -785,6 +845,7 @@ const calculateWinStats = (events, teamId) => {
             // Event is a loss
             NotWins++;
             totalEvents++;
+            Lost++;
 
             // Check if the team is home or away
             if (event.homeTeam.id === teamId) {
@@ -795,16 +856,29 @@ const calculateWinStats = (events, teamId) => {
                 goalsConcededNotWins += homeScore;
             }
         } 
+
+        // BTTS Calculation
+        if (homeScore > 0 && awayScore > 0) btts++;
+
+        // Over Goals Calculations
+        if ((homeScore + awayScore) > 1.5) over15++;
+        if ((homeScore + awayScore) > 2.5) over25++; 
+
     });
 
     return {
         Wins,
         NotWins,
+        Draws,
+        Lost,
         totalEvents,
         goalsScoredWins,
         goalsConcededWins,
         goalsScoredNotWins,
         goalsConcededNotWins,
+        btts,
+        over15,
+        over25,
     };
 };
 
@@ -881,6 +955,76 @@ const getHomeAwayForm = (events, type, teamId) => {
     return form;
 };
 
+// Function to calculate H2H stats for the last 3 years
+function calculateH2HStats(events, homeTeamId, awayTeamId) {
+    let homeWins = 0, awayWins = 0, draws = 0, homeGoals = 0, awayGoals = 0;
+
+    const twoYearsAgo = new Date();
+    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+
+    events.forEach(event => {
+        const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
+        if (eventDate >= twoYearsAgo) {
+            if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
+                const homeScore = event.homeScore?.current ?? 0;
+                const awayScore = event.awayScore?.current ?? 0; 
+                if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
+                    // Home team is homeTeamId, Away team is awayTeamId
+                    homeGoals += homeScore;
+                    awayGoals += awayScore;
+                    if (homeScore > awayScore) homeWins++;
+                    else if (homeScore < awayScore) awayWins++;
+                    else draws++;
+                } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
+                    // Home team is awayTeamId, Away team is homeTeamId
+                    homeGoals += awayScore;
+                    awayGoals += homeScore;
+                    if (homeScore > awayScore) awayWins++;
+                    else if (homeScore < awayScore) homeWins++;
+                    else draws++;
+                }
+            }
+        }
+    });
+
+    return `<span>${homeWins} </span><span>${draws} </span><span>${awayWins} G-F ${homeGoals}-${awayGoals}</span> `;
+}
+
+// Function to calculate H2H stats for the last 3 years
+function calculateOtherH2HStats(events, homeTeamId, awayTeamId) {
+    let btts = 0, over15 = 0, over25 = 0, over35 = 0;
+    let homeGoals = 0, awayGoals = 0;
+
+    const twoYearsAgo = new Date();
+    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+
+    events.forEach(event => {
+        const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
+        if (eventDate >= twoYearsAgo) {
+            if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
+                const homeScore = event.homeScore?.current ?? 0;
+                const awayScore = event.awayScore?.current ?? 0;
+
+                homeGoals += homeScore;
+                awayGoals += awayScore;
+
+                // BTTS Calculation
+                if (homeScore > 0 && awayScore > 0) btts++;
+
+                // Over Goals Calculations
+                if ((homeScore + awayScore) > 1.5) over15++;
+                if ((homeScore + awayScore) > 2.5) over25++;
+                if ((homeScore + awayScore) > 3.5) over35++;
+            }
+        }
+    });
+
+    return `
+        <span>${btts}</span>
+        <span>${over15}</span>
+        <span>${over25}</span>
+    `;
+}
         
             const fetchNextMatch = async (teamId) => {
                 const nextMatchUrl = `${baseURL}/team/${teamId}/events/next/0`;
