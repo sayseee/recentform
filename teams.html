@@ -324,19 +324,7 @@
             .score {
     font-weight: 600; 
     font-size: 13px;
-            }
-            .match-odds {
-    display: flex;
-    align-items: center;
-    gap: 1px;
-    flex-direction: column;
-    font-size: 12px;
-    justify-content: center;
-    min-width: 30px;
             } 
-            .odds{
-                line-height: 1.2;
-            }
             .teamData {
                 display: flex;
                 align-items: center;
@@ -443,6 +431,117 @@
                 display: flex;
                 gap: 1px;
             }
+            
+
+.match-info-container {
+    display: flex;
+    align-items: center;
+    padding: 15px; 
+}
+
+.team-info {
+    flex: 2;
+    text-align: center;
+}
+
+.team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.team-logo {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 5px;
+}
+
+.team-name {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.match-details {
+    text-align: center;
+    flex: 1;
+}
+
+.match-date,
+.match-time { 
+    margin-bottom: 5px;
+}
+.detailScore__wrapper {
+    display: flex;   
+    justify-content: space-between;
+    font-size: 20px;
+    font-weight: 600;
+}
+.match-status {
+    margin-top: 5px;
+}
+.match-status.done {
+    background-color: var(--color-light-gray-bg);
+    border-radius: 25px;
+    padding: 5px 0;
+}
+.team-forms, .team-wins {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+.team-wins {
+    text-align: center;
+    margin: 15px 0;
+}
+.team-stats {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 0 0 20px;
+}
+.team-stats>div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.team-stats>div span {
+    flex: 1;
+    text-align: center;
+}
+.home-team-forms, .away-team-forms, .teams-context, .home-team-wins, .away-team-wins, .teams-wins-context {
+    display: flex;
+    flex-direction: column; 
+    gap: 5px;
+}
+
+.home-team-forms>div, .away-team-forms>div {
+    display: flex; 
+    gap: 2px;
+    font-size: 11px;
+}
+
+.teams-context {
+    text-align: center;
+}
+.match-odds { 
+    display: flex;
+    justify-content: space-between;
+    background-color: var(--color-light-gray-bg);
+    margin: 10px 20px;
+    padding: 5px;
+    border-radius: 25px;
+}
+
+.match-odds span { 
+    flex: 1;
+    text-align: center;
+    font-weight: 600;
+}
+
+.match-odds span:nth-child(2) { 
+    border-left: 1px solid #c4c7c9;
+    border-right: 1px solid #c4c7c9;
+}
         </style>
     </head>
     <body>         
@@ -634,7 +733,194 @@ function calculateOtherH2HStats(events, homeTeamId, awayTeamId) {
     `;
 }
 
+const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
+    const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
+    const data = await response.json();
+    const events = data.events.reverse(); // Reverse to get the most recent events first
+    // Remove the current event from the list
+    const lastEvents = events.filter(event => event.id !== currentMatchId && event.tournament?.uniqueTournament?.id === uniqueTournamentId && event.status.type === 'finished');
+    const filteredEvents = lastEvents.slice(0, 15); // Return only the last 15 games
 
+
+    // Log the events to the console
+    console.log(`Last 15 events for team ${teamId}:`, filteredEvents);
+
+    return filteredEvents;
+};
+const fetchWonEvents = async (teamId, currentMatchId, Wins) => {
+    const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
+    const data = await response.json();
+    const events = data.events.reverse(); // Reverse to get the most recent events first
+    // Remove the current event from the list
+    const lastEvents = events.filter(event => event.id !== currentMatchId && event.status.type === 'finished');
+    const filteredEvents = lastEvents.slice(0, Wins); // Return only the last 15 games 
+
+    return filteredEvents;
+};
+const calculateWinStats = (events, teamId) => {
+    let NotWins = 0;
+    let Wins = 0;
+    let Draws = 0;
+    let Lost = 0;
+    let totalEvents = 0;
+    let goalsScoredWins = 0;
+    let goalsConcededWins = 0;
+    let goalsScoredNotWins = 0;
+    let goalsConcededNotWins = 0;
+    let btts = 0;
+    let over15 = 0;
+    let over25 = 0;
+
+    events.forEach((event) => { 
+        const homeScore = event.homeScore.current ?? 0; // Default to 0 if undefined
+        const awayScore = event.awayScore.current ?? 0; // Default to 0 if undefined
+
+        if (event.winnerCode === 3) {
+            // Event is a draw
+            NotWins++;
+            totalEvents++;
+            Draws++;
+
+            // Check if the team is home or away
+            if (event.homeTeam.id === teamId) {
+                goalsScoredNotWins += homeScore;
+                goalsConcededNotWins += awayScore;
+            } else if (event.awayTeam.id === teamId) {
+                goalsScoredNotWins += awayScore;
+                goalsConcededNotWins += homeScore;
+            }
+        } else if (
+            (event.winnerCode === 1 && event.homeTeam.id === teamId) || // Home win
+            (event.winnerCode === 2 && event.awayTeam.id === teamId)    // Away win
+        ) {
+            // Event is a win
+            Wins++;
+            totalEvents++;
+
+            // Check if the team is home or away
+            if (event.homeTeam.id === teamId) {
+                goalsScoredWins += homeScore;
+                goalsConcededWins += awayScore;
+            } else if (event.awayTeam.id === teamId) {
+                goalsScoredWins += awayScore;
+                goalsConcededWins += homeScore;
+            }
+        } else {
+            // Event is a loss
+            NotWins++;
+            totalEvents++;
+            Lost++;
+
+            // Check if the team is home or away
+            if (event.homeTeam.id === teamId) {
+                goalsScoredNotWins += homeScore;
+                goalsConcededNotWins += awayScore;
+            } else if (event.awayTeam.id === teamId) {
+                goalsScoredNotWins += awayScore;
+                goalsConcededNotWins += homeScore;
+            }
+        } 
+
+        // BTTS Calculation
+        if (homeScore > 0 && awayScore > 0) btts++;
+
+        // Over Goals Calculations
+        if ((homeScore + awayScore) > 1.5) over15++;
+        if ((homeScore + awayScore) > 2.5) over25++; 
+
+    });
+
+    return {
+        Wins,
+        NotWins,
+        Draws,
+        Lost,
+        totalEvents,
+        goalsScoredWins,
+        goalsConcededWins,
+        goalsScoredNotWins,
+        goalsConcededNotWins,
+        btts,
+        over15,
+        over25,
+    };
+};
+
+
+const getLastFiveGamesForm = (events, teamId) => {
+    const finishedEvents = events.filter((event) => event.status.type === 'finished');
+    const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
+ 
+    const form = lastFiveFinishedEvents
+        .reverse()
+        .map((event) => {
+            if (event.winnerCode === 3) {
+                return '<span class="D">D</span>'; // Draw
+            } else if (
+                (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
+                (event.winnerCode === 2 && event.awayTeam.id === teamId)
+            ) {
+                return '<span class="W">W</span>'; // Win
+            } else {
+                return '<span class="L">L</span>'; // Loss
+            }
+        })
+        .join('');
+
+    return form;
+};
+
+const getLastFiveGamesPoints = (events, teamId) => {
+    const finishedEvents = events.filter((event) => event.status.type === 'finished');
+    const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
+
+    let points = 0;
+    const form = lastFiveFinishedEvents
+        .reverse()
+        .map((event) => {
+            if (event.winnerCode === 3) {
+                points += 1; // Draw
+            } else if (
+                (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
+                (event.winnerCode === 2 && event.awayTeam.id === teamId)
+            ) {
+                points += 3; // Win
+            } else {
+                points += 0; // Win
+            }
+        })
+        .join('');
+
+    return points;
+};
+
+const getHomeAwayForm = (events, type, teamId) => {
+    const finishedEvents = events.filter((event) => event.status.type === 'finished');
+    const filteredEvents = finishedEvents.filter((event) =>
+        type === 'home' ? event.homeTeam.id === teamId : event.awayTeam.id === teamId
+    );
+    const lastFiveFilteredEvents = filteredEvents.slice(0, 5);
+
+    const form = lastFiveFilteredEvents
+        .map((event) => {
+            if (event.winnerCode === 3) {
+                return '<span class="D">D</span>'; // Draw
+            } else if (
+                (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
+                (event.winnerCode === 2 && event.awayTeam.id === teamId)
+            ) {
+                return '<span class="W">W</span>'; // Win
+            } else {
+                return '<span class="L">L</span>'; // Loss
+            }
+        })
+        .join('');
+
+    return form;
+};
+ 
+        
+     
 // Function to calculate BTTS (Both Teams To Score) for a team
 const calculateBTTS = (events, teamId) => {
     const bttsResults = [];
@@ -694,9 +980,7 @@ const displayScheduledEvents = async (events, odds, tournamentId, teams) => {
         // Extract team information
         const homeTeamId = event.homeTeam.id;
         const awayTeamId = event.awayTeam.id;
-        const customId = event.customId;
-        const homeTeamName = event.homeTeam.shortName;
-        const awayTeamName = event.awayTeam.shortName;
+        const customId = event.customId; 
         const tournamentId = event.tournament.id;
         const seasonId = event.season.id; 
         // Get team statistics
@@ -712,70 +996,146 @@ const displayScheduledEvents = async (events, odds, tournamentId, teams) => {
               const eventTime = new Date(event.startTimestamp * 1000).toLocaleString([], {
                 hour: '2-digit', minute: '2-digit', hour12: false
               });
+ 
+        // Fetch last 15 games for each team
+        const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id, event.id, event.tournament.uniqueTournament.id);
+        const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id, event.tournament.uniqueTournament.id);
 
-        // Get odds data
-        const oddsData = odds[event.id] || {};
-        const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.initialFractionalValue;
-        const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.initialFractionalValue;
-        const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.initialFractionalValue;
+// Extract last 5 games overall form
+const homeTeamForm = getLastFiveGamesForm(homeTeamLastEvents, event.homeTeam.id);
+const awayTeamForm = getLastFiveGamesForm(awayTeamLastEvents, event.awayTeam.id);
+// Extract last 5 games overall form
+const homeTeamPoints = getLastFiveGamesPoints(homeTeamLastEvents, event.homeTeam.id);
+const awayTeamPoints = getLastFiveGamesPoints(awayTeamLastEvents, event.awayTeam.id);
 
-        const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
-        const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
-        const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
+// Extract last 5 home/away games form
+const homeTeamHomeForm = getHomeAwayForm(homeTeamLastEvents, 'home', event.homeTeam.id);
+const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayTeam.id);
+
+// Calculate home and away win statistics
+const homeTeamStats = calculateWinStats(homeTeamLastEvents, event.homeTeam.id);
+const awayTeamStats = calculateWinStats(awayTeamLastEvents, event.awayTeam.id);
+
+
+// Fetch last 15 games for each team
+const homeTeamWonEvents = await fetchWonEvents(event.homeTeam.id, event.id, homeTeamStats.Wins);
+const awayTeamWonEvents = await fetchWonEvents(event.awayTeam.id, event.id, awayTeamStats.Wins);
+
+// Calculate home and away win statistics
+const homeTeamWonStats = calculateWinStats(homeTeamWonEvents, event.homeTeam.id);
+const awayTeamWonStats = calculateWinStats(awayTeamWonEvents, event.awayTeam.id);
+
+
+// Get odds data
+const oddsData = odds[event.id] || {};
+const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.initialFractionalValue;
+const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.initialFractionalValue;
+const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.initialFractionalValue;
+
+const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
+const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
+const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
+
+const homeScore = event.homeScore?.current ?? '';
+const awayScore = event.awayScore?.current ?? '';
+
+const homeTeamName = homeScore > awayScore ? `<strong>${event.homeTeam.shortName}</strong>` : event.homeTeam.shortName;
+const awayTeamName = awayScore > homeScore ? `<strong>${event.awayTeam.shortName}</strong>` : event.awayTeam.shortName;
 
         return `
             <div class="match-list" data-team-home-id="${homeTeamId}" data-team-away-id="${awayTeamId}">
-                <!-- Header with Team Names and Time -->
-                <div class="match-header">
-                    <div class="team-header">
-                        <span class="team-name home-team">${homeTeamName}</span>
+                <div class="match-info-container">
+                <div class="team-info">
+                    <div class="team">
+                        <img src="${baseURL}/team/${event.homeTeam.id}/image" width="40" height="40" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
+                        <span class="team-name">${homeTeamName}</span>
+                        <div><span>${homeTeamStats.goalsScoredWins + homeTeamStats.goalsScoredNotWins}</span> - <span>${homeTeamStats.goalsConcededWins + homeTeamStats.goalsConcededNotWins}</span></div>
+                   </div> 
+                </div>
+                <div class="match-details">
+                    ${event.status.type === 'inprogress' 
+                        ? `<div class="detailScore__wrapper">
+                            <span class="score" id="homeScores-${event.id}">${homeScore}</span> 
+                            <span class="score" id="awayScores-${event.id}">${awayScore}</span>
+                          </div>` 
+                        : event.status.type === 'finished' 
+                            ? `<div class="detailScore__wrapper">
+                                <span class="score" id="homeScores-${event.id}">${homeScore}</span> 
+                                <span class="score" id="awayScores-${event.id}">${awayScore}</span>
+                              </div>` 
+                            : `
+                                <div class="match-date">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
+                                <div class="match-time">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
+                            `}
+                    <div class="match-status${event.status.type === 'inprogress' || event.status.type === 'finished' ? ' done' : ''}">
+                        ${event.status.type === 'inprogress' ? 'Live' : event.status.type === 'finished' ? 'FT' : ''}
                     </div>
-                    <div class="match-time">
-                        <span>${eventDate}</span><span>${eventTime}</span>
+                </div>
+                <div class="team-info">
+                    <div class="team">
+                        <img src="${baseURL}/team/${event.awayTeam.id}/image" width="40" height="40" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
+                        <span class="team-name">${awayTeamName}</span>
+                        <div><span>${awayTeamStats.goalsScoredWins + awayTeamStats.goalsScoredNotWins}</span> - <span>${awayTeamStats.goalsConcededWins + awayTeamStats.goalsConcededNotWins}</span></div>
                     </div>
-                    <div class="team-header">
-                        <span class="team-name away-team">${awayTeamName}</span>
-                    </div>
+                </div>
+            </div> 
+            <div class="team-wins">
+                <div class="home-team-wins"> 
+                    <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>${homeTeamStats.totalEvents}</strong></span>
+                    <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong>${homeTeamStats.totalEvents}</strong></span> 
+                </div> 
+                <div class="away-team-wins">   
+                    <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong>${awayTeamStats.totalEvents}</strong></span>
+                    <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong>${awayTeamStats.totalEvents}</strong></span> 
                 </div>
 
-                <!-- Odds Section -->
-                <div class="odds-section">
-                    <span class="odds">${homeOdds}</span>
-                    <span class="odds">${drawOdds}</span>
-                    <span class="odds">${awayOdds}</span>
+            </div>
+            <div class="team-stats">
+                <div class="title-team-stats"> 
+                    <span>Wins</span> 
+                    <span>Draws</span> 
+                    <span>Lost</span> 
+                    <span>Btts</span> 
+                    <span>+15</span> 
+                    <span>+25</span> 
+                </div> 
+                <div class="home-team-stats"> 
+                    <span>${homeTeamStats.Wins}</span> 
+                    <span>${homeTeamStats.Draws}</span> 
+                    <span>${homeTeamStats.Lost}</span> 
+                    <span>${homeTeamStats.btts}</span> 
+                    <span>${homeTeamStats.over15}</span> 
+                    <span>${homeTeamStats.over25}</span> 
+                </div> 
+                <div class="away-team-stats">
+                    <span>${awayTeamStats.Wins}</span>
+                    <span>${awayTeamStats.Draws}</span>
+                    <span>${awayTeamStats.Lost}</span>
+                    <span>${awayTeamStats.btts}</span>
+                    <span>${awayTeamStats.over15}</span>
+                    <span>${awayTeamStats.over25}</span>
+                </div>  
+            </div>
+            <div class="team-forms">
+                <div class="home-team-forms">
+                    <div>${homeTeamForm}</div>
+                    <div>${homeTeamHomeForm}</div>
                 </div>
-
-                <!-- Team Comparison -->
-                <div class="compare-teams">
-                    <div class="team-stats home-team-stats">
-                        <p><strong>WON</strong> homeTeamWins} in last 15 games.</p>
-                        <p><strong>NOT WON</strong> homeTeamNotWon} in last 15 games.</p>
-                        <div class="last-five">
-                            <!-- Example Recent Matches -->
-                            <span class="recent-match win">W</span>
-                            <span class="recent-match loss">L</span>
-                            <span class="recent-match win">W</span>
-                            <span class="recent-match win">W</span>
-                            <span class="recent-match loss">L</span>
-                        </div>
-                    </div>
-                    <div class="home-away">
-                        <p>Last five games</p>
-                        <p>last 5 home/away only</p>
-                    </div>
-                    <div class="team-stats away-team-stats">
-                        <p><strong>WON</strong> awayTeamWins} in last 15 games.</p>
-                        <p><strong>NOT WON</strong> awayTeamNotWon} in last 15 games.</p>
-                        <div class="last-five">
-                            <!-- Example Recent Matches -->
-                            <span class="recent-match loss">L</span>
-                            <span class="recent-match loss">L</span>
-                            <span class="recent-match win">W</span>
-                            <span class="recent-match win">W</span>
-                            <span class="recent-match win">W</span>
-                        </div>
-                    </div>
+                <div class="teams-context">
+                    <span>Last 5 games</span>
+                    <span>Last 5 home/away only</span>
                 </div>
+                <div class="away-team-forms">
+                    <div>${awayTeamForm}</div>
+                    <div>${awayTeamAwayForm}</div>
+                </div>
+            </div>
+            <div class="match-odds">
+                <span class="odds">${homeOdds}</span>
+                <span class="odds">${drawOdds}</span>
+                <span class="odds">${awayOdds}</span>
+            </div>
+        
             </div>
 
         `;

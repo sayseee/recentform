@@ -614,8 +614,8 @@ const loadEvents = async (events, odds, eventsContainer) => {
         eventLink.dataset.eventId = event.id;
 
         // Fetch last 15 games for each team
-        const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id, event.id);
-        const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id);
+        const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id, event.id, event.tournament.uniqueTournament.id);
+        const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id, event.tournament.uniqueTournament.id);
 
         // Extract last 5 games overall form
         const homeTeamForm = getLastFiveGamesForm(homeTeamLastEvents, event.homeTeam.id);
@@ -658,14 +658,7 @@ const loadEvents = async (events, odds, eventsContainer) => {
         const homeTeamName = homeScore > awayScore ? `<strong>${event.homeTeam.shortName}</strong>` : event.homeTeam.shortName;
         const awayTeamName = awayScore > homeScore ? `<strong>${event.awayTeam.shortName}</strong>` : event.awayTeam.shortName;
 
-        
-        // Fetch H2H data
-        const h2hResponse = await fetch(`${baseURL}/event/${event.customId}/h2h/events`);
-        const h2hData = await h2hResponse.json();
-        
-        // Calculate H2H stats and other stats
-        const h2hStats = calculateH2HStats(h2hData.events, event.homeTeam.id, event.awayTeam.id);
-        const h2hOtherStats = calculateOtherH2HStats(h2hData.events);
+         
 
         eventLink.innerHTML = `
             <div class="match-info-container">
@@ -673,7 +666,8 @@ const loadEvents = async (events, odds, eventsContainer) => {
                     <div class="team">
                         <img src="${baseURL}/team/${event.homeTeam.id}/image" width="40" height="40" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${homeTeamName}</span>
-                    </div> 
+                        <div><span>${homeTeamStats.goalsScoredWins + homeTeamStats.goalsScoredNotWins}</span> - <span>${homeTeamStats.goalsConcededWins + homeTeamStats.goalsConcededNotWins}</span></div>
+                   </div> 
                 </div>
                 <div class="match-details">
                     ${event.status.type === 'inprogress' 
@@ -698,17 +692,18 @@ const loadEvents = async (events, odds, eventsContainer) => {
                     <div class="team">
                         <img src="${baseURL}/team/${event.awayTeam.id}/image" width="40" height="40" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${awayTeamName}</span>
+                        <div><span>${awayTeamStats.goalsScoredWins + awayTeamStats.goalsScoredNotWins}</span> - <span>${awayTeamStats.goalsConcededWins + awayTeamStats.goalsConcededNotWins}</span></div>
                     </div>
                 </div>
             </div> 
             <div class="team-wins">
                 <div class="home-team-wins"> 
-                    <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>${homeTeamStats.totalEvents}</strong> <small>(${homeTeamStats.goalsScoredWins} - ${homeTeamStats.goalsConcededWins})</small></span>
-                    <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong>${homeTeamStats.totalEvents}</strong> <small>(${homeTeamStats.goalsScoredNotWins} - ${homeTeamStats.goalsConcededNotWins})</small></span> 
+                    <span><strong>WON</strong> ${homeTeamStats.Wins} in last <strong>${homeTeamStats.totalEvents}</strong></span>
+                    <span><strong>NOT WON</strong> ${homeTeamStats.NotWins} in last <strong>${homeTeamStats.totalEvents}</strong></span> 
                 </div> 
                 <div class="away-team-wins">   
-                    <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong>${awayTeamStats.totalEvents}</strong> <small>(${awayTeamStats.goalsScoredWins} - ${awayTeamStats.goalsConcededWins})</small></span>
-                    <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong>${awayTeamStats.totalEvents}</strong> <small>(${awayTeamStats.goalsScoredNotWins} - ${awayTeamStats.goalsConcededNotWins})</small></span> 
+                    <span><strong>WON</strong> ${awayTeamStats.Wins} in last <strong>${awayTeamStats.totalEvents}</strong></span>
+                    <span><strong>NOT WON</strong> ${awayTeamStats.NotWins} in last <strong>${awayTeamStats.totalEvents}</strong></span> 
                 </div>
 
             </div>
@@ -736,11 +731,7 @@ const loadEvents = async (events, odds, eventsContainer) => {
                     <span>${awayTeamStats.btts}</span>
                     <span>${awayTeamStats.over15}</span>
                     <span>${awayTeamStats.over25}</span>
-                </div>
-            <div class="away-team-stats">
-                ${h2hStats} ${h2hOtherStats}
-            </div>
-
+                </div>  
             </div>
             <div class="team-forms">
                 <div class="home-team-forms">
@@ -769,12 +760,12 @@ const loadEvents = async (events, odds, eventsContainer) => {
     }
 };
 
-const fetchLastEvents = async (teamId, currentMatchId) => {
+const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
     const events = data.events.reverse(); // Reverse to get the most recent events first
     // Remove the current event from the list
-    const lastEvents = events.filter(event => event.id !== currentMatchId && event.status.type === 'finished');
+    const lastEvents = events.filter(event => event.id !== currentMatchId && event.tournament?.uniqueTournament?.id === uniqueTournamentId && event.status.type === 'finished');
     const filteredEvents = lastEvents.slice(0, 15); // Return only the last 15 games
 
 
@@ -954,150 +945,9 @@ const getHomeAwayForm = (events, type, teamId) => {
 
     return form;
 };
-
-// Function to calculate H2H stats for the last 3 years
-function calculateH2HStats(events, homeTeamId, awayTeamId) {
-    let homeWins = 0, awayWins = 0, draws = 0, homeGoals = 0, awayGoals = 0;
-
-    const twoYearsAgo = new Date();
-    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
-
-    events.forEach(event => {
-        const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
-        if (eventDate >= twoYearsAgo) {
-            if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
-                const homeScore = event.homeScore?.current ?? 0;
-                const awayScore = event.awayScore?.current ?? 0; 
-                if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
-                    // Home team is homeTeamId, Away team is awayTeamId
-                    homeGoals += homeScore;
-                    awayGoals += awayScore;
-                    if (homeScore > awayScore) homeWins++;
-                    else if (homeScore < awayScore) awayWins++;
-                    else draws++;
-                } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
-                    // Home team is awayTeamId, Away team is homeTeamId
-                    homeGoals += awayScore;
-                    awayGoals += homeScore;
-                    if (homeScore > awayScore) awayWins++;
-                    else if (homeScore < awayScore) homeWins++;
-                    else draws++;
-                }
-            }
-        }
-    });
-
-    return `<span>${homeWins} </span><span>${draws} </span><span>${awayWins} G-F ${homeGoals}-${awayGoals}</span> `;
-}
-
-// Function to calculate H2H stats for the last 3 years
-function calculateOtherH2HStats(events, homeTeamId, awayTeamId) {
-    let btts = 0, over15 = 0, over25 = 0, over35 = 0;
-    let homeGoals = 0, awayGoals = 0;
-
-    const twoYearsAgo = new Date();
-    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
-
-    events.forEach(event => {
-        const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
-        if (eventDate >= twoYearsAgo) {
-            if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
-                const homeScore = event.homeScore?.current ?? 0;
-                const awayScore = event.awayScore?.current ?? 0;
-
-                homeGoals += homeScore;
-                awayGoals += awayScore;
-
-                // BTTS Calculation
-                if (homeScore > 0 && awayScore > 0) btts++;
-
-                // Over Goals Calculations
-                if ((homeScore + awayScore) > 1.5) over15++;
-                if ((homeScore + awayScore) > 2.5) over25++;
-                if ((homeScore + awayScore) > 3.5) over35++;
-            }
-        }
-    });
-
-    return `
-        <span>${btts}</span>
-        <span>${over15}</span>
-        <span>${over25}</span>
-    `;
-}
+ 
         
-            const fetchNextMatch = async (teamId) => {
-                const nextMatchUrl = `${baseURL}/team/${teamId}/events/next/0`;
-                const nextMatchData = await fetch(nextMatchUrl).then(response => response.json());
-                if (!nextMatchData || !nextMatchData.events || nextMatchData.events.length === 0) return null;
-                return nextMatchData.events[1]; // Get the next match
-            };
-
-            const displayNextMatch = async (teamId, containerId) => {
-            const match = await fetchNextMatch(teamId);
-            const container = document.getElementById(containerId);
-
-            // Create the header if it does not already exist
-            let header = container.querySelector('h3.next-match-header');
-            if (!header) {
-                header = document.createElement('h3');
-                header.className = 'next-match-header'; // Assign a class to style it if needed
-                header.textContent = 'Next Match';
-                container.appendChild(header); // Append header directly to the container
-            }
-
-            // Find the .next-match-container element or create it if it doesn't exist
-            let matchContainer = container.querySelector('.next-match-container');
-            if (!matchContainer) {
-                matchContainer = document.createElement('div');
-                matchContainer.className = 'next-match-container';
-                container.appendChild(matchContainer);
-            }
-
-            if (!match) {
-                // Display 'No upcoming matches' message and clear the match container
-                matchContainer.innerHTML = ''; // Clear existing content
-                matchContainer.appendChild(document.createElement('p')).textContent = 'No upcoming matches.';
-                return;
-            }
-
-            // Extract relevant details from the match data
-            const { homeTeam, awayTeam, startTimestamp, status, tournament } = match;
-            const { uniqueTournament } = tournament;
-
-            // Create the match details HTML
-            const matchInfoHtml = `    
-                    <div class="category-group flex _F_ac">
-                        <div>
-                            <img class="tourn" src="${baseURL}/unique-tournament/${uniqueTournament.id}/image" alt="${uniqueTournament.name}" width="20" height="20" loading="lazy">
-                        </div> 
-                        <div class="category-tournament" style="display: flex;"> 
-                            <span class="tournament-name">${uniqueTournament.name}</span>
-                        </div> 
-                    </div> 
-                    <div class="match-card">
-                        <div class="match-time-status">
-                            <span class="match-time">${new Date(startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }).replace(',', ' ').replace('/', ' ')}</span>
-                            <span class="match-status">${new Date(startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
-                        </div>
-                        <div class="team-info">
-                            <div class="teams-info">
-                                <div class="team">
-                                    <img src="${baseURL}/team/${homeTeam.id}/image" width="16" height="16" alt="${homeTeam.shortName}" loading="lazy" class="team-logo">
-                                    <span class="team-name">${homeTeam.shortName}</span>
-                                </div>
-                                <div class="team">
-                                    <img src="${baseURL}/team/${awayTeam.id}/image" width="16" height="16" alt="${awayTeam.shortName}" loading="lazy" class="team-logo">
-                                    <span class="team-name">${awayTeam.shortName}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // Update the match container's HTML content with the match details
-                matchContainer.innerHTML = matchInfoHtml; // Update existing match container
-            };
+     
 
             const fetchTeamStats = async (teamId, currentMatchId, currentMatchTimestamp) => {
                 const teamEventsUrl = `${baseURL}/team/${teamId}/events/last/0`;
