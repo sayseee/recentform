@@ -169,21 +169,29 @@ button#filter-btn:hover {
 .filters__group {
     list-style: none;
     display: flex;
-    gap: 20px; /* Space between navigation items */
+    gap: 23px; /* Space between navigation items */
     padding: 0;
     margin: 0;
 }
 
+.filters__group li { 
+    min-width: 50px;
+}
+
 .filters__group li a {
     text-decoration: none;
-    color: #ccc; /* Lighter color for inactive links */
+    color: #ccc;
     font-size: 13px;
-    padding: 10px;
+    padding: 5px 10px;
+    width: 100%;
+    display: block;
+    text-align: center;
 }
 
 .filters__group li a.active, .filters__group li a:hover {
     color: white; /* White for active or hovered links */
-    border-bottom: 2px solid white; /* Bottom border for active state */
+    background-color: #373a3d;
+    border-radius: 25px;
 }
 
 /* Categories container */
