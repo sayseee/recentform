@@ -196,17 +196,25 @@ button#filter-btn:hover {
 
 /* Categories container */
 main {
-    height: calc(100vh - 76px);
+    height: calc(100vh);
     position: relative;
-    padding: 5px;
+    padding: 0 5px;
+    z-index: 2;
 }
-
+.crossline {
+    z-index: 1;
+    height: 10px;
+    display: block;
+}
 /* Categories container */
 .categories {
-    height: calc(100vh - 200px);
-    overflow-y: auto;
-    border-right: var(--color-support-3) 1px solid;
-    padding-top: 5px;
+    height: calc(100vh);
+    overflow-y: auto; 
+    z-index: 1;
+    position: relative;
+    top: -9px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 } 
 
 .categories::-webkit-scrollbar, .tab-content::-webkit-scrollbar, .sideRight::-webkit-scrollbar {
@@ -295,12 +303,15 @@ main {
     justify-content: space-between;
 }
 .tournament.show h3 {
-    background-color: var(--color-dark-bg) !important;
+    background-color: var(--color-white);
     color: var(--color-light-gray-text);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    font-weight: normal;
 } 
- 
+.tournament.show .catName {
+    color: var(--color-dark-bg);
+}
 /* Add this to your CSS file or inside a <style> tag in the HTML */
     .tournament ul {
     display: none; /* Hide the event list by default */
@@ -371,7 +382,9 @@ main {
 }
 .team-wins {
     text-align: center;
-    margin: 15px 0;
+    padding: 15px 0;
+    background-color: #f8f9fb;
+    border-top: 1px solid var(--color-light-gray-bg);
 }
 .team-stats {
     display: flex;
@@ -460,6 +473,7 @@ main {
                 </ul>
             </nav>
         </div>
+        <div class="crossline"></div>
     </header>
     
         <main>            
@@ -596,7 +610,7 @@ const createCategorySection = (tournaments, categoryName, odds) => {
         const tournamentImage = `${baseURL}/unique-tournament/${tournament.id}/image`;
         tournamentHeader.innerHTML = `
             <img class="tourn" src="${tournamentImage}" alt="${tournamentName}" width="16" height="16" loading="lazy" />
-            ${categoryName} - ${tournamentName}
+            <span class="catName">${categoryName}</span> - ${tournamentName}
         `;
         tournamentSection.appendChild(tournamentHeader);
 
