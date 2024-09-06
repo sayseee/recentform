@@ -804,7 +804,6 @@ const loadEvents = async (events, odds, eventsContainer) => {
         eventsContainer.appendChild(eventListItem);
     }
 };
-
 // Function to fetch and display the most recent H2H event
 const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, elementId) => {
     const url = `${baseURL}/event/${customId}/h2h/events`;
@@ -818,8 +817,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                 .filter(event => event.status && event.status.type === 'finished' && event.id !== currentMatchId)
                 .sort((a, b) => b.startTimestamp - a.startTimestamp);
 
-            if (finishedEvents.length > 0) {
-                console.log(finishedEvents);
+            if (finishedEvents.length > 0) { 
                 const mostRecentEvent = finishedEvents[0];
 
                 // Extract relevant information
@@ -827,9 +825,12 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                 const awayTeam = mostRecentEvent.awayTeam.shortName;
                 const homeScore = mostRecentEvent.homeScore.current;
                 const awayScore = mostRecentEvent.awayScore.current;
+                const eventDate = new Date(mostRecentEvent.startTimestamp * 1000)
+                    .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
                 // Create an HTML string with each element wrapped in <span> tags
                 const htmlString = `
+                    <span class="event-date">${eventDate}</span> 
                     <span class="home-team">${homeTeam}</span> 
                     <span class="home-score">${homeScore}</span> 
                     - 
@@ -851,6 +852,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
     }
 };
 
+
 const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
@@ -858,10 +860,7 @@ const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     // Remove the current event from the list
     const lastEvents = events.filter(event => event.id !== currentMatchId && event.tournament?.uniqueTournament?.id === uniqueTournamentId && event.status.type === 'finished');
     const filteredEvents = lastEvents.slice(0, 15); // Return only the last 15 games
-
-
-    // Log the events to the console
-    console.log(`Last 15 events for team ${teamId}:`, filteredEvents);
+ 
 
     return filteredEvents;
 };
