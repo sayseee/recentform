@@ -428,7 +428,10 @@ main {
     font-size: 11px;
     justify-content: space-between;
 }
-
+..team-events {
+    display: flex;
+    flex-direction: column;
+}
 .teams-context {
     text-align: center;
 }
@@ -794,7 +797,7 @@ const loadEvents = async (events, odds, eventsContainer) => {
                     <div>${awayTeamAwayForm}</div>
                 </div>
             </div>
-            <div class="team-forms">
+            <div class="team-events">
                 <div class="home-team-forms">
                     <h2>Last 5 Games - Home Team</h2>
             ${generateGamesHtml(homeTeamLastFiveGames)}
@@ -826,13 +829,16 @@ const loadEvents = async (events, odds, eventsContainer) => {
 const generateGamesHtml = (games) => {
             return games.map((game) => {
                 return ` 
-                    <div class="teams">
-${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'})}<strong>${game.homeTeam.shortName}</strong> vs <strong>${game.awayTeam.shortName}</strong> 
-                        ${game.homeScore.current} - ${game.awayScore.current}
-                    <div class="odds" id="odds-${game.id}">
-                        ${fractionalToDecimal(game.homeOdds)} | ${fractionalToDecimal(game.drawOdds)} | ${fractionalToDecimal(game.awayOdds)}
-                    </div>
-                    </div> 
+                    <div class="teams" style="display: flex">
+                    <span style="flex: 1">${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'})}</span>
+                    <span style="flex: 1"><strong>${game.homeTeam.shortName}</strong> vs <strong>${game.awayTeam.shortName}</strong></span>
+                    <span style="flex: 1">${game.homeScore.current} - ${game.awayScore.current}</span>
+                    <span style="flex: 1">
+                        <div class="odds" id="odds-${game.id}">
+                            ${fractionalToDecimal(game.homeOdds)} | ${fractionalToDecimal(game.drawOdds)} | ${fractionalToDecimal(game.awayOdds)}
+                        </div>
+                    </span>
+                </div> 
                 `;
             }).join('');
         };
