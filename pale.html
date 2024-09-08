@@ -428,9 +428,33 @@ main {
     font-size: 11px;
     justify-content: space-between;
 }
-..team-events {
+.team-events {
     display: flex;
     flex-direction: column;
+    margin: 0 10px;
+}
+.team-events table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.team-events table th, .team-events table td {
+    border: 1px solid #eaecf1;
+    padding: 2px 4px;
+}
+.team-events table th:nth-child(3), .team-events table td:nth-child(3) {
+    text-align: center;
+}
+.team-events .tableOdds {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 11px;
+}
+.team-events .tableOdds span {
+    flex: 1;
+}
+.team-events strong {
+    font-weight: 500;
 }
 .teams-context {
     text-align: center;
@@ -801,11 +825,11 @@ const loadEvents = async (events, odds, eventsContainer) => {
             </div>
             <div class="team-events">
                 <div class="home-team-forms">
-                    <h2>Last 5 Games - Home Team</h2>
+                <h4>Last 5 Games - ${event.homeTeam.shortName}</h4>
             ${generateGamesHtml(homeTeamLastFiveGames)}
                 </div> 
                 <div class="away-team-forms">
-            <h2>Last 5 Games - Away Team</h2>
+            <h4>Last 5 Games - ${event.awayTeam.shortName}</h4>
             ${generateGamesHtml(awayTeamLastFiveGames)}
                 </div>
             </div>
@@ -827,23 +851,37 @@ const loadEvents = async (events, odds, eventsContainer) => {
         eventsContainer.appendChild(eventListItem);
     }
 };
-// Generate HTML for last 5 games with odds
+// Generate HTML for last 5 games with odds in a table format
 const generateGamesHtml = (games) => {
-            return games.map((game) => {
-                return ` 
-                    <div class="teams" style="display: flex">
-                    <span>${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'})}</span>
-                    <span style="flex: 2"><strong>${game.homeTeam.shortName}</strong> vs <strong>${game.awayTeam.shortName}</strong></span>
-                    <span style="flex: 1">${game.homeScore.current} - ${game.awayScore.current}</span>
-                    <span style="flex: 2">
-                        <div class="odds" id="odds-${game.id}">
-                            ${fractionalToDecimal(game.homeOdds)} | ${fractionalToDecimal(game.drawOdds)} | ${fractionalToDecimal(game.awayOdds)}
+    return `
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Teams</th>
+                    <th>Score</th>
+                    <th>Odds</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${games.map((game) => `
+                    <tr>
+                        <td>${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'})}</td>
+                        <td><strong>${game.homeTeam.shortName}</strong> - <strong>${game.awayTeam.shortName}</strong></td>
+                        <td>${game.homeScore.current} - ${game.awayScore.current}</td>
+                        <td>
+                        <div class="tableOdds">
+                           <span>${fractionalToDecimal(game.homeOdds)}</span>
+                            <span>${fractionalToDecimal(game.drawOdds)}</span> 
+                            <span>${fractionalToDecimal(game.awayOdds)}</span>
                         </div>
-                    </span>
-                </div> 
-                `;
-            }).join('');
-        };
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+};
 
 // Function to get last 5 games with odds
 const getLastFiveGames = async (events, teamId) => {
