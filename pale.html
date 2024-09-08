@@ -866,7 +866,8 @@ const generateGamesHtml = (games) => {
             <tbody>
                 ${games.map((game) => `
                     <tr>
-                        <td>${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'})}</td>
+                        <td>${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit'
+                }).replace('/', '.').replace('/', '.')}</td>
                         <td><strong>${game.homeTeam.shortName}</strong> - <strong>${game.awayTeam.shortName}</strong></td>
                         <td>${game.homeScore.current} - ${game.awayScore.current}</td>
                         <td>
