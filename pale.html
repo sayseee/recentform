@@ -426,6 +426,7 @@ main {
     display: flex; 
     gap: 2px;
     font-size: 11px;
+    justify-content: space-between;
 }
 
 .teams-context {
@@ -669,6 +670,11 @@ const loadEvents = async (events, odds, eventsContainer) => {
         const homeTeamPoints = getLastFiveGamesPoints(homeTeamLastEvents, event.homeTeam.id);
         const awayTeamPoints = getLastFiveGamesPoints(awayTeamLastEvents, event.awayTeam.id);
 
+
+        // Fetch last 5 games with odds for each team
+        const homeTeamLastFiveGames = await getLastFiveGames(homeTeamLastEvents, event.homeTeam.id);
+        const awayTeamLastFiveGames = await getLastFiveGames(awayTeamLastEvents, event.awayTeam.id);
+
         // Extract last 5 home/away games form
         const homeTeamHomeForm = getHomeAwayForm(homeTeamLastEvents, 'home', event.homeTeam.id);
         const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayTeam.id);
@@ -788,6 +794,16 @@ const loadEvents = async (events, odds, eventsContainer) => {
                     <div>${awayTeamAwayForm}</div>
                 </div>
             </div>
+            <div class="team-forms">
+                <div class="home-team-forms">
+                    <h2>Last 5 Games - Home Team</h2>
+            ${generateGamesHtml(homeTeamLastFiveGames)}
+                </div> 
+                <div class="away-team-forms">
+            <h2>Last 5 Games - Away Team</h2>
+            ${generateGamesHtml(awayTeamLastFiveGames)}
+                </div>
+            </div>
             <div class="match-odds">
                 <span class="odds">${homeOdds}</span>
                 <span class="odds">${drawOdds}</span>
@@ -800,9 +816,60 @@ const loadEvents = async (events, odds, eventsContainer) => {
         // Fetch and display most recent H2H event for the current event
         fetchAndDisplayMostRecentH2HEvent(event.customId, event.id, uniqueEventId);
 
+         
+
         eventListItem.appendChild(eventLink);
         eventsContainer.appendChild(eventListItem);
     }
+};
+// Generate HTML for last 5 games with odds
+const generateGamesHtml = (games) => {
+            return games.map((game) => {
+                return ` 
+                    <div class="teams">
+${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'})}<strong>${game.homeTeam.shortName}</strong> vs <strong>${game.awayTeam.shortName}</strong> 
+                        ${game.homeScore.current} - ${game.awayScore.current}
+                    <div class="odds" id="odds-${game.id}">
+                        ${fractionalToDecimal(game.homeOdds)} | ${fractionalToDecimal(game.drawOdds)} | ${fractionalToDecimal(game.awayOdds)}
+                    </div>
+                    </div> 
+                `;
+            }).join('');
+        };
+
+// Function to get last 5 games with odds
+const getLastFiveGames = async (events, teamId) => {
+    const finishedEvents = events.filter((event) => event.status.type === 'finished');
+    const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
+
+    const oddsPromises = lastFiveFinishedEvents.map(async (event) => {
+        const eventId = event.id;
+        try {
+            const oddsResponse = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`);
+            const oddsData = await oddsResponse.json();
+
+            const homeOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '1')?.fractionalValue || '-';
+            const drawOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === 'X')?.fractionalValue || '-';
+            const awayOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '2')?.fractionalValue || '-';
+
+            return {
+                ...event,
+                homeOdds,
+                drawOdds,
+                awayOdds,
+            };
+        } catch (error) {
+            console.error(`Failed to fetch odds for event ${eventId}`, error);
+            return {
+                ...event,
+                homeOdds: '-',
+                drawOdds: '-',
+                awayOdds: '-',
+            };
+        }
+    });
+
+    return await Promise.all(oddsPromises);
 };
 // Function to fetch and display the most recent H2H event
 const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, elementId) => {
@@ -874,6 +941,8 @@ const fetchWonEvents = async (teamId, currentMatchId, Wins) => {
 
     return filteredEvents;
 };
+
+
 const calculateWinStats = (events, teamId) => {
     let NotWins = 0;
     let Wins = 0;
@@ -986,6 +1055,7 @@ const getLastFiveGamesForm = (events, teamId) => {
 
     return form;
 };
+
 
 const getLastFiveGamesPoints = (events, teamId) => {
     const finishedEvents = events.filter((event) => event.status.type === 'finished');

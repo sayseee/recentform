@@ -3,84 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Football Table Replica</title>
+    <title>Soccer Match Events and Odds</title>
+    <style>
+        .event-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .team-event {
+            width: 45%;
+        }
+        .odds {
+            margin-top: 10px;
+        }
+        .market {
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
-    <table class="football-table">
-        <thead>
-            <tr>
-                <th rowspan="2">Time</th>
-                <th rowspan="2">Teams</th>
-                <th rowspan="2">P</th>
-                <th colspan="3">HOME</th>
-                <th colspan="3">AWAY</th>
-                <th colspan="8">ALL</th>
-                <th rowspan="2">FORM</th>
-            </tr>
-            <tr>
-                <th>W</th>
-                <th>D</th>
-                <th>L</th>
-                <th>W</th>
-                <th>D</th>
-                <th>L</th>
-                <th>GF</th>
-                <th>GA</th>
-                <th>GD</th>
-                <th>Pnts</th>
-                <th>PPG</th>
-                <th>AvgG</th>
-                <th>CS</th>
-                <th>FTS</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td></td>
-                <td><img src="team1.png" alt="Man City Logo"> Man City</td>
-                <td>37</td>
-                <td>18</td>
-                <td>0</td>
-                <td>1</td>
-                <td>13</td>
-                <td>2</td>
-                <td>3</td>
-                <td>31</td>
-                <td>22</td>
-                <td>+69</td>
-                <td>95</td>
-                <td>2.57</td>
-                <td>2.46</td>
-                <td>54%</td>
-                <td>5%</td>
-                <td class="form">
-                    <span class="green"></span><span class="green"></span><span class="green"></span><span class="green"></span><span class="green"></span><span class="green"></span><span class="green"></span>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><img src="team2.png" alt="Liverpool Logo"> Liverpool</td>
-                <td>37</td>
-                <td>16</td>
-                <td>2</td>
-                <td>0</td>
-                <td>13</td>
-                <td>5</td>
-                <td>1</td>
-                <td>29</td>
-                <td>22</td>
-                <td>+65</td>
-                <td>94</td>
-                <td>2.54</td>
-                <td>2.35</td>
-                <td>54%</td>
-                <td>8%</td>
-                <td class="form">
-                    <span class="green"></span><span class="green"></span><span class="green"></span><span class="green"></span><span class="green"></span><span class="orange"></span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div id="events-container"></div>
+    
+    <script>
+        // Team IDs for comparison
+        const team1Id = 34034; // Example ID for team 1 (Palmeiras)
+        const team2Id = 44523; // Example ID for team 2 (Botafogo-SP)
+
+        // API URLs
+        const team1EventsUrl = `https://api.sofascore.com/api/v1/team/${team1Id}/events/last/0`;
+        const team2EventsUrl = `https://api.sofascore.com/api/v1/team/${team2Id}/events/last/0`;
+
+        // Helper function to convert fractional odds to decimal
+        function fractionalToDecimal(fractionalOdds) {
+            const [numerator, denominator] = fractionalOdds.split('/');
+            return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
+        }
+
+        // Helper function to format timestamp to a readable date
+        function formatDate(timestamp) {
+            return new Date(timestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
+        }
+
+        // Fetch and display team events
+        function fetchTeamEvents() {
+            Promise.all([
+                fetch(team1EventsUrl).then(response => response.json()),
+                fetch(team2EventsUrl).then(response => response.json())
+            ])
+            .then(([team1Data, team2Data]) => {
+                const events1 = team1Data.events || [];
+                const events2 = team2Data.events || [];
+                const eventsContainer = document.getElementById('events-container');
+
+                // Filter only finished events
+                const finishedEvents1 = events1.filter(event => event.status.type === 'finished');
+                const finishedEvents2 = events2.filter(event => event.status.type === 'finished');
+
+                // Sort events by date in descending order
+                finishedEvents1.sort((a, b) => new Date(b.startTimestamp * 1000) - new Date(a.startTimestamp * 1000));
+                finishedEvents2.sort((a, b) => new Date(b.startTimestamp * 1000) - new Date(a.startTimestamp * 1000));
+
+                // Ensure both teams have the same number of finished events
+                const maxEvents = Math.min(finishedEvents1.length, finishedEvents2.length);
+
+                for (let i = 0; i < maxEvents; i++) {
+                    const event1 = finishedEvents1[i];
+                    const event2 = finishedEvents2[i];
+
+                    const eventElement = document.createElement('div');
+                    eventElement.className = 'event-container';
+
+                    const homeTeamEvent = createEventElement(event1, team1Id);
+                    const awayTeamEvent = createEventElement(event2, team2Id);
+
+                    eventElement.innerHTML = `
+                        <div class="team-event">${homeTeamEvent}</div>
+                        <div class="team-event">${awayTeamEvent}</div>
+                    `;
+
+                    eventsContainer.appendChild(eventElement);
+
+                    // Fetch odds for both events
+                    fetchOdds(event1.id);
+                    fetchOdds(event2.id);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching events:', error);
+                document.getElementById('events-container').innerHTML = '<p>Error loading events.</p>';
+            });
+        }
+
+        // Create event HTML structure
+        function createEventElement(event, teamId) {
+            return `
+                <h2>${event.tournament.name} - ${event.season.name}</h2>
+                <div class="date">
+                    Date: ${formatDate(event.startTimestamp)}
+                </div>
+                <div class="teams">
+                    <strong>${event.homeTeam.name}</strong> vs <strong>${event.awayTeam.name}</strong>
+                </div>
+                <div class="score">
+                    ${event.homeScore.current} - ${event.awayScore.current}
+                </div>
+                <div class="status">
+                    Status: ${event.status.description}
+                </div>
+                <div class="odds" id="odds-${event.id}">
+                    <!-- Odds will be inserted here -->
+                </div>
+            `;
+        }
+
+        // Fetch and display odds
+        function fetchOdds(eventId) {
+            fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`)
+                .then(response => response.json())
+                .then(data => {
+                    const oddsContainer = document.getElementById(`odds-${eventId}`);
+                    const markets = data.markets || [];
+
+                    markets.forEach(market => {
+                        if (market.marketName === "Full time") {
+                            const marketElement = document.createElement('div');
+                            marketElement.className = 'market';
+                            marketElement.innerHTML = `<strong>${market.marketName}</strong>`;
+
+                            market.choices.forEach(choice => {
+                                marketElement.innerHTML += `<div>${choice.name}: ${fractionalToDecimal(choice.fractionalValue)} ${choice.winning ? '(Winning)' : ''}</div>`;
+                            });
+
+                            oddsContainer.appendChild(marketElement);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching odds:', error);
+                    const oddsContainer = document.getElementById(`odds-${eventId}`);
+                    oddsContainer.innerHTML = '<p>Error loading odds.</p>';
+                });
+        }
+
+        // Initialize data fetching
+        fetchTeamEvents();
+    </script>
 </body>
 </html>
