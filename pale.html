@@ -529,16 +529,18 @@ const filterEventsByTime = (events, hours) => {
 const displayCategories = async (startDate, endDate, hours, status) => {
     const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
     const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${startDate}`;
-    const inverseScheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${startDate}/inverse`;
+     
     const oddsResponseUrl = `${baseURL}/sport/football/odds/1/${startDate}`;
 
     try {
         const topTournamentsData = await fetch(topTournamentsUrl).then(response => response.json());
         const scheduledEventsData = await fetch(scheduledEventsUrl).then(response => response.json());
-        const inverseScheduledEventsData = await fetch(inverseScheduledEventsUrl).then(response => response.json());
+         
         const oddsData = await fetch(oddsResponseUrl).then(response => response.json());
 
-        const allEvents = [...scheduledEventsData.events, ...inverseScheduledEventsData.events];
+        const allEvents = [...scheduledEventsData.events,
+         //...inverseScheduledEventsData.events
+        ];
         const odds = oddsData?.odds || {};
 
         let filteredEvents = allEvents.filter(event => {
@@ -830,10 +832,10 @@ const generateGamesHtml = (games) => {
             return games.map((game) => {
                 return ` 
                     <div class="teams" style="display: flex">
-                    <span style="flex: 1">${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'})}</span>
-                    <span style="flex: 1"><strong>${game.homeTeam.shortName}</strong> vs <strong>${game.awayTeam.shortName}</strong></span>
+                    <span>${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'})}</span>
+                    <span style="flex: 2"><strong>${game.homeTeam.shortName}</strong> vs <strong>${game.awayTeam.shortName}</strong></span>
                     <span style="flex: 1">${game.homeScore.current} - ${game.awayScore.current}</span>
-                    <span style="flex: 1">
+                    <span style="flex: 2">
                         <div class="odds" id="odds-${game.id}">
                             ${fractionalToDecimal(game.homeOdds)} | ${fractionalToDecimal(game.drawOdds)} | ${fractionalToDecimal(game.awayOdds)}
                         </div>
