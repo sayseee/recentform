@@ -602,7 +602,7 @@ const displayCategories = async (startDate, endDate, hours, status) => {
         filteredEvents.forEach(event => {
             const categoryName = event.tournament.category.name;
             const tournamentId = event.tournament.uniqueTournament.id;
-            const tournamentName = event.tournament.name;
+            const tournamentName = event.tournament.uniqueTournament.name;
 
             const targetMap = topTournamentIds.has(tournamentId) ? topTournamentsMap : otherCategoriesMap;
 
