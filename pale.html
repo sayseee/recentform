@@ -118,8 +118,7 @@ a:hover {
     flex-direction: column;
     gap: 10px;
 }
-.filter-bar>div {
-    display: flex;
+.filter-bar>div { 
     justify-content: space-between;
 }
 
@@ -486,25 +485,83 @@ main {
     border-left: 1px solid #c4c7c9;
     border-right: 1px solid #c4c7c9;
 }
+.logo {
+    /* Add logo styling here */
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.icons {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.icon {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.filter-bar {
+    display: flex;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.date-filter,
+.time-filter {
+    margin-right: 10px;
+}
+.logo-icons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
      </style>
     </head>
-    <body> <header id="superheader">
+    <body> 
+    <header id="superheader">
+            <!-- Logo -->
+    <div class="logo-icons">
+        <div class="logo">
+            FUTBOL
+        </div>
+
+        <!-- Icons -->
+        <div class="icons">
+            <!-- Calendar Icon -->
+            <svg id="calendarIcon" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 3h-1V2h-2v1H8V2H6v1H5c-1.1 0-2 .9-2 2v17c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 4h14v2H5V4zm14 16H5V9h14v11z" fill="#dcdde0"/>
+            </svg>
+            <!-- Time Icon -->
+            <svg id="timeIcon" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13H11v6h6v-1.5H12z" fill="#dcdde0"/>
+            </svg>
+        </div>
+    </div>
+
+        <!-- Filter Container -->
         <div class="filter-bar">
-            <div class="date-filter">
+            <!-- Date Filter -->
+            <div class="date-filter hidden">
                 <span>From:</span>
                 <input type="date" id="start-date" name="start-date">
                 <span>To:</span>
                 <input type="date" id="end-date" name="end-date">
             </div>
-            <div class="time-filter">
+            <!-- Time Filter -->
+            <div class="time-filter hidden">
                 <select id="time-range">
                     <option value="">Select Time</option>
                     <option value="3">3 Hours</option>
                     <option value="6">6 Hours</option>
                     <option value="12">12 Hours</option>
                 </select>
-                <button id="filter-btn">Filter</button>
             </div>
+            <button id="filter-btn" class="hidden">Filter</button>
         </div>
         <div class="main-nav">
             <nav class="filters">
@@ -525,6 +582,37 @@ main {
         
         <div id="details-container"></div>
         <script>
+
+document.getElementById('calendarIcon').addEventListener('click', function () {
+    // Toggle date filter visibility
+    toggleFilter('date-filter');
+});
+
+document.getElementById('timeIcon').addEventListener('click', function () {
+    // Toggle time filter visibility
+    toggleFilter('time-filter');
+});
+
+function toggleFilter(filterClass) {
+    // Hide all filters first
+    document.querySelectorAll('.date-filter, .time-filter').forEach(function (filter) {
+        filter.classList.add('hidden');
+    });
+    document.getElementById('filter-btn').classList.add('hidden');
+
+    // Show the selected filter
+    const selectedFilter = document.querySelector(`.${filterClass}`);
+    if (selectedFilter) {
+        selectedFilter.classList.toggle('hidden');
+    }
+
+    // Show the filter button if any filter is visible
+    if (!document.querySelector('.date-filter').classList.contains('hidden') ||
+        !document.querySelector('.time-filter').classList.contains('hidden')) {
+        document.getElementById('filter-btn').classList.remove('hidden');
+    }
+}
+
         const baseURL = 'https://api.sofascore.com/api/v1';
 
 const fetchJson = async (url) => {
