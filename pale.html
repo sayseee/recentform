@@ -9,7 +9,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-        <link rel="manifest" href="/manifest.json">
+        <link rel="manifest" href="manifest.json">
         <style>
 :root {     
     --color-dark-bg: #1F1F24;       /* Dark background for navigation */
@@ -1064,9 +1064,8 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                 const awayTeam = mostRecentEvent.awayTeam.shortName;
                 const homeScore = mostRecentEvent.homeScore.current;
                 const awayScore = mostRecentEvent.awayScore.current;
-                const eventDate = new Date(mostRecentEvent.startTimestamp * 1000)
-                    .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
-
+                const eventDate = new Date(mostRecentEvent.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'
+                }).replace('/', '.').replace('/', '.');
                 // Create an HTML string with each element wrapped in <span> tags
                 const htmlString = `
                     <span class="event-date">${eventDate}</span> 
