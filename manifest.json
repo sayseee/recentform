@@ -1,11 +1,6 @@
-{
-    "name": "Soccer Trading Platform",
-    "short_name": "SoccerTrade",
-    "description": "A platform for trading soccer events",
-    "start_url": "/index.html",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#007BFF",
+ {
+    "short_name": "FUTBOL",
+    "name": "FUTBOL - Football Stats and Fixtures",
     "icons": [
       {
         "src": "/icons/icon-192x192.png",
@@ -17,6 +12,10 @@
         "sizes": "512x512",
         "type": "image/png"
       }
-    ]
+    ],
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#091c3d",
+    "background_color": "#091c3d"
   }
   
