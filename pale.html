@@ -1173,6 +1173,7 @@ const getHomeAwayForm = (events, type, teamId) => {
     const lastFiveFilteredEvents = filteredEvents.slice(0, 5);
 
     const form = lastFiveFilteredEvents
+        .reverse()
         .map((event) => {
             if (event.winnerCode === 3) {
                 return '<span class="D">D</span>'; // Draw
