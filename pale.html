@@ -415,6 +415,10 @@ main {
 .title-team-stats span:not(:first-child){
     border-left: 1px solid var(--color-support-1);
 }
+.team-forms span.scores {
+    margin-left: 5px;
+    float: right;
+}
 .home-team-forms, .away-team-forms, .teams-context, .home-team-wins, .away-team-wins, .teams-wins-context {
     display: flex;
     flex-direction: column; 
@@ -425,7 +429,6 @@ main {
     display: flex; 
     gap: 2px;
     font-size: 11px;
-    justify-content: space-between;
 }
 .team-events {
     display: flex;
@@ -444,13 +447,16 @@ main {
 .team-events table th:nth-child(3), .team-events table td:nth-child(3) {
     text-align: center;
 }
-.team-events .tableOdds {
+.tableOdds {
     display: flex;
     justify-content: space-between;
     gap: 10px; 
 }
-.team-events .tableOdds span {
-    flex: 1;
+.tableOdds span {
+    flex: 1; 
+}
+.team-events .tableOdds span.won {
+    font-weight: 700;
 }
 .team-events strong {
     font-weight: 500;
@@ -473,6 +479,23 @@ main {
     margin: 10px;
     padding: 5px;
     border-radius: 25px;
+    flex-direction: column;
+    font-size: 11px;
+}
+
+.h2h-event .event { 
+    display: flex;
+    justify-content: space-between; 
+}
+.h2h-event .event span {
+    flex: 1;
+}
+.h2h-event .event span.home-team, .h2h-event .event span.away-team { 
+    flex: 2;
+}
+
+.h2h-event .event .event-score { 
+    text-align: center;
 }
 
 .match-odds span { 
@@ -521,6 +544,7 @@ main {
     width: 100%;
     margin-top: 20px;
 }
+
      </style>
     </head>
     <body> 
@@ -781,20 +805,20 @@ const loadEvents = async (events, odds, eventsContainer) => {
         const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id, event.tournament.uniqueTournament.id);
 
         // Extract last 5 games overall form
-        const homeTeamForm = getLastFiveGamesForm(homeTeamLastEvents, event.homeTeam.id);
-        const awayTeamForm = getLastFiveGamesForm(awayTeamLastEvents, event.awayTeam.id);
-        // Extract last 5 games overall form
+const homeTeamOverallForm = getLastFiveGamesForm(homeTeamLastEvents, event.homeTeam.id);
+const awayTeamOverallForm = getLastFiveGamesForm(awayTeamLastEvents, event.awayTeam.id);
+// Extract last 5 home/away games form
+const homeTeamHomeForm = getHomeAwayForm(homeTeamLastEvents, 'home', event.homeTeam.id);
+const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayTeam.id);
+
         const homeTeamPoints = getLastFiveGamesPoints(homeTeamLastEvents, event.homeTeam.id);
         const awayTeamPoints = getLastFiveGamesPoints(awayTeamLastEvents, event.awayTeam.id);
 
 
         // Fetch last 5 games with odds for each team
-        const homeTeamLastFiveGames = await getLastFiveGames(homeTeamLastEvents, 'home', event.homeTeam.id);
-        const awayTeamLastFiveGames = await getLastFiveGames(awayTeamLastEvents, 'away', event.awayTeam.id);
+        const homeTeamLastFiveGames = await getLastFiveGames(homeTeamLastEvents, event.homeTeam.id);
+        const awayTeamLastFiveGames = await getLastFiveGames(awayTeamLastEvents, event.awayTeam.id);
 
-        // Extract last 5 home/away games form
-        const homeTeamHomeForm = getHomeAwayForm(homeTeamLastEvents, 'home', event.homeTeam.id);
-        const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayTeam.id);
 
         // Calculate home and away win statistics
         const homeTeamStats = calculateWinStats(homeTeamLastEvents, event.homeTeam.id);
@@ -916,16 +940,16 @@ const loadEvents = async (events, odds, eventsContainer) => {
             </div>
             <div class="team-forms">
                 <div class="home-team-forms">
-                    <div>${homeTeamForm}</div>
-                    <div>${homeTeamHomeForm}</div>
+                    <div>${homeTeamOverallForm.form} <span class="scores">${homeTeamOverallForm.totalGoalsFor}:${homeTeamOverallForm.totalGoalsAgainst}</span></div>
+                    <div>${homeTeamHomeForm.form} <span class="scores">${homeTeamHomeForm.totalGoalsFor}:${homeTeamHomeForm.totalGoalsAgainst}</span></div>
                 </div>
                 <div class="teams-context">
                     <span>Last 5 games</span>
                     <span>Last 5 home/away only</span>
                 </div>
                 <div class="away-team-forms">
-                    <div>${awayTeamForm}</div>
-                    <div>${awayTeamAwayForm}</div>
+                    <div>${awayTeamOverallForm.form} <span class="scores">${awayTeamOverallForm.totalGoalsFor}:${awayTeamOverallForm.totalGoalsAgainst}</span></div>
+                    <div>${awayTeamAwayForm.form} <span class="scores">${awayTeamAwayForm.totalGoalsFor}:${awayTeamAwayForm.totalGoalsAgainst}</span></div>
                 </div>
             </div>
             <div class="team-events">
@@ -976,17 +1000,66 @@ const generateGamesHtml = (games) => {
                         <td><strong>${game.homeTeam.shortName}</strong> - <strong>${game.awayTeam.shortName}</strong></td>
                         <td>${game.homeScore.current} - ${game.awayScore.current}</td>
                         <td>
-                        <div class="tableOdds">
-                           <span>${fractionalToDecimal(game.homeOdds)}</span>
-                            <span>${fractionalToDecimal(game.drawOdds)}</span> 
-                            <span>${fractionalToDecimal(game.awayOdds)}</span>
-                        </div>
+                            <div class="tableOdds">
+                                <span class="${game.homeOddsClass}">${fractionalToDecimal(game.homeOdds)}</span>
+                                <span class="${game.drawOddsClass}">${fractionalToDecimal(game.drawOdds)}</span>
+                                <span class="${game.awayOddsClass}">${fractionalToDecimal(game.awayOdds)}</span>
+                            </div>
                         </td>
                     </tr>
                 `).join('')}
             </tbody>
         </table>
     `;
+};
+
+
+// Function to get last 5 games with odds
+const getLastFiveGames = async (events, teamId) => {
+    const finishedEvents = events.filter((event) => event.status.type === 'finished');
+    const filteredEvents = finishedEvents.filter((event) => event.homeTeam.id === teamId || event.awayTeam.id === teamId
+    );
+    const lastFiveFinishedEvents = filteredEvents.slice(0, 5);
+
+    const oddsPromises = lastFiveFinishedEvents.map(async (event) => {
+        const eventId = event.id;
+        try {
+            const oddsResponse = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`);
+            const oddsData = await oddsResponse.json();
+
+            // Extract odds values
+            const homeOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '1')?.fractionalValue || '-';
+            const drawOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === 'X')?.fractionalValue || '-';
+            const awayOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '2')?.fractionalValue || '-';
+
+            // Find the winning choice and determine the class for each odd
+            const winningChoice = oddsData.markets[0]?.choices.find(choice => choice.winning === true);
+            const winningClass = (oddsValue) => (winningChoice?.fractionalValue === oddsValue ? 'won' : '');
+
+            return {
+                ...event,
+                homeOdds,
+                drawOdds,
+                awayOdds,
+                homeOddsClass: winningClass(homeOdds),
+                drawOddsClass: winningClass(drawOdds),
+                awayOddsClass: winningClass(awayOdds),
+            };
+        } catch (error) {
+            console.error(`Failed to fetch odds for event ${eventId}`, error);
+            return {
+                ...event,
+                homeOdds: '-',
+                drawOdds: '-',
+                awayOdds: '-',
+                homeOddsClass: '',
+                drawOddsClass: '',
+                awayOddsClass: '',
+            };
+        }
+    });
+
+    return await Promise.all(oddsPromises);
 };
 
 const fetchEventWinning = async (eventId) => {
@@ -1006,80 +1079,86 @@ const fetchEventWinning = async (eventId) => {
     }
 };
 
-// Function to get last 5 games with odds
-const getLastFiveGames = async (events, type, teamId) => {
-    const finishedEvents = events.filter((event) => event.status.type === 'finished');
-    const filteredEvents = finishedEvents.filter((event) =>
-        type === 'home' ? event.homeTeam.id === teamId : event.awayTeam.id === teamId
-    );
-    const lastFiveFinishedEvents = filteredEvents.slice(0, 5);
+// Function to fetch odds for an event
+const fetchOddsForEvent = async (eventId) => {
+    try {
+        const oddsResponse = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`);
+        const oddsData = await oddsResponse.json();
 
-    const oddsPromises = lastFiveFinishedEvents.map(async (event) => {
-        const eventId = event.id;
-        try {
-            const oddsResponse = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`);
-            const oddsData = await oddsResponse.json();
+        // Extract odds values
+        const homeOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '1')?.fractionalValue || '-';
+        const drawOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === 'X')?.fractionalValue || '-';
+        const awayOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '2')?.fractionalValue || '-';
 
-            const homeOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '1')?.fractionalValue || '-';
-            const drawOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === 'X')?.fractionalValue || '-';
-            const awayOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '2')?.fractionalValue || '-';
-
-            return {
-                ...event,
-                homeOdds,
-                drawOdds,
-                awayOdds,
-            };
-        } catch (error) {
-            console.error(`Failed to fetch odds for event ${eventId}`, error);
-            return {
-                ...event,
-                homeOdds: '-',
-                drawOdds: '-',
-                awayOdds: '-',
-            };
-        }
-    });
-
-    return await Promise.all(oddsPromises);
+        return {
+            homeOdds,
+            drawOdds,
+            awayOdds
+        };
+    } catch (error) {
+        console.error(`Failed to fetch odds for event ${eventId}`, error);
+        return {
+            homeOdds: '-',
+            drawOdds: '-',
+            awayOdds: '-'
+        };
+    }
 };
-// Function to fetch and display the most recent H2H event
-const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, elementId) => {
+
+const fetchAndDisplayMostRecentH2HEvent  = async (customId, currentMatchId, elementId) => {
     const url = `${baseURL}/event/${customId}/h2h/events`;
     try {
         const response = await fetch(url);
         const data = await response.json();
 
         if (data && data.events) {
-            // Filter and sort events to get the most recent finished event
-            const finishedEvents = data.events
+            const currentDate = new Date();
+            const threeYearsAgoDate = new Date();
+            threeYearsAgoDate.setFullYear(currentDate.getFullYear() - 2);
+
+            // Filter events to include only those from the last 2 years and exclude the current match
+            const filteredEvents = data.events
                 .filter(event => event.status && event.status.type === 'finished' && event.id !== currentMatchId)
+                .filter(event => new Date(event.startTimestamp * 1000) >= threeYearsAgoDate)
                 .sort((a, b) => b.startTimestamp - a.startTimestamp);
 
-            if (finishedEvents.length > 0) { 
-                const mostRecentEvent = finishedEvents[0];
+            if (filteredEvents.length > 0) {
+                // Fetch odds for all filtered events
+                const eventsWithOdds = await Promise.all(filteredEvents.map(async (event) => {
+                    const odds = await fetchOddsForEvent(event.id);
+                    return {
+                        ...event,
+                        ...odds
+                    };
+                }));
 
-                // Extract relevant information
-                const homeTeam = mostRecentEvent.homeTeam.shortName;
-                const awayTeam = mostRecentEvent.awayTeam.shortName;
-                const homeScore = mostRecentEvent.homeScore.current;
-                const awayScore = mostRecentEvent.awayScore.current;
-                const eventDate = new Date(mostRecentEvent.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit'
-                }).replace('/', '.').replace('/', '.');
-                // Create an HTML string with each element wrapped in <span> tags
-                const htmlString = `
-                    <span class="event-date">${eventDate}</span> 
-                    <span class="home-team">${homeTeam}</span> 
-                    <span class="home-score">${homeScore}</span> 
-                    - 
-                    <span class="away-score">${awayScore}</span> 
-                    <span class="away-team">${awayTeam}</span>
-                `;
+                // Create HTML for all filtered events with odds
+                const eventsHtml = eventsWithOdds.map(event => {
+                    const homeTeam = event.homeTeam.shortName;
+                    const awayTeam = event.awayTeam.shortName;
+                    const homeScore = event.homeScore.current;
+                    const awayScore = event.awayScore.current;
+                    const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })
+                        .replace('/', '.').replace('/', '.');
+                    return `
+                        <div class="event">
+                            <span class="event-date">${eventDate}</span> 
+                            <span class="home-team">${homeTeam}</span> 
+                            <span class="event-score">${homeScore} - ${awayScore}</span> 
+                            <span class="away-team">${awayTeam}</span>
+                            <div class="tableOdds">
+                                <span class="home-odds">${fractionalToDecimal(event.homeOdds)}</span>
+                                <span class="draw-odds">${fractionalToDecimal(event.drawOdds)}</span>
+                                <span class="away-odds">${fractionalToDecimal(event.awayOdds)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
 
-                // Display the information in the correct element
-                document.getElementById(elementId).innerHTML = htmlString;
+                // Display the HTML for all events
+                document.getElementById(elementId).innerHTML = eventsHtml;
             } else {
-                document.getElementById(elementId).innerHTML = '<span>No finished H2H events found.</span>';
+                document.getElementById(elementId).innerHTML = '<span>No finished H2H events from the last 3 years found.</span>';
             }
         } else {
             document.getElementById(elementId).innerHTML = '<span>No events data available.</span>';
@@ -1088,7 +1167,8 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
         console.error('Error fetching H2H events:', error.message);
         document.getElementById(elementId).innerHTML = '<span>Error fetching H2H events.</span>';
     }
-};
+}; 
+
 
 
 const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
@@ -1203,31 +1283,98 @@ const calculateWinStats = (events, teamId) => {
     };
 };
 
+const getTotalGoals = (events, teamId) => {
+    const finishedEvents = events.filter((event) => event.status.type === 'finished');
+    const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
+
+    let totalGoalsFor = 0;
+    let totalGoalsAgainst = 0;
+
+    lastFiveFinishedEvents.forEach((event) => {
+        const homeScore = event.homeScore.current ?? 0; // Default to 0 if undefined
+        const awayScore = event.awayScore.current ?? 0; // Default to 0 if undefined
+
+        if (event.homeTeam.id === teamId) {
+            totalGoalsFor += homeScore;
+            totalGoalsAgainst += awayScore;
+        } else {
+            totalGoalsFor += awayScore;
+            totalGoalsAgainst += homeScore;
+        }
+    });
+
+    return {
+        totalGoalsFor,
+        totalGoalsAgainst
+    };
+};
 
 const getLastFiveGamesForm = (events, teamId) => {
     const finishedEvents = events.filter((event) => event.status.type === 'finished');
     const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
- 
+
     const form = lastFiveFinishedEvents
         .reverse()
         .map((event) => {
+            let result = '';
             if (event.winnerCode === 3) {
-                return '<span class="D">D</span>'; // Draw
+                result = '<span class="D">D</span>'; // Draw
             } else if (
                 (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
                 (event.winnerCode === 2 && event.awayTeam.id === teamId)
             ) {
-                return '<span class="W">W</span>'; // Win
+                result = '<span class="W">W</span>'; // Win
             } else {
-                return '<span class="L">L</span>'; // Loss
+                result = '<span class="L">L</span>'; // Loss
             }
+            return result;
         })
         .join('');
 
-    return form;
+    const { totalGoalsFor, totalGoalsAgainst } = getTotalGoals(events, teamId);
+
+    return {
+        form,
+        totalGoalsFor,
+        totalGoalsAgainst
+    };
 };
 
+const getHomeAwayForm = (events, type, teamId) => {
+    const finishedEvents = events.filter((event) => event.status.type === 'finished');
+    const filteredEvents = finishedEvents.filter((event) =>
+        type === 'home' ? event.homeTeam.id === teamId : event.awayTeam.id === teamId
+    );
+    const lastFiveFilteredEvents = filteredEvents.slice(0, 5);
 
+    const form = lastFiveFilteredEvents
+        .reverse()
+        .map((event) => {
+            let result = '';
+            if (event.winnerCode === 3) {
+                result = '<span class="D">D</span>'; // Draw
+            } else if (
+                (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
+                (event.winnerCode === 2 && event.awayTeam.id === teamId)
+            ) {
+                result = '<span class="W">W</span>'; // Win
+            } else {
+                result = '<span class="L">L</span>'; // Loss
+            }
+            return result;
+        })
+        .join('');
+
+    const { totalGoalsFor, totalGoalsAgainst } = getTotalGoals(filteredEvents, teamId);
+
+    return {
+        form,
+        totalGoalsFor,
+        totalGoalsAgainst
+    };
+};
+        
+    
 const getLastFiveGamesPoints = (events, teamId) => {
     const finishedEvents = events.filter((event) => event.status.type === 'finished');
     const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
@@ -1250,36 +1397,7 @@ const getLastFiveGamesPoints = (events, teamId) => {
         .join('');
 
     return points;
-};
-
-const getHomeAwayForm = (events, type, teamId) => {
-    const finishedEvents = events.filter((event) => event.status.type === 'finished');
-    const filteredEvents = finishedEvents.filter((event) =>
-        type === 'home' ? event.homeTeam.id === teamId : event.awayTeam.id === teamId
-    );
-    const lastFiveFilteredEvents = filteredEvents.slice(0, 5);
-
-    const form = lastFiveFilteredEvents
-        .reverse()
-        .map((event) => {
-            if (event.winnerCode === 3) {
-                return '<span class="D">D</span>'; // Draw
-            } else if (
-                (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
-                (event.winnerCode === 2 && event.awayTeam.id === teamId)
-            ) {
-                return '<span class="W">W</span>'; // Win
-            } else {
-                return '<span class="L">L</span>'; // Loss
-            }
-        })
-        .join('');
-
-    return form;
-};
- 
-        
-     
+}; 
 
             const fetchTeamStats = async (teamId, currentMatchId, currentMatchTimestamp) => {
                 const teamEventsUrl = `${baseURL}/team/${teamId}/events/last/0`;
