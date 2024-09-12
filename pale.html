@@ -816,8 +816,8 @@ const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayT
 
 
         // Fetch last 5 games with odds for each team
-        const homeTeamLastFiveGames = await getLastFiveGames(homeTeamLastEvents, event.homeTeam.id);
-        const awayTeamLastFiveGames = await getLastFiveGames(awayTeamLastEvents, event.awayTeam.id);
+        const homeTeamLastFiveGames = await getLastFiveGames(homeTeamLastEvents, 'home', event.homeTeam.id);
+        const awayTeamLastFiveGames = await getLastFiveGames(awayTeamLastEvents, 'away', event.awayTeam.id);
 
 
         // Calculate home and away win statistics
@@ -1015,10 +1015,13 @@ const generateGamesHtml = (games) => {
 
 
 // Function to get last 5 games with odds
-const getLastFiveGames = async (events, teamId) => {
+const getLastFiveGames = async (events, type, teamId) => {
     const finishedEvents = events.filter((event) => event.status.type === 'finished');
-    const filteredEvents = finishedEvents.filter((event) => event.homeTeam.id === teamId || event.awayTeam.id === teamId
+    const filteredEvents = finishedEvents.filter((event) =>
+        type === 'home' ? event.homeTeam.id === teamId : event.awayTeam.id === teamId
     );
+    //.filter((event) => event.homeTeam.id === teamId || event.awayTeam.id === teamId
+    //);
     const lastFiveFinishedEvents = filteredEvents.slice(0, 5);
 
     const oddsPromises = lastFiveFinishedEvents.map(async (event) => {

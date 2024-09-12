@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Tournaments</title>
+    <style>
+        /* styles.css */
+body {
+    font-family: Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    font-size: .75rem;
+    background-color: #121212;
+    color: #858585;
+}
+::-webkit-scrollbar {
+    width: 1px;
+    height: 3px;
+} 
+
+::-webkit-scrollbar-track {
+    background: #181818; 
+}
+::-webkit-scrollbar-thumb {
+    background: #3d3d3d;  
+}
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.left-col {
+    width: 300px;
+    background-color: #181818;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.right-col {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-right {
+    flex: 1; 
+}
+
+.bottom-right {
+    flex: 2;
+}
+
+.category-header {
+    cursor: pointer;
+    padding: 5px;
+    background-color: #1e1c1d;
+    border: 1px solid #202020;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.category-header img {
+    margin-right: 10px;
+}
+
+.category-header .event-count, .category-tournaments .event-count {
+    margin-left: auto;
+    font-weight: bold;
+}
+
+ul.topTourn, ul.category-tournaments, ul.tournament-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul.topTourn li, ul.category-tournaments li, ul.tournament-list li {
+    padding: 5px;
+    border-bottom: 1px solid #202020;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+ul.topTourn li img, ul.category-tournaments li img, ul.tournament-list li img {
+    margin-right: 10px;
+}
+
+.category-tournaments, .tournament-list {
+    display: none;
+}
+
+.expanded {
+    background-color: #202020;
+}
+.top-right {
+    overflow-x: auto;
+}
+.event-details {
+    border-top: 1px solid #212121;
+    padding: 10px;  
+}
+.col-middle {
+    width: 100%;
+    display: block; 
+}
+ul.tournamentEvents {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 85vw;
+}
+
+ul.tournamentEvents li {
+    display: flex; 
+    min-width: 250px;
+    cursor: pointer;
+}
+
+
+.info-wrapper {
+            display: flex;
+            flex: 1;
+            align-items: stretch;
+        }
+        .date {
+            display: flex;
+            flex-direction: column;
+            margin-right: 8px;
+            padding-right: 8px;
+            text-align: center;
+            flex: 0 0 35px;
+            -webkit-box-flex: 0;
+            color: #555;
+            border-right: 1px solid #212121;
+            justify-content: center;
+        }
+        .team-info {            
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: calc(100% - 35px); 
+        }
+        .teams-info { 
+            display: flex;
+            flex-direction: column;
+            overflow-x: clip; 
+            gap: 3px;
+            justify-content: center;
+            padding: 5px 0;
+            flex: 1 1 190px;
+        }
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            line-height: 1.51429;
+        }
+        .match-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 8px;
+            flex: 0 0 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-tabs-secondary-fill-base);
+            justify-content: space-around; 
+            border-right: 3px solid #212121;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-col">
+            <div class="categories"></div>
+        </div>
+        <div class="col-middle">
+            <div class="top-right"></div>
+            <div class="bottom-right"> 
+                <div class="event-details"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        
+        const baseURL = 'https://api.sofascore.com/api/v1';
+        const staticImageUrl = 'https://www.sofascore.com/static/images';
+document.addEventListener('DOMContentLoaded', () => {
+
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+    //const formattedDate = `2024-09-10`;
+
+    Promise.all([
+        fetch(`${baseURL}/sport/football/categories`).then(response => response.json()),
+        fetch(`${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
+        fetch(`${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json()),
+        fetch(`${baseURL}/sport/football/scheduled-events/${formattedDate}/inverse`).then(response => response.json())
+    ])
+    .then(([categoriesData, topTournamentsData, scheduledEventsData1, scheduledEventsData2]) => {
+        const categories = categoriesData.categories.sort((a, b) => a.name.localeCompare(b.name));
+        const startOfDay = new Date(formattedDate).setHours(0, 30, 0, 0) / 1000;
+        const endOfDay = startOfDay + 36 * 60 * 60;
+        const topTournaments = topTournamentsData.uniqueTournaments;
+
+        const events = scheduledEventsData1.events.filter(event => event.startTimestamp >= startOfDay && event.startTimestamp <= endOfDay);
+        const inverseEvents = scheduledEventsData2.events.filter(event => event.startTimestamp >= startOfDay && event.startTimestamp <= endOfDay);
+
+        const allEvents = [...events, ...inverseEvents];
+        const uniqueEvents = events.filter((event, index, self) => index === self.findIndex(e => e.id === event.id));
+
+        const categoryEventCounts = {};
+        const tournamentEventCounts = {};
+
+        uniqueEvents.forEach(event => {
+            const categoryId = event.tournament.category.id;
+            const tournamentId = event.tournament.uniqueTournament.id;
+
+            categoryEventCounts[categoryId] = (categoryEventCounts[categoryId] || 0) + 1;
+            tournamentEventCounts[tournamentId] = (tournamentEventCounts[tournamentId] || 0) + 1;
+        });
+
+        const leftCol = document.querySelector('.categories');
+        const topRightList = document.querySelector('.tournament-list');
+        const bottomRightDetails = document.querySelector('.event-details');
+        const middleCol = document.querySelector('.col-middle');
+
+        const promises = [];
+
+        let topTournamentsHtml = '<h2>Top leagues</h2><ul class="topTourn">';
+        topTournaments.forEach(tournament => {
+            if (tournamentEventCounts[tournament.id]) {
+                const category = tournament.category;
+                const imageUrl = category.alpha2
+                    ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
+                    : `${staticImageUrl}/flags/${category.flag}.png`;
+                const eventCount = tournamentEventCounts[tournament.id];
+                topTournamentsHtml += `<li data-tournament-id="${tournament.id}"><img src="${imageUrl}" alt="${category.name} flag" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${tournament.name}<span class="event-count">${eventCount}</span></li>`;
+            }
+        });
+        topTournamentsHtml += '</ul> <h2>All Leagues </h2>';
+
+        categories.forEach((category) => {
+            if (categoryEventCounts[category.id]) {
+                const categoryId = category.id;
+                const promise = fetch(`${baseURL}/category/${categoryId}/unique-tournaments`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const uniqueTournaments = data.groups[0].uniqueTournaments;
+                        const imageUrl = category.alpha2
+                            ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
+                            : `${staticImageUrl}/flags/${category.flag}.png`;
+
+                        const categoryEventCount = categoryEventCounts[category.id];
+                        let categoryHtml = `<div class="category-header"><img src="${imageUrl}" alt="${category.name} flag"  width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${category.name}<span class="event-count">${categoryEventCount}</span></div><ul class="category-tournaments">`;
+                        uniqueTournaments.forEach((tournament) => {
+                            if (tournamentEventCounts[tournament.id]) {
+                                const tournamentEventCount = tournamentEventCounts[tournament.id];
+                                categoryHtml += `<li data-tournament-id="${tournament.id}"><img src="${baseURL}/unique-tournament/${tournament.id}/image" alt="${tournament.name}" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;"> ${tournament.name}<span class="event-count">${tournamentEventCount}</span></li>`;
+                            }
+                        });
+                        categoryHtml += `</ul>`;
+                        return categoryHtml;
+                    });
+                promises.push(promise);
+            }
+        });
+
+        Promise.all(promises).then(results => {
+            leftCol.innerHTML = topTournamentsHtml + results.join('');
+
+            const categoryHeaders = leftCol.querySelectorAll('.category-header');
+            categoryHeaders.forEach((header) => {
+                header.addEventListener('click', () => {
+                    const ul = header.nextElementSibling;
+                    if (ul.style.display === 'none') {
+                        ul.style.display = 'block';
+                        header.classList.add('expanded');
+                    } else {
+                        ul.style.display = 'none';
+                        header.classList.remove('expanded');
+                    }
+                    const otherHeaders = leftCol.querySelectorAll('.category-header');
+                    otherHeaders.forEach((otherHeader) => {
+                        if (otherHeader !== header) {
+                            const otherUl = otherHeader.nextElementSibling;
+                            otherUl.style.display = 'none';
+                            otherHeader.classList.remove('expanded');
+                        }
+                    });
+                });
+            });
+
+            const tournamentItems = document.querySelectorAll('ul.topTourn li, .category-tournaments li');
+            tournamentItems.forEach(item => {
+                item.addEventListener('click', async () => {
+                    const tournamentId = parseInt(item.dataset.tournamentId);
+                    try {
+                        const tournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === tournamentId);
+                        displayScheduledEvents(tournamentEvents);
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                    }
+                });
+            });
+
+            if (uniqueEvents.length > 0) {
+                const firstTournamentId = uniqueEvents[0].tournament.uniqueTournament.id;
+                const firstTournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === firstTournamentId);
+                displayScheduledEvents(firstTournamentEvents);
+            }
+        }).catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    });
+});
+function displayScheduledEvents(events) {
+    const topRightList = document.querySelector('.top-right');
+    const bottomRightDetails = document.querySelector('.event-details');
+
+    // Check if topRightList is null and log an error if it is
+    if (!topRightList) {
+        console.error('Top right list element not found');
+        return;
+    }
+
+    // Check if bottomRightDetails is null and log an error if it is
+    if (!bottomRightDetails) {
+        console.error('Bottom right details element not found');
+        return;
+    }
+
+    let tournamentEventsHtml = '<ul class="tournamentEvents">';
+    events.forEach(event => {
+        const homeScore = event.homeScore?.current ?? '';
+        const awayScore = event.awayScore?.current ?? '';
+        const status = event.status.type;
+        const eventTime = new Date(event.startTimestamp * 1000).toLocaleString([], {
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+
+        tournamentEventsHtml += `<li class="match-list ${status}" data-event-id="${event.id}" data-custom-id="${event.customId}" data-tournament-id="${event.tournament.id}" data-unique-tournament-id="${event.tournament.uniqueTournament.id}" data-season-id="${event.season.id}" data-home-team-id="${event.homeTeam.id}" data-away-team-id="${event.awayTeam.id}">
+            <div class="info-wrapper">
+                <div class="date"><span>${eventTime}</span></div>
+                <div class="team-info">
+                    <div class="teams-info">
+                        <div class="team"><img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">${event.homeTeam.shortName}</div>
+                        <div class="team"><img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">${event.awayTeam.shortName}</div>
+                    </div>
+                    <div class="match-score">
+                        <span class="score" id="homeScore-${event.id}">${homeScore}</span>
+                        <span class="score" id="awayScore-${event.id}">${awayScore}</span>
+                    </div>
+                </div>
+            </div>
+        </li>`;
+    });
+    tournamentEventsHtml += '</ul>';
+    topRightList.innerHTML = tournamentEventsHtml;
+
+    // Add event listener to each event item
+    const eventItems = topRightList.querySelectorAll('.match-list');
+    eventItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const eventId = item.getAttribute('data-event-id');
+            const selectedEvent = events.find(event => event.id == eventId);
+            displayEventDetails(selectedEvent);
+        });
+    });
+
+    // Display details of the first event, if available
+    if (events.length > 0) {
+        const firstEvent = events[0];
+        displayEventDetails(firstEvent);
+    } else {
+        bottomRightDetails.innerHTML = '<p>No events available.</p>';
+    }
+}
+
+// Function to display event details
+function displayEventDetails(event) {
+    const bottomRightDetails = document.querySelector('.event-details');
+
+    if (!bottomRightDetails) {
+        console.error('Bottom right details element not found');
+        return;
+    }
+
+    const homeScore = event.homeScore?.current ?? '';
+    const awayScore = event.awayScore?.current ?? '';
+    const eventTime = new Date(event.startTimestamp * 1000).toLocaleString();
+    const eventDetailsHtml = `
+        <h2>Event Details</h2>
+        <p><strong>Event Name:</strong> ${event.homeTeam.name} vs ${event.awayTeam.name}</p>
+        <p><strong>Start Time:</strong> ${eventTime}</p>
+        <p><strong>Status:</strong> ${event.status.type}</p>
+        <p><strong>Score:</strong> ${homeScore} - ${awayScore}</p>
+    `;
+    bottomRightDetails.innerHTML = eventDetailsHtml;
+}
+
+
+    </script>
+</body>
+</html>
