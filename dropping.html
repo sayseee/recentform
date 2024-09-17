@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Odds Drop</title>
+    <style>
+        .event {
+            margin-bottom: 20px;
+        }
+
+        .odds {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        .odds span {
+            position: relative;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+
+        .odds span::after {
+            content: attr(data-initial-odd);
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .odds span:hover::after {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .live {
+            color: green;
+            font-weight: bold;
+        }
+
+        .not-live {
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Events with Odds Drop of 10% or More</h1>
+
+    <!-- Date Input -->
+    <label for="date-picker">Select Date:</label>
+    <input type="date" id="date-picker" value="<?php echo date('Y-m-d'); ?>">
+    <button onclick="updateOdds()">Get Odds</button>
+
+    <ul id="event-list"></ul>
+
+    <script>
+        const baseURL = 'https://api.sofascore.com/api/v1';
+
+        const fetchJson = async (url) => {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Error ${response.status}: ${errorData.message}`);
+                }
+                return response.json();
+            } catch (error) {
+                console.error('Fetch error:', error.message);
+                return null;
+            }
+        };
+
+        const fractionalToDecimal = (fractionalOdds) => {
+            const [numerator, denominator] = fractionalOdds.split('/');
+            return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
+        };
+
+        const calculatePercentageDrop = (initialOdds, currentOdds) => {
+            const initialDecimal = parseFloat(fractionalToDecimal(initialOdds));
+            const currentDecimal = parseFloat(fractionalToDecimal(currentOdds));
+            return ((initialDecimal - currentDecimal) / initialDecimal * 100).toFixed(2);
+        };
+
+        const displayEventsWithSignificantDrop = async (date) => {
+            const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${date}`;
+            const oddsUrl = `${baseURL}/sport/football/odds/1/${date}`;
+
+            const scheduledEventsData = await fetchJson(scheduledEventsUrl);
+            const oddsData = await fetchJson(oddsUrl);
+
+            if (!scheduledEventsData || !oddsData) {
+                console.error('Failed to fetch data');
+                return;
+            }
+
+            const events = scheduledEventsData.events;
+            const odds = oddsData.odds;
+
+            const significantDropEvents = [];
+
+            events.forEach(event => {
+                const eventId = event.id;
+                const eventOdds = odds[eventId];
+
+                if (eventOdds) {
+                    const choices = eventOdds.choices;
+                    const isLive = eventOdds.isLive;
+
+                    if (choices.length >= 2) {
+                        let homeOddsDrop = null;
+                        let drawOddsDrop = null;
+                        let awayOddsDrop = null;
+
+                        let homeOddsInitial = null;
+                        let drawOddsInitial = null;
+                        let awayOddsInitial = null;
+
+                        choices.forEach(choice => {
+                            const initialOdds = choice.initialFractionalValue;
+                            const currentOdds = choice.fractionalValue;
+                            const percentageDrop = calculatePercentageDrop(initialOdds, currentOdds);
+
+                            if (choice.name === '1') {
+                                homeOddsInitial = initialOdds;
+                                homeOddsDrop = percentageDrop;
+                            } else if (choice.name === 'X') {
+                                drawOddsInitial = initialOdds;
+                                drawOddsDrop = percentageDrop;
+                            } else if (choice.name === '2') {
+                                awayOddsInitial = initialOdds;
+                                awayOddsDrop = percentageDrop;
+                            }
+                        });
+
+                        if (homeOddsDrop >= 10 || drawOddsDrop >= 10 || awayOddsDrop >= 10) {
+                            significantDropEvents.push({
+                                homeTeam: event.homeTeam.name,
+                                awayTeam: event.awayTeam.name,
+                                homeOdds: fractionalToDecimal(eventOdds.choices.find(c => c.name === '1').fractionalValue),
+                                drawOdds: fractionalToDecimal(eventOdds.choices.find(c => c.name === 'X').fractionalValue),
+                                awayOdds: fractionalToDecimal(eventOdds.choices.find(c => c.name === '2').fractionalValue),
+                                initialHomeOdds: fractionalToDecimal(eventOdds.choices.find(c => c.name === '1').initialFractionalValue),
+                                initialDrawOdds: fractionalToDecimal(eventOdds.choices.find(c => c.name === 'X').initialFractionalValue),
+                                initialAwayOdds: fractionalToDecimal(eventOdds.choices.find(c => c.name === '2').initialFractionalValue),
+                                homeOddsDrop,
+                                drawOddsDrop,
+                                awayOddsDrop,
+                                isLive
+                            });
+                        }
+                    }
+                }
+            });
+
+            const eventList = document.getElementById('event-list');
+            eventList.innerHTML = '';
+
+            significantDropEvents.forEach(event => {
+                const listItem = document.createElement('li');
+                
+                const homeOddsHighlight = event.homeOddsDrop >= 10 ? 'highlight' : '';
+                const drawOddsHighlight = event.drawOddsDrop >= 10 ? 'highlight' : '';
+                const awayOddsHighlight = event.awayOddsDrop >= 10 ? 'highlight' : '';
+                const liveStatus = event.isLive ? 'live' : 'not-live';
+
+                listItem.innerHTML = `
+                    ${event.homeTeam} vs ${event.awayTeam} <br>
+                    <span class="${liveStatus}">${event.isLive ? 'Live' : 'Not Live'}</span> <br>
+                    Home Odds: <span class="${homeOddsHighlight}">${event.initialHomeOdds} - ${event.homeOdds}</span> ${event.homeOddsDrop ? `Drop: ${event.homeOddsDrop}%` : ''} <br>
+                    Draw Odds: <span class="${drawOddsHighlight}">${event.initialDrawOdds} - ${event.drawOdds}</span> ${event.drawOddsDrop ? `Drop: ${event.drawOddsDrop}%` : ''} <br>
+                    Away Odds: <span class="${awayOddsHighlight}">${event.initialAwayOdds} - ${event.awayOdds}</span> ${event.awayOddsDrop ? `Drop: ${event.awayOddsDrop}%` : ''} <br>
+                `;
+                eventList.appendChild(listItem);
+            });
+        };
+
+        const updateOdds = () => {
+            const datePicker = document.getElementById('date-picker');
+            const selectedDate = datePicker.value;
+            if (selectedDate) {
+                displayEventsWithSignificantDrop(selectedDate);
+            }
+        };
+
+        // Initialize with today's date
+        document.addEventListener('DOMContentLoaded', () => {
+            const datePicker = document.getElementById('date-picker');
+            const today = new Date().toISOString().split('T')[0];
+            datePicker.value = today;
+            displayEventsWithSignificantDrop(today);
+        });
+    </script>
+</body>
+</html>
