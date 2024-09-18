@@ -1,152 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soccer Match Events and Odds</title>
-    <style>
-        .event-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .team-event {
-            width: 45%;
-        }
-        .odds {
-            margin-top: 10px;
-        }
-        .market {
-            margin-bottom: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Matches Layout</title>
+  <style>
+    body {
+  font-family: Roboto, sans-serif;
+  background-color: #121212;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  font-size: 0.75rem;
+} 
+
+.matches-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.match-category {
+  margin-bottom: 20px;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #333;
+  justify-content: space-between;
+}
+
+.category-flag {
+  width: 24px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.category-title {
+  flex-grow: 1; 
+}
+
+.standings-link { 
+  color: #00bfa5;
+  text-decoration: none;
+}
+
+.match-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+    gap: 10px;
+}
+
+.match-row:last-child {
+  border-bottom: none;
+}
+
+.tournament-info {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    flex: 2.3;
+}
+.match-info {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    flex: 2;
+}
+
+.match-time,
+.match-status { 
+  color: #aaa;
+  width: 72px;
+}
+
+.team-names {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+.match-scores {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 0.2;
+    text-align: center;
+}
+
+.team-names span { 
+  margin-bottom: 2px;
+}
+
+.odds, .odds-title {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.odd {
+  background-color: #222;
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: #00e676;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+}
+
+.odd.negative {
+  color: #ff1744;
+}
+
+.odd.highlighted {
+  border: 0 solid #ffc400;
+}
+
+.finished .match-info .team-names {
+  color: #f5f5f5;
+}
+
+.finished .match-info .match-status {
+  color: #ff9100;
+}
+
+  </style>
 </head>
 <body>
-    <div id="events-container"></div>
-    
-    <script>
-        // Team IDs for comparison
-        const team1Id = 34034; // Example ID for team 1 (Palmeiras)
-        const team2Id = 44523; // Example ID for team 2 (Botafogo-SP)
+  <div class="matches-container">
+    <!-- Ireland Division 1 Section -->
+    <div class="match-category">
+      <div class="category-header">
+        <div class="tournament-info">
+        <img src="ireland-flag.png" alt="" class="category-flag">
+        <span class="category-title">IRELAND: Division 1</span>
+      </div>
+        <span></span>
+        <div class="odds-title">
+          <span>1</span>
+          <span>X</span>
+          <span>2</span>
+        </div>
+      </div>
 
-        // API URLs
-        const team1EventsUrl = `https://api.sofascore.com/api/v1/team/${team1Id}/events/last/0`;
-        const team2EventsUrl = `https://api.sofascore.com/api/v1/team/${team2Id}/events/last/0`;
+      <div class="match-row">
+        <div class="match-info">
+          <span class="match-time">21:45</span>
+          <span class="team-names">
+            <span class="home-team">Wexford</span>
+            <span class="away-team">Bray</span>
+          </span>
+        </div>
+        <div class="match-scores">
+          <span class="home-score">-</span>
+          <span class="away-score">-</span>
+        </div>
+        <div class="odds">
+          <span class="odd">2.04</span>
+          <span class="odd">3.30</span>
+          <span class="odd">3.50</span>
+        </div>
+      </div>
+    </div>
 
-        // Helper function to convert fractional odds to decimal
-        function fractionalToDecimal(fractionalOdds) {
-            const [numerator, denominator] = fractionalOdds.split('/');
-            return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
-        }
+    <!-- Israel Liga Alef North Section -->
+    <div class="match-category">
+      <div class="category-header">
+        <img src="israel-flag.png" alt="Israel Flag" class="category-flag">
+        <span class="category-title">ISRAEL: Liga Alef North</span>
+        <a href="#" class="standings-link">Standings</a>
+      </div>
 
-        // Helper function to format timestamp to a readable date
-        function formatDate(timestamp) {
-            return new Date(timestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' });
-        }
+      <div class="match-row finished">
+        <div class="match-info">
+          <span class="match-status">Finished</span>
+          <span class="team-names">
+            <span class="home-team">Hapoel Kafr</span>
+            <span class="away-team">KannaAraba</span>
+          </span>
+        </div>
+        <div class="match-scores">
+          <span class="home-score">2</span>
+          <span class="away-score">3</span>
+        </div>
+        <div class="odds">
+          <span class="odd highlighted">5.00</span>
+          <span class="odd highlighted">5.00</span>
+          <span class="odd highlighted negative">1.50</span>
+        </div>
+      </div>
 
-        // Fetch and display team events
-        function fetchTeamEvents() {
-            Promise.all([
-                fetch(team1EventsUrl).then(response => response.json()),
-                fetch(team2EventsUrl).then(response => response.json())
-            ])
-            .then(([team1Data, team2Data]) => {
-                const events1 = team1Data.events || [];
-                const events2 = team2Data.events || [];
-                const eventsContainer = document.getElementById('events-container');
-
-                // Filter only finished events
-                const finishedEvents1 = events1.filter(event => event.status.type === 'finished');
-                const finishedEvents2 = events2.filter(event => event.status.type === 'finished');
-
-                // Sort events by date in descending order
-                finishedEvents1.sort((a, b) => new Date(b.startTimestamp * 1000) - new Date(a.startTimestamp * 1000));
-                finishedEvents2.sort((a, b) => new Date(b.startTimestamp * 1000) - new Date(a.startTimestamp * 1000));
-
-                // Ensure both teams have the same number of finished events
-                const maxEvents = Math.min(finishedEvents1.length, finishedEvents2.length);
-
-                for (let i = 0; i < maxEvents; i++) {
-                    const event1 = finishedEvents1[i];
-                    const event2 = finishedEvents2[i];
-
-                    const eventElement = document.createElement('div');
-                    eventElement.className = 'event-container';
-
-                    const homeTeamEvent = createEventElement(event1, team1Id);
-                    const awayTeamEvent = createEventElement(event2, team2Id);
-
-                    eventElement.innerHTML = `
-                        <div class="team-event">${homeTeamEvent}</div>
-                        <div class="team-event">${awayTeamEvent}</div>
-                    `;
-
-                    eventsContainer.appendChild(eventElement);
-
-                    // Fetch odds for both events
-                    fetchOdds(event1.id);
-                    fetchOdds(event2.id);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching events:', error);
-                document.getElementById('events-container').innerHTML = '<p>Error loading events.</p>';
-            });
-        }
-
-        // Create event HTML structure
-        function createEventElement(event, teamId) {
-            return `
-                <h2>${event.tournament.name} - ${event.season.name}</h2>
-                <div class="date">
-                    Date: ${formatDate(event.startTimestamp)}
-                </div>
-                <div class="teams">
-                    <strong>${event.homeTeam.name}</strong> vs <strong>${event.awayTeam.name}</strong>
-                </div>
-                <div class="score">
-                    ${event.homeScore.current} - ${event.awayScore.current}
-                </div>
-                <div class="status">
-                    Status: ${event.status.description}
-                </div>
-                <div class="odds" id="odds-${event.id}">
-                    <!-- Odds will be inserted here -->
-                </div>
-            `;
-        }
-
-        // Fetch and display odds
-        function fetchOdds(eventId) {
-            fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`)
-                .then(response => response.json())
-                .then(data => {
-                    const oddsContainer = document.getElementById(`odds-${eventId}`);
-                    const markets = data.markets || [];
-
-                    markets.forEach(market => {
-                        if (market.marketName === "Full time") {
-                            const marketElement = document.createElement('div');
-                            marketElement.className = 'market';
-                            marketElement.innerHTML = `<strong>${market.marketName}</strong>`;
-
-                            market.choices.forEach(choice => {
-                                marketElement.innerHTML += `<div>${choice.name}: ${fractionalToDecimal(choice.fractionalValue)} ${choice.winning ? '(Winning)' : ''}</div>`;
-                            });
-
-                            oddsContainer.appendChild(marketElement);
-                        }
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching odds:', error);
-                    const oddsContainer = document.getElementById(`odds-${eventId}`);
-                    oddsContainer.innerHTML = '<p>Error loading odds.</p>';
-                });
-        }
-
-        // Initialize data fetching
-        fetchTeamEvents();
-    </script>
+      <!-- Other matches -->
+      <div class="match-row">
+        <div class="match-info">
+          <span class="match-time">15:30</span>
+          <span class="team-names">
+            <span class="home-team">H. Migdal HaEmek</span>
+            <span class="away-team">Maccabi Nujeidat Ahmad</span>
+          </span>
+        </div>
+        <div class="match-scores">
+          <span class="home-score">-</span>
+          <span class="away-score">-</span>
+        </div>
+        <div class="odds">
+          <span class="odd">1.69</span>
+          <span class="odd">3.60</span>
+          <span class="odd">4.46</span>
+        </div>
+      </div>
+      </div>
+    </div> 
 </body>
 </html>

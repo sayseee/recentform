@@ -1,0 +1,1031 @@
+package com.sofascore.network.api;
+
+import com.google.android.gms.actions.SearchIntents;
+import com.google.android.gms.common.Scopes;
+import com.sofascore.model.GoogleTranslate;
+import com.sofascore.model.TvType;
+import com.sofascore.model.UserRegionResponse;
+import com.sofascore.model.buzzer.BuzzerConfigResponse;
+import com.sofascore.model.buzzer.BuzzerConfigResponseKt;
+import com.sofascore.model.buzzer.BuzzerTilesResponse;
+import com.sofascore.model.buzzer.NewBuzzerTilesResponse;
+import com.sofascore.model.chat.BanReason;
+import com.sofascore.model.cuptree.CupTreesResponse;
+import com.sofascore.model.fanRating.FanOverallRatingResponse;
+import com.sofascore.model.fanRating.FanRatingAllMatchesResponse;
+import com.sofascore.model.fanRating.MyRatingBody;
+import com.sofascore.model.network.AddedEventsResponse;
+import com.sofascore.model.network.post.FeedbackPost;
+import com.sofascore.model.network.response.AveragePositionsResponse;
+import com.sofascore.model.network.response.EventInningsResponse;
+import com.sofascore.model.network.response.EventManagersResponse;
+import com.sofascore.model.network.response.EventResponse;
+import com.sofascore.model.network.response.EventStatisticsResponse;
+import com.sofascore.model.network.response.EventTeamHeatmapResponse;
+import com.sofascore.model.network.response.EventWinProbabilityResponse;
+import com.sofascore.model.network.response.FlareCountResponse;
+import com.sofascore.model.network.response.GoalDistributionsResponse;
+import com.sofascore.model.network.response.Head2HeadEventsResponse;
+import com.sofascore.model.network.response.Head2HeadResponse;
+import com.sofascore.model.network.response.LineupsResponse;
+import com.sofascore.model.network.response.MessageCountResponse;
+import com.sofascore.model.network.response.PlayerEventStatisticsResponse;
+import com.sofascore.model.network.response.PlayerSeasonShotActionsResponse;
+import com.sofascore.model.network.response.SearchResponse;
+import com.sofascore.model.network.response.SearchResponseKt;
+import com.sofascore.model.network.response.SeasonShotActionAreaResponse;
+import com.sofascore.model.network.response.TeamEventShotmapResponse;
+import com.sofascore.model.network.response.TeamRssFeedResponse;
+import com.sofascore.model.network.response.TeamStreaksResponse;
+import com.sofascore.model.network.response.TweetsResponse;
+import com.sofascore.model.network.response.VotesResponse;
+import com.sofascore.model.network.response.WinningOddsResponse;
+import com.sofascore.model.network.response.bettingtips.BetBoostsResponse;
+import com.sofascore.model.network.response.bettingtips.DroppingOddsResponse;
+import com.sofascore.model.network.response.bettingtips.H2HStreaksResponse;
+import com.sofascore.model.network.response.bettingtips.HighValueStreaksResponse;
+import com.sofascore.model.network.response.bettingtips.TrendingOddsResponse;
+import com.sofascore.model.newNetwork.AllOddsResponse;
+import com.sofascore.model.newNetwork.ApiBranchesResponse;
+import com.sofascore.model.newNetwork.AttributeOverviewResponse;
+import com.sofascore.model.newNetwork.CareerHistoryResponse;
+import com.sofascore.model.newNetwork.CategoriesForDateResponse;
+import com.sofascore.model.newNetwork.CategoryUniqueStagesResponse;
+import com.sofascore.model.newNetwork.CategoryUniqueTournamentResponse;
+import com.sofascore.model.newNetwork.ChangeEventVoteBody;
+import com.sofascore.model.newNetwork.ChatMessagesResponse;
+import com.sofascore.model.newNetwork.CricketRunsPerOverGraphResponse;
+import com.sofascore.model.newNetwork.CrowdsourcingSuggest;
+import com.sofascore.model.newNetwork.CrowdsourcingUserContributionResponse;
+import com.sofascore.model.newNetwork.DefaultPinnedLeaguesResponse;
+import com.sofascore.model.newNetwork.DriverCareerHistoryResponse;
+import com.sofascore.model.newNetwork.DriverRacesResponse;
+import com.sofascore.model.newNetwork.ESportsBansResponse;
+import com.sofascore.model.newNetwork.ESportsGameLineupsResponse;
+import com.sofascore.model.newNetwork.ESportsGameRoundsResponse;
+import com.sofascore.model.newNetwork.EsportsGameStatisticsResponse;
+import com.sofascore.model.newNetwork.EsportsGamesResponse;
+import com.sofascore.model.newNetwork.EventBestPlayersResponse;
+import com.sofascore.model.newNetwork.EventBestPlayersSummaryResponse;
+import com.sofascore.model.newNetwork.EventChildEventsResponse;
+import com.sofascore.model.newNetwork.EventFlareCountResponse;
+import com.sofascore.model.newNetwork.EventGraphResponse;
+import com.sofascore.model.newNetwork.EventIdsResponse;
+import com.sofascore.model.newNetwork.EventIncidentsResponse;
+import com.sofascore.model.newNetwork.EventListResponse;
+import com.sofascore.model.newNetwork.EventSeriesResponse;
+import com.sofascore.model.newNetwork.EventVoteBody;
+import com.sofascore.model.newNetwork.FeaturedEventsResponse;
+import com.sofascore.model.newNetwork.FeaturedOddsResponse;
+import com.sofascore.model.newNetwork.FeaturedPlayersResponse;
+import com.sofascore.model.newNetwork.FeaturedPrematchOddsResponse;
+import com.sofascore.model.newNetwork.FootballShotmapResponse;
+import com.sofascore.model.newNetwork.HighlightsResponse;
+import com.sofascore.model.newNetwork.HockeyEventShotmapResponse;
+import com.sofascore.model.newNetwork.HockeyPlayerShotmapResponse;
+import com.sofascore.model.newNetwork.InfoResponse;
+import com.sofascore.model.newNetwork.LatestCrowdsourcingSuggestResponse;
+import com.sofascore.model.newNetwork.LiveCategoriesResponse;
+import com.sofascore.model.newNetwork.ManagerDetailsResponse;
+import com.sofascore.model.newNetwork.ManagerEventsResponse;
+import com.sofascore.model.newNetwork.MediaResponse;
+import com.sofascore.model.newNetwork.MonthlyUniqueTournamentsResponse;
+import com.sofascore.model.newNetwork.NationalTeamStatisticsResponse;
+import com.sofascore.model.newNetwork.NetworkResponse;
+import com.sofascore.model.newNetwork.OddsProviderDetailsResponse;
+import com.sofascore.model.newNetwork.OddsProvidersResponse;
+import com.sofascore.model.newNetwork.PerformanceGraphDataResponse;
+import com.sofascore.model.newNetwork.PlayerCareerStatisticsResponse;
+import com.sofascore.model.newNetwork.PlayerCharacteristicsResponse;
+import com.sofascore.model.newNetwork.PlayerDetailsResponse;
+import com.sofascore.model.newNetwork.PlayerEventsListResponse;
+import com.sofascore.model.newNetwork.PlayerHeatmapResponse;
+import com.sofascore.model.newNetwork.PlayerLastRatingsResponse;
+import com.sofascore.model.newNetwork.PlayerOfTheSeasonResponse;
+import com.sofascore.model.newNetwork.PlayerPenaltyHistoryResponse;
+import com.sofascore.model.newNetwork.PlayerSeasonHeatMapResponse;
+import com.sofascore.model.newNetwork.PlayerShotmapResponse;
+import com.sofascore.model.newNetwork.PlayerYearSummaryResponse;
+import com.sofascore.model.newNetwork.PointByPointResponse;
+import com.sofascore.model.newNetwork.PostChatFlag;
+import com.sofascore.model.newNetwork.PostChatMessage;
+import com.sofascore.model.newNetwork.PostUserBadge;
+import com.sofascore.model.newNetwork.PostUserNickname;
+import com.sofascore.model.newNetwork.PowerRankingResponse;
+import com.sofascore.model.newNetwork.PowerRankingRoundsResponse;
+import com.sofascore.model.newNetwork.PregameFormResponse;
+import com.sofascore.model.newNetwork.RankingResponse;
+import com.sofascore.model.newNetwork.RecentStageIdsResponse;
+import com.sofascore.model.newNetwork.RecentTeamTournamentsResponse;
+import com.sofascore.model.newNetwork.RefereeDetailsResponse;
+import com.sofascore.model.newNetwork.RefereeStatisticsResponse;
+import com.sofascore.model.newNetwork.RiskyTopicsResponse;
+import com.sofascore.model.newNetwork.SearchManagersResponse;
+import com.sofascore.model.newNetwork.SearchPlayersResponseKt;
+import com.sofascore.model.newNetwork.SearchTeamsResponse;
+import com.sofascore.model.newNetwork.SearchTournamentsResponse;
+import com.sofascore.model.newNetwork.SearchVenuesResponse;
+import com.sofascore.model.newNetwork.SeasonDaysWithEventsResponse;
+import com.sofascore.model.newNetwork.SeasonInfoResponse;
+import com.sofascore.model.newNetwork.SeasonStatisticsResponse;
+import com.sofascore.model.newNetwork.SportCategoriesResponse;
+import com.sofascore.model.newNetwork.SportItem;
+import com.sofascore.model.newNetwork.StageResponse;
+import com.sofascore.model.newNetwork.StageSeasonsResponse;
+import com.sofascore.model.newNetwork.StageSportSeasonsResponse;
+import com.sofascore.model.newNetwork.StageStandingsResponse;
+import com.sofascore.model.newNetwork.StagesListResponse;
+import com.sofascore.model.newNetwork.StandingsFormMultipleTournamentsResponse;
+import com.sofascore.model.newNetwork.StandingsFormResponse;
+import com.sofascore.model.newNetwork.StandingsResponse;
+import com.sofascore.model.newNetwork.StatisticsSeasonsResponse;
+import com.sofascore.model.newNetwork.SuggestedPlayersResponse;
+import com.sofascore.model.newNetwork.SurveyAnswersPost;
+import com.sofascore.model.newNetwork.SurveyResponse;
+import com.sofascore.model.newNetwork.TeamCareerStatisticsResponse;
+import com.sofascore.model.newNetwork.TeamDetailsResponse;
+import com.sofascore.model.newNetwork.TeamNearEventsResponse;
+import com.sofascore.model.newNetwork.TeamOfTheWeekResponse;
+import com.sofascore.model.newNetwork.TeamOfTheWeekRoundsResponse;
+import com.sofascore.model.newNetwork.TeamPerformanceResponse;
+import com.sofascore.model.newNetwork.TeamPlayersResponse;
+import com.sofascore.model.newNetwork.TeamRankingsResponse;
+import com.sofascore.model.newNetwork.TeamStandingsSeasonsResponse;
+import com.sofascore.model.newNetwork.TeamStreakBettingOddsResponse;
+import com.sofascore.model.newNetwork.TeamSuggestionResponse;
+import com.sofascore.model.newNetwork.TeamTransfersResponse;
+import com.sofascore.model.newNetwork.TeamUniqueTournamentsResponse;
+import com.sofascore.model.newNetwork.TennisPowerResponse;
+import com.sofascore.model.newNetwork.TopFollowedPlayersResponse;
+import com.sofascore.model.newNetwork.TournamentResponse;
+import com.sofascore.model.newNetwork.TournamentSeasonsResponse;
+import com.sofascore.model.newNetwork.TransferHistoryResponse;
+import com.sofascore.model.newNetwork.TransfersResponse;
+import com.sofascore.model.newNetwork.TranslationResponse;
+import com.sofascore.model.newNetwork.TvChannelScheduleResponse;
+import com.sofascore.model.newNetwork.TvChannelVoteBody;
+import com.sofascore.model.newNetwork.TvChannelVotesResponse;
+import com.sofascore.model.newNetwork.TvChannelsResponse;
+import com.sofascore.model.newNetwork.TvCountryChannelsResponse;
+import com.sofascore.model.newNetwork.UniqueTournamentDetailsResponse;
+import com.sofascore.model.newNetwork.UniqueTournamentGroupsResponse;
+import com.sofascore.model.newNetwork.UniqueTournamentResponse;
+import com.sofascore.model.newNetwork.UniqueTournamentRoundsResponse;
+import com.sofascore.model.newNetwork.UniqueTournamentSuggestionResponse;
+import com.sofascore.model.newNetwork.UniqueTournamentTeamsResponse;
+import com.sofascore.model.newNetwork.UseFlareResponse;
+import com.sofascore.model.newNetwork.UserFlareInfoResponse;
+import com.sofascore.model.newNetwork.UserPredictionsResponse;
+import com.sofascore.model.newNetwork.UserPredictionsVotesResponse;
+import com.sofascore.model.newNetwork.ValuableUserResponse;
+import com.sofascore.model.newNetwork.commentary.CommentaryResponse;
+import com.sofascore.model.newNetwork.commentary.HockeyPlayByPlayResponse;
+import com.sofascore.model.newNetwork.cpc.ValuableUserVersionsResponse;
+import com.sofascore.model.newNetwork.mediaposts.MediaPostReactionsResponse;
+import com.sofascore.model.newNetwork.mediaposts.MediaPostResponse;
+import com.sofascore.model.newNetwork.mediaposts.MediaReactionPost;
+import com.sofascore.model.newNetwork.mediaposts.PersonalizedMediaPostsResponse;
+import com.sofascore.model.newNetwork.newRankings.RankingTypeWithRows;
+import com.sofascore.model.newNetwork.newRankings.RankingsSummaryResponse;
+import com.sofascore.model.newNetwork.post.ImageUploadResponse;
+import com.sofascore.model.newNetwork.post.PlayerSuggestPostBody;
+import com.sofascore.model.newNetwork.post.ProfileImageUploadResponse;
+import com.sofascore.model.newNetwork.post.TeamSuggestPostBody;
+import com.sofascore.model.newNetwork.post.VenueSuggestPostBody;
+import com.sofascore.model.newNetwork.toto.TotoTournamentsConfigResponse;
+import com.sofascore.model.profile.ContributionSummaryResponse;
+import com.sofascore.model.profile.ContributionsResponse;
+import com.sofascore.model.profile.CredibilityScoreGraphResponse;
+import com.sofascore.model.profile.EditorEventOpeningsGraphResponse;
+import com.sofascore.model.profile.EditorsEventsCountResponse;
+import com.sofascore.model.profile.EditorsPopularEventsResponse;
+import com.sofascore.model.profile.EditorsTournamentsResponse;
+import com.sofascore.model.profile.ProfileNetworkResponse;
+import com.sofascore.model.profile.UserBadgesReponse;
+import com.sofascore.model.profile.UserSubscriptionsResponse;
+import com.sofascore.model.profile.VoteRankingResponse;
+import com.sofascore.model.stories.StoryListResponse;
+import com.sofascore.model.weeklyChallenge.PopularEventsResponse;
+import com.sofascore.model.weeklyChallenge.WeeklyChallengeAssetsResponse;
+import com.sofascore.model.weeklyChallenge.WeeklyChallengeLeaderboardResponse;
+import com.sofascore.model.weeklyChallenge.WeeklyChallengeTimestampResponse;
+import com.sofascore.model.wsc.WSCStoriesResponse;
+import io.nats.client.support.ApiConstants;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import kotlin.Metadata;
+import kotlin.Unit;
+import m8.p;
+import org.jetbrains.annotations.NotNull;
+import pl.C;
+import pl.M;
+import retrofit2.Response;
+import retrofit2.http.Body;
+import retrofit2.http.DELETE;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Part;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
+import retrofit2.http.Url;
+import rj.InterfaceC5234a;
+
+@Metadata(d1 = {"\u0000Â\u000b\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\u0010\u000e\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\b\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\b\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u000b\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\n\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\b\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0007\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0004\bf\u0018\u00002\u00020\u0001J$\u0010\u0006\u001a\u00020\u00052\b\b\u0001\u0010\u0003\u001a\u00020\u00022\b\b\u0001\u0010\u0004\u001a\u00020\u0002H§@¢\u0006\u0004\b\u0006\u0010\u0007J\u001a\u0010\u000b\u001a\u00020\n2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b\u000b\u0010\fJ\u001a\u0010\u000e\u001a\u00020\r2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b\u000e\u0010\fJ\u001a\u0010\u0010\u001a\u00020\u000f2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b\u0010\u0010\fJ\u001a\u0010\u0012\u001a\u00020\u00112\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b\u0012\u0010\fJ\u0010\u0010\u0014\u001a\u00020\u0013H§@¢\u0006\u0004\b\u0014\u0010\u0015J$\u0010\u001a\u001a\u00020\u00192\b\b\u0001\u0010\u0017\u001a\u00020\u00162\b\b\u0001\u0010\u0018\u001a\u00020\bH§@¢\u0006\u0004\b\u001a\u0010\u001bJ.\u0010\u001e\u001a\u00020\u001d2\b\b\u0001\u0010\u001c\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00162\b\b\u0001\u0010\u0018\u001a\u00020\bH§@¢\u0006\u0004\b\u001e\u0010\u001fJ\u001a\u0010!\u001a\u00020 2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b!\u0010\fJ\u001a\u0010#\u001a\u00020\"2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b#\u0010\fJ\u001a\u0010%\u001a\u00020$2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b%\u0010\fJ\u001a\u0010'\u001a\u00020&2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b'\u0010\fJ\u001a\u0010)\u001a\u00020(2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b)\u0010\fJ\u001a\u0010+\u001a\u00020*2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b+\u0010\fJ\u001a\u0010-\u001a\u00020,2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b-\u0010\fJ\u001a\u0010/\u001a\u00020.2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\b/\u0010\fJ$\u00102\u001a\u0002012\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u00100\u001a\u00020\bH§@¢\u0006\u0004\b2\u00103J$\u00105\u001a\u0002042\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u00100\u001a\u00020\bH§@¢\u0006\u0004\b5\u00103J$\u00108\u001a\u0002072\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\b8\u00103J\u001a\u00109\u001a\u0002072\b\b\u0001\u0010\u0018\u001a\u00020\bH§@¢\u0006\u0004\b9\u0010\fJ\u001a\u0010;\u001a\u00020:2\b\b\u0001\u0010\u0018\u001a\u00020\bH§@¢\u0006\u0004\b;\u0010\fJ$\u0010=\u001a\u00020<2\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\b=\u00103J.\u0010A\u001a\u00020@2\b\b\u0001\u0010>\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0004\bA\u0010BJ\u001a\u0010D\u001a\u00020C2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\bD\u0010\fJ\u001a\u0010F\u001a\u00020E2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\bF\u0010\fJ\u001a\u0010I\u001a\u00020H2\b\b\u0001\u0010G\u001a\u00020\u0002H§@¢\u0006\u0004\bI\u0010JJ\u001a\u0010L\u001a\u00020K2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\bL\u0010\fJ\u001a\u0010N\u001a\u00020M2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\bN\u0010\fJ$\u0010Q\u001a\u00020P2\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010O\u001a\u00020\bH§@¢\u0006\u0004\bQ\u00103J$\u0010S\u001a\u00020R2\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\bS\u00103J$\u0010U\u001a\u00020T2\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\bU\u00103J\u001a\u0010V\u001a\u00020\"2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\bV\u0010\fJ\u001a\u0010X\u001a\u00020W2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\bX\u0010\fJ\u001a\u0010Z\u001a\u00020Y2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\bZ\u0010\fJ$\u0010^\u001a\u00020]2\b\b\u0001\u0010[\u001a\u00020\u00022\b\b\u0003\u0010\\\u001a\u00020\u0002H§@¢\u0006\u0004\b^\u0010\u0007J\u001a\u0010`\u001a\u00020_2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\b`\u0010\fJ\u001a\u0010b\u001a\u00020a2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\bb\u0010\fJ\u001a\u0010d\u001a\u00020c2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\bd\u0010\fJ\u001a\u0010f\u001a\u00020e2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\bf\u0010\fJ\u001a\u0010h\u001a\u00020g2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0004\bh\u0010\fJ\u001a\u0010j\u001a\u00020i2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0004\bj\u0010\fJ.\u0010m\u001a\u00020l2\b\b\u0001\u00106\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0004\bm\u0010nJ8\u0010r\u001a\u00020q2\b\b\u0001\u00106\u001a\u00020\b2\b\b\u0001\u0010o\u001a\u00020\b2\b\b\u0001\u0010p\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0004\br\u0010sJ.\u0010u\u001a\u00020t2\b\b\u0001\u00106\u001a\u00020\b2\b\b\u0001\u0010>\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0004\bu\u0010vJ.\u0010y\u001a\u00020x2\b\b\u0001\u00106\u001a\u00020\b2\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0004\by\u0010vJ.\u0010{\u001a\u00020z2\b\b\u0001\u00106\u001a\u00020\b2\b\b\u0001\u0010>\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0004\b{\u0010vJ8\u0010}\u001a\u00020|2\b\b\u0001\u00106\u001a\u00020\b2\b\b\u0001\u0010>\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0004\b}\u0010sJ9\u0010\u007f\u001a\u00020@2\b\b\u0001\u0010>\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010~\u001a\u00020\u0002H§@¢\u0006\u0005\b\u007f\u0010\u0080\u0001J\u001d\u0010\u0082\u0001\u001a\u00030\u0081\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0082\u0001\u0010\fJ\u001d\u0010\u0084\u0001\u001a\u00030\u0083\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0084\u0001\u0010\fJ&\u0010\u0085\u0001\u001a\u00020T2\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0005\b\u0085\u0001\u00103J'\u0010\u0087\u0001\u001a\u00030\u0086\u00012\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u00106\u001a\u00020\bH§@¢\u0006\u0005\b\u0087\u0001\u00103J\u001d\u0010\u0089\u0001\u001a\u00030\u0088\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0089\u0001\u0010\fJ\u001d\u0010\u008b\u0001\u001a\u00030\u008a\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u008b\u0001\u0010\fJ\u001d\u0010\u008d\u0001\u001a\u00030\u008c\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u008d\u0001\u0010\fJ'\u0010\u008f\u0001\u001a\u00030\u008e\u00012\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u0010O\u001a\u00020\bH§@¢\u0006\u0005\b\u008f\u0001\u00103J'\u0010\u0091\u0001\u001a\u00030\u0090\u00012\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u0010O\u001a\u00020\bH§@¢\u0006\u0005\b\u0091\u0001\u00103J'\u0010\u0093\u0001\u001a\u00030\u0092\u00012\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u0010O\u001a\u00020\bH§@¢\u0006\u0005\b\u0093\u0001\u00103J\u001d\u0010\u0095\u0001\u001a\u00030\u0094\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0095\u0001\u0010\fJ\u001d\u0010\u0097\u0001\u001a\u00030\u0096\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0097\u0001\u0010\fJ\u001d\u0010\u0099\u0001\u001a\u00030\u0098\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0099\u0001\u0010\fJ\u001d\u0010\u009a\u0001\u001a\u00030\u0098\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u009a\u0001\u0010\fJ\u001d\u0010\u009c\u0001\u001a\u00030\u009b\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u009c\u0001\u0010\fJ\u001d\u0010\u009e\u0001\u001a\u00030\u009d\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u009e\u0001\u0010\fJ)\u0010¡\u0001\u001a\u00030 \u00012\b\b\u0001\u0010\t\u001a\u00020\b2\t\b\u0001\u0010\u009f\u0001\u001a\u00020\u0002H§@¢\u0006\u0006\b¡\u0001\u0010¢\u0001J\u001d\u0010¤\u0001\u001a\u00030£\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b¤\u0001\u0010\fJ\u001d\u0010¦\u0001\u001a\u00030¥\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b¦\u0001\u0010\fJ\u001d\u0010¨\u0001\u001a\u00030§\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b¨\u0001\u0010\fJ\u001d\u0010ª\u0001\u001a\u00030©\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bª\u0001\u0010\fJ\u001d\u0010¬\u0001\u001a\u00030«\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b¬\u0001\u0010\fJ\u001d\u0010®\u0001\u001a\u00030\u00ad\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b®\u0001\u0010\fJ\u001d\u0010°\u0001\u001a\u00030¯\u00012\b\b\u0001\u0010w\u001a\u00020\bH§@¢\u0006\u0005\b°\u0001\u0010\fJ\u001d\u0010²\u0001\u001a\u00030±\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b²\u0001\u0010\fJ\u001d\u0010´\u0001\u001a\u00030³\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b´\u0001\u0010\fJ\u001d\u0010¶\u0001\u001a\u00030µ\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b¶\u0001\u0010\fJ1\u0010¸\u0001\u001a\u00030·\u00012\b\b\u0001\u0010>\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u00100\u001a\u00020\bH§@¢\u0006\u0005\b¸\u0001\u0010vJ:\u0010¹\u0001\u001a\u00020q2\b\b\u0001\u00100\u001a\u00020\b2\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\b¹\u0001\u0010sJ1\u0010»\u0001\u001a\u00030º\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010>\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\b»\u0001\u0010vJ1\u0010½\u0001\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\t\b\u0001\u0010¼\u0001\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0005\b½\u0001\u0010nJ\u001d\u0010¿\u0001\u001a\u00030¾\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b¿\u0001\u0010\fJ'\u0010À\u0001\u001a\u00020i2\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0006\bÀ\u0001\u0010¢\u0001J:\u0010Á\u0001\u001a\u00020q2\b\b\u0001\u00100\u001a\u00020\b2\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\bÁ\u0001\u0010sJ:\u0010Â\u0001\u001a\u00020q2\b\b\u0001\u00100\u001a\u00020\b2\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\bÂ\u0001\u0010sJ\u001d\u0010Ä\u0001\u001a\u00030Ã\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÄ\u0001\u0010\fJ\u001d\u0010Æ\u0001\u001a\u00030Å\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÆ\u0001\u0010\fJ\u001d\u0010È\u0001\u001a\u00030Ç\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÈ\u0001\u0010\fJ\u001d\u0010Ê\u0001\u001a\u00030É\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÊ\u0001\u0010\fJ\u001d\u0010Ì\u0001\u001a\u00030Ë\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÌ\u0001\u0010\fJ\u001d\u0010Î\u0001\u001a\u00030Í\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÎ\u0001\u0010\fJ\u001d\u0010Ð\u0001\u001a\u00030Ï\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÐ\u0001\u0010\fJ1\u0010Ò\u0001\u001a\u00030Ñ\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\bÒ\u0001\u0010BJ1\u0010Ó\u0001\u001a\u00030Ñ\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\bÓ\u0001\u0010BJ1\u0010Õ\u0001\u001a\u00030Ô\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\bÕ\u0001\u0010BJ1\u0010×\u0001\u001a\u00030Ö\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\b×\u0001\u0010BJ'\u0010Ù\u0001\u001a\u00030Ø\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\bÙ\u0001\u00103J'\u0010Ú\u0001\u001a\u00030Ø\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\bÚ\u0001\u00103J0\u0010Û\u0001\u001a\u00020q2\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\bÛ\u0001\u0010BJ<\u0010Ý\u0001\u001a\u00020q2\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\t\b\u0001\u0010Ü\u0001\u001a\u00020\u0002H§@¢\u0006\u0006\bÝ\u0001\u0010\u0080\u0001J0\u0010Þ\u0001\u001a\u00020q2\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\bÞ\u0001\u0010BJ0\u0010ß\u0001\u001a\u00020q2\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0005\bß\u0001\u0010BJ<\u0010à\u0001\u001a\u00020q2\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\t\b\u0001\u0010Ü\u0001\u001a\u00020\u00022\b\b\u0001\u0010\u0017\u001a\u00020\u0002H§@¢\u0006\u0006\bà\u0001\u0010\u0080\u0001J'\u0010â\u0001\u001a\u00030á\u00012\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\bâ\u0001\u00103J'\u0010ä\u0001\u001a\u00030ã\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\bä\u0001\u00103J\u001d\u0010æ\u0001\u001a\u00030å\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bæ\u0001\u0010\fJ\u001d\u0010è\u0001\u001a\u00030ç\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bè\u0001\u0010\fJ\u001d\u0010ê\u0001\u001a\u00030é\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bê\u0001\u0010\fJ\u001d\u0010ë\u0001\u001a\u00030é\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bë\u0001\u0010\fJ;\u0010ì\u0001\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\bì\u0001\u0010í\u0001J;\u0010î\u0001\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\bî\u0001\u0010í\u0001J1\u0010ð\u0001\u001a\u00020\u00052\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010>\u001a\u00020\b2\t\b\u0001\u0010ï\u0001\u001a\u00020\u0002H§@¢\u0006\u0005\bð\u0001\u0010BJ0\u0010ñ\u0001\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0005\bñ\u0001\u0010nJ2\u0010ò\u0001\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\n\b\u0001\u0010\u0017\u001a\u0004\u0018\u00010\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0005\bò\u0001\u0010nJ0\u0010ó\u0001\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0005\bó\u0001\u0010nJ(\u0010ö\u0001\u001a\u00030õ\u00012\t\b\u0001\u0010ô\u0001\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\bö\u0001\u00103J3\u0010ù\u0001\u001a\u00030ø\u00012\t\b\u0001\u0010ô\u0001\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\t\b\u0001\u0010÷\u0001\u001a\u00020\bH§@¢\u0006\u0005\bù\u0001\u0010vJ'\u0010û\u0001\u001a\u00030ú\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\bû\u0001\u00103J'\u0010ý\u0001\u001a\u00030ü\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\bý\u0001\u00103J'\u0010ÿ\u0001\u001a\u00030þ\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\bÿ\u0001\u00103JF\u0010\u0081\u0002\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\t\b\u0001\u0010\u0080\u0002\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\b\u0081\u0002\u0010\u0082\u0002JU\u0010\u0081\u0002\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\t\b\u0001\u0010\u0080\u0002\u001a\u00020\b2\u000b\b\u0001\u0010\u0083\u0002\u001a\u0004\u0018\u00010\u00022\n\b\u0001\u0010\u0017\u001a\u0004\u0018\u00010\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\b\u0081\u0002\u0010\u0084\u0002JU\u0010\u0086\u0002\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\t\b\u0001\u0010\u0080\u0002\u001a\u00020\b2\u000b\b\u0001\u0010\u0085\u0002\u001a\u0004\u0018\u00010\u00022\n\b\u0001\u0010\u0017\u001a\u0004\u0018\u00010\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\b\u0086\u0002\u0010\u0084\u0002Jb\u0010\u0081\u0002\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\t\b\u0001\u0010\u0080\u0002\u001a\u00020\b2\u000b\b\u0001\u0010\u0083\u0002\u001a\u0004\u0018\u00010\u00022\u000b\b\u0001\u0010\u0085\u0002\u001a\u0004\u0018\u00010\u00022\n\b\u0001\u0010\u0017\u001a\u0004\u0018\u00010\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\b\u0081\u0002\u0010\u0087\u0002JG\u0010\u0088\u0002\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\b\b\u0001\u00100\u001a\u00020\b2\n\b\u0001\u0010\u0017\u001a\u0004\u0018\u00010\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\b\u0088\u0002\u0010\u0082\u0002J\u001d\u0010\u008a\u0002\u001a\u00030\u0089\u00022\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u008a\u0002\u0010\fJ\u001c\u0010\u008b\u0002\u001a\u00020 2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u008b\u0002\u0010\fJ'\u0010\u008d\u0002\u001a\u00030\u008c\u00022\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\b\u008d\u0002\u00103J'\u0010\u008f\u0002\u001a\u00030\u008e\u00022\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\b\u008f\u0002\u00103J\u001d\u0010\u0091\u0002\u001a\u00030\u0090\u00022\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0091\u0002\u0010\fJ3\u0010\u0093\u0002\u001a\u00030\u0092\u00022\t\b\u0001\u0010ô\u0001\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\b2\t\b\u0001\u0010÷\u0001\u001a\u00020\bH§@¢\u0006\u0005\b\u0093\u0002\u0010vJ(\u0010\u0094\u0002\u001a\u00030\u0092\u00022\t\b\u0001\u0010ô\u0001\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\b\u0094\u0002\u00103J\u001d\u0010\u0095\u0002\u001a\u00030³\u00012\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0095\u0002\u0010\fJ'\u0010\u0097\u0002\u001a\u00030\u0096\u00022\b\b\u0001\u0010[\u001a\u00020\u00022\b\b\u0003\u0010\\\u001a\u00020\u0002H§@¢\u0006\u0005\b\u0097\u0002\u0010\u0007J\u001d\u0010\u0099\u0002\u001a\u00030\u0098\u00022\b\b\u0001\u0010[\u001a\u00020\u0002H§@¢\u0006\u0005\b\u0099\u0002\u0010JJ\u001d\u0010\u009b\u0002\u001a\u00030\u009a\u00022\b\b\u0001\u0010[\u001a\u00020\u0002H§@¢\u0006\u0005\b\u009b\u0002\u0010JJ+\u0010\u009c\u0002\u001a\u00030\u0096\u00022\n\b\u0001\u0010\u0003\u001a\u0004\u0018\u00010\u00022\n\b\u0001\u0010[\u001a\u0004\u0018\u00010\u0002H§@¢\u0006\u0005\b\u009c\u0002\u0010\u0007J\u001d\u0010\u009e\u0002\u001a\u00030\u009d\u00022\b\b\u0001\u0010\u0018\u001a\u00020\bH§@¢\u0006\u0005\b\u009e\u0002\u0010\fJ*\u0010¢\u0002\u001a\u00030¡\u00022\b\b\u0001\u0010\u0018\u001a\u00020\b2\n\b\u0001\u0010 \u0002\u001a\u00030\u009f\u0002H§@¢\u0006\u0006\b¢\u0002\u0010£\u0002J\u001d\u0010¥\u0002\u001a\u00030¤\u00022\b\b\u0001\u0010\u0018\u001a\u00020\bH§@¢\u0006\u0005\b¥\u0002\u0010\fJ\u001e\u0010¨\u0002\u001a\u00030§\u00022\t\b\u0001\u0010¦\u0002\u001a\u00020\bH§@¢\u0006\u0005\b¨\u0002\u0010\fJ\u001e\u0010ª\u0002\u001a\u00030©\u00022\t\b\u0001\u0010¦\u0002\u001a\u00020\bH§@¢\u0006\u0005\bª\u0002\u0010\fJ0\u0010«\u0002\u001a\u00020\u00052\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0005\b«\u0002\u0010nJ\u0013\u0010\u00ad\u0002\u001a\u00030¬\u0002H§@¢\u0006\u0005\b\u00ad\u0002\u0010\u0015J\u001e\u0010°\u0002\u001a\u00030¯\u00022\t\b\u0001\u0010®\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\b°\u0002\u0010JJ\u001e\u0010²\u0002\u001a\u00030±\u00022\t\b\u0001\u0010®\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\b²\u0002\u0010JJ\u001e\u0010´\u0002\u001a\u00030³\u00022\t\b\u0001\u0010®\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\b´\u0002\u0010JJ)\u0010·\u0002\u001a\u00030¶\u00022\b\b\u0001\u0010\t\u001a\u00020\b2\t\b\u0001\u0010µ\u0002\u001a\u00020\u0002H§@¢\u0006\u0006\b·\u0002\u0010¢\u0001J)\u0010º\u0002\u001a\u00030¹\u00022\t\b\u0001\u0010¸\u0002\u001a\u00020\u00022\t\b\u0001\u0010µ\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\bº\u0002\u0010\u0007J)\u0010¼\u0002\u001a\u00030»\u00022\b\b\u0001\u0010\t\u001a\u00020\b2\t\b\u0001\u0010µ\u0002\u001a\u00020\u0002H§@¢\u0006\u0006\b¼\u0002\u0010¢\u0001J)\u0010¾\u0002\u001a\u00030½\u00022\b\b\u0001\u0010\t\u001a\u00020\b2\t\b\u0001\u0010µ\u0002\u001a\u00020\u0002H§@¢\u0006\u0006\b¾\u0002\u0010¢\u0001J\u001d\u0010À\u0002\u001a\u00030¿\u00022\b\b\u0001\u0010O\u001a\u00020\bH§@¢\u0006\u0005\bÀ\u0002\u0010\fJ'\u0010Â\u0002\u001a\u00030Á\u00022\b\b\u0001\u0010>\u001a\u00020\b2\b\b\u0001\u0010O\u001a\u00020\bH§@¢\u0006\u0005\bÂ\u0002\u00103J)\u0010Ã\u0002\u001a\u00030Á\u00022\t\b\u0001\u0010µ\u0002\u001a\u00020\u00022\b\b\u0001\u0010O\u001a\u00020\bH§@¢\u0006\u0006\bÃ\u0002\u0010Ä\u0002J)\u0010Æ\u0002\u001a\u00030Å\u00022\b\b\u0001\u0010\t\u001a\u00020\b2\t\b\u0001\u0010µ\u0002\u001a\u00020\u0002H§@¢\u0006\u0006\bÆ\u0002\u0010¢\u0001J4\u0010È\u0002\u001a\u00030Ç\u00022\b\b\u0001\u0010[\u001a\u00020\u00022\n\b\u0001\u0010\u0003\u001a\u0004\u0018\u00010\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\bÈ\u0002\u0010É\u0002J*\u0010Ë\u0002\u001a\u00030Ç\u00022\t\b\u0001\u0010Ê\u0002\u001a\u00020\u00022\n\b\u0001\u0010\u0003\u001a\u0004\u0018\u00010\u0002H§@¢\u0006\u0005\bË\u0002\u0010\u0007J?\u0010Ì\u0002\u001a\u00030Ç\u00022\t\b\u0001\u0010Ê\u0002\u001a\u00020\u00022\b\b\u0001\u0010[\u001a\u00020\u00022\n\b\u0001\u0010\u0003\u001a\u0004\u0018\u00010\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\bÌ\u0002\u0010Í\u0002JA\u0010Ò\u0002\u001a\u00030Ñ\u00022+\b\u0001\u0010Ð\u0002\u001a$\u0012\u0004\u0012\u00020\u0002\u0012\u0006\u0012\u0004\u0018\u00010\u00020Î\u0002j\u0011\u0012\u0004\u0012\u00020\u0002\u0012\u0006\u0012\u0004\u0018\u00010\u0002`Ï\u0002H§@¢\u0006\u0006\bÒ\u0002\u0010Ó\u0002J'\u0010Õ\u0002\u001a\u00030Ô\u00022\b\b\u0001\u0010[\u001a\u00020\u00022\b\b\u0003\u0010\\\u001a\u00020\u0002H§@¢\u0006\u0005\bÕ\u0002\u0010\u0007J\u001d\u0010×\u0002\u001a\u00030Ö\u00022\b\b\u0001\u0010\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\b×\u0002\u0010JJ3\u0010Ú\u0002\u001a\u00030Ù\u00022\b\b\u0001\u0010\u0003\u001a\u00020\u00022\b\b\u0001\u0010\u0004\u001a\u00020\u00022\t\b\u0001\u0010Ø\u0002\u001a\u00020\u0002H§@¢\u0006\u0006\bÚ\u0002\u0010Û\u0002J(\u0010Ý\u0002\u001a\u00020\u00052\t\b\u0001\u0010Ü\u0002\u001a\u00020\b2\b\b\u0001\u0010\u0004\u001a\u00020\u0002H§@¢\u0006\u0006\bÝ\u0002\u0010¢\u0001J2\u0010ß\u0002\u001a\u00020\u00052\b\b\u0001\u0010w\u001a\u00020\b2\b\b\u0001\u0010\u0004\u001a\u00020\u00022\t\b\u0001\u0010Þ\u0002\u001a\u00020\u0002H§@¢\u0006\u0006\bß\u0002\u0010à\u0002J\u001c\u0010á\u0002\u001a\u00020\u00052\b\b\u0001\u0010\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bá\u0002\u0010JJ\u001d\u0010ã\u0002\u001a\u00030â\u00022\b\b\u0001\u0010\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bã\u0002\u0010JJ3\u0010å\u0002\u001a\u00030ä\u00022\b\b\u0001\u0010\u0004\u001a\u00020\u00022\t\b\u0001\u0010Ø\u0002\u001a\u00020\u00022\b\b\u0001\u0010\u0003\u001a\u00020\u0002H§@¢\u0006\u0006\bå\u0002\u0010Û\u0002J3\u0010æ\u0002\u001a\u00030ä\u00022\b\b\u0001\u0010\u0004\u001a\u00020\u00022\t\b\u0001\u0010Ø\u0002\u001a\u00020\u00022\b\b\u0001\u0010\u0003\u001a\u00020\u0002H§@¢\u0006\u0006\bæ\u0002\u0010Û\u0002J)\u0010è\u0002\u001a\u00030ç\u00022\b\b\u0001\u0010?\u001a\u00020\b2\t\b\u0001\u0010Þ\u0002\u001a\u00020\u0002H§@¢\u0006\u0006\bè\u0002\u0010¢\u0001J\u001d\u0010ê\u0002\u001a\u00030é\u00022\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bê\u0002\u0010\fJ4\u0010î\u0002\u001a\u00030í\u00022\b\b\u0001\u0010w\u001a\u00020\b2\t\b\u0001\u0010ë\u0002\u001a\u00020\u00022\t\b\u0001\u0010ì\u0002\u001a\u00020\u0002H§@¢\u0006\u0006\bî\u0002\u0010à\u0002J\u001d\u0010ð\u0002\u001a\u00030ï\u00022\b\b\u0001\u0010\u0017\u001a\u00020\bH§@¢\u0006\u0005\bð\u0002\u0010\fJ5\u0010ô\u0002\u001a\u00030ó\u00022\t\b\u0001\u0010ñ\u0002\u001a\u00020\u00022\t\b\u0001\u0010ò\u0002\u001a\u00020\b2\t\b\u0001\u0010\u009f\u0001\u001a\u00020\u0002H§@¢\u0006\u0006\bô\u0002\u0010õ\u0002J\u001e\u0010ø\u0002\u001a\u00030÷\u00022\t\b\u0001\u0010ö\u0002\u001a\u00020\bH§@¢\u0006\u0005\bø\u0002\u0010\fJ\u001e\u0010ú\u0002\u001a\u00030ù\u00022\t\b\u0001\u0010ö\u0002\u001a\u00020\bH§@¢\u0006\u0005\bú\u0002\u0010\fJ1\u0010ü\u0002\u001a\u00030û\u00022\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0005\bü\u0002\u0010nJ?\u0010ÿ\u0002\u001a\u0004\u0018\u00010\u00012\b\b\u0001\u0010\u0017\u001a\u00020\u00162\b\b\u0001\u0010\u0018\u001a\u00020\b2\b\b\u0001\u0010\u001c\u001a\u00020\b2\n\b\u0001\u0010þ\u0002\u001a\u00030ý\u0002H§@¢\u0006\u0006\bÿ\u0002\u0010\u0080\u0003J1\u0010\u0083\u0003\u001a\n\u0012\u0005\u0012\u00030¡\u00020\u0082\u00032\b\b\u0001\u0010\t\u001a\u00020\b2\n\b\u0001\u0010þ\u0002\u001a\u00030\u0081\u0003H§@¢\u0006\u0006\b\u0083\u0003\u0010\u0084\u0003J1\u0010\u0086\u0003\u001a\n\u0012\u0005\u0012\u00030¡\u00020\u0082\u00032\b\b\u0001\u0010\t\u001a\u00020\b2\n\b\u0001\u0010þ\u0002\u001a\u00030\u0085\u0003H§@¢\u0006\u0006\b\u0086\u0003\u0010\u0087\u0003J?\u0010\u008a\u0003\u001a\u00030¡\u00022\b\b\u0001\u0010\t\u001a\u00020\b2\u001f\b\u0001\u0010þ\u0002\u001a\u0018\u0012\u0002\b\u0003\u0012\u0002\b\u00030\u0088\u0003j\u000b\u0012\u0002\b\u0003\u0012\u0002\b\u0003`\u0089\u0003H§@¢\u0006\u0006\b\u008a\u0003\u0010\u008b\u0003J1\u0010\u008d\u0003\u001a\n\u0012\u0005\u0012\u00030¡\u00020\u0082\u00032\b\b\u0001\u0010\t\u001a\u00020\b2\n\b\u0001\u0010þ\u0002\u001a\u00030\u008c\u0003H§@¢\u0006\u0006\b\u008d\u0003\u0010\u008e\u0003J/\u0010\u0093\u0003\u001a\u0004\u0018\u00010\u00012\n\b\u0001\u0010\u0090\u0003\u001a\u00030\u008f\u00032\f\b\u0001\u0010\u0092\u0003\u001a\u0005\u0018\u00010\u0091\u0003H§@¢\u0006\u0006\b\u0093\u0003\u0010\u0094\u0003J@\u0010\u009a\u0003\u001a\u00030\u0099\u00032\t\b\u0001\u0010\u0095\u0003\u001a\u00020\u00022\t\b\u0001\u0010\u0096\u0003\u001a\u00020\b2\t\b\u0001\u0010\u0097\u0003\u001a\u00020\u00022\t\b\u0001\u0010\u0098\u0003\u001a\u00020\bH§@¢\u0006\u0006\b\u009a\u0003\u0010\u009b\u0003J\u001d\u0010\u009d\u0003\u001a\u00030\u009c\u00032\b\b\u0001\u0010\t\u001a\u00020\u0002H§@¢\u0006\u0005\b\u009d\u0003\u0010JJ\u001d\u0010\u009f\u0003\u001a\u00030\u009e\u00032\b\b\u0001\u0010\t\u001a\u00020\u0002H§@¢\u0006\u0005\b\u009f\u0003\u0010JJ\u001e\u0010¡\u0003\u001a\u00030 \u00032\t\b\u0001\u0010®\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\b¡\u0003\u0010JJ\u0013\u0010£\u0003\u001a\u00030¢\u0003H§@¢\u0006\u0005\b£\u0003\u0010\u0015J)\u0010¦\u0003\u001a\u00030¥\u00032\t\b\u0001\u0010¤\u0003\u001a\u00020\u00022\t\b\u0001\u0010\u0085\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\b¦\u0003\u0010\u0007J\u0013\u0010¨\u0003\u001a\u00030§\u0003H§@¢\u0006\u0005\b¨\u0003\u0010\u0015J\u0013\u0010©\u0003\u001a\u00030§\u0003H§@¢\u0006\u0005\b©\u0003\u0010\u0015J\u0013\u0010ª\u0003\u001a\u00030§\u0003H§@¢\u0006\u0005\bª\u0003\u0010\u0015J'\u0010¬\u0003\u001a\n\u0012\u0005\u0012\u00030¡\u00020\u0082\u00032\n\b\u0001\u0010þ\u0002\u001a\u00030«\u0003H§@¢\u0006\u0006\b¬\u0003\u0010\u00ad\u0003J1\u0010¯\u0003\u001a\n\u0012\u0005\u0012\u00030¡\u00020\u0082\u00032\b\b\u0001\u0010\t\u001a\u00020\b2\n\b\u0001\u0010þ\u0002\u001a\u00030®\u0003H§@¢\u0006\u0006\b¯\u0003\u0010°\u0003J1\u0010²\u0003\u001a\n\u0012\u0005\u0012\u00030¡\u00020\u0082\u00032\b\b\u0001\u0010\t\u001a\u00020\b2\n\b\u0001\u0010þ\u0002\u001a\u00030±\u0003H§@¢\u0006\u0006\b²\u0003\u0010³\u0003J \u0010·\u0003\u001a\u00030¶\u00032\n\b\u0001\u0010µ\u0003\u001a\u00030´\u0003H§@¢\u0006\u0006\b·\u0003\u0010¸\u0003J2\u0010º\u0003\u001a\u00030¹\u00032\b\b\u0001\u0010\t\u001a\u00020\u00022\b\b\u0001\u0010\u0017\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\bº\u0003\u0010É\u0002J\u001e\u0010½\u0003\u001a\u00030¼\u00032\t\b\u0001\u0010»\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\b½\u0003\u0010JJ\u001e\u0010¿\u0003\u001a\u00030¾\u00032\t\b\u0001\u0010»\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\b¿\u0003\u0010JJ\u001e\u0010Á\u0003\u001a\u00030À\u00032\t\b\u0001\u0010»\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bÁ\u0003\u0010JJ\u001e\u0010Ã\u0003\u001a\u00030Â\u00032\t\b\u0001\u0010»\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bÃ\u0003\u0010JJ\u001e\u0010Å\u0003\u001a\u00030Ä\u00032\t\b\u0001\u0010»\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bÅ\u0003\u0010JJ\u001e\u0010Ç\u0003\u001a\u00030Æ\u00032\t\b\u0001\u0010»\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bÇ\u0003\u0010JJ\u001e\u0010É\u0003\u001a\u00030È\u00032\t\b\u0001\u0010»\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bÉ\u0003\u0010JJ'\u0010Ë\u0003\u001a\n\u0012\u0005\u0012\u00030¡\u00020\u0082\u00032\n\b\u0001\u0010þ\u0002\u001a\u00030Ê\u0003H§@¢\u0006\u0006\bË\u0003\u0010Ì\u0003J\u001e\u0010Î\u0003\u001a\u00030Í\u00032\t\b\u0001\u0010»\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bÎ\u0003\u0010JJ\u001e\u0010Ñ\u0003\u001a\u00030Ð\u00032\t\b\u0001\u0010Ï\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bÑ\u0003\u0010JJ\u0013\u0010Ó\u0003\u001a\u00030Ò\u0003H§@¢\u0006\u0005\bÓ\u0003\u0010\u0015J\u0013\u0010Õ\u0003\u001a\u00030Ô\u0003H§@¢\u0006\u0005\bÕ\u0003\u0010\u0015J\u0013\u0010×\u0003\u001a\u00030Ö\u0003H§@¢\u0006\u0005\b×\u0003\u0010\u0015J\u001d\u0010Ù\u0003\u001a\u00030Ø\u00032\b\b\u0001\u0010\t\u001a\u00020\u0002H§@¢\u0006\u0005\bÙ\u0003\u0010JJ\u001d\u0010Ú\u0003\u001a\u00030Ø\u00032\b\b\u0001\u0010\t\u001a\u00020\u0002H§@¢\u0006\u0005\bÚ\u0003\u0010JJ)\u0010Ü\u0003\u001a\u00020$2\b\b\u0001\u0010\t\u001a\u00020\u00022\n\b\u0001\u0010þ\u0002\u001a\u00030Û\u0003H§@¢\u0006\u0006\bÜ\u0003\u0010Ý\u0003J\u001c\u0010Þ\u0003\u001a\u00020$2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÞ\u0003\u0010\fJ\u001c\u0010ß\u0003\u001a\u00020$2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bß\u0003\u0010\fJ3\u0010á\u0003\u001a\u00020$2\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010\u0017\u001a\u00020\u00022\n\b\u0001\u0010þ\u0002\u001a\u00030à\u0003H§@¢\u0006\u0006\bá\u0003\u0010â\u0003J\u001c\u0010ã\u0003\u001a\u00020$2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bã\u0003\u0010\fJ\u001c\u0010ä\u0003\u001a\u00020$2\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bä\u0003\u0010\fJ\u001c\u0010å\u0003\u001a\u00020$2\b\b\u0001\u0010\t\u001a\u00020\u0002H§@¢\u0006\u0005\bå\u0003\u0010JJ \u0010ç\u0003\u001a\u00030æ\u00032\n\b\u0001\u0010µ\u0003\u001a\u00030´\u0003H§@¢\u0006\u0006\bç\u0003\u0010¸\u0003J\u0013\u0010é\u0003\u001a\u00030è\u0003H§@¢\u0006\u0005\bé\u0003\u0010\u0015J\u001d\u0010ë\u0003\u001a\u00030ê\u00032\b\b\u0001\u0010\t\u001a\u00020\u0002H§@¢\u0006\u0005\bë\u0003\u0010JJ\u001d\u0010í\u0003\u001a\u00030ì\u00032\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bí\u0003\u0010\fJ\u001f\u0010ï\u0003\u001a\u00020$2\n\b\u0001\u0010þ\u0002\u001a\u00030î\u0003H§@¢\u0006\u0006\bï\u0003\u0010ð\u0003J4\u0010ô\u0003\u001a\u00030ó\u00032\t\b\u0001\u0010ñ\u0003\u001a\u00020\u00022\t\b\u0001\u0010ò\u0003\u001a\u00020\u00022\b\b\u0001\u0010[\u001a\u00020\u0002H§@¢\u0006\u0006\bô\u0003\u0010Û\u0002J\u0013\u0010ö\u0003\u001a\u00030õ\u0003H§@¢\u0006\u0005\bö\u0003\u0010\u0015J)\u0010ù\u0003\u001a\u00030ø\u00032\b\b\u0001\u0010\u0018\u001a\u00020\b2\t\b\u0001\u0010÷\u0003\u001a\u00020\u0002H§@¢\u0006\u0006\bù\u0003\u0010¢\u0001J\u001e\u0010û\u0003\u001a\u00030ú\u00032\t\b\u0001\u0010»\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\bû\u0003\u0010JJ\u001d\u0010ý\u0003\u001a\u00030ü\u00032\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bý\u0003\u0010\fJ\u0013\u0010ÿ\u0003\u001a\u00030þ\u0003H§@¢\u0006\u0005\bÿ\u0003\u0010\u0015J\u001d\u0010\u0081\u0004\u001a\u00030\u0080\u00042\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0081\u0004\u0010\fJ)\u0010\u0083\u0004\u001a\u00020\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\n\b\u0001\u0010þ\u0002\u001a\u00030\u0082\u0004H§@¢\u0006\u0006\b\u0083\u0004\u0010\u0084\u0004J\u001e\u0010\u0087\u0004\u001a\u00030\u0086\u00042\t\b\u0001\u0010\u0085\u0004\u001a\u00020\u0002H§@¢\u0006\u0005\b\u0087\u0004\u0010JJ\u001e\u0010\u0089\u0004\u001a\u00030\u0088\u00042\t\b\u0001\u0010\u0085\u0004\u001a\u00020\u0002H§@¢\u0006\u0005\b\u0089\u0004\u0010JJ\u001e\u0010\u008b\u0004\u001a\u00030\u008a\u00042\t\b\u0001\u0010\u0085\u0004\u001a\u00020\u0002H§@¢\u0006\u0005\b\u008b\u0004\u0010JJ3\u0010\u008c\u0004\u001a\u00030\u0088\u00042\t\b\u0001\u0010\u0085\u0004\u001a\u00020\u00022\b\b\u0001\u0010\u0003\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\b\u008c\u0004\u0010É\u0002J3\u0010\u008d\u0004\u001a\u00030\u0086\u00042\t\b\u0001\u0010\u0085\u0004\u001a\u00020\u00022\b\b\u0001\u0010\u0003\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\b\u008d\u0004\u0010É\u0002J3\u0010\u008e\u0004\u001a\u00030\u008a\u00042\t\b\u0001\u0010\u0085\u0004\u001a\u00020\u00022\b\b\u0001\u0010\u0003\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\b\u008e\u0004\u0010É\u0002J\u001e\u0010\u0090\u0004\u001a\u00030\u008f\u00042\t\b\u0001\u0010®\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\b\u0090\u0004\u0010JJ\u001d\u0010\u0092\u0004\u001a\u00030\u0091\u00042\b\b\u0001\u0010\u001c\u001a\u00020\bH§@¢\u0006\u0005\b\u0092\u0004\u0010\fJ\u0012\u0010\u0093\u0004\u001a\u00020HH§@¢\u0006\u0005\b\u0093\u0004\u0010\u0015J\u001d\u0010\u0095\u0004\u001a\u00030\u0094\u00042\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0095\u0004\u0010\fJ\u001d\u0010\u0097\u0004\u001a\u00030\u0096\u00042\b\b\u0001\u0010\u0003\u001a\u00020\u0002H§@¢\u0006\u0005\b\u0097\u0004\u0010JJ\u001d\u0010\u0099\u0004\u001a\u00030\u0098\u00042\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b\u0099\u0004\u0010\fJ\u001e\u0010\u009b\u0004\u001a\u00030\u009a\u00042\t\b\u0001\u0010ô\u0001\u001a\u00020\bH§@¢\u0006\u0005\b\u009b\u0004\u0010\fJ\u001e\u0010\u009d\u0004\u001a\u00030\u009c\u00042\t\b\u0001\u0010ô\u0001\u001a\u00020\bH§@¢\u0006\u0005\b\u009d\u0004\u0010\fJ\u001d\u0010\u009e\u0004\u001a\u00030\u0096\u00042\b\b\u0001\u0010\u0018\u001a\u00020\bH§@¢\u0006\u0005\b\u009e\u0004\u0010\fJ*\u0010¢\u0004\u001a\u00030¡\u00042\t\b\u0001\u0010\u009f\u0004\u001a\u00020\b2\t\b\u0001\u0010 \u0004\u001a\u00020\u0002H§@¢\u0006\u0006\b¢\u0004\u0010¢\u0001J\u001d\u0010¤\u0004\u001a\u00030£\u00042\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b¤\u0004\u0010\fJ'\u0010¦\u0004\u001a\u00030¥\u00042\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\b¦\u0004\u00103J\u001d\u0010¨\u0004\u001a\u00030§\u00042\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b¨\u0004\u0010\fJ=\u0010ª\u0004\u001a\"\u0012\u0004\u0012\u00020\u0002\u0012\u0005\u0012\u00030©\u00040\u0088\u0003j\u0010\u0012\u0004\u0012\u00020\u0002\u0012\u0005\u0012\u00030©\u0004`\u0089\u00032\t\b\u0001\u0010Ø\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\bª\u0004\u0010JJ\u0013\u0010¬\u0004\u001a\u00030«\u0004H§@¢\u0006\u0005\b¬\u0004\u0010\u0015J)\u0010®\u0004\u001a\u00020\u00012\b\b\u0001\u0010\t\u001a\u00020\b2\n\b\u0001\u0010þ\u0002\u001a\u00030\u00ad\u0004H§@¢\u0006\u0006\b®\u0004\u0010¯\u0004J\u001d\u0010±\u0004\u001a\u00030°\u00042\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\b±\u0004\u0010\fJ\u001e\u0010³\u0004\u001a\u00030²\u00042\t\b\u0001\u0010®\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\b³\u0004\u0010JJ)\u0010µ\u0004\u001a\u00030²\u00042\t\b\u0001\u0010®\u0002\u001a\u00020\u00022\t\b\u0001\u0010´\u0004\u001a\u00020\u0002H§@¢\u0006\u0005\bµ\u0004\u0010\u0007J\u001e\u0010¸\u0004\u001a\u00030·\u00042\t\b\u0001\u0010¶\u0004\u001a\u00020\u0002H§@¢\u0006\u0005\b¸\u0004\u0010JJ\u001d\u0010º\u0004\u001a\u00030¹\u00042\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bº\u0004\u0010\fJ\u001e\u0010¼\u0004\u001a\u00030»\u00042\t\b\u0001\u0010®\u0002\u001a\u00020\u0002H§@¢\u0006\u0005\b¼\u0004\u0010JJ\u001d\u0010¾\u0004\u001a\u00030½\u00042\b\b\u0001\u0010\t\u001a\u00020\u0002H§@¢\u0006\u0005\b¾\u0004\u0010JJ'\u0010À\u0004\u001a\u00030¿\u00042\b\b\u0001\u0010\t\u001a\u00020\b2\b\b\u0001\u0010?\u001a\u00020\bH§@¢\u0006\u0005\bÀ\u0004\u00103J)\u0010Ã\u0004\u001a\u00030Â\u00042\t\b\u0001\u0010Á\u0004\u001a\u00020\u00022\b\b\u0001\u0010k\u001a\u00020\bH§@¢\u0006\u0006\bÃ\u0004\u0010Ä\u0002J\u001d\u0010Å\u0004\u001a\u00030Ä\u00042\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÅ\u0004\u0010\fJ\u001d\u0010Ç\u0004\u001a\u00030Æ\u00042\b\b\u0001\u0010\t\u001a\u00020\bH§@¢\u0006\u0005\bÇ\u0004\u0010\fJ*\u0010Ê\u0004\u001a\u00030Æ\u00042\b\b\u0001\u0010\t\u001a\u00020\b2\n\b\u0001\u0010É\u0004\u001a\u00030È\u0004H§@¢\u0006\u0006\bÊ\u0004\u0010Ë\u0004¨\u0006Ì\u0004"}, d2 = {"Lcom/sofascore/network/api/NetworkCoroutineAPI;", "", "", "sport", "date", "Lcom/sofascore/model/newNetwork/EventListResponse;", "sportMainEventsExtended", "(Ljava/lang/String;Ljava/lang/String;Lrj/a;)Ljava/lang/Object;", "", "id", "Lcom/sofascore/model/network/response/EventResponse;", "getEvent", "(ILrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/EventIncidentsResponse;", "getEventIncidents", "Lcom/sofascore/model/newNetwork/PointByPointResponse;", "pointByPoint", "Lcom/sofascore/model/network/response/VotesResponse;", "getEventVotes", "Lcom/sofascore/model/network/AddedEventsResponse;", "getNewlyAddedEvents", "(Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/TvType;", "type", "eventId", "Lcom/sofascore/model/newNetwork/TvCountryChannelsResponse;", "getTvCountryChannels", "(Lcom/sofascore/model/TvType;ILrj/a;)Ljava/lang/Object;", "channelId", "Lcom/sofascore/model/newNetwork/TvChannelVotesResponse;", "getTvChannelVotes", "(ILcom/sofascore/model/TvType;ILrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/MediaResponse;", "getMedia", "Lcom/sofascore/model/newNetwork/HighlightsResponse;", "getStageHighlights", "Lcom/sofascore/model/newNetwork/NetworkResponse;", "liveActionWidget", "Lcom/sofascore/model/network/response/LineupsResponse;", "getLineups", "Lcom/sofascore/model/network/response/TweetsResponse;", "getTweets", "Lcom/sofascore/model/network/response/TeamRssFeedResponse;", "getTeamRssFeed", "Lcom/sofascore/model/network/response/EventStatisticsResponse;", "getEventStatistics", "Lcom/sofascore/model/network/response/EventInningsResponse;", "getEventInnings", "teamId", "Lcom/sofascore/model/network/response/EventTeamHeatmapResponse;", "getEventTeamHeatMap", "(IILrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/network/response/TeamEventShotmapResponse;", "getBasketballTeamEventShotmap", "playerId", "Lcom/sofascore/model/newNetwork/FootballShotmapResponse;", "getFootballPlayerEventShotmap", "getFootballEventShotmap", "Lcom/sofascore/model/newNetwork/HockeyEventShotmapResponse;", "getHockeyEventShotmap", "Lcom/sofascore/model/newNetwork/HockeyPlayerShotmapResponse;", "getHockeyPlayerEventShotmap", "tournamentId", "seasonId", "Lcom/sofascore/model/network/response/SeasonShotActionAreaResponse;", "getSeasonShotActionAreas", "(IILjava/lang/String;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/network/response/EventWinProbabilityResponse;", "getEventWinProbability", "Lcom/sofascore/model/network/response/Head2HeadResponse;", "getHead2Head", "customId", "Lcom/sofascore/model/network/response/Head2HeadEventsResponse;", "getHead2HeadEvents", "(Ljava/lang/String;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/network/response/TeamStreaksResponse;", "getTeamStreaks", "Lcom/sofascore/model/network/response/EventManagersResponse;", "getEventManagers", "providerId", "Lcom/sofascore/model/network/response/WinningOddsResponse;", "getWinningOdds", "Lcom/sofascore/model/network/response/PlayerEventStatisticsResponse;", "playerEventStatistics", "Lcom/sofascore/model/newNetwork/PlayerHeatmapResponse;", "playerEventHeatmap", "getHighlights", "Lcom/sofascore/model/newNetwork/PlayerDetailsResponse;", "playerDetails", "Lcom/sofascore/model/newNetwork/PlayerCharacteristicsResponse;", "playerCharacteristics", SearchIntents.EXTRA_QUERY, "more", "Lcom/sofascore/model/newNetwork/SearchPlayersResponseKt;", "searchPlayers", "Lcom/sofascore/model/newNetwork/PlayerYearSummaryResponse;", "playerYearSummary", "Lcom/sofascore/model/newNetwork/AttributeOverviewResponse;", "playerAttributeOverview", "Lcom/sofascore/model/newNetwork/NationalTeamStatisticsResponse;", "playerNationalTeamStatistics", "Lcom/sofascore/model/newNetwork/PlayerCareerStatisticsResponse;", "playerCareerStatistics", "Lcom/sofascore/model/newNetwork/TransferHistoryResponse;", "playerTransferHistory", "Lcom/sofascore/model/newNetwork/StatisticsSeasonsResponse;", "playerStatisticsSeasons", "page", "Lcom/sofascore/model/newNetwork/PlayerEventsListResponse;", "playerEventsList", "(ILjava/lang/String;ILrj/a;)Ljava/lang/Object;", "tid", "sid", "Lm8/p;", "playerSeasonStatistics", "(IIILjava/lang/String;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/PlayerSeasonHeatMapResponse;", "playerSeasonHeatMap", "(IIILrj/a;)Ljava/lang/Object;", "uniqueTournamentId", "Lcom/sofascore/model/newNetwork/PlayerPenaltyHistoryResponse;", "playerPenaltyHistory", "Lcom/sofascore/model/newNetwork/PlayerLastRatingsResponse;", "playerLastRatings", "Lcom/sofascore/model/network/response/PlayerSeasonShotActionsResponse;", "playerSubSeasonShotActions", "seasonType", "subSeasonShotActionAreas", "(IILjava/lang/String;Ljava/lang/String;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/EventChildEventsResponse;", "eventChildEvents", "Lcom/sofascore/model/network/response/AveragePositionsResponse;", "getAveragePositions", "heatMap", "Lcom/sofascore/model/newNetwork/PlayerShotmapResponse;", "eventPlayerShotMap", "Lcom/sofascore/model/newNetwork/FeaturedPlayersResponse;", "eventFeaturedPlayers", "Lcom/sofascore/model/newNetwork/EventBestPlayersResponse;", "bestPlayers", "Lcom/sofascore/model/newNetwork/EventBestPlayersSummaryResponse;", "bestPlayersSummary", "Lcom/sofascore/model/newNetwork/FeaturedOddsResponse;", "featuredOdds", "Lcom/sofascore/model/newNetwork/AllOddsResponse;", "allOdds", "Lcom/sofascore/model/newNetwork/TeamStreakBettingOddsResponse;", "teamStreakBettingOdds", "Lcom/sofascore/model/newNetwork/PregameFormResponse;", "pregameForm", "Lcom/sofascore/model/newNetwork/EventSeriesResponse;", "getEventSeries", "Lcom/sofascore/model/newNetwork/EventGraphResponse;", "eventGraph", "winProbability", "Lcom/sofascore/model/newNetwork/CricketRunsPerOverGraphResponse;", "cricketRunsPerOverGraph", "Lcom/sofascore/model/newNetwork/TennisPowerResponse;", "tennisPower", "languageCode", "Lcom/sofascore/model/newNetwork/commentary/CommentaryResponse;", "getCommentary", "(ILjava/lang/String;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/commentary/HockeyPlayByPlayResponse;", "getHockeyPlayByPlay", "Lcom/sofascore/model/newNetwork/EsportsGamesResponse;", "esportsGames", "Lcom/sofascore/model/newNetwork/EsportsGameStatisticsResponse;", "esportsGameStatistics", "Lcom/sofascore/model/newNetwork/ESportsGameRoundsResponse;", "eSportsGameRounds", "Lcom/sofascore/model/newNetwork/ESportsGameLineupsResponse;", "eSportsGameLineUps", "Lcom/sofascore/model/newNetwork/ESportsBansResponse;", "eSportsGameBans", "Lcom/sofascore/model/newNetwork/newRankings/RankingsSummaryResponse;", "mmaOrganisationRanking", "Lcom/sofascore/model/newNetwork/TeamDetailsResponse;", "teamDetails", "Lcom/sofascore/model/newNetwork/EventIdsResponse;", "teamEventIds", "Lcom/sofascore/model/newNetwork/TeamStandingsSeasonsResponse;", "teamStandingsSeasons", "Lcom/sofascore/model/newNetwork/PerformanceGraphDataResponse;", "performanceGraphData", "teamTopPlayers", "Lcom/sofascore/model/network/response/GoalDistributionsResponse;", "getGoalDistributions", "span", "getTeamEventList", "Lcom/sofascore/model/newNetwork/TeamPlayersResponse;", "getTeamSquad", "teamStatisticsSeasons", "teamStatistics", "rankedTeamSeasonStatistics", "Lcom/sofascore/model/newNetwork/TeamPerformanceResponse;", "teamPerformance", "Lcom/sofascore/model/newNetwork/TeamRankingsResponse;", "teamRankings", "Lcom/sofascore/model/newNetwork/TeamNearEventsResponse;", "teamNearEvents", "Lcom/sofascore/model/newNetwork/TeamUniqueTournamentsResponse;", "teamTournaments", "Lcom/sofascore/model/newNetwork/RecentTeamTournamentsResponse;", "recentTeamTournaments", "Lcom/sofascore/model/newNetwork/TeamTransfersResponse;", "teamTransfers", "Lcom/sofascore/model/newNetwork/TeamCareerStatisticsResponse;", "teamCareerStatistics", "Lcom/sofascore/model/newNetwork/StandingsResponse;", "standings", "uniqueStandings", "Lcom/sofascore/model/newNetwork/StandingsFormResponse;", "standingsForm", "Lcom/sofascore/model/newNetwork/StandingsFormMultipleTournamentsResponse;", "uniqueStandingsForm", "Lcom/sofascore/model/newNetwork/SeasonStatisticsResponse;", "tournamentPlayerStatisticsTypes", "tournamentTeamStatisticsTypes", "leagueTopPlayers", "position", "leagueTopPlayersByPosition", "leagueTopTeams", "leagueTopStats", "leagueTopStatsByPosition", "Lcom/sofascore/model/cuptree/CupTreesResponse;", "uniqueCupTree", "Lcom/sofascore/model/newNetwork/SeasonInfoResponse;", "uniqueTournamentSeasonInfo", "Lcom/sofascore/model/newNetwork/TournamentResponse;", "tournament", "Lcom/sofascore/model/newNetwork/UniqueTournamentResponse;", SearchResponseKt.LEAGUE_ENTITY, "Lcom/sofascore/model/newNetwork/TournamentSeasonsResponse;", "tournamentSeasons", "uniqueTournamentSeasons", "tournamentSeasonEvents", "(IILjava/lang/String;ILrj/a;)Ljava/lang/Object;", "uniqueTournamentSeasonEvents", "mmaEventType", "mmaFightNightEvents", "uniqueTournamentEvents", "uniqueTournamentMainEvents", "tournamentEvents", "uniqueId", "Lcom/sofascore/model/newNetwork/PowerRankingRoundsResponse;", "powerRankingRounds", "roundId", "Lcom/sofascore/model/newNetwork/PowerRankingResponse;", "powerRanking", "Lcom/sofascore/model/newNetwork/UniqueTournamentGroupsResponse;", "uniqueTournamentGroups", "Lcom/sofascore/model/newNetwork/UniqueTournamentTeamsResponse;", "uniqueTournamentTeams", "Lcom/sofascore/model/newNetwork/UniqueTournamentRoundsResponse;", "uniqueTournamentRounds", "round", "uniqueTournamentRoundEvents", "(IIILjava/lang/String;ILrj/a;)Ljava/lang/Object;", "roundSlug", "(IIILjava/lang/String;Ljava/lang/String;ILrj/a;)Ljava/lang/Object;", "prefix", "uniqueTournamentRoundEventsPrefix", "(IIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;ILrj/a;)Ljava/lang/Object;", "uniqueTournamentTeamEvents", "Lcom/sofascore/model/newNetwork/UniqueTournamentDetailsResponse;", "uniqueTournamentDetails", "uniqueTournamentMedia", "Lcom/sofascore/model/newNetwork/PlayerOfTheSeasonResponse;", "playerOfTheSeason", "Lcom/sofascore/model/newNetwork/TeamOfTheWeekRoundsResponse;", "teamOfTheWeekRounds", "Lcom/sofascore/model/newNetwork/FeaturedEventsResponse;", "uniqueTournamentFeaturedEvents", "Lcom/sofascore/model/newNetwork/TeamOfTheWeekResponse;", BuzzerConfigResponseKt.TEAM_OF_THE_WEEK, "teamOfTheSeason", "myLeagueEventIds", "Lcom/sofascore/model/newNetwork/SearchTeamsResponse;", "searchTeams", "Lcom/sofascore/model/newNetwork/SearchManagersResponse;", "searchManagers", "Lcom/sofascore/model/newNetwork/SearchVenuesResponse;", "searchVenues", "searchTeamsBySport", "Lcom/sofascore/model/fanRating/FanOverallRatingResponse;", "fanOverallRating", "Lcom/sofascore/model/fanRating/MyRatingBody;", "rating", "", "fanRating", "(ILcom/sofascore/model/fanRating/MyRatingBody;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/fanRating/FanRatingAllMatchesResponse;", "fanRatingAllMatches", "refereeId", "Lcom/sofascore/model/newNetwork/RefereeDetailsResponse;", "refereeDetails", "Lcom/sofascore/model/newNetwork/RefereeStatisticsResponse;", "refereeStatistics", "refereeEvents", "Lcom/sofascore/model/buzzer/BuzzerConfigResponse;", "getBuzzerConfig", "countryCode", "Lcom/sofascore/model/buzzer/BuzzerTilesResponse;", "getBuzzerTiles", "Lcom/sofascore/model/buzzer/NewBuzzerTilesResponse;", "getNewBuzzerTiles", "Lcom/sofascore/model/stories/StoryListResponse;", "getStories", "sportSlug", "Lcom/sofascore/model/network/response/bettingtips/DroppingOddsResponse;", "droppingOdds", "streakName", "Lcom/sofascore/model/network/response/bettingtips/TeamStreaksResponse;", "teamStreaks", "Lcom/sofascore/model/network/response/bettingtips/H2HStreaksResponse;", "h2hStreaks", "Lcom/sofascore/model/network/response/bettingtips/TrendingOddsResponse;", "trendingOdds", "Lcom/sofascore/model/network/response/bettingtips/HighValueStreaksResponse;", "highValueStreaks", "Lcom/sofascore/model/newNetwork/FeaturedPrematchOddsResponse;", "recommendedPrematchOdds", "recommendedPrematchTopVotedOdds", "(Ljava/lang/String;ILrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/network/response/bettingtips/BetBoostsResponse;", "betBoosts", "Lcom/sofascore/model/network/response/SearchResponse;", "search", "(Ljava/lang/String;Ljava/lang/String;ILrj/a;)Ljava/lang/Object;", "entityType", "searchSuggestionsByEntityType", "searchByEntityType", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILrj/a;)Ljava/lang/Object;", "Ljava/util/LinkedHashMap;", "Lkotlin/collections/LinkedHashMap;", ApiConstants.OPTIONS, "Lcom/sofascore/model/newNetwork/TransfersResponse;", "getTransfers", "(Ljava/util/LinkedHashMap;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/SearchTournamentsResponse;", "searchTournaments", "Lcom/sofascore/model/newNetwork/SportCategoriesResponse;", "sportCategories", ApiConstants.OFFSET, "Lcom/sofascore/model/newNetwork/CategoriesForDateResponse;", "categoriesForDate", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lrj/a;)Ljava/lang/Object;", "categoryId", "categoryScheduledEvents", "timezoneOffset", "uniqueTournamentScheduledEvents", "(ILjava/lang/String;Ljava/lang/String;Lrj/a;)Ljava/lang/Object;", "sportLiveEvents", "Lcom/sofascore/model/newNetwork/LiveCategoriesResponse;", "liveCategories", "Lcom/sofascore/model/newNetwork/MonthlyUniqueTournamentsResponse;", "monthlyTournaments", "monthlyTournamentsFlow", "Lcom/sofascore/model/newNetwork/SeasonDaysWithEventsResponse;", "seasonDaysWithEvents", "Lcom/sofascore/model/newNetwork/CategoryUniqueTournamentResponse;", "categoryTournaments", "weightClass", "gender", "Lcom/sofascore/model/newNetwork/newRankings/RankingTypeWithRows;", "mmaRankingByWeightClass", "Lcom/sofascore/model/newNetwork/RankingResponse;", "teamRankingOld", "entity", "entityId", "Lcom/sofascore/model/newNetwork/TranslationResponse;", "translateDescription", "(Ljava/lang/String;ILjava/lang/String;Lrj/a;)Ljava/lang/Object;", "managerId", "Lcom/sofascore/model/newNetwork/ManagerDetailsResponse;", "managerDetails", "Lcom/sofascore/model/newNetwork/CareerHistoryResponse;", "managerCareerHistory", "Lcom/sofascore/model/newNetwork/ManagerEventsResponse;", "managerEvents", "Lcom/sofascore/model/newNetwork/TvChannelVoteBody;", "body", "voteTvChannel", "(Lcom/sofascore/model/TvType;IILcom/sofascore/model/newNetwork/TvChannelVoteBody;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/post/PlayerSuggestPostBody;", "Lretrofit2/Response;", "editPlayer", "(ILcom/sofascore/model/newNetwork/post/PlayerSuggestPostBody;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/post/TeamSuggestPostBody;", "editTeam", "(ILcom/sofascore/model/newNetwork/post/TeamSuggestPostBody;Lrj/a;)Ljava/lang/Object;", "Ljava/util/HashMap;", "Lkotlin/collections/HashMap;", "editFighter", "(ILjava/util/HashMap;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/post/VenueSuggestPostBody;", "editVenue", "(ILcom/sofascore/model/newNetwork/post/VenueSuggestPostBody;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/network/post/FeedbackPost;", "payload", "Lpl/C;", "screenshot", "feedback", "(Lcom/sofascore/model/network/post/FeedbackPost;Lpl/C;Lrj/a;)Ljava/lang/Object;", "url", "appVersion", "platform", "sdkVersion", "Lcom/sofascore/model/newNetwork/InfoResponse;", "info", "(Ljava/lang/String;ILjava/lang/String;ILrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/profile/ProfileNetworkResponse;", Scopes.PROFILE, "Lcom/sofascore/model/profile/UserSubscriptionsResponse;", "userSubscriptions", "Lcom/sofascore/model/newNetwork/DefaultPinnedLeaguesResponse;", "defaultPinnedTournaments", "Lcom/sofascore/model/newNetwork/cpc/ValuableUserVersionsResponse;", "getValuableUsersVersions", ApiConstants.VERSION, "Lcom/sofascore/model/newNetwork/ValuableUserResponse;", "getValuableUsersForVersion", "Lcom/sofascore/model/profile/VoteRankingResponse;", "voteRanking", "contributionRanking", "editorRanking", "Lcom/sofascore/model/newNetwork/PostUserNickname;", "nickname", "(Lcom/sofascore/model/newNetwork/PostUserNickname;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/EventVoteBody;", "eventVote", "(ILcom/sofascore/model/newNetwork/EventVoteBody;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/ChangeEventVoteBody;", "changeEventVote", "(ILcom/sofascore/model/newNetwork/ChangeEventVoteBody;Lrj/a;)Ljava/lang/Object;", "Lpl/M;", "file", "Lcom/sofascore/model/newNetwork/post/ProfileImageUploadResponse;", "uploadProfileImage", "(Lpl/M;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/UserPredictionsResponse;", "userPredictions", "userId", "Lcom/sofascore/model/profile/ContributionsResponse;", "getUserContributions", "Lcom/sofascore/model/profile/ContributionSummaryResponse;", "getUserContributionSummary", "Lcom/sofascore/model/profile/CredibilityScoreGraphResponse;", "getCredibilityScoreGraphResponse", "Lcom/sofascore/model/profile/EditorsEventsCountResponse;", "getEditorsEventsCount", "Lcom/sofascore/model/profile/EditorsTournamentsResponse;", "getEditorsTournaments", "Lcom/sofascore/model/profile/EditorsPopularEventsResponse;", "getMostOpenedEditorMatches", "Lcom/sofascore/model/profile/EditorEventOpeningsGraphResponse;", "getEditorOpeningsGraphResponse", "Lcom/sofascore/model/newNetwork/PostUserBadge;", "changeUserBadge", "(Lcom/sofascore/model/newNetwork/PostUserBadge;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/profile/UserBadgesReponse;", "getUserBadges", "leaderboardId", "Lcom/sofascore/model/weeklyChallenge/WeeklyChallengeLeaderboardResponse;", "getWeeklyChallengeRankings", "Lcom/sofascore/model/weeklyChallenge/PopularEventsResponse;", "getPopularUpcomingEvents", "Lcom/sofascore/model/weeklyChallenge/WeeklyChallengeTimestampResponse;", "getWeeklyChallengeTimestamp", "Lcom/sofascore/model/weeklyChallenge/WeeklyChallengeAssetsResponse;", "getWeeklyChallengeAssets", "Lcom/sofascore/model/newNetwork/ChatMessagesResponse;", "getChatMessages", "getFeaturedChatMessages", "Lcom/sofascore/model/newNetwork/PostChatMessage;", "postMessage", "(Ljava/lang/String;Lcom/sofascore/model/newNetwork/PostChatMessage;Lrj/a;)Ljava/lang/Object;", "upVoteMessage", "featureMessage", "Lcom/sofascore/model/chat/BanReason;", "reportMessage", "(ILjava/lang/String;Lcom/sofascore/model/chat/BanReason;Lrj/a;)Ljava/lang/Object;", "unReportMessage", "deleteMessage", "markNotRisky", "Lcom/sofascore/model/newNetwork/post/ImageUploadResponse;", "uploadChatImage", "Lcom/sofascore/model/newNetwork/RiskyTopicsResponse;", "riskyChatChannels", "Lcom/sofascore/model/network/response/MessageCountResponse;", "chatMessageCount", "Lcom/sofascore/model/network/response/FlareCountResponse;", "chatFlareCount", "Lcom/sofascore/model/newNetwork/PostChatFlag;", "setUserAccountChatFlag", "(Lcom/sofascore/model/newNetwork/PostChatFlag;Lrj/a;)Ljava/lang/Object;", "source", "target", "Lcom/sofascore/model/GoogleTranslate;", "translate", "Lcom/sofascore/model/UserRegionResponse;", "userRegion", "teamSide", "Lcom/sofascore/model/newNetwork/UseFlareResponse;", "useFlare", "Lcom/sofascore/model/newNetwork/UserFlareInfoResponse;", "getUserFlareInfo", "Lcom/sofascore/model/newNetwork/EventFlareCountResponse;", "getEventFlareCount", "Lcom/sofascore/model/newNetwork/toto/TotoTournamentsConfigResponse;", "getTotoConfig", "Lcom/sofascore/model/newNetwork/SurveyResponse;", "getSurvey", "Lcom/sofascore/model/newNetwork/SurveyAnswersPost;", "postSurveyData", "(ILcom/sofascore/model/newNetwork/SurveyAnswersPost;Lrj/a;)Ljava/lang/Object;", "alpha2", "Lcom/sofascore/model/newNetwork/TeamSuggestionResponse;", "teamSuggestions", "Lcom/sofascore/model/newNetwork/UniqueTournamentSuggestionResponse;", "uniqueTournamentSuggestion", "Lcom/sofascore/model/newNetwork/SuggestedPlayersResponse;", "suggestedPlayers", "uniqueTournamentSuggestionPerSport", "teamSuggestionsPerSport", "suggestedPlayersPerSport", "Lcom/sofascore/model/newNetwork/TvChannelsResponse;", "tvChannelsForCountry", "Lcom/sofascore/model/newNetwork/TvChannelScheduleResponse;", "tvChannelEvents", "getPopularEvents", "Lcom/sofascore/model/newNetwork/StageResponse;", "stageDetails", "Lcom/sofascore/model/newNetwork/StagesListResponse;", "featuredStages", "Lcom/sofascore/model/newNetwork/CategoryUniqueStagesResponse;", "stageSportUniqueStages", "Lcom/sofascore/model/newNetwork/StageSportSeasonsResponse;", "stageSportSeasons", "Lcom/sofascore/model/newNetwork/RecentStageIdsResponse;", "recentStageIds", "stageSportSubStages", "stageId", "teamType", "Lcom/sofascore/model/newNetwork/StageStandingsResponse;", "stageStandings", "Lcom/sofascore/model/newNetwork/StageSeasonsResponse;", "driverStageSeasons", "Lcom/sofascore/model/newNetwork/DriverRacesResponse;", "stageSportDriverSeasonRaces", "Lcom/sofascore/model/newNetwork/DriverCareerHistoryResponse;", "driverCareerHistory", "Lcom/sofascore/model/newNetwork/SportItem;", "sportEventCount", "Lcom/sofascore/model/newNetwork/ApiBranchesResponse;", "availableBranches", "Lcom/sofascore/model/newNetwork/CrowdsourcingSuggest;", "suggestChanges", "(ILcom/sofascore/model/newNetwork/CrowdsourcingSuggest;Lrj/a;)Ljava/lang/Object;", "Lcom/sofascore/model/newNetwork/CrowdsourcingUserContributionResponse;", "userContribution", "Lcom/sofascore/model/newNetwork/OddsProvidersResponse;", "oddsProvidersForCountry", "regionCode", "oddsProvidersForCountryRegion", "providerSlug", "Lcom/sofascore/model/newNetwork/OddsProviderDetailsResponse;", "oddsProviderDetails", "Lcom/sofascore/model/newNetwork/LatestCrowdsourcingSuggestResponse;", "latestCrowdsourcingSuggests", "Lcom/sofascore/model/wsc/WSCStoriesResponse;", "videoHighlightsForCountry", "Lcom/sofascore/model/newNetwork/UserPredictionsVotesResponse;", "getUserVotes", "Lcom/sofascore/model/newNetwork/TopFollowedPlayersResponse;", "getTopFollowedPlayers", "queryIdentifier", "Lcom/sofascore/model/newNetwork/mediaposts/PersonalizedMediaPostsResponse;", "personalizedMediaPosts", "Lcom/sofascore/model/newNetwork/mediaposts/MediaPostResponse;", "mediaPost", "Lcom/sofascore/model/newNetwork/mediaposts/MediaPostReactionsResponse;", "mediaPostReactions", "Lcom/sofascore/model/newNetwork/mediaposts/MediaReactionPost;", "reactionPost", "addMediaPostReaction", "(ILcom/sofascore/model/newNetwork/mediaposts/MediaReactionPost;Lrj/a;)Ljava/lang/Object;", "network_release"}, k = 1, mv = {2, 0, 0})
+/* loaded from: classes3.dex */
+public interface NetworkCoroutineAPI {
+    @POST("/api/v1/media-posts/{id}/reactions")
+    Object addMediaPostReaction(@Path("id") int i10, @Body @NotNull MediaReactionPost mediaReactionPost, @NotNull InterfaceC5234a<? super MediaPostReactionsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/odds/{providerId}/all")
+    Object allOdds(@Path("id") int i10, @Path("providerId") int i11, @NotNull InterfaceC5234a<? super AllOddsResponse> interfaceC5234a);
+
+    @POST("https://api.sofascore.com/api/v1/app/branches")
+    Object availableBranches(@NotNull InterfaceC5234a<? super ApiBranchesResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/best-players")
+    Object bestPlayers(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventBestPlayersResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/best-players/summary")
+    Object bestPlayersSummary(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventBestPlayersSummaryResponse> interfaceC5234a);
+
+    @GET("/api/v1/odds/{id}/boost/{sportSlug}")
+    Object betBoosts(@Path("id") int i10, @Path("sportSlug") @NotNull String str, @NotNull InterfaceC5234a<? super BetBoostsResponse> interfaceC5234a);
+
+    @GET("api/v1/sport/{sport}/{date}/{offset}/categories")
+    Object categoriesForDate(@Path("sport") @NotNull String str, @Path("date") @NotNull String str2, @Path("offset") @NotNull String str3, @NotNull InterfaceC5234a<? super CategoriesForDateResponse> interfaceC5234a);
+
+    @GET("api/v1/category/{cid}/scheduled-events/{date}")
+    Object categoryScheduledEvents(@Path("cid") int i10, @Path("date") @NotNull String str, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/category/{id}/unique-tournaments")
+    Object categoryTournaments(@Path("id") int i10, @NotNull InterfaceC5234a<? super CategoryUniqueTournamentResponse> interfaceC5234a);
+
+    @PUT("api/v1/event/{id}/change-vote")
+    Object changeEventVote(@Path("id") int i10, @Body @NotNull ChangeEventVoteBody changeEventVoteBody, @NotNull InterfaceC5234a<? super Response<Unit>> interfaceC5234a);
+
+    @POST("api/v1/user/badge")
+    Object changeUserBadge(@Body @NotNull PostUserBadge postUserBadge, @NotNull InterfaceC5234a<? super Response<Unit>> interfaceC5234a);
+
+    @GET("api/v1/flare/{id}")
+    Object chatFlareCount(@Path("id") int i10, @NotNull InterfaceC5234a<? super FlareCountResponse> interfaceC5234a);
+
+    @GET("api/v1/chat/topic-message-count/{id}")
+    Object chatMessageCount(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super MessageCountResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/contribution-ranking")
+    Object contributionRanking(@NotNull InterfaceC5234a<? super VoteRankingResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/graph/cricket")
+    Object cricketRunsPerOverGraph(@Path("id") int i10, @NotNull InterfaceC5234a<? super CricketRunsPerOverGraphResponse> interfaceC5234a);
+
+    @GET("api/v1/config/default-unique-tournaments/{countryCode}")
+    Object defaultPinnedTournaments(@Path("countryCode") @NotNull String str, @NotNull InterfaceC5234a<? super DefaultPinnedLeaguesResponse> interfaceC5234a);
+
+    @DELETE("/api/v1/chat/message/{id}")
+    Object deleteMessage(@Path("id") int i10, @NotNull InterfaceC5234a<? super NetworkResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/driver-career-history")
+    Object driverCareerHistory(@Path("id") int i10, @NotNull InterfaceC5234a<? super DriverCareerHistoryResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/stage-seasons")
+    Object driverStageSeasons(@Path("id") int i10, @NotNull InterfaceC5234a<? super StageSeasonsResponse> interfaceC5234a);
+
+    @GET("/api/v1/odds/{id}/dropping/{sportSlug}")
+    Object droppingOdds(@Path("id") int i10, @Path("sportSlug") @NotNull String str, @NotNull InterfaceC5234a<? super DroppingOddsResponse> interfaceC5234a);
+
+    @GET("api/v1/esports-game/{id}/bans")
+    Object eSportsGameBans(@Path("id") int i10, @NotNull InterfaceC5234a<? super ESportsBansResponse> interfaceC5234a);
+
+    @GET("api/v1/esports-game/{id}/lineups")
+    Object eSportsGameLineUps(@Path("id") int i10, @NotNull InterfaceC5234a<? super ESportsGameLineupsResponse> interfaceC5234a);
+
+    @GET("api/v1/esports-game/{id}/rounds")
+    Object eSportsGameRounds(@Path("id") int i10, @NotNull InterfaceC5234a<? super ESportsGameRoundsResponse> interfaceC5234a);
+
+    @POST("api/v1/suggest/team/{id}")
+    Object editFighter(@Path("id") int i10, @Body @NotNull HashMap<?, ?> hashMap, @NotNull InterfaceC5234a<? super Unit> interfaceC5234a);
+
+    @POST("api/v1/suggest/player/{id}")
+    Object editPlayer(@Path("id") int i10, @Body @NotNull PlayerSuggestPostBody playerSuggestPostBody, @NotNull InterfaceC5234a<? super Response<Unit>> interfaceC5234a);
+
+    @POST("api/v1/suggest/team/{id}")
+    Object editTeam(@Path("id") int i10, @Body @NotNull TeamSuggestPostBody teamSuggestPostBody, @NotNull InterfaceC5234a<? super Response<Unit>> interfaceC5234a);
+
+    @POST("api/v1/suggest/venue/{id}")
+    Object editVenue(@Path("id") int i10, @Body @NotNull VenueSuggestPostBody venueSuggestPostBody, @NotNull InterfaceC5234a<? super Response<Unit>> interfaceC5234a);
+
+    @GET("api/v1/user-account/editor-ranking")
+    Object editorRanking(@NotNull InterfaceC5234a<? super VoteRankingResponse> interfaceC5234a);
+
+    @GET("api/v1/esports-game/{id}/statistics")
+    Object esportsGameStatistics(@Path("id") int i10, @NotNull InterfaceC5234a<? super EsportsGameStatisticsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/esports-games")
+    Object esportsGames(@Path("id") int i10, @NotNull InterfaceC5234a<? super EsportsGamesResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/child-events")
+    Object eventChildEvents(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventChildEventsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/featured-players")
+    Object eventFeaturedPlayers(@Path("id") int i10, @NotNull InterfaceC5234a<? super FeaturedPlayersResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/graph")
+    Object eventGraph(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventGraphResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/player/{playerid}/shotmap")
+    Object eventPlayerShotMap(@Path("id") int i10, @Path("playerid") int i11, @NotNull InterfaceC5234a<? super PlayerShotmapResponse> interfaceC5234a);
+
+    @POST("api/v1/event/{id}/vote")
+    Object eventVote(@Path("id") int i10, @Body @NotNull EventVoteBody eventVoteBody, @NotNull InterfaceC5234a<? super Response<Unit>> interfaceC5234a);
+
+    @GET("/api/v1/event/{eventId}/fan-rating")
+    Object fanOverallRating(@Path("eventId") int i10, @NotNull InterfaceC5234a<? super FanOverallRatingResponse> interfaceC5234a);
+
+    @PUT("/api/v1/event/{eventId}/fan-rating")
+    Object fanRating(@Path("eventId") int i10, @Body @NotNull MyRatingBody myRatingBody, @NotNull InterfaceC5234a<? super Unit> interfaceC5234a);
+
+    @GET("/api/v1/event/fan-rating/ranking/season/{seasonId}")
+    Object fanRatingAllMatches(@Path("seasonId") int i10, @NotNull InterfaceC5234a<? super FanRatingAllMatchesResponse> interfaceC5234a);
+
+    @POST("/api/v1/chat/message/{id}/feature")
+    Object featureMessage(@Path("id") int i10, @NotNull InterfaceC5234a<? super NetworkResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/odds/{providerId}/featured")
+    Object featuredOdds(@Path("id") int i10, @Path("providerId") int i11, @NotNull InterfaceC5234a<? super FeaturedOddsResponse> interfaceC5234a);
+
+    @GET("api/v1/stage/sport/{sport}/featured")
+    Object featuredStages(@Path("sport") @NotNull String str, @NotNull InterfaceC5234a<? super StagesListResponse> interfaceC5234a);
+
+    @POST("api/v1/app/feedback")
+    @Multipart
+    Object feedback(@NotNull @Part("payload") FeedbackPost feedbackPost, @Part C c10, @NotNull InterfaceC5234a<Object> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/average-positions")
+    Object getAveragePositions(@Path("id") int i10, @NotNull InterfaceC5234a<? super AveragePositionsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/shotmap/{teamid}")
+    Object getBasketballTeamEventShotmap(@Path("id") int i10, @Path("teamid") int i11, @NotNull InterfaceC5234a<? super TeamEventShotmapResponse> interfaceC5234a);
+
+    @GET("/api/v1/buzzer/config")
+    Object getBuzzerConfig(@NotNull InterfaceC5234a<? super BuzzerConfigResponse> interfaceC5234a);
+
+    @GET("/api/v1/buzzer/tiles/{cc}")
+    Object getBuzzerTiles(@Path("cc") @NotNull String str, @NotNull InterfaceC5234a<? super BuzzerTilesResponse> interfaceC5234a);
+
+    @GET("/api/v1/chat/topic/{id}")
+    Object getChatMessages(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super ChatMessagesResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/comments/{languageCode}")
+    Object getCommentary(@Path("id") int i10, @Path("languageCode") @NotNull String str, @NotNull InterfaceC5234a<? super CommentaryResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/credibility-score-graph")
+    Object getCredibilityScoreGraphResponse(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super CredibilityScoreGraphResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/event-openings-graph")
+    Object getEditorOpeningsGraphResponse(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super EditorEventOpeningsGraphResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/editor-events-count")
+    Object getEditorsEventsCount(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super EditorsEventsCountResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/unique-tournaments")
+    Object getEditorsTournaments(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super EditorsTournamentsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{eventId}")
+    Object getEvent(@Path("eventId") int i10, @NotNull InterfaceC5234a<? super EventResponse> interfaceC5234a);
+
+    @GET("api/v1/flare/{id}")
+    Object getEventFlareCount(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventFlareCountResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{eventId}/incidents")
+    Object getEventIncidents(@Path("eventId") int i10, @NotNull InterfaceC5234a<? super EventIncidentsResponse> interfaceC5234a);
+
+    @GET("/api/v1/event/{id}/innings")
+    Object getEventInnings(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventInningsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/managers")
+    Object getEventManagers(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventManagersResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/series")
+    Object getEventSeries(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventSeriesResponse> interfaceC5234a);
+
+    @GET("/api/v1/event/{id}/statistics")
+    Object getEventStatistics(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventStatisticsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/heatmap/{teamId}")
+    Object getEventTeamHeatMap(@Path("id") int i10, @Path("teamId") int i11, @NotNull InterfaceC5234a<? super EventTeamHeatmapResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/votes")
+    Object getEventVotes(@Path("id") int i10, @NotNull InterfaceC5234a<? super VotesResponse> interfaceC5234a);
+
+    @GET("/api/v1/event/{id}/win-probability")
+    Object getEventWinProbability(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventWinProbabilityResponse> interfaceC5234a);
+
+    @GET("/api/v1/chat/topic/{id}/featured")
+    Object getFeaturedChatMessages(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super ChatMessagesResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/shotmap")
+    Object getFootballEventShotmap(@Path("id") int i10, @NotNull InterfaceC5234a<? super FootballShotmapResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{eventId}/shotmap/player/{playerId}")
+    Object getFootballPlayerEventShotmap(@Path("eventId") int i10, @Path("playerId") int i11, @NotNull InterfaceC5234a<? super FootballShotmapResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/unique-tournament/{tid}/season/{sid}/goal-distributions")
+    Object getGoalDistributions(@Path("id") int i10, @Path("tid") int i11, @Path("sid") int i12, @NotNull InterfaceC5234a<? super GoalDistributionsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/h2h")
+    Object getHead2Head(@Path("id") int i10, @NotNull InterfaceC5234a<? super Head2HeadResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{customId}/h2h/events")
+    Object getHead2HeadEvents(@Path("customId") @NotNull String str, @NotNull InterfaceC5234a<? super Head2HeadEventsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{eventId}/highlights")
+    Object getHighlights(@Path("eventId") int i10, @NotNull InterfaceC5234a<? super HighlightsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/shotmap")
+    Object getHockeyEventShotmap(@Path("id") int i10, @NotNull InterfaceC5234a<? super HockeyEventShotmapResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/comments")
+    Object getHockeyPlayByPlay(@Path("id") int i10, @NotNull InterfaceC5234a<? super HockeyPlayByPlayResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{eventId}/player/{playerId}/shotmap")
+    Object getHockeyPlayerEventShotmap(@Path("eventId") int i10, @Path("playerId") int i11, @NotNull InterfaceC5234a<? super HockeyPlayerShotmapResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{eventId}/lineups")
+    Object getLineups(@Path("eventId") int i10, @NotNull InterfaceC5234a<? super LineupsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{eventId}/media")
+    Object getMedia(@Path("eventId") int i10, @NotNull InterfaceC5234a<? super MediaResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/popular-events-action")
+    Object getMostOpenedEditorMatches(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super EditorsPopularEventsResponse> interfaceC5234a);
+
+    @GET("/api/v1/buzzer/simple-tiles/{cc}")
+    Object getNewBuzzerTiles(@Path("cc") @NotNull String str, @NotNull InterfaceC5234a<? super NewBuzzerTilesResponse> interfaceC5234a);
+
+    @GET("api/v1/event/newly-added-events")
+    Object getNewlyAddedEvents(@NotNull InterfaceC5234a<? super AddedEventsResponse> interfaceC5234a);
+
+    @GET("api/v1/sport/all/popular-events")
+    Object getPopularEvents(@NotNull InterfaceC5234a<? super Head2HeadEventsResponse> interfaceC5234a);
+
+    @GET("api/v1/league/popular-events")
+    Object getPopularUpcomingEvents(@NotNull InterfaceC5234a<? super PopularEventsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{tid}/season/{sid}/shot-action-areas/{type}")
+    Object getSeasonShotActionAreas(@Path("tid") int i10, @Path("sid") int i11, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super SeasonShotActionAreaResponse> interfaceC5234a);
+
+    @GET("api/v1/stage/{stageId}/highlights")
+    Object getStageHighlights(@Path("stageId") int i10, @NotNull InterfaceC5234a<? super HighlightsResponse> interfaceC5234a);
+
+    @GET("/api/v1/stories/{cc}")
+    Object getStories(@Path("cc") @NotNull String str, @NotNull InterfaceC5234a<? super StoryListResponse> interfaceC5234a);
+
+    @GET("api/v1/survey/{id}")
+    Object getSurvey(@Path("id") int i10, @NotNull InterfaceC5234a<? super SurveyResponse> interfaceC5234a);
+
+    @GET("/api/v1/team/{id}/events/{span}/{page}")
+    Object getTeamEventList(@Path("id") int i10, @Path("span") @NotNull String str, @Path("page") int i11, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("/api/v1/team/{id}/rss")
+    Object getTeamRssFeed(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamRssFeedResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/players")
+    Object getTeamSquad(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamPlayersResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/team-streaks")
+    Object getTeamStreaks(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamStreaksResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{tid}/season/{sid}/top-followed-players")
+    Object getTopFollowedPlayers(@Path("tid") int i10, @Path("sid") int i11, @NotNull InterfaceC5234a<? super TopFollowedPlayersResponse> interfaceC5234a);
+
+    @GET("api/v1/toto/tournament/all")
+    Object getTotoConfig(@NotNull InterfaceC5234a<? super TotoTournamentsConfigResponse> interfaceC5234a);
+
+    @GET("api/v1/transfer")
+    Object getTransfers(@QueryMap @NotNull LinkedHashMap<String, String> linkedHashMap, @NotNull InterfaceC5234a<? super TransfersResponse> interfaceC5234a);
+
+    @GET("api/v1/tv/channel/{id}/{type}/{eventId}/votes")
+    Object getTvChannelVotes(@Path("id") int i10, @Path("type") @NotNull TvType tvType, @Path("eventId") int i11, @NotNull InterfaceC5234a<? super TvChannelVotesResponse> interfaceC5234a);
+
+    @GET("api/v1/tv/{type}/{eventId}/country-channels")
+    Object getTvCountryChannels(@Path("type") @NotNull TvType tvType, @Path("eventId") int i10, @NotNull InterfaceC5234a<? super TvCountryChannelsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{eventId}/tweets")
+    Object getTweets(@Path("eventId") int i10, @NotNull InterfaceC5234a<? super TweetsResponse> interfaceC5234a);
+
+    @GET("api/v1/user/{id}/badges")
+    Object getUserBadges(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super UserBadgesReponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/contributions-count")
+    Object getUserContributionSummary(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super ContributionSummaryResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/contributions")
+    Object getUserContributions(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super ContributionsResponse> interfaceC5234a);
+
+    @GET("api/v1/flare/user/{id}")
+    Object getUserFlareInfo(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super UserFlareInfoResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/predictions-future")
+    Object getUserVotes(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super UserPredictionsVotesResponse> interfaceC5234a);
+
+    @GET("/api/v1/valuable-user/{version}/{prefix}")
+    Object getValuableUsersForVersion(@Path("version") @NotNull String str, @Path("prefix") @NotNull String str2, @NotNull InterfaceC5234a<? super ValuableUserResponse> interfaceC5234a);
+
+    @GET("/api/v1/valuable-user/versions")
+    Object getValuableUsersVersions(@NotNull InterfaceC5234a<? super ValuableUserVersionsResponse> interfaceC5234a);
+
+    @GET("api/v1/league/assets")
+    Object getWeeklyChallengeAssets(@NotNull InterfaceC5234a<? super WeeklyChallengeAssetsResponse> interfaceC5234a);
+
+    @GET("api/v1/league/leaderboard/{id}/rankings")
+    Object getWeeklyChallengeRankings(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super WeeklyChallengeLeaderboardResponse> interfaceC5234a);
+
+    @GET("api/v1/league/active-league-details")
+    Object getWeeklyChallengeTimestamp(@NotNull InterfaceC5234a<? super WeeklyChallengeTimestampResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/provider/{providerId}/winning-odds")
+    Object getWinningOdds(@Path("id") int i10, @Path("providerId") int i11, @NotNull InterfaceC5234a<? super WinningOddsResponse> interfaceC5234a);
+
+    @GET("/api/v1/odds/{id}/top-h2h/{sportSlug}")
+    Object h2hStreaks(@Path("id") int i10, @Path("sportSlug") @NotNull String str, @NotNull InterfaceC5234a<? super H2HStreaksResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/player/{playerid}/heatmap")
+    Object heatMap(@Path("id") int i10, @Path("playerid") int i11, @NotNull InterfaceC5234a<? super PlayerHeatmapResponse> interfaceC5234a);
+
+    @GET("/api/v1/odds/{providerId}/high-value-streaks")
+    Object highValueStreaks(@Path("providerId") int i10, @NotNull InterfaceC5234a<? super HighValueStreaksResponse> interfaceC5234a);
+
+    @GET
+    Object info(@Url @NotNull String str, @Header("app-version") int i10, @NotNull @Query("platform") String str2, @Query("sdk_version") int i11, @NotNull InterfaceC5234a<? super InfoResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/suggests")
+    Object latestCrowdsourcingSuggests(@Path("id") int i10, @NotNull InterfaceC5234a<? super LatestCrowdsourcingSuggestResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{sid}/top-players/{type}")
+    Object leagueTopPlayers(@Path("id") int i10, @Path("sid") int i11, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super p> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{sid}/top-players/{type}/{positionDetailed}")
+    Object leagueTopPlayersByPosition(@Path("id") int i10, @Path("sid") int i11, @Path("type") @NotNull String str, @Path("positionDetailed") @NotNull String str2, @NotNull InterfaceC5234a<? super p> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{sid}/top-players-per-game/all/{type}")
+    Object leagueTopStats(@Path("id") int i10, @Path("sid") int i11, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super p> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{sid}/top-players-per-game/{positionDetailed}/{type}")
+    Object leagueTopStatsByPosition(@Path("id") int i10, @Path("sid") int i11, @Path("positionDetailed") @NotNull String str, @Path("type") @NotNull String str2, @NotNull InterfaceC5234a<? super p> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{sid}/top-teams/{type}")
+    Object leagueTopTeams(@Path("id") int i10, @Path("sid") int i11, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super p> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/live-action-widget")
+    Object liveActionWidget(@Path("id") int i10, @NotNull InterfaceC5234a<? super NetworkResponse> interfaceC5234a);
+
+    @GET("api/v1/sport/{sport}/live-categories")
+    Object liveCategories(@Path("sport") @NotNull String str, @NotNull InterfaceC5234a<? super LiveCategoriesResponse> interfaceC5234a);
+
+    @GET("api/v1/manager/{id}/career-history")
+    Object managerCareerHistory(@Path("id") int i10, @NotNull InterfaceC5234a<? super CareerHistoryResponse> interfaceC5234a);
+
+    @GET("api/v1/manager/{id}")
+    Object managerDetails(@Path("id") int i10, @NotNull InterfaceC5234a<? super ManagerDetailsResponse> interfaceC5234a);
+
+    @GET("api/v1/manager/{id}/events/{type}/{page}")
+    Object managerEvents(@Path("id") int i10, @Path("type") @NotNull String str, @Path("page") int i11, @NotNull InterfaceC5234a<? super ManagerEventsResponse> interfaceC5234a);
+
+    @POST("/api/v1/chat/topic/{id}/not-risky")
+    Object markNotRisky(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super NetworkResponse> interfaceC5234a);
+
+    @GET("api/v1/media-posts/{id}")
+    Object mediaPost(@Path("id") int i10, @NotNull InterfaceC5234a<? super MediaPostResponse> interfaceC5234a);
+
+    @GET("/api/v1/media-posts/{id}/reactions")
+    Object mediaPostReactions(@Path("id") int i10, @NotNull InterfaceC5234a<? super MediaPostReactionsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{uid}/tournament/{tid}/mma-events/{type}")
+    Object mmaFightNightEvents(@Path("uid") int i10, @Path("tid") int i11, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/rankings/unique-tournament/{id}/summary")
+    Object mmaOrganisationRanking(@Path("id") int i10, @NotNull InterfaceC5234a<? super RankingsSummaryResponse> interfaceC5234a);
+
+    @GET("api/v1/rankings/unique-tournament/{uniqueTournamentId}/{weightClass}/{gender}")
+    Object mmaRankingByWeightClass(@Path("uniqueTournamentId") int i10, @Path("weightClass") @NotNull String str, @Path("gender") @NotNull String str2, @NotNull InterfaceC5234a<? super RankingTypeWithRows> interfaceC5234a);
+
+    @GET("api/v1/calendar/{yearAndMonth}/{timezoneOffset}/{sportSlug}/unique-tournaments")
+    Object monthlyTournaments(@Path("yearAndMonth") @NotNull String str, @Path("timezoneOffset") @NotNull String str2, @Path("sportSlug") @NotNull String str3, @NotNull InterfaceC5234a<? super MonthlyUniqueTournamentsResponse> interfaceC5234a);
+
+    @GET("api/v1/calendar/{yearAndMonth}/{timezoneOffset}/{sportSlug}/unique-tournaments")
+    Object monthlyTournamentsFlow(@Path("yearAndMonth") @NotNull String str, @Path("timezoneOffset") @NotNull String str2, @Path("sportSlug") @NotNull String str3, @NotNull InterfaceC5234a<? super MonthlyUniqueTournamentsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/recent-event-ids")
+    Object myLeagueEventIds(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventIdsResponse> interfaceC5234a);
+
+    @POST("api/v1/user/nickname")
+    Object nickname(@Body @NotNull PostUserNickname postUserNickname, @NotNull InterfaceC5234a<? super Response<Unit>> interfaceC5234a);
+
+    @GET("api/v1/odds/{providerSlug}")
+    Object oddsProviderDetails(@Path("providerSlug") @NotNull String str, @NotNull InterfaceC5234a<? super OddsProviderDetailsResponse> interfaceC5234a);
+
+    @GET("api/v1/odds/providers/{cc}/app")
+    Object oddsProvidersForCountry(@Path("cc") @NotNull String str, @NotNull InterfaceC5234a<? super OddsProvidersResponse> interfaceC5234a);
+
+    @GET("api/v1/odds/providers/{cc}-{rc}/app")
+    Object oddsProvidersForCountryRegion(@Path("cc") @NotNull String str, @Path("rc") @NotNull String str2, @NotNull InterfaceC5234a<? super OddsProvidersResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/team/{teamId}/team-performance-graph-data")
+    Object performanceGraphData(@Path("id") int i10, @Path("seasonId") int i11, @Path("teamId") int i12, @NotNull InterfaceC5234a<? super PerformanceGraphDataResponse> interfaceC5234a);
+
+    @GET("api/v1/media-posts/personalized/{queryIdentifier}/{page}")
+    Object personalizedMediaPosts(@Path("queryIdentifier") @NotNull String str, @Path("page") int i10, @NotNull InterfaceC5234a<? super PersonalizedMediaPostsResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{id}/attribute-overviews")
+    Object playerAttributeOverview(@Path("id") int i10, @NotNull InterfaceC5234a<? super AttributeOverviewResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{id}/career-statistics")
+    Object playerCareerStatistics(@Path("id") int i10, @NotNull InterfaceC5234a<? super PlayerCareerStatisticsResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{id}/characteristics")
+    Object playerCharacteristics(@Path("id") int i10, @NotNull InterfaceC5234a<? super PlayerCharacteristicsResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{id}")
+    Object playerDetails(@Path("id") int i10, @NotNull InterfaceC5234a<? super PlayerDetailsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/player/{pid}/heatmap")
+    Object playerEventHeatmap(@Path("id") int i10, @Path("pid") int i11, @NotNull InterfaceC5234a<? super PlayerHeatmapResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/player/{pid}/statistics")
+    Object playerEventStatistics(@Path("id") int i10, @Path("pid") int i11, @NotNull InterfaceC5234a<? super PlayerEventStatisticsResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{id}/events/{type}/{page}")
+    Object playerEventsList(@Path("id") int i10, @Path("type") @NotNull String str, @Path("page") int i11, @NotNull InterfaceC5234a<? super PlayerEventsListResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{pid}/unique-tournament/{tid}/season/{sid}/last-ratings")
+    Object playerLastRatings(@Path("pid") int i10, @Path("tid") int i11, @Path("sid") int i12, @NotNull InterfaceC5234a<? super PlayerLastRatingsResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{id}/national-team-statistics")
+    Object playerNationalTeamStatistics(@Path("id") int i10, @NotNull InterfaceC5234a<? super NationalTeamStatisticsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/player-of-the-season")
+    Object playerOfTheSeason(@Path("id") int i10, @Path("seasonId") int i11, @NotNull InterfaceC5234a<? super PlayerOfTheSeasonResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{pid}/penalty-history/unique-tournament/{uid}/season/{sid}")
+    Object playerPenaltyHistory(@Path("pid") int i10, @Path("uid") int i11, @Path("sid") int i12, @NotNull InterfaceC5234a<? super PlayerPenaltyHistoryResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{pid}/unique-tournament/{tid}/season/{sid}/heatmap")
+    Object playerSeasonHeatMap(@Path("pid") int i10, @Path("tid") int i11, @Path("sid") int i12, @NotNull InterfaceC5234a<? super PlayerSeasonHeatMapResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{id}/unique-tournament/{tid}/season/{sid}/statistics/{type}")
+    Object playerSeasonStatistics(@Path("id") int i10, @Path("tid") int i11, @Path("sid") int i12, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super p> interfaceC5234a);
+
+    @GET("api/v1/player/{id}/statistics/seasons")
+    Object playerStatisticsSeasons(@Path("id") int i10, @NotNull InterfaceC5234a<? super StatisticsSeasonsResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{pid}/unique-tournament/{tid}/season/{sid}/shot-actions/{type}")
+    Object playerSubSeasonShotActions(@Path("pid") int i10, @Path("tid") int i11, @Path("sid") int i12, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super PlayerSeasonShotActionsResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{id}/transfer-history")
+    Object playerTransferHistory(@Path("id") int i10, @NotNull InterfaceC5234a<? super TransferHistoryResponse> interfaceC5234a);
+
+    @GET("api/v1/player/{id}/last-year-summary")
+    Object playerYearSummary(@Path("id") int i10, @NotNull InterfaceC5234a<? super PlayerYearSummaryResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/point-by-point")
+    Object pointByPoint(@Path("id") int i10, @NotNull InterfaceC5234a<? super PointByPointResponse> interfaceC5234a);
+
+    @POST("/api/v1/chat/topic/{id}")
+    Object postMessage(@Path("id") @NotNull String str, @Body @NotNull PostChatMessage postChatMessage, @NotNull InterfaceC5234a<? super NetworkResponse> interfaceC5234a);
+
+    @POST("api/v1/survey/{id}")
+    Object postSurveyData(@Path("id") int i10, @Body @NotNull SurveyAnswersPost surveyAnswersPost, @NotNull InterfaceC5234a<Object> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{sid}/power-rankings/round/{roundId}")
+    Object powerRanking(@Path("id") int i10, @Path("sid") int i11, @Path("roundId") int i12, @NotNull InterfaceC5234a<? super PowerRankingResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{sid}/power-rankings/rounds")
+    Object powerRankingRounds(@Path("id") int i10, @Path("sid") int i11, @NotNull InterfaceC5234a<? super PowerRankingRoundsResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/pregame-form")
+    Object pregameForm(@Path("id") int i10, @NotNull InterfaceC5234a<? super PregameFormResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}")
+    Object profile(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super ProfileNetworkResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{tid}/unique-tournament/{uid}/season/{sid}/ranks/{type}")
+    Object rankedTeamSeasonStatistics(@Path("tid") int i10, @Path("uid") int i11, @Path("sid") int i12, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super p> interfaceC5234a);
+
+    @GET("api/v1/unique-stage/{id}/recent-stage-ids")
+    Object recentStageIds(@Path("id") int i10, @NotNull InterfaceC5234a<? super RecentStageIdsResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/recent-unique-tournaments")
+    Object recentTeamTournaments(@Path("id") int i10, @NotNull InterfaceC5234a<? super RecentTeamTournamentsResponse> interfaceC5234a);
+
+    @GET("api/v1/odds/{providerId}/recommended-prematch/tournament/{tournamentId}")
+    Object recommendedPrematchOdds(@Path("tournamentId") int i10, @Path("providerId") int i11, @NotNull InterfaceC5234a<? super FeaturedPrematchOddsResponse> interfaceC5234a);
+
+    @GET("api/v1/odds/{providerId}/recommended-prematch-top-voted/sport/{sportSlug}")
+    Object recommendedPrematchTopVotedOdds(@Path("sportSlug") @NotNull String str, @Path("providerId") int i10, @NotNull InterfaceC5234a<? super FeaturedPrematchOddsResponse> interfaceC5234a);
+
+    @GET("api/v1/referee/{id}")
+    Object refereeDetails(@Path("id") int i10, @NotNull InterfaceC5234a<? super RefereeDetailsResponse> interfaceC5234a);
+
+    @GET("api/v1/referee/{id}/events/{type}/{page}")
+    Object refereeEvents(@Path("id") int i10, @Path("type") @NotNull String str, @Path("page") int i11, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/referee/{id}/statistics")
+    Object refereeStatistics(@Path("id") int i10, @NotNull InterfaceC5234a<? super RefereeStatisticsResponse> interfaceC5234a);
+
+    @POST("/api/v1/chat/message/{id}/{type}")
+    Object reportMessage(@Path("id") int i10, @Path("type") @NotNull String str, @Body @NotNull BanReason banReason, @NotNull InterfaceC5234a<? super NetworkResponse> interfaceC5234a);
+
+    @GET("api/v1/chat/risky-topics")
+    Object riskyChatChannels(@NotNull InterfaceC5234a<? super RiskyTopicsResponse> interfaceC5234a);
+
+    @GET("/api/v1/search/all")
+    Object search(@NotNull @Query("q") String str, @Query("sport") String str2, @Query("page") int i10, @NotNull InterfaceC5234a<? super SearchResponse> interfaceC5234a);
+
+    @GET("/api/v1/search/{entityType}")
+    Object searchByEntityType(@Path("entityType") @NotNull String str, @NotNull @Query("q") String str2, @Query("sport") String str3, @Query("page") int i10, @NotNull InterfaceC5234a<? super SearchResponse> interfaceC5234a);
+
+    @GET("api/v1/search/managers/{query}")
+    Object searchManagers(@Path("query") @NotNull String str, @NotNull InterfaceC5234a<? super SearchManagersResponse> interfaceC5234a);
+
+    @GET("api/v1/search/players/{query}/{more}")
+    Object searchPlayers(@Path("query") @NotNull String str, @Path("more") @NotNull String str2, @NotNull InterfaceC5234a<? super SearchPlayersResponseKt> interfaceC5234a);
+
+    @GET("/api/v1/search/suggestions/{entityType}")
+    Object searchSuggestionsByEntityType(@Path("entityType") @NotNull String str, @Query("sport") String str2, @NotNull InterfaceC5234a<? super SearchResponse> interfaceC5234a);
+
+    @GET("api/v1/search/teams/{query}/{more}")
+    Object searchTeams(@Path("query") @NotNull String str, @Path("more") @NotNull String str2, @NotNull InterfaceC5234a<? super SearchTeamsResponse> interfaceC5234a);
+
+    @GET("api/v1/search/teams-by-sport/{sport}/{query}")
+    Object searchTeamsBySport(@Path("sport") String str, @Path("query") String str2, @NotNull InterfaceC5234a<? super SearchTeamsResponse> interfaceC5234a);
+
+    @GET("api/v1/search/unique-tournaments/{query}/{more}")
+    Object searchTournaments(@Path("query") @NotNull String str, @Path("more") @NotNull String str2, @NotNull InterfaceC5234a<? super SearchTournamentsResponse> interfaceC5234a);
+
+    @GET("api/v1/search/venues/{query}")
+    Object searchVenues(@Path("query") @NotNull String str, @NotNull InterfaceC5234a<? super SearchVenuesResponse> interfaceC5234a);
+
+    @GET("api/v1/calendar/season/{sid}/{timezoneOffset}/days-with-events")
+    Object seasonDaysWithEvents(@Path("sid") int i10, @Path("timezoneOffset") @NotNull String str, @NotNull InterfaceC5234a<? super SeasonDaysWithEventsResponse> interfaceC5234a);
+
+    @POST("api/v1/user/chat/flag")
+    Object setUserAccountChatFlag(@Body @NotNull PostChatFlag postChatFlag, @NotNull InterfaceC5234a<? super NetworkResponse> interfaceC5234a);
+
+    @GET("api/v1/sport/{sport}/categories")
+    Object sportCategories(@Path("sport") @NotNull String str, @NotNull InterfaceC5234a<? super SportCategoriesResponse> interfaceC5234a);
+
+    @GET("api/v1/sport/{offset}/event-count")
+    Object sportEventCount(@Path("offset") @NotNull String str, @NotNull InterfaceC5234a<? super HashMap<String, SportItem>> interfaceC5234a);
+
+    @GET("api/v1/sport/{sport}/events/live")
+    Object sportLiveEvents(@Path("sport") @NotNull String str, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/sport/{sport}/main-events/{date}/extended")
+    Object sportMainEventsExtended(@Path("sport") @NotNull String str, @Path("date") @NotNull String str2, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/stage/{id}")
+    Object stageDetails(@Path("id") int i10, @NotNull InterfaceC5234a<? super StageResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/stage-season/{seasonId}/races")
+    Object stageSportDriverSeasonRaces(@Path("id") int i10, @Path("seasonId") int i11, @NotNull InterfaceC5234a<? super DriverRacesResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-stage/{id}/seasons")
+    Object stageSportSeasons(@Path("id") int i10, @NotNull InterfaceC5234a<? super StageSportSeasonsResponse> interfaceC5234a);
+
+    @GET("api/v1/stage/{id}/v2/substages")
+    Object stageSportSubStages(@Path("id") int i10, @NotNull InterfaceC5234a<? super StagesListResponse> interfaceC5234a);
+
+    @GET("api/v1/category/{id}/unique-stages")
+    Object stageSportUniqueStages(@Path("id") int i10, @NotNull InterfaceC5234a<? super CategoryUniqueStagesResponse> interfaceC5234a);
+
+    @GET("api/v1/stage/{id}/standings/{outrightTeamType}")
+    Object stageStandings(@Path("id") int i10, @Path("outrightTeamType") @NotNull String str, @NotNull InterfaceC5234a<? super StageStandingsResponse> interfaceC5234a);
+
+    @GET("api/v1/tournament/{id}/season/{seasonId}/standings/{type}")
+    Object standings(@Path("id") int i10, @Path("seasonId") int i11, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super StandingsResponse> interfaceC5234a);
+
+    @GET("api/v1/tournament/{id}/season/{seasonId}/team-events/{type}")
+    Object standingsForm(@Path("id") int i10, @Path("seasonId") int i11, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super StandingsFormResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{tid}/season/{sid}/shot-action-areas/{type}/{seasonType}")
+    Object subSeasonShotActionAreas(@Path("tid") int i10, @Path("sid") int i11, @Path("type") @NotNull String str, @Path("seasonType") @NotNull String str2, @NotNull InterfaceC5234a<? super SeasonShotActionAreaResponse> interfaceC5234a);
+
+    @POST("api/v1/suggest/event/{id}")
+    Object suggestChanges(@Path("id") int i10, @Body @NotNull CrowdsourcingSuggest crowdsourcingSuggest, @NotNull InterfaceC5234a<Object> interfaceC5234a);
+
+    @GET("api/v1/config/follow-suggestions/players/{alpha2}")
+    Object suggestedPlayers(@Path("alpha2") @NotNull String str, @NotNull InterfaceC5234a<? super SuggestedPlayersResponse> interfaceC5234a);
+
+    @GET("api/v1/config/follow-suggestions/players/{alpha2}/sport/{sport}/{page}")
+    Object suggestedPlayersPerSport(@Path("alpha2") @NotNull String str, @Path("sport") @NotNull String str2, @Path("page") int i10, @NotNull InterfaceC5234a<? super SuggestedPlayersResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/career-statistics")
+    Object teamCareerStatistics(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamCareerStatisticsResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}")
+    Object teamDetails(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamDetailsResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/recent-event-ids")
+    Object teamEventIds(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventIdsResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/near-events")
+    Object teamNearEvents(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamNearEventsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/team-of-the-season")
+    Object teamOfTheSeason(@Path("id") int i10, @Path("seasonId") int i11, @NotNull InterfaceC5234a<? super TeamOfTheWeekResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/team-of-the-week/{roundId}")
+    Object teamOfTheWeek(@Path("id") int i10, @Path("seasonId") int i11, @Path("roundId") int i12, @NotNull InterfaceC5234a<? super TeamOfTheWeekResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/team-of-the-week/rounds")
+    Object teamOfTheWeekRounds(@Path("id") int i10, @Path("seasonId") int i11, @NotNull InterfaceC5234a<? super TeamOfTheWeekRoundsResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/performance")
+    Object teamPerformance(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamPerformanceResponse> interfaceC5234a);
+
+    @GET("api/v1/rankings/type/{type}")
+    Object teamRankingOld(@Path("type") int i10, @NotNull InterfaceC5234a<? super RankingResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/rankings")
+    Object teamRankings(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamRankingsResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/standings/seasons")
+    Object teamStandingsSeasons(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamStandingsSeasonsResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/unique-tournament/{uniqueTournamentId}/season/{seasonId}/statistics/{type}")
+    Object teamStatistics(@Path("id") int i10, @Path("uniqueTournamentId") int i11, @Path("seasonId") int i12, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super p> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/{type}-statistics/seasons")
+    Object teamStatisticsSeasons(@Path("id") int i10, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super StatisticsSeasonsResponse> interfaceC5234a);
+
+    @GET("/api/v1/event/{eventId}/team-streaks/betting-odds/{providerId}")
+    Object teamStreakBettingOdds(@Path("eventId") int i10, @Path("providerId") int i11, @NotNull InterfaceC5234a<? super TeamStreakBettingOddsResponse> interfaceC5234a);
+
+    @GET("/api/v1/odds/top-team-streaks/{streakName}/{sportSlug}")
+    Object teamStreaks(@Path("streakName") @NotNull String str, @Path("sportSlug") @NotNull String str2, @NotNull InterfaceC5234a<? super com.sofascore.model.network.response.bettingtips.TeamStreaksResponse> interfaceC5234a);
+
+    @GET("api/v1/config/follow-suggestions/teams/{alpha2}")
+    Object teamSuggestions(@Path("alpha2") @NotNull String str, @NotNull InterfaceC5234a<? super TeamSuggestionResponse> interfaceC5234a);
+
+    @GET("api/v1/config/follow-suggestions/teams/{alpha2}/sport/{sport}/{page}")
+    Object teamSuggestionsPerSport(@Path("alpha2") @NotNull String str, @Path("sport") @NotNull String str2, @Path("page") int i10, @NotNull InterfaceC5234a<? super TeamSuggestionResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/unique-tournament/{tid}/season/{sid}/top-players/{type}")
+    Object teamTopPlayers(@Path("id") int i10, @Path("tid") int i11, @Path("sid") int i12, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super p> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/unique-tournaments")
+    Object teamTournaments(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamUniqueTournamentsResponse> interfaceC5234a);
+
+    @GET("api/v1/team/{id}/transfers")
+    Object teamTransfers(@Path("id") int i10, @NotNull InterfaceC5234a<? super TeamTransfersResponse> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/tennis-power")
+    Object tennisPower(@Path("id") int i10, @NotNull InterfaceC5234a<? super TennisPowerResponse> interfaceC5234a);
+
+    @GET("api/v1/tournament/{id}")
+    Object tournament(@Path("id") int i10, @NotNull InterfaceC5234a<? super TournamentResponse> interfaceC5234a);
+
+    @GET("api/v1/tournament/{id}/events/{span}/{page}")
+    Object tournamentEvents(@Path("id") int i10, @Path("span") @NotNull String str, @Path("page") int i11, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{sid}/player-statistics/types")
+    Object tournamentPlayerStatisticsTypes(@Path("id") int i10, @Path("sid") int i11, @NotNull InterfaceC5234a<? super SeasonStatisticsResponse> interfaceC5234a);
+
+    @GET("api/v1/tournament/{id}/season/{seasonId}/events/{span}/{page}")
+    Object tournamentSeasonEvents(@Path("id") int i10, @Path("seasonId") int i11, @Path("span") @NotNull String str, @Path("page") int i12, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/tournament/{id}/seasons")
+    Object tournamentSeasons(@Path("id") int i10, @NotNull InterfaceC5234a<? super TournamentSeasonsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{sid}/team-statistics/types")
+    Object tournamentTeamStatisticsTypes(@Path("id") int i10, @Path("sid") int i11, @NotNull InterfaceC5234a<? super SeasonStatisticsResponse> interfaceC5234a);
+
+    @Headers({"User-Agent: AndroidTranslate/5.3.0.RC02.130475354-53000263 5.1 phone TRANSLATE_OPM5_TEST_1"})
+    @GET("https://translate.google.com/translate_a/single?client=at&dt=t&dt=ld&dt=qca&dt=rm&dt=bd&dj=1&hl=es-ES&ie=UTF-8&oe=UTF-8&inputm=2&otf=2&iid=1dd3b944-fa62-4b55-b330-74909a99969e")
+    Object translate(@NotNull @Query("sl") String str, @NotNull @Query("tl") String str2, @NotNull @Query("q") String str3, @NotNull InterfaceC5234a<? super GoogleTranslate> interfaceC5234a);
+
+    @GET("api/v1/translation/{entity}/{entityId}/language/{languageCode}")
+    Object translateDescription(@Path("entity") @NotNull String str, @Path("entityId") int i10, @Path("languageCode") @NotNull String str2, @NotNull InterfaceC5234a<? super TranslationResponse> interfaceC5234a);
+
+    @GET("/api/v1/odds/{id}/winning/{sportSlug}")
+    Object trendingOdds(@Path("id") int i10, @Path("sportSlug") @NotNull String str, @NotNull InterfaceC5234a<? super TrendingOddsResponse> interfaceC5234a);
+
+    @GET("api/v1/tv/channel/{id}/schedule")
+    Object tvChannelEvents(@Path("id") int i10, @NotNull InterfaceC5234a<? super TvChannelScheduleResponse> interfaceC5234a);
+
+    @GET("api/v1/tv/country/{countryCode}/channels")
+    Object tvChannelsForCountry(@Path("countryCode") @NotNull String str, @NotNull InterfaceC5234a<? super TvChannelsResponse> interfaceC5234a);
+
+    @POST("/api/v1/chat/message/{id}/unreport")
+    Object unReportMessage(@Path("id") int i10, @NotNull InterfaceC5234a<? super NetworkResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{tid}/season/{sid}/cuptrees")
+    Object uniqueCupTree(@Path("tid") int i10, @Path("sid") int i11, @NotNull InterfaceC5234a<? super CupTreesResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/standings/{type}")
+    Object uniqueStandings(@Path("id") int i10, @Path("seasonId") int i11, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super StandingsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/team-events/{type}")
+    Object uniqueStandingsForm(@Path("id") int i10, @Path("seasonId") int i11, @Path("type") @NotNull String str, @NotNull InterfaceC5234a<? super StandingsFormMultipleTournamentsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}")
+    Object uniqueTournament(@Path("id") int i10, @NotNull InterfaceC5234a<? super UniqueTournamentResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}")
+    Object uniqueTournamentDetails(@Path("id") int i10, @NotNull InterfaceC5234a<? super UniqueTournamentDetailsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/events/{span}/{page}")
+    Object uniqueTournamentEvents(@Path("id") int i10, @Path("span") @NotNull String str, @Path("page") int i11, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/featured-events")
+    Object uniqueTournamentFeaturedEvents(@Path("id") int i10, @NotNull InterfaceC5234a<? super FeaturedEventsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/groups")
+    Object uniqueTournamentGroups(@Path("id") int i10, @Path("seasonId") int i11, @NotNull InterfaceC5234a<? super UniqueTournamentGroupsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/main-events/{span}/{page}")
+    Object uniqueTournamentMainEvents(@Path("id") int i10, @Path("span") String str, @Path("page") int i11, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/media")
+    Object uniqueTournamentMedia(@Path("id") int i10, @NotNull InterfaceC5234a<? super MediaResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/events/round/{round}/{span}/{page}")
+    Object uniqueTournamentRoundEvents(@Path("id") int i10, @Path("seasonId") int i11, @Path("round") int i12, @Path("span") @NotNull String str, @Path("page") int i13, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/events/round/{round}/slug/{roundSlug}/{span}/{page}")
+    Object uniqueTournamentRoundEvents(@Path("id") int i10, @Path("seasonId") int i11, @Path("round") int i12, @Path("roundSlug") String str, @Path("span") String str2, @Path("page") int i13, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/events/round/{round}/slug/{roundSlug}/prefix/{prefix}/{span}/{page}")
+    Object uniqueTournamentRoundEvents(@Path("id") int i10, @Path("seasonId") int i11, @Path("round") int i12, @Path("roundSlug") String str, @Path("prefix") String str2, @Path("span") String str3, @Path("page") int i13, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/events/round/{round}/prefix/{prefix}/{span}/{page}")
+    Object uniqueTournamentRoundEventsPrefix(@Path("id") int i10, @Path("seasonId") int i11, @Path("round") int i12, @Path("prefix") String str, @Path("span") String str2, @Path("page") int i13, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/rounds")
+    Object uniqueTournamentRounds(@Path("id") int i10, @Path("seasonId") int i11, @NotNull InterfaceC5234a<? super UniqueTournamentRoundsResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{uid}/scheduled-events/{date}/{timezoneOffset}")
+    Object uniqueTournamentScheduledEvents(@Path("uid") int i10, @Path("date") @NotNull String str, @Path("timezoneOffset") @NotNull String str2, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/events/{span}/{page}")
+    Object uniqueTournamentSeasonEvents(@Path("id") int i10, @Path("seasonId") int i11, @Path("span") @NotNull String str, @Path("page") int i12, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/info")
+    Object uniqueTournamentSeasonInfo(@Path("id") int i10, @Path("seasonId") int i11, @NotNull InterfaceC5234a<? super SeasonInfoResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/seasons")
+    Object uniqueTournamentSeasons(@Path("id") int i10, @NotNull InterfaceC5234a<? super TournamentSeasonsResponse> interfaceC5234a);
+
+    @GET("api/v1/config/follow-suggestions/unique-tournaments/{alpha2}")
+    Object uniqueTournamentSuggestion(@Path("alpha2") @NotNull String str, @NotNull InterfaceC5234a<? super UniqueTournamentSuggestionResponse> interfaceC5234a);
+
+    @GET("api/v1/config/follow-suggestions/unique-tournaments/{alpha2}/sport/{sport}/{page}")
+    Object uniqueTournamentSuggestionPerSport(@Path("alpha2") @NotNull String str, @Path("sport") @NotNull String str2, @Path("page") int i10, @NotNull InterfaceC5234a<? super UniqueTournamentSuggestionResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/team/{teamId}/events/{span}/{page}")
+    Object uniqueTournamentTeamEvents(@Path("id") int i10, @Path("seasonId") int i11, @Path("teamId") int i12, @Path("span") String str, @Path("page") int i13, @NotNull InterfaceC5234a<? super EventListResponse> interfaceC5234a);
+
+    @GET("api/v1/unique-tournament/{id}/season/{seasonId}/teams")
+    Object uniqueTournamentTeams(@Path("id") int i10, @Path("seasonId") int i11, @NotNull InterfaceC5234a<? super UniqueTournamentTeamsResponse> interfaceC5234a);
+
+    @POST("/api/v1/chat/message/{id}/upvote")
+    Object upVoteMessage(@Path("id") int i10, @NotNull InterfaceC5234a<? super NetworkResponse> interfaceC5234a);
+
+    @PUT("api/v1/chat/upload-image")
+    Object uploadChatImage(@Body @NotNull M m6, @NotNull InterfaceC5234a<? super ImageUploadResponse> interfaceC5234a);
+
+    @PUT("api/v1/user/image")
+    Object uploadProfileImage(@Body @NotNull M m6, @NotNull InterfaceC5234a<? super ProfileImageUploadResponse> interfaceC5234a);
+
+    @POST("api/v1/flare/{eventId}/{teamSide}")
+    Object useFlare(@Path("eventId") int i10, @Path("teamSide") @NotNull String str, @NotNull InterfaceC5234a<? super UseFlareResponse> interfaceC5234a);
+
+    @GET("api/v1/suggest/event/{id}/user-images")
+    Object userContribution(@Path("id") int i10, @NotNull InterfaceC5234a<? super CrowdsourcingUserContributionResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/predictions/{type}/{page}")
+    Object userPredictions(@Path("id") @NotNull String str, @Path("type") @NotNull String str2, @Path("page") int i10, @NotNull InterfaceC5234a<? super UserPredictionsResponse> interfaceC5234a);
+
+    @GET("https://pro.ip-api.com/json/?fields=16398&key=oDKZQyAc9jlHwMn")
+    Object userRegion(@NotNull InterfaceC5234a<? super UserRegionResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/{id}/subscriptions")
+    Object userSubscriptions(@Path("id") @NotNull String str, @NotNull InterfaceC5234a<? super UserSubscriptionsResponse> interfaceC5234a);
+
+    @GET("api/v1/sport-video-highlights/country/{cc}")
+    Object videoHighlightsForCountry(@Path("cc") @NotNull String str, @NotNull InterfaceC5234a<? super WSCStoriesResponse> interfaceC5234a);
+
+    @GET("api/v1/user-account/vote-ranking")
+    Object voteRanking(@NotNull InterfaceC5234a<? super VoteRankingResponse> interfaceC5234a);
+
+    @POST("api/v1/tv/{type}/{eventId}/{channelId}/vote")
+    Object voteTvChannel(@Path("type") @NotNull TvType tvType, @Path("eventId") int i10, @Path("channelId") int i11, @Body @NotNull TvChannelVoteBody tvChannelVoteBody, @NotNull InterfaceC5234a<Object> interfaceC5234a);
+
+    @GET("api/v1/event/{id}/graph/win-probability")
+    Object winProbability(@Path("id") int i10, @NotNull InterfaceC5234a<? super EventGraphResponse> interfaceC5234a);
+}

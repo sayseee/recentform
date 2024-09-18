@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Football Events and Odds</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+  font-family: Roboto, sans-serif;
+  background-color: #121212;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  font-size: 0.75rem;
+} 
+
+.matches-container {
+  width: 100%; 
+  margin: 0 auto; 
+  display: flex;
+}
+#content {
+    width: 30%;
+}
+.match-category {
+  margin-bottom: 20px;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #333;
+  justify-content: space-between;
+}
+
+.category-flag {
+  width: 24px;
+  height: auto;
+  margin-right: 10px;
+}
+
+.category-title {
+  flex-grow: 1; 
+}
+
+.standings-link { 
+  color: #00bfa5;
+  text-decoration: none;
+}
+
+.match-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #333;
+    gap: 10px;
+}
+
+.match-row:last-child {
+  border-bottom: none;
+}
+
+.tournament-info {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    flex: 2.3;
+}
+.match-info {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    flex: 2;
+}
+
+.match-time,
+.match-status { 
+  color: #aaa;
+  width: 72px;
+}
+
+.team-names {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+.match-scores {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 0.2;
+    text-align: center;
+    gap: 5px;
+}
+
+.team-names span { 
+  margin-bottom: 2px;
+}
+
+.odds, .odds-title {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.odd {
+  background-color: #222;
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: #00e676;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+}
+
+.odd.negative {
+  color: #ff1744;
+}
+
+.odd.highlighted {
+  border: 0 solid #ffc400;
+}
+
+.finished .match-info .team-names {
+  color: #f5f5f5;
+}
+
+.finished .match-info .match-status {
+  color: #ff9100;
+}
+
+#details {
+    width: 70%;
+}
+    </style>
+</head>
+<body>
+    <div class="matches-container">
+        <div id="content"></div>
+        <div id="details"></div>
+    </div>
+    <script>
+    const baseURL = 'https://api.sofascore.com/api/v1';
+
+    // Function to convert fractional odds to decimal odds
+    function fractionalToDecimal(fractional) {
+        const [numerator, denominator] = fractional.split('/').map(Number);
+        return (numerator / denominator + 1).toFixed(2);
+    }
+    
+    const fetchEvents = async (startDate) => {
+    try {
+        const scheduledURL = `${baseURL}/sport/football/scheduled-events/${startDate}`;
+        const inverseURL = `${baseURL}/sport/football/scheduled-events/${startDate}/inverse`;
+        const oddsURL = `${baseURL}/sport/football/odds/1/${startDate}`;
+
+        // Fetch all data in parallel
+        const [scheduledResponse, inverseResponse, oddsResponse] = await Promise.all([
+            fetch(scheduledURL),
+            fetch(inverseURL),
+            fetch(oddsURL)
+        ]);
+
+        if (!scheduledResponse.ok || !inverseResponse.ok || !oddsResponse.ok) {
+            throw new Error('Failed to fetch events or odds');
+        }
+
+        // Parse all JSON responses in parallel
+        const [scheduledData, inverseData, oddsData] = await Promise.all([
+            scheduledResponse.json(),
+            inverseResponse.json(),
+            oddsResponse.json()
+        ]);
+
+        // Combine events from scheduled and inverse data
+        const events = [...scheduledData.events, ...inverseData.events];
+
+        // Create a map for odds for easy lookup
+        const odds = oddsData.odds || {};
+
+        // Combine events with their odds, convert odds to decimal, and filter out events without odds
+        const eventsWithOdds = events.map(event => {
+            const oddsForEvent = odds[event.id] || {};
+            const formattedOdds = {};
+
+            if (oddsForEvent.choices) {
+                formattedOdds[oddsForEvent.marketName] = oddsForEvent.choices.map(choice => ({
+                    name: choice.name,
+                    decimal: fractionalToDecimal(choice.fractionalValue),
+                    initialDecimal: fractionalToDecimal(choice.initialFractionalValue),
+                    oddsDrop: `${choice.initialFractionalValue} -> ${choice.fractionalValue}`
+                }));
+            }
+
+            return {
+    ...event,
+    odds: formattedOdds,
+    uniqueTournamentId: event.tournament.uniqueTournament.id,
+    seasonId: event.season ? event.season.id : null,
+    customId: event.customId,
+    homeScore: event.homeScore?.current ?? '-', // Display 0 if it's a valid score
+    awayScore: event.awayScore?.current ?? '-', // Display 0 if it's a valid score
+};
+
+        }).filter(event => Object.keys(event.odds).length > 0); // Filter out events without odds
+
+        // Group events by uniqueTournament.id and seasonId
+        const groupedEvents = eventsWithOdds.reduce((acc, event) => {
+            const tournamentId = event.uniqueTournamentId;
+            const seasonId = event.seasonId;
+
+            if (!acc[tournamentId]) {
+                acc[tournamentId] = {
+                    tournament: {
+                        id: tournamentId,
+                        name: event.tournament.uniqueTournament.name
+                    },
+                    seasons: {}
+                };
+            }
+
+            if (seasonId && !acc[tournamentId].seasons[seasonId]) {
+                acc[tournamentId].seasons[seasonId] = {
+                    seasonId: seasonId,
+                    events: []
+                };
+            }
+
+            if (seasonId) {
+                acc[tournamentId].seasons[seasonId].events.push(event);
+            }
+
+            return acc;
+        }, {});
+
+        // Convert seasons object to array
+        for (const tournamentId in groupedEvents) {
+            groupedEvents[tournamentId].seasons = Object.values(groupedEvents[tournamentId].seasons);
+        }
+
+        // Display the events on the page
+        const contentDiv = document.getElementById('content');
+        contentDiv.innerHTML = '';  // Clear previous content
+
+        for (const tournamentId in groupedEvents) {
+            const tournament = groupedEvents[tournamentId];
+
+            // Create tournament category header
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'match-category';
+
+            const categoryHeader = document.createElement('div');
+            categoryHeader.className = 'category-header';
+
+            categoryHeader.innerHTML = `
+                <div class="tournament-info">
+                    <img src="${tournament.tournament.name.toLowerCase().replace(/\s/g, '-')}-flag.png" alt="" class="category-flag">
+                    <span class="category-title">${tournament.tournament.name}</span>
+                </div>
+                <div class="odds-title">
+                    <span>1</span>
+                    <span>X</span>
+                    <span>2</span>
+                </div>
+            `;
+            categoryDiv.appendChild(categoryHeader);
+
+            tournament.seasons.forEach(season => {
+                season.events.forEach(event => {
+                    const matchRow = document.createElement('div');
+                    matchRow.className = `match-row ${event.status.type === 'finished' ? 'finished' : ''}`;
+
+                    matchRow.innerHTML = `
+                        <div class="match-info">
+                            <span class="match-time">${event.status.type === 'finished' ? 'Finished' : event.startTime || '-'}</span>
+                            <span class="team-names">
+                                    <span class="home-team">${event.homeTeam.shortName}</span>
+                                    <span class="away-team">${event.awayTeam.shortName}</span>
+                                </span>
+                            </div>
+                            <div class="match-scores">
+                            <span class="home-score">${event.homeScore}</span>
+                            <span class="away-score">${event.awayScore}</span>
+                            </div>
+                            <div class="odds">
+                                ${Object.keys(event.odds).map(market => `
+                                    ${event.odds[market].map(odd => `
+                                        <div class="odd">
+                                            <span class="initial-odd">${odd.initialDecimal}</span>
+                                            <span class="final-odd">${odd.decimal}</span> 
+                                        </div>
+                                    `).join('')}
+                                `).join('')}
+                            </div>
+                        `;
+                        categoryDiv.appendChild(matchRow);
+                    });
+                });
+    
+                contentDiv.appendChild(categoryDiv);
+            }
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        }
+    };
+    
+    // Example usage
+    fetchEvents('2024-09-17');
+    
+    </script>
+</body>
+</html>
