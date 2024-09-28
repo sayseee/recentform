@@ -9,7 +9,10 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="">
+        
+    <script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script> <!-- Add this line -->
         <style>
 :root {   
     --bg-color-1: #010a0f; 
@@ -190,15 +193,15 @@ main {
     padding-top: 20px; 
 }
 
-.categories::-webkit-scrollbar, .tab-content::-webkit-scrollbar, .sideRight::-webkit-scrollbar {
+.categories::-webkit-scrollbar, #events-tabs::-webkit-scrollbar, .tab-content::-webkit-scrollbar, .sideRight::-webkit-scrollbar {
     width: 2px; /* Set the width of the scrollbar */
 }
 
-.categories::-webkit-scrollbar-track, .tab-content::-webkit-scrollbar-track, .sideRight::-webkit-scrollbar-track {
+.categories::-webkit-scrollbar-track, #events-tabs::-webkit-scrollbar-track, .tab-content::-webkit-scrollbar-track, .sideRight::-webkit-scrollbar-track {
     background: transparent; /* Color of the track */
 }
 
-.categories::-webkit-scrollbar-thumb, .tab-content::-webkit-scrollbar-thumb, .sideRight::-webkit-scrollbar-thumb {
+.categories::-webkit-scrollbar-thumb, #events-tabs::-webkit-scrollbar-thumb, .tab-content::-webkit-scrollbar-thumb, .sideRight::-webkit-scrollbar-thumb {
     background: var(--color-support-3); /* Color of the thumb */
     border-radius: 1px; 
     height: 40px;
@@ -579,9 +582,11 @@ nav li a.active {
     display: none;
 }
 
-#events-tabs .tab-content {
+#events-tabs {
     height: calc(100vh - 450px);
     overflow-y: auto;
+}   
+#events-tabs .tab-content { 
     padding: 0 5px;
 }
 
@@ -1794,9 +1799,86 @@ table th {
                                 }
                             }
                         };
+ 
+
+                                        
+                        async function fetchOdds(currentMatchId) {
+                            try { 
+                                const response = await fetch(`${baseURL}/event/${currentMatchId}/odds/1/changes`);
+                                const data = await response.json();
+                                return data.changedOdds;
+                            } catch (error) {
+                                console.error('Error fetching odds:', error);
+                            }
+                        } function renderChart(odds) {
+    const ctx = document.getElementById('oddsChart').getContext('2d');
+    const timestamps = odds.map(entry => new Date(entry.timestamp * 1000));  // Convert Unix timestamp to Date
+    const choice1 = odds.map(entry => fractionalToDecimal(entry.choice1.fractionalValue));
+    const choice2 = odds.map(entry => fractionalToDecimal(entry.choice2.fractionalValue));
+    const choice3 = odds.map(entry => fractionalToDecimal(entry.choice3.fractionalValue));
+
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timestamps,
+            datasets: [
+                {
+                    label: 'Choice 1 (1)',
+                    data: choice1,
+                    borderColor: 'red',
+                    fill: false,
+                },
+                {
+                    label: 'Choice X',
+                    data: choice2,
+                    borderColor: 'blue',
+                    fill: false,
+                },
+                {
+                    label: 'Choice 2',
+                    data: choice3,
+                    borderColor: 'green',
+                    fill: false,
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',  // Group data by day
+                        tooltipFormat: 'll',  // Display date in tooltip (e.g., Sep 25, 2024)
+                    },
+                    title: {
+                        display: true,
+                        text: 'Date',  // Add label to x-axis
+                    },
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Odds',  // Add label to y-axis
+                    },
+                },
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.raw}`;
+                        }
+                    }
+                }
+            }
+        },
+    });
+}
 
 
-                    const updateStandingsContainer = async (eventData) => {
+                        const updateStandingsContainer = async (eventData) => {
                         try { 
     
                             const homeTeamId = eventData.homeTeam.id;
@@ -1806,11 +1888,7 @@ table th {
 
                             const tournamentId = eventData.tournament.id;
                             const uniqueTournamentId = eventData.tournament.uniqueTournament.id;
-                            const seasonId = eventData.season.id
-                            
-                            console.log(`Tournament ID`, tournamentId);
-                            console.log(`season ID`, seasonId);
- 
+                            const seasonId = eventData.season.id 
 
                             await displayNextMatch(homeTeamId, 'home-next-match');
                             await displayNextMatch(awayTeamId, 'away-next-match'); 
@@ -1839,6 +1917,12 @@ table th {
 
                             // Display only home team at home head-to-head
                             displayH2H(filteredH2HEvents, 'homeTeamH2HContainer', homeTeamId, true); 
+
+                                // Fetch and render odds for the current match
+                                const odds = await fetchOdds(currentMatchId);
+                                if (odds) {
+                                    renderChart(odds);
+                                }
 
                             // Fetch standings and events
                             const [totalStandings, homeStandings, awayStandings] = await Promise.all([
@@ -2219,9 +2303,12 @@ table th {
                                     <div id="next-match" class="flex _F_r _F_jc">
                                         <div id="home-next-match" class="next-match"></div>
                                         <div id="away-next-match" class="next-match"></div>
-                                    </div> 
+                                    </div>                   
                                     <!-- Tabs Navigation -->
                                     <div id="events-tabs" class="tab-contentContainer">
+                                    <div id="match-odds" class="flex _F_r _F_jc">                                        
+                                        <canvas id="oddsChart"></canvas>
+                                    </div> 
                                         <div class="tab-menu">
                                             <button class="tab-button active" data-tab="overall-events">Overall</button>
                                             <button class="tab-button" data-tab="home-vs-away-events">Home vs Away</button>

@@ -25,7 +25,7 @@
     width: 30%;
 }
 .match-category {
-  margin-bottom: 20px;
+  margin-bottom: 0;
 }
 
 .category-header {
@@ -37,7 +37,7 @@
 }
 
 .category-flag {
-  width: 24px;
+  width: 16px;
   height: auto;
   margin-right: 10px;
 }
@@ -58,6 +58,7 @@
     padding: 10px 0;
     border-bottom: 1px solid #333;
     gap: 10px;
+    cursor: pointer;
 }
 
 .match-row:last-child {
@@ -101,6 +102,10 @@
 
 .team-names span { 
   margin-bottom: 2px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
 }
 
 .odds, .odds-title {
@@ -140,8 +145,24 @@
 }
 
 #details {
-    width: 70%;
-}
+            width: 70%;
+            padding: 10px;
+            border-left: 1px solid #333;
+        }
+        .details-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .details-stats {
+            margin-top: 20px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -152,6 +173,12 @@
     <script>
     const baseURL = 'https://api.sofascore.com/api/v1';
 
+    const staticImageUrl = 'https://www.sofascore.com/static/images';
+    const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based, so we add 1
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
     // Function to convert fractional odds to decimal odds
     function fractionalToDecimal(fractional) {
         const [numerator, denominator] = fractional.split('/').map(Number);
@@ -209,10 +236,16 @@
     seasonId: event.season ? event.season.id : null,
     customId: event.customId,
     homeScore: event.homeScore?.current ?? '-', // Display 0 if it's a valid score
-    awayScore: event.awayScore?.current ?? '-', // Display 0 if it's a valid score
+    awayScore: event.awayScore?.current ?? '-', // Display 0 if it's a valid score 
+   
 };
 
         }).filter(event => Object.keys(event.odds).length > 0); // Filter out events without odds
+        
+        fetchEvents(eventsWithOdds);
+                if (eventsWithOdds.length > 0) {
+                    displayEventDetails(eventsWithOdds[0]); // Display first event on initial load
+                }
 
         // Group events by uniqueTournament.id and seasonId
         const groupedEvents = eventsWithOdds.reduce((acc, event) => {
@@ -223,7 +256,10 @@
                 acc[tournamentId] = {
                     tournament: {
                         id: tournamentId,
-                        name: event.tournament.uniqueTournament.name
+                        name: event.tournament.uniqueTournament.name,
+                        category: event.tournament.category.name,
+                        categoryAlpha2: event.tournament.category.country.alpha2,
+                        flag: event.tournament.category.flag
                     },
                     seasons: {}
                 };
@@ -253,69 +289,100 @@
         contentDiv.innerHTML = '';  // Clear previous content
 
         for (const tournamentId in groupedEvents) {
-            const tournament = groupedEvents[tournamentId];
+    const tournament = groupedEvents[tournamentId];
 
-            // Create tournament category header
-            const categoryDiv = document.createElement('div');
-            categoryDiv.className = 'match-category';
+    // Create tournament category header
+    const categoryDiv = document.createElement('div');
+    categoryDiv.className = 'match-category';
 
-            const categoryHeader = document.createElement('div');
-            categoryHeader.className = 'category-header';
+    const categoryHeader = document.createElement('div');
+    categoryHeader.className = 'category-header';
+    const imageUrl = tournament.tournament.categoryAlpha2
+        ? `${staticImageUrl}/flags/${tournament.tournament.categoryAlpha2.toLowerCase()}.png`
+        : `${staticImageUrl}/flags/${tournament.tournament.flag}.png`;
 
-            categoryHeader.innerHTML = `
-                <div class="tournament-info">
-                    <img src="${tournament.tournament.name.toLowerCase().replace(/\s/g, '-')}-flag.png" alt="" class="category-flag">
-                    <span class="category-title">${tournament.tournament.name}</span>
+    categoryHeader.innerHTML = `
+        <div class="tournament-info">
+            <img src="${imageUrl}" alt="" width="16" height="16" class="category-flag">
+            <span class="category-title">${tournament.tournament.name}</span>
+        </div>
+        <div class="odds-title">
+            <span>1</span>
+            <span>X</span>
+            <span>2</span>
+        </div>
+    `;
+    
+    // Append the header to the categoryDiv before the season loop
+    categoryDiv.appendChild(categoryHeader);
+
+    // Process each season and its events
+    tournament.seasons.forEach(season => {
+        season.events.forEach(event => {
+            const matchRow = document.createElement('div');
+            matchRow.className = `match-row ${event.status.type === 'finished' ? 'finished' : ''}`;
+
+            matchRow.innerHTML = `
+                <div class="match-info">
+                    <span class="match-time">${event.status.type === 'finished' ? 'Finished' : event.startTime || '-'}</span>
+                    <span class="team-names">
+                        <span class="home-team">
+                            <img src='${baseURL}/team/${event.homeTeam.id}/image' width="15" alt='${event.homeTeam.shortName}'>${event.homeTeam.shortName}
+                        </span>
+                        <span class="away-team">
+                            <img src='${baseURL}/team/${event.awayTeam.id}/image' width="15" alt='${event.awayTeam.shortName}'>${event.awayTeam.shortName}
+                        </span>
+                    </span>
                 </div>
-                <div class="odds-title">
-                    <span>1</span>
-                    <span>X</span>
-                    <span>2</span>
+                <div class="match-scores">
+                    <span class="home-score">${event.homeScore}</span>
+                    <span class="away-score">${event.awayScore}</span>
+                </div>
+                <div class="odds">
+                    ${Object.keys(event.odds).map(market => `
+                        ${event.odds[market].map(odd => `
+                            <div class="odd">
+                                <span class="initial-odd">${odd.initialDecimal}</span>
+                                <span class="final-odd">${odd.decimal}</span> 
+                            </div>
+                        `).join('')}
+                    `).join('')}
                 </div>
             `;
-            categoryDiv.appendChild(categoryHeader);
+            
+            matchRow.onclick = () => displayEventDetails(event); // Display event details on click
+            
+            categoryDiv.appendChild(matchRow);
+        });
+    });
 
-            tournament.seasons.forEach(season => {
-                season.events.forEach(event => {
-                    const matchRow = document.createElement('div');
-                    matchRow.className = `match-row ${event.status.type === 'finished' ? 'finished' : ''}`;
+    // Append the completed categoryDiv to the contentDiv after processing all seasons
+    contentDiv.appendChild(categoryDiv);
+}
 
-                    matchRow.innerHTML = `
-                        <div class="match-info">
-                            <span class="match-time">${event.status.type === 'finished' ? 'Finished' : event.startTime || '-'}</span>
-                            <span class="team-names">
-                                    <span class="home-team">${event.homeTeam.shortName}</span>
-                                    <span class="away-team">${event.awayTeam.shortName}</span>
-                                </span>
-                            </div>
-                            <div class="match-scores">
-                            <span class="home-score">${event.homeScore}</span>
-                            <span class="away-score">${event.awayScore}</span>
-                            </div>
-                            <div class="odds">
-                                ${Object.keys(event.odds).map(market => `
-                                    ${event.odds[market].map(odd => `
-                                        <div class="odd">
-                                            <span class="initial-odd">${odd.initialDecimal}</span>
-                                            <span class="final-odd">${odd.decimal}</span> 
-                                        </div>
-                                    `).join('')}
-                                `).join('')}
-                            </div>
-                        `;
-                        categoryDiv.appendChild(matchRow);
-                    });
-                });
-    
-                contentDiv.appendChild(categoryDiv);
-            }
         } catch (error) {
             console.error('Error fetching events:', error);
         }
     };
-    
+   
+        function displayEventDetails(event) {
+            const detailsDiv = document.getElementById('details');
+            detailsDiv.innerHTML = `
+                <div class="details-title">${event.homeTeam.shortName} vs ${event.awayTeam.shortName}</div>
+                <div class="details-stats">
+                    <div class="stat-row"><span>Status:</span> <span>${event.status.description}</span></div>
+                    <div class="stat-row"><span>Score:</span> <span>${event.homeScore} - ${event.awayScore}</span></div>
+                    <div class="stat-row"><span>Odds:</span> ${Object.keys(event.odds).map(market => `
+                        <div>${market}: ${event.odds[market].map(odd => `
+                            <span>${odd.name} ${odd.initialDecimal} → ${odd.decimal}</span>
+                        `).join('')}</div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
     // Example usage
-    fetchEvents('2024-09-17');
+    fetchEvents(formattedDate);
     
     </script>
 </body>

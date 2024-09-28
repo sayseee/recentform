@@ -1,0 +1,185 @@
+
+.Data h3 {
+    padding: 0;
+    margin: 0;
+}
+.team-stats-block {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+.top-team-data {
+        display: flex;
+        justify-content: space-between;
+        color: white; 
+        flex-direction: column;
+    }
+    
+.last-data-column {
+        display: flex; 
+        color: white; 
+        flex-direction: column;
+    }
+.top-labels {display: flex; }
+.teams-labels {
+    flex: 1; 
+}
+    .top-team-data .team {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-basis: 40%;
+    }
+
+.top-team-data .home-team, .top-team-data .away-team {
+    display: flex;
+    flex-direction: row;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.top-team-data .home-team {
+    background-color: #003366;
+}
+
+.top-team-data .away-team {
+    background-color: #d8000d;
+}
+.top-team-data .home-team .teamInfo, .top-team-data .away-team .teamInfo {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    flex: 1;
+}
+.top-team-data .home-team .teamData, .top-team-data .away-team .teamData {
+    display: flex;
+    flex-direction: row;
+    gap: 5px; 
+    flex: 2;
+}
+.teamInfo {
+    align-items: center;
+    gap: 5px; 
+}
+    .top-team-data .team img {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 10px;
+    }
+
+    .team-stats-block {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .team-stats-block h3 {
+        margin: 0;
+        background-color: #c8102e;
+        padding: 5px;
+    }
+
+    .stats-labels {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #ffffff;
+        color: #000;
+        padding: 10px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .stats-labels div {
+        flex-basis: 14%;
+    }
+
+    .team-data {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+    }
+
+    .team-data div {
+        flex-basis: 14%;
+        text-align: center;
+    }
+    .teamData, .stats-teamData-labels {
+        display: flex;
+    } 
+    
+    .stats-teamData-labels {
+        flex: 2;
+    }
+    .top-Data {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+<div class="top-Data">
+    <div class="top-labels">
+        <div class="teams-labels">
+        </div>
+        <div class="stats-teamData-labels">
+            <div>GP</div>
+            <div>PTS</div>
+            <div>PPG</div>
+            <div>Avg Sc.</div>
+            <div>Avg Co.</div>
+            <div>W</div>
+            <div>D</div>
+            <div>L</div>
+        </div>
+    </div>
+    <div class="top-team-data">
+        <div class="home-team">
+            <div class="teamInfo">
+            <div class="team-logo">
+                <img src='${baseURL}/team/${teamId1}/image/small' alt='${teamName1}'>
+            </div>
+            <h3>${teamName1}</h3> 
+            </div> 
+
+            <div class="team-stats-block teamData">
+               <div>${gamesPlayed1}</div>
+                <div>${points1}</div>
+                <div>${pointsPerGame1.toFixed(2)}</div>
+                <div>${averageScored1.toFixed(2)}</div>
+                <div>${averageConceded1.toFixed(2)}</div>
+                <div>${wins1}</div>
+                <div>${draws1}</div>
+                <div>${losses1}</div>
+            </div>
+        </div>
+
+        <div class="away-team">
+            <div class="teamInfo">
+                <div class="team-logo">
+                    <img src='${baseURL}/team/${teamId2}/image/small' alt='${teamName2}'>
+                </div>
+                <h3>${teamName2}</h3> 
+            </div> 
+
+            <div class="team-stats-block teamData">
+                <div>${gamesPlayed2}</div>
+                <div>${points2}</div>
+                <div>${pointsPerGame2.toFixed(2)}</div>
+                <div>${averageScored2.toFixed(2)}</div>
+                <div>${averageConceded2.toFixed(2)}</div>
+                <div>${wins2}</div>
+                <div>${draws2}</div>
+                <div>${losses2}</div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="last-data-column">
+        <div class="stats-last">
+            <div>Last</div> 
+        </div>
+        <div class="last-data">
+            <p>${lastMatchTotalGoals1}Total Goals  ${lastMatchTotalGoals2}</p>
+            <p>${lastMatchBTTS1 ? 'Yes' : 'No'}Last Match BTTS: ${lastMatchBTTS2 ? 'Yes' : 'No'}</p>
+            <p>${lastMatchOver2_51 ? 'Yes' : 'No'}Last Match Over 2.5 Goals: ${lastMatchOver2_52 ? 'Yes' : 'No'}</p>
+        </div>
+    </div>

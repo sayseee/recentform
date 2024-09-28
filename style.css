@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+.fixture-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.fixture-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.fixture-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fixture-status {
+    font-weight: bold;
+    color: #007bff; /* Change color for better visibility */
+}
+
+.fixture-details {
+    margin-top: 10px;
+}
+
+.fixture-odds {
+    margin-top: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+
+.odds-choice {
+    margin: 5px 0;
+}
+
+.odds-value {
+    font-weight: bold;
+}
