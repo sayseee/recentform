@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduled Events</title>
+    <style>
+         :root {         
+            --win-color: #00a83f; /* Wins */
+            --draw-color: #f3a000;/* Draws */
+            --loss-color: #dc0000;/* Losses */
+        }
+        
+              body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-y: hidden;
+        }
+        .events-column::-webkit-scrollbar, .right-column::-webkit-scrollbar {
+            width: 2px; /* Set the width of the scrollbar */
+        }
+
+        .events-column::-webkit-scrollbar-track, .right-column::-webkit-scrollbar-track {
+            background: #ccc; /* Color of the track */
+        }
+
+        .events-column::-webkit-scrollbar-thumb, .right-column::-webkit-scrollbar-thumb {
+            background: var(--color-support-3); /* Color of the thumb */
+            border-radius: 1px; 
+            height: 40px;
+        }
+        .container {
+            display: flex;
+            height: 100%; /* Ensure the container takes full height */ 
+        }
+        .events-column, .right-column { 
+            margin-right: 20px; 
+            box-sizing: border-box;
+            height: 95vh; /* Ensure columns take full available height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 20px;
+        } 
+        .events-column {
+            width: 15%;
+        }
+        .right-column {
+            margin-right: 0;
+            width: 85%;
+        }
+        .tournament {
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .country {
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .event {
+            padding-left: 20px;
+        }
+        .accordion-content {
+            display: none;
+            overflow: hidden;
+            padding-left: 20px;
+        }
+        .accordion-content.active {
+            display: block;
+        }
+        .events-table th:first-child, .events-table td:first-child {
+            text-align: left;
+        }
+        .events-table th:not(first-child), .events-table td:not(first-child) {
+            text-align: center;
+        }
+        .form-column span:not(last-child)  {
+            margin-right: 2px;
+        }
+        .W, .D, .L {  
+            color: #fff;
+            align-items: center; 
+            display: inline-flex;
+            height: 12px;
+            width: 16px;
+            justify-content: center;
+            overflow: hidden;
+            position: relative; 
+            padding:2px 0;
+        } 
+        .W, .win {
+            background-color: var(--win-color);
+        }
+        .D, .draw {
+            background-color: var(--draw-color);
+        }
+        .L, .loss {
+            background-color: var(--loss-color);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="event-info">
+        <div class="event-date">
+            <div class="date-box">
+                <div class="calendar">
+                    <button class="calendar__navigation calendar__navigation--yesterday" title="Previous day">&#8249;</button>
+                    <button id="calendarMenu" aria-expanded="false" class="calendar__datepicker">
+                        <span id="current-day"></span> <!-- Current date dynamically displayed here -->
+                    </button>
+                    <ul aria-labelledby="calendarMenu" class="calendar__days" id="date-list" hidden>
+                        <!-- Dates will be appended here dynamically -->
+                    </ul>
+                    <button class="calendar__navigation calendar__navigation--tomorrow" title="Next day">&#8250;</button>
+                </div>
+            </div>
+            <div class="filter-bar">
+                <div>
+                    <select id="time-range">
+                        <option value="">Select Time</option>
+                        <option value="3">3 Hours</option>
+                        <option value="6">6 Hours</option>
+                        <option value="12">12 Hours</option>
+                    </select>
+                    <button id="filter-btn">Filter</button>
+                </div> 
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="events-column" id="eventsContainer"></div>
+        <div class="right-column" id="rightColumn"></div>
+    </div>
+    
+    <script>
+        // Function to format date in 'YYYY-MM-DD'
+        const formatDate = (date) => date.toISOString().split('T')[0];
+    
+        // Function to display the current date in the calendar
+        const updateCalendarDisplay = (date) => {
+            document.getElementById('current-day').innerText = date.toLocaleDateString();
+        };
+    
+        // Function to filter events by time range
+        function filterEventsByTime(events, hours) {
+            const now = new Date().getTime();
+            const timeRange = hours * 60 * 60 * 1000; // Convert hours to milliseconds
+    
+            return events.filter(event => {
+                const eventTime = new Date(event.startTimestamp * 1000).getTime();
+                return eventTime >= now && eventTime <= now + timeRange;
+            });
+        }
+    
+        // Toggle visibility for accordion
+        const toggleAccordion = (element) => {
+            const content = element.nextElementSibling;
+            content.classList.toggle('active');
+        };
+    
+            // Fetch events by selected date
+            const fetchEventsByDate = async (date, hours) => {
+            try {
+                const [scheduledEvents, inverseEvents] = await Promise.all([
+                fetch(`https://www.sofascore.com/api/v1/sport/football/scheduled-events/${date}`),
+                fetch(`https://www.sofascore.com/api/v1/sport/football/scheduled-events/${date}/inverse`),
+                ]);
+
+                const data1 = await scheduledEvents.json();
+                const data2 = await inverseEvents.json();
+
+                let events = [...data1.events, ...data2.events];
+
+                    // Filter events by selected date and hours if selected
+                    const startDate = new Date(date).setHours(0, 0, 0);
+                    const endDate = new Date(date).setHours(23, 59, 59);
+
+                    events = events.filter(event => {
+                    const eventTime = new Date(event.startTimestamp * 1000).getTime();
+                    return eventTime >= startDate && eventTime <= endDate;
+                    });
+
+                    // If hours are selected, filter events further
+                    if (hours) {
+                    const timeRangeStart = new Date(date).setHours(0, 0, 0);
+                    const timeRangeEnd = new Date(date).setHours(hours, 59, 59);
+
+                    events = events.filter(event => {
+                        const eventTime = new Date(event.startTimestamp * 1000).getTime();
+                        return eventTime >= timeRangeStart && eventTime <= timeRangeEnd;
+                    });
+                    }
+     
+    
+                // Render events grouped by country and tournament
+                const eventsContainer = document.getElementById('eventsContainer');
+                const rightColumn = document.getElementById('rightColumn');
+                eventsContainer.innerHTML = '';
+                rightColumn.innerHTML = '';
+    
+                // Grouping logic
+                const groupedEvents = {};
+                events.forEach(event => {
+                    const country = event.tournament.category.name;
+                    const tournament = event.tournament.name;
+    
+                    if (!groupedEvents[country]) groupedEvents[country] = {};
+                    if (!groupedEvents[country][tournament]) groupedEvents[country][tournament] = [];
+    
+                    groupedEvents[country][tournament].push(event);
+                });
+    
+                // Display grouped data by country and tournament with accordion functionality
+                for (const country in groupedEvents) {
+                    const countryDiv = document.createElement('div');
+                    countryDiv.classList.add('country');
+                    countryDiv.innerText = country;
+                    countryDiv.onclick = () => toggleAccordion(countryDiv);
+                    eventsContainer.appendChild(countryDiv);
+    
+                    const countryContent = document.createElement('div');
+                    countryContent.classList.add('accordion-content');
+    
+                    for (const tournament in groupedEvents[country]) {
+                        const tournamentDiv = document.createElement('div');
+                        tournamentDiv.classList.add('tournament');
+                        tournamentDiv.innerText = tournament;
+                        tournamentDiv.onclick = () => {
+                            displayEvents(groupedEvents[country][tournament], rightColumn);
+                        };
+    
+                        countryContent.appendChild(tournamentDiv);
+                    }
+    
+                    eventsContainer.appendChild(countryContent);
+                }
+    
+                // Display first tournament's events by default
+                if (Object.keys(groupedEvents).length > 0) {
+                    const firstCountry = Object.keys(groupedEvents)[0];
+                    const firstTournament = Object.keys(groupedEvents[firstCountry])[0];
+                    displayEvents(groupedEvents[firstCountry][firstTournament], rightColumn);
+                }
+    
+            } catch (error) {
+                console.error('Error fetching events:', error);
+            }
+        };
+    
+         // Event listener for page load
+         document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            let selectedDate = today;
+            let selectedHours = '';
+    
+            // Display today's date
+            updateCalendarDisplay(today);
+            fetchEventsByDate(formatDate(today), selectedHours);
+    
+            // Date navigation
+            document.querySelector('.calendar__navigation--yesterday').addEventListener('click', () => {
+                selectedDate.setDate(selectedDate.getDate() - 1);
+                updateCalendarDisplay(selectedDate);
+                fetchEventsByDate(formatDate(selectedDate), selectedHours);
+            });
+    
+            document.querySelector('.calendar__navigation--tomorrow').addEventListener('click', () => {
+                selectedDate.setDate(selectedDate.getDate() + 1);
+                updateCalendarDisplay(selectedDate);
+                fetchEventsByDate(formatDate(selectedDate), selectedHours);
+            });
+    
+            // Filter events based on time range
+            document.getElementById('filter-btn').addEventListener('click', () => {
+                selectedHours = document.getElementById('time-range').value;
+                fetchEventsByDate(formatDate(selectedDate), selectedHours);
+            });
+        });
+ 
+    
+        const displayEvents = (events, rightColumn) => {
+  rightColumn.innerHTML = ''; // Clear previous events
+
+  // Create table
+  const table = document.createElement('table');
+  table.classList.add('events-table');
+  table.style.width = '100%';
+
+  // Create header row
+  const headerRow = document.createElement('tr');
+  table.appendChild(headerRow);
+
+  const headers = ['Team', 'Form', 'G', '1H G', '2H G', 'CS', 'FTS', 'BTS', 'O 1.5', 'O 2.5', 'O 3.5', 'BTS & O 2.5'];
+  headers.forEach(header => {
+    const th = document.createElement('th');
+    th.innerText = header;
+    headerRow.appendChild(th);
+  });
+
+  
+  events.forEach(async event => {
+    // Create separator row
+    const separatorRow = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 12;
+    td.innerHTML = `<hr/>`;
+    separatorRow.appendChild(td);
+    table.appendChild(separatorRow);
+
+    // Create team stats rows
+    const homeTeamRow = document.createElement('tr');
+    homeTeamRow.id = `homeTeamStats_${event.homeTeam.id}`;
+    const homeTeamCells = [
+      event.homeTeam.shortName,
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+    ];
+    homeTeamCells.forEach(cell => {
+      const td = document.createElement('td');
+      td.innerText = cell;
+      homeTeamRow.appendChild(td);
+    });
+    table.appendChild(homeTeamRow);
+
+    const awayTeamRow = document.createElement('tr');
+    awayTeamRow.id = `awayTeamStats_${event.awayTeam.id}`;
+    const awayTeamCells = [
+      event.awayTeam.shortName,
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+      'Loading...',
+    ];
+    awayTeamCells.forEach(cell => {
+      const td = document.createElement('td');
+      td.innerText = cell;
+      awayTeamRow.appendChild(td);
+    });
+    table.appendChild(awayTeamRow);
+
+    rightColumn.appendChild(table); // Move this line inside the loop
+
+    await fetchAndDisplayTeamStats(event.tournament.id, event.season.id, event.homeTeam.id, event.id, 'home');
+            await fetchAndDisplayTeamStats(event.tournament.id, event.season.id, event.awayTeam.id, event.id, 'away');
+  });
+};
+        const fetchAndDisplayTeamStats = async (tournamentId, seasonId, teamId, currentMatchId, teamType) => {
+            try {
+                    const response = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/events`);
+                    const data = await response.json();
+                    const events = data.events;
+
+                    // Function to get last N games by team ID and game type
+                function getLastNGames(events, teamId, gameType, n, currentMatchId) {
+                const filteredGames = events.filter((event) => 
+                    ((gameType === 'home' && event.homeTeam.id === teamId) || 
+                    (gameType === 'away' && event.awayTeam.id === teamId)) && 
+                    event.status.type === 'finished' && 
+                    event.id !== currentMatchId
+                );
+
+                return filteredGames.slice(-n);
+                }
+
+/**
+ * Calculates team statistics from an array of games.
+ *
+ * @param {Object[]} games - Array of game objects.
+ * @param {number} teamId - ID of the team.
+ * @returns {Object} Team statistics.
+ */
+ function calculateStats(games, teamId) {
+  if (!games || games.length === 0) {
+    return {
+      goalsScored: 0,
+      goalsConceded: 0,
+      goalsScoredFirstHalf: 0,
+      goalsConcededFirstHalf: 0,
+      goalsScoredSecondHalf: 0,
+      goalsConcededSecondHalf: 0,
+      cleanSheets: 0,
+      failedToScore: 0,
+      btts: 0,
+      overs1_5: 0,
+      overs2_5: 0,
+      overs3_5: 0,
+      bttsAndOver2_5: 0,
+      cleanSheetsPercentage: 0,
+      failedToScorePercentage: 0,
+      bttsPercentage: 0,
+      overs1_5Percentage: 0,
+      overs2_5Percentage: 0,
+      overs3_5Percentage: 0,
+      bttsAndOver2_5Percentage: 0,
+    };
+  }
+
+  let goalsScored = 0,
+    goalsConceded = 0,
+    goalsScoredFirstHalf = 0,
+    goalsConcededFirstHalf = 0,
+    goalsScoredSecondHalf = 0,
+    goalsConcededSecondHalf = 0,
+    cleanSheets = 0,
+    failedToScore = 0,
+    overs1_5 = 0,
+    overs2_5 = 0,
+    overs3_5 = 0,
+    btts = 0,
+    bttsAndOver2_5 = 0;
+
+  games.forEach((game) => {
+    const isHomeGame = game.homeTeam.id === teamId;
+    const { current: homeScore, period1: homeFirstHalf } = game.homeScore;
+    const { current: awayScore, period1: awayFirstHalf } = game.awayScore;
+    const homeSecondHalf = homeScore - homeFirstHalf;
+    const awaySecondHalf = awayScore - awayFirstHalf;
+
+    // Goals scored/conceded
+    if (isHomeGame) {
+      goalsScored += homeScore;
+      goalsConceded += awayScore;
+    } else {
+      goalsScored += awayScore;
+      goalsConceded += homeScore;
+    }
+
+    // Goals scored/conceded per half
+    if (isHomeGame) {
+      goalsScoredFirstHalf += homeFirstHalf;
+      goalsConcededFirstHalf += awayFirstHalf;
+      goalsScoredSecondHalf += homeSecondHalf;
+      goalsConcededSecondHalf += awaySecondHalf;
+    } else {
+      goalsScoredFirstHalf += awayFirstHalf;
+      goalsConcededFirstHalf += homeFirstHalf;
+      goalsScoredSecondHalf += awaySecondHalf;
+      goalsConcededSecondHalf += homeSecondHalf;
+    }
+
+    // Clean sheets and failed to score
+    if (isHomeGame) {
+      if (awayScore === 0) cleanSheets++;
+      if (homeScore === 0) failedToScore++;
+    } else {
+      if (homeScore === 0) cleanSheets++;
+      if (awayScore === 0) failedToScore++;
+    }
+
+    // Over 1.5, 2.5, 3.5 goals and BTTS & Over 2.5
+    const totalGoals = homeScore + awayScore;
+    if (totalGoals > 1.5) overs1_5++;
+    if (totalGoals > 2.5) overs2_5++;
+    if (totalGoals > 3.5) overs3_5++;
+    if (homeScore > 0 && awayScore > 0 && totalGoals > 2.5) bttsAndOver2_5++;
+    if (homeScore > 0 && awayScore > 0) btts++;
+  });
+
+  const totalGames = games.length;
+
+  return {
+    goalsScored,
+    goalsConceded,
+    goalsScoredFirstHalf,
+    goalsConcededFirstHalf,
+    goalsScoredSecondHalf,
+    goalsConcededSecondHalf,
+    cleanSheets,
+    failedToScore,
+    btts,
+    overs1_5,
+    overs2_5,
+    overs3_5,
+    bttsAndOver2_5,
+    cleanSheetsPercentage: (cleanSheets / totalGames) * 100,
+    failedToScorePercentage: (failedToScore / totalGames) * 100,
+    bttsPercentage: (btts / totalGames) * 100,
+    overs1_5Percentage: (overs1_5 / totalGames) * 100,
+    overs2_5Percentage: (overs2_5 / totalGames) * 100,
+    overs3_5Percentage: (overs3_5 / totalGames) * 100,
+    bttsAndOver2_5Percentage: (bttsAndOver2_5 / totalGames) * 100,
+  };
+}
+
+
+// Function to get match result (W/D/L)
+function getMatchResult(game, teamId) {
+  const isHomeGame = game.homeTeam.id === teamId;
+  const homeScore = game.homeScore.current;
+  const awayScore = game.awayScore.current;
+
+  if (isHomeGame) {
+    if (homeScore > awayScore) return '<span class="W">W</span>';
+    else if (homeScore < awayScore) return '<span class="L">L</span>';
+    else return '<span class="D">D</span>';
+  } else {
+    if (awayScore > homeScore) return '<span class="W">W</span>';
+    else if (awayScore < homeScore) return '<span class="L">L</span>';
+    else return '<span class="D">D</span>';
+  }
+}
+    // Get last 6 games (to account for excluding current match)
+let games;
+if (teamType === 'home') {
+  games = getLastNGames(events, teamId, 'home', 5, currentMatchId);
+} else {
+  games = getLastNGames(events, teamId, 'away', 5, currentMatchId);
+}
+    
+        // Log last 5 games
+        console.log(`Team ${teamId} Last 5 ${teamType} Games:`);
+        games.forEach((game, index) => {
+        console.log(`Game ${index + 1}: ${game.homeTeam.name} vs ${game.awayTeam.name} - ${game.homeScore.current} : ${game.awayScore.current}`);
+        });
+    // Calculate stats
+    const teamStats = calculateStats(games);
+
+    // Generate match result string
+const matchResults = games.map((game) => getMatchResult(game, teamId)).join('');
+// Update stats table
+return updateTeamStatsTable(teamStats, teamId, matchResults);
+  } catch (error) {
+    console.error(`Error fetching team stats: ${error}`);
+  }
+};
+// Usage
+/**
+ * Updates the stats table for a team.
+ *
+ * @param {Object} stats - Team statistics.
+ * @param {number} teamId - ID of the team.
+ * @param {string} matchResults - Match results.
+ */
+ const updateTeamStatsTable = (stats, teamId, matchResults) => {
+  // Get the table row for the team
+  const row = document.getElementById(`homeTeamStats_${teamId}`) || document.getElementById(`awayTeamStats_${teamId}`);
+  const cells = row.children;
+
+  // Update table cells
+  cells[0].innerText = row.querySelector('td').innerText; // Team name
+  cells[1].innerHTML = matchResults; // Form
+  cells[1].className = 'form-column';
+  cells[2].innerText = `${stats.goalsScored} - ${stats.goalsConceded}`; // G
+  cells[3].innerText = `${stats.goalsScoredFirstHalf} - ${stats.goalsConcededFirstHalf}`; // 1H G
+  cells[4].innerText = `${stats.goalsScoredSecondHalf} - ${stats.goalsConcededSecondHalf}`; // 2H G
+  cells[5].innerText = `${stats.cleanSheets} (${stats.cleanSheetsPercentage.toFixed(2)}%)`; // CS
+  cells[6].innerText = `${stats.failedToScore} (${stats.failedToScorePercentage.toFixed(2)}%)`; // FTS
+  cells[7].innerText = `${stats.btts} (${stats.bttsPercentage.toFixed(2)}%)`; // BTS
+  cells[8].innerText = `${stats.overs1_5} (${stats.overs1_5Percentage.toFixed(2)}%)`; // O 1.5
+  cells[9].innerText = `${stats.overs2_5} (${stats.overs2_5Percentage.toFixed(2)}%)`; // O 2.5
+  cells[10].innerText = `${stats.overs3_5} (${stats.overs3_5Percentage.toFixed(2)}%)`; // O 3.5
+  cells[11].innerText = `${stats.bttsAndOver2_5} (${stats.bttsAndOver2_5Percentage.toFixed(2)}%)`; // BTS & O 2.5
+};
+</script>
+
+</body>
+</html>

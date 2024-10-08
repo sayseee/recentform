@@ -8,11 +8,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script> <!-- Add this line -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <link href="chunk.css" rel="stylesheet">
-    <style>     
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> 
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
         html {
-    font-size: 13px;
+    font-size: 12px;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
@@ -21,10 +21,13 @@ html {
 }
 
 html, body {
-    font-family: "UI Sans", Lato, sans-serif;
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto; 
+  font-style: normal;
+  font-weight: 400; 
     -webkit-font-smoothing: antialiased;
     font-synthesis: none;
-    font-variant-ligatures: no-common-ligatures;
+    font-variant-ligatures: no-common-ligatures; 
 }
 
 *, ::after, ::before {
@@ -47,8 +50,7 @@ html, body {
     background: rgba(0, 0, 0, 0.3);
     color: rgb(255, 255, 255);
 }
-        body { 
-            background-color: #f4f4f4;
+        body {  
             margin: 0;
             padding: 0;
             overflow-y: hidden; /* Enable vertical scrolling */
@@ -68,15 +70,11 @@ html, body {
 
         #odds-container {
             margin-bottom: 20px;
-        }
-
-        canvas {
-            width: 100%;
-            height: 400px;
-        }
+            width: 30%;
+        } 
         /* Categories container */
 main {
-    height: calc(100vh - 76px); /* Fill the viewport height minus 76px */  
+    height: calc(100vh - 60px); /* Fill the viewport height minus 76px */  
     display: flex;
     position: relative;
 }
@@ -91,7 +89,7 @@ main {
     overflow-y: auto; /* Enable vertical scrolling */
     padding: 5px; /* Optional padding */ 
     border-right: var(--color-support-3) 1px solid;
-    padding-top: 7px; 
+    padding-top: 20px; 
     background-color: #222222;
     color: #9c9c9c;
     font-size: 12px;
@@ -254,7 +252,12 @@ li {
     color: var(--color-tabs-secondary-fill-base);
     justify-content: space-around;
     gap: 5px;
-} 
+}
+.team-logo {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
 .team-name h2 {
   font-size: 1.5em;
   margin-bottom: 5px;
@@ -460,44 +463,126 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     padding: 10px 20px;
     clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
 }
-.team-stats-container {
+.odds-Data {
     display: flex;
-    width: 100%;
+    gap: 20px;
 }
-
-.team-stats {
-    width: 100%;
+#oddsChart {
+    width: 70%;
 }
-.Data {
+.Data, .top-labels {
         display: flex;
         justify-content: space-between;
 }
 
-.Data>div:first-child {
-    flex: 2;
-    border-right: 1px solid #002d71;
+.Data>div:first-child, .top-labels .teams-labels:first-child {
+    flex: 1; 
 }
 
-.Data>div:not(:first-child) {
+.Data>div:not(:first-child), .top-labels>div:not(:first-child) {
     flex: 1;
     border-right: 1px solid #444649;
 }
-
-.teams-data {
-        display: flex;
-        justify-content: space-between; 
-        flex-direction: column;
-    }
-    
-.teamInfo {
+.score-container {
+            width: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .team-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 10px;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .team-row img {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .team-name {
+            display: flex;
+            align-items: center;
+        } 
+        .home-team {
+            background-color: #003f87; /* Dark blue */
+        }
+        .away-team {
+            background-color: #d52b1e; /* Red */
+        }
+.games-played {
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-left: 20px;
     align-items: center;
-    gap: 5px; 
-}  
-.teamInfo h3 {
-    padding: 0;
 }
-    </style>
+.stats-block, .ulS {
+    display: flex;
+    gap: 40px;
+}
+.stats-block>div, .ulS ul {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.stats-block>div.correct-scores { 
+    flex: 2;
+}
+.stats-block h3 {
+    text-align: center;
+    text-transform: uppercase;
+    color: #1cbad1;
+    font-weight: 700;
+}
+.stats-block p {
+    display: flex;
+}
+.stats-block p span {
+    margin: 0 auto;
+}
+.comparison-table {
+    overflow-x: auto;
+}
+
+.comparison-table table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.comparison-table th, .comparison-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.comparison-table th {
+    background-color: #f7f7f7;
+}
+
+.correct-scores-table {
+    overflow-x: auto;
+}
+
+.correct-scores-table table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.correct-scores-table th, .correct-scores-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.correct-scores-table th {
+    background-color: #f7f7f7;
+}
+</style>
 </head>
 <body>
     <header class="team-header" id="superheader">
@@ -508,14 +593,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
             <div class="event-date">
                 <div class="date-box">
                     <div class="calendar">
-                        <button class="calendar__navigation calendar__navigation--yesterday" title="Previous day">&#9664;</button>
+                        <button class="calendar__navigation calendar__navigation--yesterday" title="Previous day">&#8249;</button>
                         <button id="calendarMenu" aria-expanded="false" class="calendar__datepicker">
                             <span id="current-day">27/09 FR</span> <!-- You can set this dynamically -->
                         </button>
                         <ul aria-labelledby="calendarMenu" class="calendar__days" id="date-list" hidden>
                             <!-- Dates will be appended here dynamically -->
                         </ul>
-                        <button class="calendar__navigation calendar__navigation--tomorrow" title="Next day">&#9654;</button>
+                        <button class="calendar__navigation calendar__navigation--tomorrow" title="Next day">&#8250;</button>
                     </div>
                 </div>
                 
@@ -540,8 +625,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     <div class="content-container">
         <div class="loader" id="loader">Loading data...</div>
         <div id="event-details-div"></div> 
-        <div id="odds-container"></div>
-        <div id="oddsChart"></div> 
+        <div class="odds-Data">
+            <div id="odds-container"></div>
+        </div> 
     </div>
 </main>
     <script>
@@ -562,6 +648,20 @@ async function fetchJson(url) {
     }
 }
 
+const fractionalToDecimal = (fractional) => {
+            const [numerator, denominator] = fractional.split('/').map(Number);
+            return (numerator / denominator + 1).toFixed(2);
+};
+
+async function fetchOdds(eventId) {
+    try {
+        const response = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/changes`);
+        const data = await response.json();
+        return data.changedOdds;
+    } catch (error) {
+        console.error('Error fetching odds:', error);
+    }
+}
 // Function to filter events by time
 function filterEventsByTime(events, hours) {
     const now = new Date().getTime();
@@ -573,10 +673,31 @@ function filterEventsByTime(events, hours) {
     });
 }
 
+
+
+function displayOdds(odds) {
+            const container = document.getElementById('odds-container');
+            container.innerHTML = '';
+
+            odds.forEach(entry => {
+                const timestamp = new Date(entry.timestamp * 1000).toLocaleString();
+                const oddsInfo = `
+                    <div>
+                        <strong>${timestamp}</strong>: 
+                        1: ${fractionalToDecimal(entry.choice1.fractionalValue)}, 
+                        X: ${fractionalToDecimal(entry.choice2.fractionalValue)}, 
+                        2: ${fractionalToDecimal(entry.choice3.fractionalValue)}
+                    </div>
+                `;
+                container.innerHTML += oddsInfo;
+            });
+        }
+ 
+
 const displayCategories = async (startDate, endDate, hours, status) => {
         const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
         const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${startDate}`;
-        const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${startDate}/inverse`;
+        //const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${startDate}/inverse`;
         const oddsResponse = `${baseURL}/sport/football/odds/1/${startDate}`;
 
         let filteredEvents = [];
@@ -586,10 +707,10 @@ const displayCategories = async (startDate, endDate, hours, status) => {
             try {
                 const topTournamentsData = await fetchJson(topTournamentsUrl);
                 const scheduledEventsData = await fetchJson(scheduledEventsUrl);
-                const scheduledEventsData2 = await fetchJson(scheduledEventsUrl2);
+                //const scheduledEventsData2 = await fetchJson(scheduledEventsUrl2);
                 const oddsData = await fetchJson(oddsResponse);
 
-                const events = [...scheduledEventsData.events, ...scheduledEventsData2.events];
+                const events = [...scheduledEventsData.events];
                 odds = oddsData?.odds || {};
 
                 // Filter events
@@ -693,7 +814,8 @@ const displayCategories = async (startDate, endDate, hours, status) => {
                             const eventLink = document.createElement('a');
                             eventLink.className = 'match-card';
                             eventLink.dataset.eventId = event.id;
-                            eventLink.dataset.customId = event.customId;
+                            eventLink.dataset.customId = event.customId; // Add customId to dataset
+
 
                             // Get odds data
                             const oddsData = odds[event.id] || {};
@@ -775,15 +897,13 @@ const displayCategories = async (startDate, endDate, hours, status) => {
 
                 if (filteredEvents.length > 0) {
                     loadEventDetails(filteredEvents[0].id, filteredEvents[0].customId);
-                    init(filteredEvents[0].id);
                 }
 
                 document.querySelectorAll('.match-card').forEach(card => {
                     card.addEventListener('click', async (event) => {
                         const eventId = event.currentTarget.dataset.eventId;
                         const customId = event.currentTarget.dataset.customId;
-                        await loadEventDetails(eventId, customId);
-                        await init(eventId);
+                        await loadEventDetails(eventId, customId); 
                     });
                 });
 
@@ -793,6 +913,639 @@ const displayCategories = async (startDate, endDate, hours, status) => {
         };
         await fetchData();
     }
+
+// Function to fetch and check data
+async function fetchAndCheck(endpoint) {
+    const response = await fetch(endpoint);
+    if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
+        return response.json();
+    }
+
+  // Initialize team IDs
+let teamIds = {
+    homeTeamId: null,
+    awayTeamId: null
+};
+
+// Function to fetch team names
+async function fetchTeamNames(teamIds) {
+    const teamNames = {};
+    const nameFetchPromises = [
+        fetch(`https://api.sofascore.com/api/v1/team/${teamIds.homeTeamId}`)
+            .then(response => {
+                if (!response.ok) throw new Error(`Failed to fetch team name for ID ${teamIds.homeTeamId}`);
+                return response.json();
+            })
+            .then(data => {
+                teamNames.home = data.team.name;
+            }),
+        fetch(`https://api.sofascore.com/api/v1/team/${teamIds.awayTeamId}`)
+            .then(response => {
+                if (!response.ok) throw new Error(`Failed to fetch team name for ID ${teamIds.awayTeamId}`);
+                return response.json();
+            })
+            .then(data => {
+                teamNames.away = data.team.name;
+            })
+    ];
+
+    await Promise.all(nameFetchPromises);
+    return teamNames;
+}
+
+
+
+function processTeamStats(events) {
+    let totalGoalsScored = 0, totalGoalsConceded = 0, wins = 0, draws = 0, losses = 0;
+    let over1_5 = 0, over2_5 = 0, over3_5 = 0, under2_5 = 0, btts = 0;
+    let drawsHalfTime = 0, cleanSheets = 0, scoredBothHalves = 0, bttsWin = 0, bttsOver2_5 = 0;
+    let totalFirstHalfGoals = 0, totalSecondHalfGoals = 0;
+    let totalFirstHalfConceded = 0, totalSecondHalfConceded = 0;
+    let winAndOver2_5 = 0; // New variable for "Win & Over 2.5"
+
+    const gamesPlayed = events.length;
+
+    events.forEach(event => {
+        const { homeScore, awayScore } = event;
+        const isHomeTeam = event.homeTeam.id === teamIds.home;
+
+        // Use normaltime if penalties exist, otherwise use current score
+        const homeGoals = homeScore.penalties ? homeScore.normaltime : homeScore.current;
+        const awayGoals = awayScore.penalties ? awayScore.normaltime : awayScore.current;
+
+        const totalScore = homeGoals + awayGoals;
+
+        totalGoalsScored += isHomeTeam ? homeGoals : awayGoals;
+        totalGoalsConceded += isHomeTeam ? awayGoals : homeGoals;
+
+        // First and Second Half Goals
+        totalFirstHalfGoals += isHomeTeam ? (homeScore.period1 || 0) : (awayScore.period1 || 0);
+        totalFirstHalfConceded += isHomeTeam ? (awayScore.period1 || 0) : (homeScore.period1 || 0);
+        totalSecondHalfGoals += isHomeTeam ? (homeScore.period2 || 0) : (awayScore.period2 || 0);
+        totalSecondHalfConceded += isHomeTeam ? (awayScore.period2 || 0) : (homeScore.period2 || 0);
+
+        // Win/Draw/Loss Logic
+        const teamWon = (isHomeTeam && homeGoals > awayGoals) || 
+                        (!isHomeTeam && awayGoals > homeGoals);
+        if (teamWon) {
+            wins++;
+            if (totalScore > 2.5) winAndOver2_5++; // Track "Win & Over 2.5"
+        } else if (homeGoals === awayGoals) {
+            draws++;
+        } else {
+            losses++;
+        }
+
+        // Over/Under, BTTS, Half-time, Clean Sheets, etc.
+        if (totalScore > 1.5) over1_5++;
+        if (totalScore > 2.5) over2_5++;
+        if (totalScore > 3.5) over3_5++;
+        if (totalScore < 2.5) under2_5++; 
+        if (homeScore.period1 === awayScore.period1) drawsHalfTime++;
+        if ((isHomeTeam && awayGoals === 0) || (!isHomeTeam && homeGoals === 0)) cleanSheets++;
+        if ((isHomeTeam && homeScore.period1 > 0 && homeScore.period2 > 0) || 
+            (!isHomeTeam && awayScore.period1 > 0 && awayScore.period2 > 0)) scoredBothHalves++;
+        if (homeGoals > 0 && awayGoals > 0) { 
+            btts++; 
+            if (teamWon) {
+                bttsWin++; 
+            }
+            if (totalScore > 2.5) {
+                bttsOver2_5++; 
+            }
+        }
+    });
+
+    return {
+        gamesPlayed, totalGoalsScored, totalGoalsConceded, wins, draws, losses,
+        over1_5, over2_5, over3_5, under2_5, btts, drawsHalfTime, cleanSheets,
+        scoredBothHalves, bttsWin, bttsOver2_5, totalFirstHalfGoals, totalSecondHalfGoals,
+        totalFirstHalfConceded, totalSecondHalfConceded, winAndOver2_5 // Return the new stat
+    };
+}
+
+
+
+function processLast6GamesStats(events, isHomeTeam) {
+    const filteredEvents = events.filter(event => 
+        isHomeTeam ? event.homeScore.current != null && event.awayScore.current != null : event.awayScore.current != null && event.homeScore.current != null
+    );
+
+    const last3Games = filteredEvents.slice(-5); 
+    let gamesScoredIn = 0, goalsScored = 0, over2_5 = 0, lastMatchTotalGoals = 0;
+    let firstHalfGoals = 0, secondHalfGoals = 0, lastMatchBTTS = false, lastMatchOver2_5 = false;
+    let last6FirstHalfGoals = 0, last6SecondHalfGoals = 0;
+    let last6FirstHalfConceded = 0, last6SecondHalfConceded = 0;
+
+    last3Games.forEach((event, i) => {
+        const { homeScore, awayScore } = event;
+
+        // Use normaltime if penalties exist, otherwise use current score
+        const homeGoals = homeScore.penalties ? homeScore.normaltime : homeScore.current;
+        const awayGoals = awayScore.penalties ? awayScore.normaltime : awayScore.current;
+
+        const totalScore = homeGoals + awayGoals;
+
+        const teamGoals = isHomeTeam ? homeGoals : awayGoals;
+        if (teamGoals > 0) gamesScoredIn++;
+        goalsScored += teamGoals;
+
+        // First Half and Second Half Goals
+        firstHalfGoals += isHomeTeam ? (homeScore.period1 || 0) : (awayScore.period1 || 0);
+        secondHalfGoals += isHomeTeam ? (homeScore.period2 || 0) : (awayScore.period2 || 0);
+        
+        // First and Second Half Goals
+        last6FirstHalfGoals += isHomeTeam ? (homeScore.period1 || 0) : (awayScore.period1 || 0);
+        last6FirstHalfConceded += isHomeTeam ? (awayScore.period1 || 0) : (homeScore.period1 || 0);
+        last6SecondHalfGoals += isHomeTeam ? (homeScore.period2 || 0) : (awayScore.period2 || 0);
+        last6SecondHalfConceded += isHomeTeam ? (awayScore.period2 || 0) : (homeScore.period2 || 0);
+
+        if (totalScore > 2.5) over2_5++;
+
+        if (i === 0) { // Process the last match
+            lastMatchTotalGoals = totalScore;
+            lastMatchBTTS = homeGoals > 0 && awayGoals > 0;
+            lastMatchOver2_5 = totalScore > 2.5;
+        }
+    });
+
+    return {
+        gamesScoredIn,
+        goalsScored,
+        over2_5,
+        lastMatchTotalGoals,
+        firstHalfGoals,
+        secondHalfGoals,
+        last6FirstHalfGoals, last6SecondHalfGoals,
+        last6FirstHalfConceded, last6SecondHalfConceded,
+        lastMatchBTTS,
+        lastMatchOver2_5
+    };
+}
+
+
+
+let customId = {
+    customId: null
+}
+
+// Function to fetch head-to-head data
+async function fetchHeadToHead(customId, currentMatchId) {
+    try {
+        const response = await fetch(`https://api.sofascore.com/api/v1/event/${customId.customId}/h2h/events`);
+        if (!response.ok) throw new Error(`Failed to fetch head-to-head data for event ${customId.customId}`);
+        const data = await response.json();
+        
+        // Filter events excluding current match ID and only including finished events
+        const filteredEvents = data.events
+            .reverse()
+            .filter(event => Number(event.id) !== Number(currentMatchId) && event.status.type === 'finished')
+            .slice(-2); // Return only the last 15 games
+        
+        console.log(filteredEvents);
+        return filteredEvents; // Get the last 15 head-to-head events
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+function displayHeadToHead(headToHeadData) {
+    // Target the existing head-to-head div
+    const h2hDiv = document.querySelector('#head-to-head');
+
+    // Clear any existing content in the head-to-head div
+    h2hDiv.innerHTML = '';
+
+    if (!headToHeadData || headToHeadData.length === 0) {
+        h2hDiv.innerHTML = `<p>No Head-to-Head data available.</p>`;
+        return;
+    }
+
+    // Populate the head-to-head div with new content
+    h2hDiv.innerHTML = `
+        <h3>Head-to-Head</h3>
+        ${headToHeadData.map((event, index) => `
+            <p>Match ${index + 1}: ${event.homeTeam.shortName} ${event.homeScore.current} - ${event.awayScore.current} ${event.awayTeam.shortName}</p>
+        `).join('')}
+    `;
+}
+
+
+function displayStats(teamStats1, last3GamesStats1, correctScores1, 
+                     teamStats2, last3GamesStats2, correctScores2, 
+                     teamName1, teamId1, teamName2, teamId2, container) {
+    // Process stats for both teams
+    const {
+        gamesPlayed: gamesPlayed1, totalGoalsScored: totalGoalsScored1, totalGoalsConceded: totalGoalsConceded1, 
+        wins: wins1, draws: draws1, losses: losses1, 
+        over1_5: over1_5_1, over2_5: over2_5_1, over3_5: over3_5_1, under2_5: under2_5_1, 
+        btts: btts_1, drawsHalfTime: drawsHalfTime_1, cleanSheets: cleanSheets_1, 
+        scoredBothHalves: scoredBothHalves_1, bttsWin: bttsWin_1, bttsOver2_5: bttsOver2_5_1,
+        totalFirstHalfGoals: totalFirstHalfGoals_1, totalSecondHalfGoals: totalSecondHalfGoals_1,
+        totalFirstHalfConceded: totalFirstHalfConceded_1, totalSecondHalfConceded: totalSecondHalfConceded_1,
+    } = teamStats1;
+
+    const {
+        gamesPlayed: gamesPlayed2, totalGoalsScored: totalGoalsScored2, totalGoalsConceded: totalGoalsConceded2, 
+        wins: wins2, draws: draws2, losses: losses2, 
+        over1_5: over1_5_2, over2_5: over2_5_2, over3_5: over3_5_2, under2_5: under2_5_2, 
+        btts: btts_2, drawsHalfTime: drawsHalfTime_2, cleanSheets: cleanSheets_2, 
+        scoredBothHalves: scoredBothHalves_2, bttsWin: bttsWin_2, bttsOver2_5: bttsOver2_5_2,
+        totalFirstHalfGoals: totalFirstHalfGoals_2, totalSecondHalfGoals: totalSecondHalfGoals_2,
+        totalFirstHalfConceded: totalFirstHalfConceded_2, totalSecondHalfConceded: totalSecondHalfConceded_2,
+    } = teamStats2;
+
+    const {
+        gamesScoredIn: gamesScoredIn1, goalsScored: goalsScored1, 
+        over2_5: last3GamesOver2_5_1, lastMatchTotalGoals: lastMatchTotalGoals1,
+        firstHalfGoals: firstHalfGoals1, secondHalfGoals: secondHalfGoals1, 
+        last6FirstHalfGoals: last6GamesFirstHalfGoals1, last6SecondHalfGoals: last6GamesSecondHalfGoals1,
+        last6FirstHalfConceded: last6GamesFirstHalfConceded1, last6SecondHalfConceded: last6GamesSecondHalfConceded1,
+        lastMatchBTTS: lastMatchBTTS1, lastMatchOver2_5: lastMatchOver2_51 
+    } = last3GamesStats1;
+
+    const {
+        gamesScoredIn: gamesScoredIn2, goalsScored: goalsScored2, 
+        over2_5: last3GamesOver2_5_2, lastMatchTotalGoals: lastMatchTotalGoals2,
+        firstHalfGoals: firstHalfGoals2, secondHalfGoals: secondHalfGoals2, 
+        last6FirstHalfGoals: last6GamesFirstHalfGoals2, last6SecondHalfGoals: last6GamesSecondHalfGoals2,
+        last6FirstHalfConceded: last6GamesFirstHalfConceded2, last6SecondHalfConceded: last6GamesSecondHalfConceded2,
+        lastMatchBTTS: lastMatchBTTS2, lastMatchOver2_5: lastMatchOver2_52 
+    } = last3GamesStats2;
+
+    const averageScored1 = totalGoalsScored1 / gamesPlayed1;
+    const averageConceded1 = totalGoalsConceded1 / gamesPlayed1;
+    const points1 = (wins1 * 3 + draws1);
+    const pointsPerGame1 = (points1 / gamesPlayed1).toFixed(2);
+
+    const averageScored2 = totalGoalsScored2 / gamesPlayed2;
+    const averageConceded2 = totalGoalsConceded2 / gamesPlayed2;
+    const points2 = (wins2 * 3 + draws2);
+    const pointsPerGame2 = (points2 / gamesPlayed2).toFixed(2);
+
+    const safeTeamName1 = teamName1.replace(/[^a-zA-Z0-9]/g, ' ');
+    const safeTeamName2 = teamName2.replace(/[^a-zA-Z0-9]/g, ' ');
+
+    const teamStatsDiv = document.createElement('div');
+    teamStatsDiv.classList.add('team-stats-container');
+
+    // Team 1
+    const teamDiv = document.createElement('div');
+    teamDiv.classList.add('team-stats');
+    teamDiv.innerHTML = `
+      
+            <div class="Data"> 
+                <div class="score-container">
+                    <!-- Fenerbahce Row -->
+                    <div class="team-row home-team">
+                        <div class="team-name">
+                            <img src='${baseURL}/team/${teamId1}/image/small' alt='${teamName1} width="20" height="20" loading="lazy" '>
+                            <span>${teamName1}</span>
+                        </div>
+                    </div>
+                    <!-- Gencler Row -->
+                    <div class="team-row away-team">
+                        <div class="team-name">
+                             <img src='${baseURL}/team/${teamId2}/image/small' alt='${teamName2} width="20" height="20" loading="lazy" '>
+                            <span>${teamName2}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="games-played">
+                    <span><strong>W / D / L</strong></span>
+                    <span>${wins1} / ${draws1}  / ${losses1} </span>
+                    <span>${wins2}  / ${draws2}  / ${losses2} </span>
+                </div>
+                <div class="games-played"> 
+                    <span><strong>Games / Points / PPG</strong></span>
+                    <span>${gamesPlayed1} / ${points1}  / ${pointsPerGame1} </span>
+                    <span>${gamesPlayed2}  / ${points2}  / ${pointsPerGame2} </span>
+                </div>
+                <div class="games-played"> 
+                    <span><strong>Average Goals: Scored / Conceded  </strong></span>
+                    <div>${averageScored1.toFixed(2)} / ${averageConceded1.toFixed(2)}</div>
+                    <div>${averageScored2.toFixed(2)} / ${averageConceded2.toFixed(2)}</div>
+                </div>
+            </div>
+
+        <div class="stats-block">
+    <div>
+    <div id="head-to-head"></div>
+      
+    <div class="comparison-table">
+    <h2>Last Match Comparison</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Stat</th>
+                    <th>${teamName1}</th>
+                    <th>${teamName2}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Goals</td>
+                    <td>${lastMatchTotalGoals1}</td>
+                    <td>${lastMatchTotalGoals2}</td>
+                </tr>
+                <tr>
+                    <td>Last Match BTTS</td>
+                    <td>${lastMatchBTTS1 ? 'Yes' : 'No'}</td>
+                    <td>${lastMatchBTTS2 ? 'Yes' : 'No'}</td>
+                </tr>
+                <tr>
+                    <td>Last Match Over 2.5 Goals</td>
+                    <td>${lastMatchOver2_51 ? 'Yes' : 'No'}</td>
+                    <td>${lastMatchOver2_52 ? 'Yes' : 'No'}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div> 
+    </div>
+    <div>
+    <h2>Team Comparison</h2>
+    <div class="comparison-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Stat</th>
+                    <th>${teamName1}</th>
+                    <th>${teamName2}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Clean Sheets</td>
+                    <td>${(cleanSheets_1 / gamesPlayed1 * 100).toFixed(0)}%</td>
+                    <td>${(cleanSheets_2 / gamesPlayed2 * 100).toFixed(0)}%</td>
+                </tr>
+                <tr>
+                    <td>Games Scored In</td>
+                    <td>${(gamesScoredIn1 / gamesPlayed1 * 100).toFixed(0)}%</td>
+                    <td>${(gamesScoredIn2 / gamesPlayed2 * 100).toFixed(0)}%</td>
+                </tr>
+                <tr>
+                    <td>First Half Goals</td>
+                    <td>${last6GamesFirstHalfGoals1} / ${last6GamesFirstHalfConceded1}</td>
+                    <td>${last6GamesFirstHalfGoals2} / ${last6GamesFirstHalfConceded2}</td>
+                </tr>
+                <tr>
+                    <td>Second Half Goals</td>
+                    <td>${last6GamesSecondHalfGoals1} / ${last6GamesSecondHalfConceded1}</td>
+                    <td>${last6GamesSecondHalfGoals2} / ${last6GamesSecondHalfConceded2}</td>
+                </tr>
+                <tr>
+                    <td>BTTS & Over 2.5 Goals</td>
+                    <td>${(bttsOver2_5_1 / gamesPlayed1 * 100).toFixed(0)}%</td>
+                    <td>${(bttsOver2_5_2 / gamesPlayed2 * 100).toFixed(0)}%</td>
+                </tr>
+                <tr>
+                    <td>Over 2.5 Goals in Last 6 Games</td>
+                    <td>${(last3GamesOver2_5_1 / gamesPlayed1 * 100).toFixed(0)}%</td>
+                    <td>${(last3GamesOver2_5_2 / gamesPlayed2 * 100).toFixed(0)}%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    </div> 
+    <div class="comparison-table">
+    <h2>Goals Comparison</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Stat</th>
+                    <th>${teamName1}</th>
+                    <th>${teamName2}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Goals Scored</td>
+                    <td>${goalsScored1}</td>
+                    <td>${goalsScored2}</td>
+                </tr>
+                <tr>
+                    <td>BTTS</td>
+                    <td>${(btts_1 / gamesPlayed1 * 100).toFixed(0)}%</td>
+                    <td>${(btts_2 / gamesPlayed2 * 100).toFixed(0)}%</td>
+                </tr>
+                 <tr>
+                    <td>Over 1.5 Goals</td>
+                    <td>${(over1_5_1 / gamesPlayed1 * 100).toFixed(0)}%</td>
+                    <td>${(over1_5_2 / gamesPlayed2 * 100).toFixed(0)}%</td>
+                </tr>
+                <tr>
+                    <td>Over 2.5 Goals</td>
+                    <td>${(over2_5_1 / gamesPlayed1 * 100).toFixed(0)}%</td>
+                    <td>${(over2_5_2 / gamesPlayed2 * 100).toFixed(0)}%</td>
+                </tr>
+                <tr>
+                    <td>Over 3.5 Goals</td>
+                    <td>${(over3_5_1 / gamesPlayed1 * 100).toFixed(0)}%</td>
+                    <td>${(over3_5_2 / gamesPlayed2 * 100).toFixed(0)}%</td>
+                </tr>
+                <tr>
+                    <td>Under 2.5 Goals</td>
+                    <td>${(under2_5_1 / gamesPlayed1 * 100).toFixed(0)}%</td>
+                    <td>${(under2_5_2 / gamesPlayed2 * 100).toFixed(0)}%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div> 
+    `; 
+ 
+    teamStatsDiv.appendChild(teamDiv); 
+
+    container.appendChild(teamStatsDiv);
+}
+
+
+/**
+ * Calculate correct scores from a list of events.
+ * 
+ * @param {Object[]} events - Array of event objects.
+ * @param {boolean} isHomeTeam - Whether the team of interest is the home team.
+ * @returns {Object} An object with scorelines as keys and their percentages as values, sorted first by scoreline and then by percentage in descending order.
+ */
+ function calculateCorrectScores(events, isHomeTeam) {
+    const scoreCounts = {};
+
+    // Process events to count scorelines
+    events.forEach(event => {
+        const { homeScore, awayScore } = event;
+
+        // Ensure valid scores
+        if (!homeScore || !awayScore || homeScore.normaltime == null || awayScore.normaltime == null) {
+            return;
+        }
+
+        const homeGoals = homeScore.normaltime || 0;
+        const awayGoals = awayScore.normaltime || 0;
+
+        const scoreline = isHomeTeam ? `${homeGoals}:${awayGoals}` : `${awayGoals}:${homeGoals}`;
+
+        if (!scoreCounts[scoreline]) {
+            scoreCounts[scoreline] = 0;
+        }
+
+        scoreCounts[scoreline]++;
+    });
+
+    // Calculate percentages
+    const totalEvents = events.length;
+    const scorePercentages = Object.fromEntries(
+        Object.entries(scoreCounts).map(([scoreline, count]) => [scoreline, Math.round((count / totalEvents) * 100)])
+    );
+
+    // Sort scorePercentages first by scoreline and then by percentage in descending order
+    return Object.fromEntries(
+        Object.entries(scorePercentages).sort((a, b) => {
+            const [homeA, awayA] = a[0].split(':').map(Number);
+            const [homeB, awayB] = b[0].split(':').map(Number);
+
+            // Custom sorting order for scorelines
+            const scorelineOrder = (home, away) => {
+                if (home === 0 && away === 0) return 0;
+                if (home === 0) return away;
+                if (away === 0) return home + 10;
+                return home + away + 20;
+            };
+
+            const orderA = scorelineOrder(homeA, awayA);
+            const orderB = scorelineOrder(homeB, awayB);
+
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            } else {
+                return b[1] - a[1];
+            }
+        })
+    );
+}
+
+// Function to fetch team IDs by event ID
+async function fetchTeamIdsByEvent(eventId) {
+    const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`);
+    if (!response.ok) throw new Error(`Failed to fetch team IDs for event ${eventId}`);
+    const data = await response.json(); 
+    
+    return {
+        homeTeamId: data.event.homeTeam.id,
+        awayTeamId: data.event.awayTeam.id
+    };
+}
+// Function to fetch and display team details
+async function fetchAndDisplayDetails(teamIds, container, currentMatchId) {
+    if (!teamIds || !teamIds.homeTeamId || !teamIds.awayTeamId) {
+        console.error('Team IDs are required');
+        return;
+    }
+
+    if (!container) {
+        console.error('Container not found!');
+        return;
+    }
+ 
+    const loader = document.getElementById('loader');
+
+    loader.style.display = 'block';
+    container.innerHTML = ''; 
+
+    try {
+        // Fetch team names
+        const teamNames = await fetchTeamNames(teamIds);
+
+        // Check if teamNames object has required properties
+        if (!teamNames || !teamNames.home || !teamNames.away) {
+            console.error('Invalid team names response:', teamNames);
+            return;
+        }
+
+        // Fetch team performance data
+        const endpoints = [
+            `https://api.sofascore.com/api/v1/team/${teamIds.homeTeamId}/performance`, 
+            `https://api.sofascore.com/api/v1/team/${teamIds.awayTeamId}/performance`  
+        ];
+        const results = await Promise.all(endpoints.map(fetchAndCheck));
+
+        // Filter out current match from the events before processing stats
+        const homeData = results[0]; 
+
+        const filteredHomeEvents = homeData.events.filter(event => { 
+            return Number(event.id) !== Number(currentMatchId);  // Convert both to number
+            // or alternatively
+            // return event.id.toString() !== currentMatchId.toString(); // Convert both to string
+        }); 
+        const homeTeamStats = processTeamStats(filteredHomeEvents);
+        const homeLast6GamesStats = processLast6GamesStats(filteredHomeEvents, true);
+        const homeCorrectScores = calculateCorrectScores(filteredHomeEvents, true);
+        console.log(homeLast6GamesStats);
+
+        const awayData = results[1]; 
+        const filteredAwayEvents = awayData.events.filter(event => { 
+            return Number(event.id) !== Number(currentMatchId);  // Convert both to number
+            // or alternatively
+            // return event.id.toString() !== currentMatchId.toString(); // Convert both to string
+        }); 
+        const awayTeamStats = processTeamStats(filteredAwayEvents);
+        const awayLast6GamesStats = processLast6GamesStats(filteredAwayEvents, false);
+        const awayCorrectScores = calculateCorrectScores(filteredAwayEvents, false);
+        console.log(awayLast6GamesStats);
+
+        // Display stats for both teams
+        displayStats(homeTeamStats, homeLast6GamesStats, homeCorrectScores, 
+             awayTeamStats, awayLast6GamesStats, awayCorrectScores, 
+             teamNames.home, teamIds.homeTeamId, teamNames.away, teamIds.awayTeamId, container);
+
+    } catch (error) {
+        console.error('Fetch error:', error);
+        container.innerHTML = `<p>Error fetching data. Please try again later.</p>`;
+    } finally {
+        loader.style.display = 'none';
+    }
+}
+
+
+async function init(eventId) {
+            const odds = await fetchOdds(eventId);
+            if (odds) {
+                displayOdds(odds); 
+            }
+        }
+    
+
+
+// Function to load event details
+async function loadEventDetails(eventId, customIdValue) {
+    let customId = {
+        customId: customIdValue
+    }
+    const eventDetailsDiv = document.getElementById('event-details-div');
+    if (!eventDetailsDiv) {
+        console.error('Event details div not found!');
+        return;
+    }
+
+    eventDetailsDiv.innerHTML = ''; 
+
+    try {
+        teamIds = await fetchTeamIdsByEvent(eventId);
+        await fetchAndDisplayDetails(teamIds, eventDetailsDiv, eventId);
+        await fetchOdds(eventId); // Pass eventId to fetchOdds
+        //await init(eventId);
+        const headToHeadData = await fetchHeadToHead(customId, eventId);
+        displayHeadToHead(headToHeadData, eventDetailsDiv);
+
+    } catch (error) {
+        console.error('Error loading event details:', error);
+        eventDetailsDiv.innerHTML = `<p>Error loading event details. Please try again later.</p>`;
+    }
+}
+
+
         
     document.addEventListener('DOMContentLoaded', () => {
         const dateList = document.getElementById('date-list');
@@ -878,559 +1631,6 @@ const displayCategories = async (startDate, endDate, hours, status) => {
             });
 
 
-// Initialize team IDs
-let teamIds = {
-    homeTeamId: null,
-    awayTeamId: null
-};
-
-
-// Function to fetch team names
-async function fetchTeamNames(teamIds) {
-    const teamNames = {};
-    const nameFetchPromises = [
-        fetch(`https://api.sofascore.com/api/v1/team/${teamIds.homeTeamId}`)
-            .then(response => {
-                if (!response.ok) throw new Error(`Failed to fetch team name for ID ${teamIds.homeTeamId}`);
-                return response.json();
-            })
-            .then(data => {
-                teamNames.home = data.team.name;
-            }),
-        fetch(`https://api.sofascore.com/api/v1/team/${teamIds.awayTeamId}`)
-            .then(response => {
-                if (!response.ok) throw new Error(`Failed to fetch team name for ID ${teamIds.awayTeamId}`);
-                return response.json();
-            })
-            .then(data => {
-                teamNames.away = data.team.name;
-            })
-    ];
-
-    await Promise.all(nameFetchPromises);
-    return teamNames;
-}
-
-let customId = {
-    customId: null
-}
-
-// Function to fetch head-to-head data
-async function fetchHeadToHead(customId) {
-    const response = await fetch(`https://api.sofascore.com/api/v1/event/${customId}/h2h/events`);
-    if (!response.ok) throw new Error(`Failed to fetch head-to-head data for event ${customId}`);
-    const data = await response.json();
-
-    return data.events.slice(-2); // Get the last 2 head-to-head events
-}
-
-
-// Function to fetch and display team details
-async function fetchAndDisplayDetails(teamIds, customId, container) {
-    if (!teamIds || !teamIds.homeTeamId || !teamIds.awayTeamId) {
-        console.error('Team IDs are required');
-        return;
-    }
-
-    if (!container) {
-        console.error('Container not found!');
-        return;
-    }
-
-    const loader = document.getElementById('loader');
-    loader.style.display = 'block';
-    container.innerHTML = '';
-
-    try {
-        // Fetch team names
-        const teamNames = await fetchTeamNames(teamIds);
-
-        // Check if teamNames object has required properties
-        if (!teamNames || !teamNames.home || !teamNames.away) {
-            console.error('Invalid team names response:', teamNames);
-            return;
-        }
-
-        // Fetch team performance data for both home and away teams
-        const endpoints = [
-            `https://api.sofascore.com/api/v1/team/${teamIds.homeTeamId}/performance`,
-            `https://api.sofascore.com/api/v1/team/${teamIds.awayTeamId}/performance`
-        ];
-        const results = await Promise.all(endpoints.map(fetchAndCheck));
-
-        // Fetch head-to-head data once
-        const headToHeadData = await fetchHeadToHead(customId);
-
-        // Display stats for both teams
-        const homeData = results[0];
-        const homeTeamStats = processTeamStats(homeData.events);
-        const homeLast3GamesStats = processLast3GamesStats(homeData.events, true);
-        const homeCorrectScores = calculateCorrectScores(homeData.events, true);
-
-        const awayData = results[1];
-        const awayTeamStats = processTeamStats(awayData.events);
-        const awayLast3GamesStats = processLast3GamesStats(awayData.events, false);
-        const awayCorrectScores = calculateCorrectScores(awayData.events, false);
-
-        displayStats(homeTeamStats, homeLast3GamesStats, homeCorrectScores, 
-             awayTeamStats, awayLast3GamesStats, awayCorrectScores, 
-             teamNames.home, teamIds.homeTeamId, teamNames.away, teamIds.awayTeamId, container, headToHeadData);
-
-        // After displaying both team stats, display the H2H data only once
-        displayHeadToHead(headToHeadData, container);
-
-    } catch (error) {
-        console.error('Fetch error:', error);
-        container.innerHTML = `<p>Error fetching data. Please try again later.</p>`;
-    } finally {
-        loader.style.display = 'none';
-    }
-}
-
-// Function to display head-to-head data
-function displayHeadToHead(headToHeadData, container) {
-    if (!headToHeadData || headToHeadData.length === 0) {
-        container.innerHTML += `<p>No Head-to-Head data available.</p>`;
-        return;
-    }
-
-    const h2hDiv = document.createElement('div');
-    h2hDiv.classList.add('head-to-head');
-    h2hDiv.innerHTML = `
-        <h3>Head-to-Head</h3>
-        ${headToHeadData.map((event, index) => `
-            <p>Match ${index + 1}: ${event.homeTeam.name} ${event.homeScore.current} - ${event.awayScore.current} ${event.awayTeam.name}</p>
-        `).join('')}
-    `;
-    container.appendChild(h2hDiv);
-}
-
-
-// Function to fetch team IDs by event ID
-async function fetchTeamIdsByEvent(eventId) {
-    const response = await fetch(`https://api.sofascore.com/api/v1/event/${eventId}`);
-    if (!response.ok) throw new Error(`Failed to fetch team IDs for event ${eventId}`);
-    const data = await response.json(); 
-    
-    return {
-        homeTeamId: data.event.homeTeam.id,
-        awayTeamId: data.event.awayTeam.id
-    };
-}
-
-// Function to load event details
-async function loadEventDetails(eventId, customId) {
-    const eventDetailsDiv = document.getElementById('event-details-div');
-    if (!eventDetailsDiv) {
-        console.error('Event details div not found!');
-        return;
-    }
-
-    eventDetailsDiv.innerHTML = ''; 
-
-    try {
-        teamIds = await fetchTeamIdsByEvent(eventId);
-        await fetchAndDisplayDetails(teamIds, customId, eventDetailsDiv);
-        await fetchOdds(eventId); // Pass eventId to fetchOdds
-
-    } catch (error) {
-        console.error('Error loading event details:', error);
-        eventDetailsDiv.innerHTML = `<p>Error loading event details. Please try again later.</p>`;
-    }
-}
-
-// Function to fetch and check data
-async function fetchAndCheck(endpoint) {
-    const response = await fetch(endpoint);
-    if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
-        return response.json();
-}
-
-    function processTeamStats(events) {
-    let totalGoalsScored = 0, totalGoalsConceded = 0, wins = 0, draws = 0, losses = 0;
-    let over1_5 = 0, over2_5 = 0, over3_5 = 0, under2_5 = 0, btts = 0;
-    let drawsHalfTime = 0, cleanSheets = 0, scoredBothHalves = 0, bttsWin = 0, bttsOver2_5 = 0;
-    let totalFirstHalfGoals = 0, totalSecondHalfGoals = 0;
-    let totalFirstHalfConceded = 0, totalSecondHalfConceded = 0;
-    let winAndOver2_5 = 0; // New variable for "Win & Over 2.5"
-
-    const gamesPlayed = events.length;
-
-    events.forEach(event => {
-        const { homeScore, awayScore } = event;
-        const isHomeTeam = event.homeTeam.id === teamIds.home; 
-        const totalScore = homeScore.current + awayScore.current;
-
-        totalGoalsScored += isHomeTeam ? homeScore.current : awayScore.current;
-        totalGoalsConceded += isHomeTeam ? awayScore.current : homeScore.current;
-
-        // First and Second Half Goals
-        totalFirstHalfGoals += isHomeTeam ? (homeScore.period1 || 0) : (awayScore.period1 || 0);
-        totalFirstHalfConceded += isHomeTeam ? (awayScore.period1 || 0) : (homeScore.period1 || 0);
-        totalSecondHalfGoals += isHomeTeam ? (homeScore.period2 || 0) : (awayScore.period2 || 0);
-        totalSecondHalfConceded += isHomeTeam ? (awayScore.period2 || 0) : (homeScore.period2 || 0);
-
-        // Win/Draw/Loss Logic
-        const teamWon = (isHomeTeam && homeScore.current > awayScore.current) || 
-                        (!isHomeTeam && awayScore.current > homeScore.current);
-        if (teamWon) {
-            wins++;
-            if (totalScore > 2.5) winAndOver2_5++; // Track "Win & Over 2.5"
-        } else if (homeScore.current === awayScore.current) {
-            draws++;
-        } else {
-            losses++;
-        }
-
-        // Over/Under, BTTS, Half-time, Clean Sheets, etc.
-        if (totalScore > 1.5) over1_5++;
-        if (totalScore > 2.5) over2_5++;
-        if (totalScore > 3.5) over3_5++;
-        if (totalScore < 2.5) under2_5++; 
-        if (homeScore.period1 === awayScore.period1) drawsHalfTime++;
-        if ((isHomeTeam && awayScore.current === 0) || (!isHomeTeam && homeScore.current === 0)) cleanSheets++;
-        if ((isHomeTeam && homeScore.period1 > 0 && homeScore.period2 > 0) || 
-            (!isHomeTeam && awayScore.period1 > 0 && awayScore.period2 > 0)) scoredBothHalves++;
-        if (homeScore.current > 0 && awayScore.current > 0) { 
-            btts++; 
-            if (teamWon) {
-                bttsWin++; 
-            }
-            if (totalScore > 2.5) {
-                bttsOver2_5++; 
-            }
-        }
-    });
-
-    return {
-        gamesPlayed, totalGoalsScored, totalGoalsConceded, wins, draws, losses,
-        over1_5, over2_5, over3_5, under2_5, btts, drawsHalfTime, cleanSheets,
-        scoredBothHalves, bttsWin, bttsOver2_5, totalFirstHalfGoals, totalSecondHalfGoals,
-        totalFirstHalfConceded, totalSecondHalfConceded, winAndOver2_5 // Return the new stat
-    };
-}
-
-
-function processLast3GamesStats(events, isHomeTeam) {
-    const filteredEvents = events.filter(event => 
-        isHomeTeam ? event.homeScore.current != null && event.awayScore.current != null : event.awayScore.current != null && event.homeScore.current != null
-    );
-
-    const last3Games = filteredEvents.slice(-3).reverse();
-
-    let gamesScoredIn = 0, goalsScored = 0, over2_5 = 0, lastMatchTotalGoals = 0;
-    let firstHalfGoals = 0, secondHalfGoals = 0, lastMatchBTTS = false, lastMatchOver2_5 = false;
-
-    last3Games.forEach((event, i) => {
-        const { homeScore, awayScore } = event;
-
-        // Ensure home and away scores are available, default to 0 if undefined
-        const homeGoals = homeScore && homeScore.current != null ? homeScore.current : 0;
-        const awayGoals = awayScore && awayScore.current != null ? awayScore.current : 0;
-
-        const totalScore = homeGoals + awayGoals;
-
-        const teamGoals = isHomeTeam ? homeGoals : awayGoals;
-        if (teamGoals > 0) gamesScoredIn++;
-        goalsScored += teamGoals;
-
-        // First Half and Second Half Goals
-        firstHalfGoals += isHomeTeam ? (homeScore.period1 || 0) : (awayScore.period1 || 0);
-        secondHalfGoals += isHomeTeam ? (homeScore.period2 || 0) : (awayScore.period2 || 0);
-
-        if (totalScore > 2.5) over2_5++;
-
-        if (i === 0) { // Process the last match
-            console.log("Last match - Home Goals:", homeScore.current, "Away Goals:", awayScore.current);
-            console.log("Home Goals:", homeGoals, "Away Goals:", awayGoals);
-            console.log("Total Score:", totalScore);
-            lastMatchTotalGoals = totalScore;
-
-            // Check BTTS only if both home and away teams scored
-            console.log("BTTS Condition:", homeGoals > 0, awayGoals > 0);
-            lastMatchBTTS = homeGoals > 0 && awayGoals > 0;
-            console.log("Over 2.5 Condition:", totalScore > 2.5);
-            lastMatchOver2_5 = totalScore > 2.5;
-        }
-    });
-
-    return {
-        gamesScoredIn,
-        goalsScored,
-        over2_5,
-        lastMatchTotalGoals,
-        firstHalfGoals,
-        secondHalfGoals,
-        lastMatchBTTS,
-        lastMatchOver2_5
-    };
-}
-
-
-function displayStats(teamStats1, last3GamesStats1, correctScores1, 
-                     teamStats2, last3GamesStats2, correctScores2, 
-                     teamName1, teamId1, teamName2, teamId2, container, headToHeadData) {
-    // Process stats for both teams
-    const {
-        gamesPlayed: gamesPlayed1, totalGoalsScored: totalGoalsScored1, totalGoalsConceded: totalGoalsConceded1, 
-        wins: wins1, draws: draws1, losses: losses1, 
-        over1_5: over1_5_1, over2_5: over2_5_1, over3_5: over3_5_1, under2_5: under2_5_1, 
-        btts: btts_1, drawsHalfTime: drawsHalfTime_1, cleanSheets: cleanSheets_1, 
-        scoredBothHalves: scoredBothHalves_1, bttsWin: bttsWin_1, bttsOver2_5: bttsOver2_5_1,
-        totalFirstHalfGoals: totalFirstHalfGoals_1, totalSecondHalfGoals: totalSecondHalfGoals_1,
-        totalFirstHalfConceded: totalFirstHalfConceded_1, totalSecondHalfConceded: totalSecondHalfConceded_1,
-    } = teamStats1;
-
-    const {
-        gamesPlayed: gamesPlayed2, totalGoalsScored: totalGoalsScored2, totalGoalsConceded: totalGoalsConceded2, 
-        wins: wins2, draws: draws2, losses: losses2, 
-        over1_5: over1_5_2, over2_5: over2_5_2, over3_5: over3_5_2, under2_5: under2_5_2, 
-        btts: btts_2, drawsHalfTime: drawsHalfTime_2, cleanSheets: cleanSheets_2, 
-        scoredBothHalves: scoredBothHalves_2, bttsWin: bttsWin_2, bttsOver2_5: bttsOver2_5_2,
-        totalFirstHalfGoals: totalFirstHalfGoals_2, totalSecondHalfGoals: totalSecondHalfGoals_2,
-        totalFirstHalfConceded: totalFirstHalfConceded_2, totalSecondHalfConceded: totalSecondHalfConceded_2,
-    } = teamStats2;
-
-    const {
-        gamesScoredIn: gamesScoredIn1, goalsScored: goalsScored1, 
-        over2_5: last3GamesOver2_5_1, lastMatchTotalGoals: lastMatchTotalGoals1,
-        firstHalfGoals: firstHalfGoals1, secondHalfGoals: secondHalfGoals1, 
-        lastMatchBTTS: lastMatchBTTS1, lastMatchOver2_5: lastMatchOver2_51 
-    } = last3GamesStats1;
-
-    const {
-        gamesScoredIn: gamesScoredIn2, goalsScored: goalsScored2, 
-        over2_5: last3GamesOver2_5_2, lastMatchTotalGoals: lastMatchTotalGoals2,
-        firstHalfGoals: firstHalfGoals2, secondHalfGoals: secondHalfGoals2, 
-        lastMatchBTTS: lastMatchBTTS2, lastMatchOver2_5: lastMatchOver2_52 
-    } = last3GamesStats2;
-
-    const averageScored1 = totalGoalsScored1 / gamesPlayed1;
-    const averageConceded1 = totalGoalsConceded1 / gamesPlayed1;
-    const points1 = (wins1 * 3 + draws1);
-    const pointsPerGame1 = points1 / gamesPlayed1;
-
-    const averageScored2 = totalGoalsScored2 / gamesPlayed2;
-    const averageConceded2 = totalGoalsConceded2 / gamesPlayed2;
-    const points2 = (wins2 * 3 + draws2);
-    const pointsPerGame2 = points2 / gamesPlayed2;
-
-    const safeTeamName1 = teamName1.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-    const safeTeamName2 = teamName2.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
-
-    const teamStatsDiv = document.createElement('div');
-    teamStatsDiv.classList.add('team-stats-container');
-
-    // Team 1
-    const teamDiv = document.createElement('div');
-    teamDiv.classList.add('team-stats');
-    teamDiv.innerHTML = ` 
-            <div class="Data">
-                <div class="teams-data"> 
-                    <div class="teamInfo">
-                    <div class="team-logo">
-                        <img src='${baseURL}/team/${teamId1}/image/small' alt='${teamName1} width="20" height="20" loading="lazy" '>
-                    </div>
-                    <h3>${teamName1}</h3> 
-                    </div> 
-                    
-                    <div class="teamInfo">
-                        <div class="team-logo">
-                            <img src='${baseURL}/team/${teamId2}/image/small' alt='${teamName2} width="20" height="20" loading="lazy" '>
-                        </div>
-                        <h3>${teamName2}</h3> 
-                    </div>  
-                </div>
-            <div class="teams">
-                
-            </div>
-            <div class="teams">
-                
-            </div>
-            <div class="teams">
-                
-            </div>
-        </div>
-
-        <div class="team-stats-block">
-            <h3>Goals</h3>
-            <p>${over1_5_1}Over 1.5 Goals: ${over1_5_2}</p>
-            <p>${over2_5_1}Over 2.5 Goals: ${over2_5_2}</p>
-            <p>${over3_5_1}Over 3.5 Goals: ${over3_5_2}</p>
-            <p>${under2_5_1}Under 2.5 Goals: ${under2_5_2}</p>
-            <p>${cleanSheets_1}Clean Sheets: ${cleanSheets_2}</p>
-            <p>${bttsWin_1}Win & Over 2.5 Goals: ${bttsWin_2}</p>
-        </div>
-
-        <div class="team-stats-block">
-            <h3>BTTS (Both Teams to Score)</h3>
-            <p>${btts_1}BTTS: ${btts_2}</p>
-            <p>${bttsWin_1}BTTS & Win: ${bttsWin_2}</p>
-            <p>${bttsOver2_5_1}BTTS & Over 2.5 Goals: ${bttsOver2_5_2}</p>
-        </div>
-
-        <div class="team-stats-block">
-            <h3>Halves</h3>
-            <p>${drawsHalfTime_1}Draws at Half-Time: ${drawsHalfTime_2}</p>
-            <p>${scoredBothHalves_1}Scored in Both Halves: ${scoredBothHalves_2}</p>
-            <p>${(totalFirstHalfGoals_1 / gamesPlayed1).toFixed(2)}First Half Goals Scored: ${(totalFirstHalfGoals_2 / gamesPlayed2).toFixed(2)}</p>
-            <p>${(totalFirstHalfConceded_1 / gamesPlayed1).toFixed(2)}First Half Goals Conceded: ${(totalFirstHalfConceded_2 / gamesPlayed2).toFixed(2)}</p>
-            <p>${(totalSecondHalfGoals_1 / gamesPlayed1).toFixed(2)}Second Half Goals Scored: ${(totalSecondHalfGoals_2 / gamesPlayed2).toFixed(2)}</p>
-            <p>${(totalSecondHalfConceded_1 / gamesPlayed1).toFixed(2)}Second Half Goals Conceded: ${(totalSecondHalfConceded_2 / gamesPlayed2).toFixed(2)}</p>
-        </div>
-
-        <div class="team-stats-block">
-            <h3>Last 3 Home Games</h3>
-            <p>${gamesScoredIn1}Games Scored In: ${gamesScoredIn2}</p>
-            <p>${goalsScored1}Goals Scored: ${goalsScored2}</p>
-            <p>${firstHalfGoals1}First Half Goals: ${firstHalfGoals2}</p>
-            <p>${secondHalfGoals1}Second Half Goals: ${secondHalfGoals2}</p>
-            <p>${last3GamesOver2_5_1}Over 2.5 Goals in Last 3 Games: ${last3GamesOver2_5_2}</p> 
-        </div>
- 
-        <div class="team-stats-block">
-            <h3>Correct Scores</h3>
-            <ul id="${safeTeamName1}-correct-scores">
-                ${Object.keys(correctScores1).map(score => `<li>${score} - ${correctScores1[score]}</li>`).join('')}
-            </ul>
-            <ul id="${safeTeamName2}-correct-scores">
-                ${Object.keys(correctScores2).map(score => `<li>${score} - ${correctScores2[score]}</li>`).join('')}
-            </ul>
-        </div> 
-    `; 
- 
-    teamStatsDiv.appendChild(teamDiv); 
-
-    container.appendChild(teamStatsDiv);
-}
-
-
-
-
-function calculateCorrectScores(events, isHomeTeam) {
-    const scoreCounts = {};
-
-    events.forEach(event => {
-        const { homeScore, awayScore } = event;
-
-        // Ensure valid scores
-        if (!homeScore || !awayScore || homeScore.normaltime == null || awayScore.normaltime == null) {
-            return;
-        }
-
-        const homeGoals = homeScore.normaltime || 0;
-        const awayGoals = awayScore.normaltime || 0;
-
-        const scoreline = `${homeGoals}:${awayGoals}`;
-
-        if (!scoreCounts[scoreline]) {
-            scoreCounts[scoreline] = 0;
-        }
-
-        scoreCounts[scoreline]++;
-    });
-
-    return scoreCounts;
-}
-
-
-        const fractionalToDecimal = (fractional) => {
-            const [numerator, denominator] = fractional.split('/').map(Number);
-            return (numerator / denominator + 1).toFixed(2);
-        };
-
-        async function fetchOdds(eventId) {
-            try {
-                const response = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/changes`);
-                const data = await response.json();
-                return data.changedOdds;
-            } catch (error) {
-                console.error('Error fetching odds:', error);
-            }
-        }
-
-        function displayOdds(odds) {
-            const container = document.getElementById('odds-container');
-            container.innerHTML = '';
-
-            odds.forEach(entry => {
-                const timestamp = new Date(entry.timestamp * 1000).toLocaleString();
-                const oddsInfo = `
-                    <div>
-                        <strong>${timestamp}</strong>: 
-                        1: ${fractionalToDecimal(entry.choice1.fractionalValue)}, 
-                        X: ${fractionalToDecimal(entry.choice2.fractionalValue)}, 
-                        2: ${fractionalToDecimal(entry.choice3.fractionalValue)}
-                    </div>
-                `;
-                container.innerHTML += oddsInfo;
-            });
-        }
-
-        // Function to render chart
-function renderChart(odds) {
-    // Remove existing chart
-    const existingChart = document.querySelector("#oddsChart");
-    if (existingChart) {
-        existingChart.innerHTML = '';
-    }
-
-    const timestamps = '.';
-    const choice1 = odds.map(entry => fractionalToDecimal(entry.choice1.fractionalValue));
-    const choice2 = odds.map(entry => fractionalToDecimal(entry.choice2.fractionalValue));
-    const choice3 = odds.map(entry => fractionalToDecimal(entry.choice3.fractionalValue));
-
-    const options = {
-        chart: {
-            type: 'line',
-            toolbar: { show: false }, // Hide the toolbar
-        },
-        series: [
-            { name: 'Home', data: choice1 },
-            { name: 'Draw', data: choice2 },
-            { name: 'Away', data: choice3 }
-        ],
-        xaxis: {
-            categories: timestamps,
-            labels: { show: true }, // Show x-axis labels
-        },
-        yaxis: {
-            labels: {
-                show: true, // Show y-axis labels
-                style: {
-                    color: '#000' // Change color of y-axis labels if needed
-                }
-            }
-        },
-        grid: {
-            borderColor: '#1c1c1c', // Change this to your desired grid line color 
-        },
-        legend: {
-            show: true, // Show the legend
-            position: 'top',
-        },
-        stroke: {
-            width: 2 // Set the thickness of the lines (default is 2)
-        },
-        dataLabels: { enabled: false }, // Remove data labels
-        tooltip: {
-            enabled: false, // Disable tooltips
-        },
-    };
-
-
-    const chart = new ApexCharts(document.querySelector("#oddsChart"), options);
-    chart.render();
-}
-
-        async function init(eventId) {
-            const odds = await fetchOdds(eventId);
-            if (odds) {
-                displayOdds(odds);
-                renderChart(odds);
-            }
-        }
-     
 
     </script>
 </body>
