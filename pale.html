@@ -1088,7 +1088,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                 const awayTeam = event.awayTeam.shortName;
                                 const homeScore = event.homeScore.current;
                                 const awayScore = event.awayScore.current;
-                                const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })
+                                const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { month: '2-digit', year: '2-digit' })
                                     .replace('/', '.').replace('/', '.');
 
                                 return `
