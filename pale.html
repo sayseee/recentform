@@ -944,14 +944,6 @@ const calculateGameResult = (game, teamId) => {
 const generateGamesHtml = (games, teamId) => {
     return `
         <table border="1" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th width="180">Teams</th>
-                    <th>Score</th>
-                    <th>Odds</th> 
-                </tr>
-            </thead>
             <tbody>
                 ${games.map((game) => {
                     const result = calculateGameResult(game, teamId);
