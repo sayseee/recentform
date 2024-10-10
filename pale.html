@@ -774,7 +774,7 @@ const createCategorySection = (tournaments, categoryName, odds) => {
         tournamentHeader.classList.add('flex', '_F_ac');
         const tournamentImage = `${baseURL}/unique-tournament/${tournament.id}/image`;
         tournamentHeader.innerHTML = `
-            <img class="tourn" src="${tournamentImage}" alt="${tournamentName}" width="16" height="16" loading="lazy" />
+            <img class="tourn" src="${tournamentImage}" alt="${tournamentName}" width="20" height="20" loading="lazy" />
             <span class="catName">${categoryName}</span> - ${tournamentName}
         `;
         tournamentSection.appendChild(tournamentHeader);
@@ -1347,7 +1347,7 @@ const getLastFiveGamesPoints = (events, teamId) => {
                                             <span>${new Date(eventData.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace(',', ' ').replace('/', ' ')}</span>
                                         </div>
                                         <div class="team duelParticipant__home">
-                                            <img src="${baseURL}/team/${eventData.homeTeam.id}/image" width="16" height="16" alt="${eventData.homeTeam.shortName}" loading="lazy" class="team-logo">
+                                            <img src="${baseURL}/team/${eventData.homeTeam.id}/image" width="20" height="20" alt="${eventData.homeTeam.shortName}" loading="lazy" class="team-logo">
                                             <div class="team-name">${eventData.homeTeam.shortName}</div>
                                         </div>
 
@@ -1366,7 +1366,7 @@ const getLastFiveGamesPoints = (events, teamId) => {
                                             </div> 
                                         </div>
                                         <div class="team duelParticipant__away">
-                                            <img src="${baseURL}/team/${eventData.awayTeam.id}/image" width="16" height="16" alt="${eventData.awayTeam.shortName}" loading="lazy" class="team-logo">
+                                            <img src="${baseURL}/team/${eventData.awayTeam.id}/image" width="20" height="20" alt="${eventData.awayTeam.shortName}" loading="lazy" class="team-logo">
                                             <div class="team-name">${eventData.awayTeam.shortName}</div>
                                         </div>
                                     </div>                    
