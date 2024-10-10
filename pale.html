@@ -19,9 +19,9 @@
     --color-medium-gray-text: #666666; /* Medium gray text */
     --color-light-gray-text: #B2B2B2; /* Light gray text */
     --color-white: #FFFFFF;         /* White for text and backgrounds */
-    --win-color: #00a83f; /* Wins */
-    --draw-color: #f3a000;/* Draws */
-    --loss-color: #dc0000;/* Losses */ 
+    --win-color: #a5cd99; /* Wins */
+    --draw-color: #e0ae55;/* Draws */
+    --loss-color: #f2afa9;/* Losses */ 
     --color-support-1: #f5f6f8;
 }
 body {
@@ -40,12 +40,8 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-.W, .D, .L {  
-    color: #fff;
-    align-items: center; 
-    display: flex;
-    height: 10px;
-    width: 14px;
+.W, .D, .L {   
+    align-items: center;  
     justify-content: center;
     overflow: hidden;
     position: relative; 
@@ -945,32 +941,36 @@ const calculateGameResult = (game, teamId) => {
         return 'L'; // Loss
     }
 };
-const generateGamesHtml = (games, teamId) => { 
+const generateGamesHtml = (games, teamId) => {
     return `
-        <table border="1" style="width: 100%; border-collapse: collapse;"> 
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th width="180">Teams</th>
+                    <th>Score</th>
+                    <th>Odds</th> 
+                </tr>
+            </thead>
             <tbody>
-                ${games.map((game) => { 
-                                const homeTeam = game.homeTeam.shortName;
-                                const awayTeam = game.awayTeam.shortName;
-                                const homeScore = game.homeScore.current;
-                                const awayScore = game.awayScore.current;
+                ${games.map((game) => {
                     const result = calculateGameResult(game, teamId);
-                    const resultText = game.winnerCode === 3 ? '<span class="D">D</span>' : 
+                    const resultText = game.winnerCode === 3 ? 'D' : 
                         (game.winnerCode === 1 && game.homeTeam.id === teamId) || 
-                        (game.winnerCode === 2 && game.awayTeam.id === teamId) ? '<span class="W">W</span>' : '<span class="L">L</span>';
+                        (game.winnerCode === 2 && game.awayTeam.id === teamId) ? 'W' : 'L';
 
                     return `
                         <tr>
                             <td class="tableDate">${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit'}).replace('/', '.').replace('/', '.')}</td>
-                            <td style="min-width:120px;">${homeTeam}<br />${awayTeam}</td>
-                            <td>${homeScore} - ${awayScore}</td><td>
-                                <div class="tableOdds" style="min-width:30px;">
+                            <td style="min-width:120px;">${game.homeTeam.shortName}<br />${game.awayTeam.shortName}</td>
+                            <td class="${resultText}">${game.homeScore.current} - ${game.awayScore.current}</td>
+                            <td>
+                                <div class="tableOdds">
                                     <span class="${game.homeOddsClass}">${fractionalToDecimal(game.homeOdds)}</span>
                                     <span class="${game.drawOddsClass}">${fractionalToDecimal(game.drawOdds)}</span>
                                     <span class="${game.awayOddsClass}">${fractionalToDecimal(game.awayOdds)}</span>
                                 </div>
-                            </td>
-                            <td>${resultText}</td>
+                            </td> 
                         </tr>
                     `;
                 }).join('')}
@@ -978,6 +978,7 @@ const generateGamesHtml = (games, teamId) => {
         </table>
     `;
 };
+
 
  
 
