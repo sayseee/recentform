@@ -963,7 +963,7 @@ const generateGamesHtml = (games, teamId) => {
                             <td class="tableDate">${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit'}).replace('/', '.').replace('/', '.')}</td>
                             <td style="min-width:120px;">${homeTeam}<br />${awayTeam}</td>
                             <td>${homeScore} - ${awayScore}</td><td>
-                                <div class="tableOdds">
+                                <div class="tableOdds" style="min-width:30px;">
                                     <span class="${game.homeOddsClass}">${fractionalToDecimal(game.homeOdds)}</span>
                                     <span class="${game.drawOddsClass}">${fractionalToDecimal(game.drawOdds)}</span>
                                     <span class="${game.awayOddsClass}">${fractionalToDecimal(game.awayOdds)}</span>
@@ -1100,7 +1100,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                         <td style="min-width:120px;">${homeTeam}<br />${awayTeam}</td>
                                         <td>${homeScore} - ${awayScore}</td>
                                         <td>
-                                            <div class="tableOdds">
+                                            <div class="tableOdds" style="min-width:30px;">
                                                 <span class="home-odds">${fractionalToDecimal(event.homeOdds)}</span>
                                                 <span class="draw-odds">${fractionalToDecimal(event.drawOdds)}</span>
                                                 <span class="away-odds">${fractionalToDecimal(event.awayOdds)}</span>
