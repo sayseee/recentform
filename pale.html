@@ -957,7 +957,7 @@ const generateGamesHtml = (games, teamId) => {
                     return `
                         <tr>
                             <td class="tableDate">${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit'}).replace('/', '.').replace('/', '.')}</td>
-                            <td>${game.homeTeam.shortName} - ${game.awayTeam.shortName}</td>
+                            <td>${game.homeTeam.shortName} <br /> ${game.awayTeam.shortName}</td>
                             <td>${game.homeScore.current} - ${game.awayScore.current}</td>
                             <td>
                                 <div class="tableOdds">
@@ -1094,7 +1094,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                 return `
                                     <tr>
                                         <td class="tableDate">${eventDate}</td>
-                                        <td><strong>${homeTeam}</strong> - <strong>${awayTeam}</strong></td>
+                                        <td>${homeTeam}<br />${awayTeam}</td>
                                         <td>${homeScore} - ${awayScore}</td>
                                         <td>
                                             <div class="tableOdds">
