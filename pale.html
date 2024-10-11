@@ -1059,7 +1059,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
         if (data && data.events) {
             const currentDate = new Date();
             const threeYearsAgoDate = new Date();
-            threeYearsAgoDate.setFullYear(currentDate.getFullYear() - 2);
+            threeYearsAgoDate.setFullYear(currentDate.getFullYear() - 3);
 
             // Filter events to include only those from the last 2 years and exclude the current match
             const filteredEvents = data.events

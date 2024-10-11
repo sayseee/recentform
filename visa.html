@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scheduled Events</title>
+    <title>Scheduled Events</title>    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.json">
+           
     <style>
          :root {         
             --win-color: #00a83f; /* Wins */
@@ -12,14 +16,26 @@
         }
         
               body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
+            font-family: "Arimo", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-size: 12px; 
+            line-height: 1.5;  
+            overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
             margin: 0;
             padding: 0;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow-y: hidden;
+        }
+        hr {
+            border:0;
+            border-top: 1px solid #f0f1f3;
+            height: 0;
+            margin:0;
         }
         .events-column::-webkit-scrollbar, .right-column::-webkit-scrollbar {
             width: 2px; /* Set the width of the scrollbar */
@@ -38,38 +54,66 @@
             display: flex;
             height: 100%; /* Ensure the container takes full height */ 
         }
-        .events-column, .right-column { 
-            margin-right: 20px; 
+        .event-info {
+            background-color: #2a2c2b; 
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+        }
+        .event-date { 
+            display: flex;
+            width: 25%;
+            margin-left: auto;
+            align-items: center;
+            gap: 30px;
+        }
+        .filter-bar { 
+            display: flex; 
+            align-items: center;
+            gap: 30px;
+        }
+        .events-column, .right-column {  
             box-sizing: border-box;
             height: 95vh; /* Ensure columns take full available height */
-            overflow-y: auto; /* Enable vertical scrolling */
-            padding: 20px;
+            overflow-y: auto; /* Enable vertical scrolling */ 
         } 
         .events-column {
-            width: 15%;
+            width: 18%;
+            background-color: #2a2c2b;
         }
         .right-column {
             margin-right: 0;
-            width: 85%;
+            width: 82%;
         }
-        .tournament {
-            margin-bottom: 10px;
+        .tournament { 
             cursor: pointer;
+            padding: 10px 20px; 
+            border-bottom: 1px solid #2a2c2b;
+            color: #b9bbba;
         }
         .country {
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
+            padding: 10px 20px;
+            border-bottom: 1px solid #363937;
+            color: #dcdcdc;
+        }
+        .country.active {
+            background-color: #3b3d3c;
         }
         .event {
             padding-left: 20px;
         }
         .accordion-content {
             display: none;
-            overflow: hidden;
-            padding-left: 20px;
+            overflow: hidden; 
         }
         .accordion-content.active {
             display: block;
+            background-color: #323433;
+        }
+        .events-table th {
+            font-weight: 600;
         }
         .events-table th:first-child, .events-table td:first-child {
             text-align: left;
@@ -82,14 +126,16 @@
         }
         .W, .D, .L {  
             color: #fff;
-            align-items: center; 
+            align-items: center;
             display: inline-flex;
-            height: 12px;
-            width: 16px;
+            height: 14px;
+            width: 17px;
             justify-content: center;
             overflow: hidden;
-            position: relative; 
-            padding:2px 0;
+            position: relative;
+            padding: 2px 0;
+            font-size: 11px;
+            border-radius: 2px;
         } 
         .W, .win {
             background-color: var(--win-color);
@@ -99,6 +145,33 @@
         }
         .L, .loss {
             background-color: var(--loss-color);
+        } 
+        .calendar__navigation {
+            border: 0;
+            color: #ededed;
+            font-weight: 600; 
+            background-color: transparent;
+            font-size: 20px;
+        }
+        #calendarMenu {
+            border: 0;
+            color: #ededed;
+            font-weight: 500; 
+            background-color: transparent;
+        }
+        select {
+            border: 0;
+            color: #ededed;
+            font-weight: 500;
+            font-size: 14px;
+            background-color: transparent;
+        }
+        #filter-btn {
+            background-color: #0877ac;
+            font-weight: 500;
+            color: #ededed;
+            border: 0; 
+            padding:5px 10px; 
         }
     </style>
 </head>
@@ -118,16 +191,14 @@
                     <button class="calendar__navigation calendar__navigation--tomorrow" title="Next day">&#8250;</button>
                 </div>
             </div>
-            <div class="filter-bar">
-                <div>
+            <div class="filter-bar"> 
                     <select id="time-range">
                         <option value="">Select Time</option>
                         <option value="3">3 Hours</option>
                         <option value="6">6 Hours</option>
                         <option value="12">12 Hours</option>
                     </select>
-                    <button id="filter-btn">Filter</button>
-                </div> 
+                    <button id="filter-btn">Filter</button> 
             </div>
         </div>
     </div>
@@ -159,9 +230,16 @@
     
         // Toggle visibility for accordion
         const toggleAccordion = (element) => {
+            // Add/remove 'active' class to the clicked element (parent)
+            element.classList.toggle('active');
+            
+            // Add/remove 'active' class to the next sibling element
             const content = element.nextElementSibling;
-            content.classList.toggle('active');
+            if (content) {
+                content.classList.toggle('active');
+            }
         };
+
     
             // Fetch events by selected date
             const fetchEventsByDate = async (date, hours) => {
@@ -365,145 +443,145 @@
             await fetchAndDisplayTeamStats(event.tournament.id, event.season.id, event.awayTeam.id, event.id, 'away');
   });
 };
-        const fetchAndDisplayTeamStats = async (tournamentId, seasonId, teamId, currentMatchId, teamType) => {
-            try {
-                    const response = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/events`);
-                    const data = await response.json();
-                    const events = data.events;
+const fetchAndDisplayTeamStats = async (tournamentId, seasonId, teamId, currentMatchId) => {
+    try {
+        const response = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/events`);
+        const data = await response.json();
+        const events = data.events;
 
-                    // Function to get last N games by team ID and game type
-                function getLastNGames(events, teamId, gameType, n, currentMatchId) {
-                const filteredGames = events.filter((event) => 
-                    ((gameType === 'home' && event.homeTeam.id === teamId) || 
-                    (gameType === 'away' && event.awayTeam.id === teamId)) && 
-                    event.status.type === 'finished' && 
-                    event.id !== currentMatchId
-                );
+        // Function to get last N overall games by team ID
+        function getLastNGames(events, teamId, n, currentMatchId) {
+            const filteredGames = events.filter((event) =>
+                (event.homeTeam.id === teamId || event.awayTeam.id === teamId) &&
+                event.status.type === 'finished' &&
+                event.id !== currentMatchId // Exclude the current match
+            );
 
-                return filteredGames.slice(-n);
+            return filteredGames.slice(-n); // Return the last N games
+        }
+
+        /**
+         * Calculates team statistics from an array of games.
+         *
+         * @param {Object[]} games - Array of game objects.
+         * @param {number} teamId - ID of the team.
+         * @returns {Object} Team statistics.
+         */
+        function calculateStats(games, teamId) {
+            if (!games || games.length === 0) {
+                return {
+                    goalsScored: 0,
+                    goalsConceded: 0,
+                    goalsScoredFirstHalf: 0,
+                    goalsConcededFirstHalf: 0,
+                    goalsScoredSecondHalf: 0,
+                    goalsConcededSecondHalf: 0,
+                    cleanSheets: 0,
+                    failedToScore: 0,
+                    btts: 0,
+                    overs1_5: 0,
+                    overs2_5: 0,
+                    overs3_5: 0,
+                    bttsAndOver2_5: 0,
+                    cleanSheetsPercentage: 0,
+                    failedToScorePercentage: 0,
+                    bttsPercentage: 0,
+                    overs1_5Percentage: 0,
+                    overs2_5Percentage: 0,
+                    overs3_5Percentage: 0,
+                    bttsAndOver2_5Percentage: 0,
+                };
+            }
+
+            let goalsScored = 0,
+                goalsConceded = 0,
+                goalsScoredFirstHalf = 0,
+                goalsConcededFirstHalf = 0,
+                goalsScoredSecondHalf = 0,
+                goalsConcededSecondHalf = 0,
+                cleanSheets = 0,
+                failedToScore = 0,
+                overs1_5 = 0,
+                overs2_5 = 0,
+                overs3_5 = 0,
+                btts = 0,
+                bttsAndOver2_5 = 0;
+
+            games.forEach((game) => {
+                const isHomeGame = game.homeTeam.id === teamId;
+                const { current: homeScore, period1: homeFirstHalf } = game.homeScore;
+                const { current: awayScore, period1: awayFirstHalf } = game.awayScore;
+                const homeSecondHalf = homeScore - homeFirstHalf;
+                const awaySecondHalf = awayScore - awayFirstHalf;
+
+                // Goals scored/conceded
+                if (isHomeGame) {
+                    goalsScored += homeScore;
+                    goalsConceded += awayScore;
+                } else {
+                    goalsScored += awayScore;
+                    goalsConceded += homeScore;
                 }
 
-/**
- * Calculates team statistics from an array of games.
- *
- * @param {Object[]} games - Array of game objects.
- * @param {number} teamId - ID of the team.
- * @returns {Object} Team statistics.
- */
- function calculateStats(games, teamId) {
-  if (!games || games.length === 0) {
-    return {
-      goalsScored: 0,
-      goalsConceded: 0,
-      goalsScoredFirstHalf: 0,
-      goalsConcededFirstHalf: 0,
-      goalsScoredSecondHalf: 0,
-      goalsConcededSecondHalf: 0,
-      cleanSheets: 0,
-      failedToScore: 0,
-      btts: 0,
-      overs1_5: 0,
-      overs2_5: 0,
-      overs3_5: 0,
-      bttsAndOver2_5: 0,
-      cleanSheetsPercentage: 0,
-      failedToScorePercentage: 0,
-      bttsPercentage: 0,
-      overs1_5Percentage: 0,
-      overs2_5Percentage: 0,
-      overs3_5Percentage: 0,
-      bttsAndOver2_5Percentage: 0,
-    };
-  }
+                // Goals scored/conceded per half
+                if (isHomeGame) {
+                    goalsScoredFirstHalf += homeFirstHalf;
+                    goalsConcededFirstHalf += awayFirstHalf;
+                    goalsScoredSecondHalf += homeSecondHalf;
+                    goalsConcededSecondHalf += awaySecondHalf;
+                } else {
+                    goalsScoredFirstHalf += awayFirstHalf;
+                    goalsConcededFirstHalf += homeFirstHalf;
+                    goalsScoredSecondHalf += awaySecondHalf;
+                    goalsConcededSecondHalf += homeSecondHalf;
+                }
 
-  let goalsScored = 0,
-    goalsConceded = 0,
-    goalsScoredFirstHalf = 0,
-    goalsConcededFirstHalf = 0,
-    goalsScoredSecondHalf = 0,
-    goalsConcededSecondHalf = 0,
-    cleanSheets = 0,
-    failedToScore = 0,
-    overs1_5 = 0,
-    overs2_5 = 0,
-    overs3_5 = 0,
-    btts = 0,
-    bttsAndOver2_5 = 0;
+                // Clean sheets and failed to score
+                if (isHomeGame) {
+                    if (awayScore === 0) cleanSheets++;
+                    if (homeScore === 0) failedToScore++;
+                } else {
+                    if (homeScore === 0) cleanSheets++;
+                    if (awayScore === 0) failedToScore++;
+                }
 
-  games.forEach((game) => {
-    const isHomeGame = game.homeTeam.id === teamId;
-    const { current: homeScore, period1: homeFirstHalf } = game.homeScore;
-    const { current: awayScore, period1: awayFirstHalf } = game.awayScore;
-    const homeSecondHalf = homeScore - homeFirstHalf;
-    const awaySecondHalf = awayScore - awayFirstHalf;
+                // Over 1.5, 2.5, 3.5 goals and BTTS & Over 2.5
+                const totalGoals = homeScore + awayScore;
+                if (totalGoals > 1.5) overs1_5++;
+                if (totalGoals > 2.5) overs2_5++;
+                if (totalGoals > 3.5) overs3_5++;
+                if (homeScore > 0 && awayScore > 0 && totalGoals > 2.5) bttsAndOver2_5++;
+                if (homeScore > 0 && awayScore > 0) btts++;
+            });
 
-    // Goals scored/conceded
-    if (isHomeGame) {
-      goalsScored += homeScore;
-      goalsConceded += awayScore;
-    } else {
-      goalsScored += awayScore;
-      goalsConceded += homeScore;
-    }
+            const totalGames = games.length;
 
-    // Goals scored/conceded per half
-    if (isHomeGame) {
-      goalsScoredFirstHalf += homeFirstHalf;
-      goalsConcededFirstHalf += awayFirstHalf;
-      goalsScoredSecondHalf += homeSecondHalf;
-      goalsConcededSecondHalf += awaySecondHalf;
-    } else {
-      goalsScoredFirstHalf += awayFirstHalf;
-      goalsConcededFirstHalf += homeFirstHalf;
-      goalsScoredSecondHalf += awaySecondHalf;
-      goalsConcededSecondHalf += homeSecondHalf;
-    }
+            return {
+                goalsScored,
+                goalsConceded,
+                goalsScoredFirstHalf,
+                goalsConcededFirstHalf,
+                goalsScoredSecondHalf,
+                goalsConcededSecondHalf,
+                cleanSheets,
+                failedToScore,
+                btts,
+                overs1_5,
+                overs2_5,
+                overs3_5,
+                bttsAndOver2_5,
+                cleanSheetsPercentage: (cleanSheets / totalGames) * 100,
+                failedToScorePercentage: (failedToScore / totalGames) * 100,
+                bttsPercentage: (btts / totalGames) * 100,
+                overs1_5Percentage: (overs1_5 / totalGames) * 100,
+                overs2_5Percentage: (overs2_5 / totalGames) * 100,
+                overs3_5Percentage: (overs3_5 / totalGames) * 100,
+                bttsAndOver2_5Percentage: (bttsAndOver2_5 / totalGames) * 100,
+            };
+        }
 
-    // Clean sheets and failed to score
-    if (isHomeGame) {
-      if (awayScore === 0) cleanSheets++;
-      if (homeScore === 0) failedToScore++;
-    } else {
-      if (homeScore === 0) cleanSheets++;
-      if (awayScore === 0) failedToScore++;
-    }
-
-    // Over 1.5, 2.5, 3.5 goals and BTTS & Over 2.5
-    const totalGoals = homeScore + awayScore;
-    if (totalGoals > 1.5) overs1_5++;
-    if (totalGoals > 2.5) overs2_5++;
-    if (totalGoals > 3.5) overs3_5++;
-    if (homeScore > 0 && awayScore > 0 && totalGoals > 2.5) bttsAndOver2_5++;
-    if (homeScore > 0 && awayScore > 0) btts++;
-  });
-
-  const totalGames = games.length;
-
-  return {
-    goalsScored,
-    goalsConceded,
-    goalsScoredFirstHalf,
-    goalsConcededFirstHalf,
-    goalsScoredSecondHalf,
-    goalsConcededSecondHalf,
-    cleanSheets,
-    failedToScore,
-    btts,
-    overs1_5,
-    overs2_5,
-    overs3_5,
-    bttsAndOver2_5,
-    cleanSheetsPercentage: (cleanSheets / totalGames) * 100,
-    failedToScorePercentage: (failedToScore / totalGames) * 100,
-    bttsPercentage: (btts / totalGames) * 100,
-    overs1_5Percentage: (overs1_5 / totalGames) * 100,
-    overs2_5Percentage: (overs2_5 / totalGames) * 100,
-    overs3_5Percentage: (overs3_5 / totalGames) * 100,
-    bttsAndOver2_5Percentage: (bttsAndOver2_5 / totalGames) * 100,
-  };
-}
-
-
+        // Get last 5 overall games (including both home and away)
+        const games = getLastNGames(events, teamId, 5, currentMatchId);
 // Function to get match result (W/D/L)
 function getMatchResult(game, teamId) {
   const isHomeGame = game.homeTeam.id === teamId;
@@ -520,30 +598,25 @@ function getMatchResult(game, teamId) {
     else return '<span class="D">D</span>';
   }
 }
-    // Get last 6 games (to account for excluding current match)
-let games;
-if (teamType === 'home') {
-  games = getLastNGames(events, teamId, 'home', 5, currentMatchId);
-} else {
-  games = getLastNGames(events, teamId, 'away', 5, currentMatchId);
-}
-    
         // Log last 5 games
-        console.log(`Team ${teamId} Last 5 ${teamType} Games:`);
+        console.log(`Team ${teamId} Last 5 Games:`);
         games.forEach((game, index) => {
-        console.log(`Game ${index + 1}: ${game.homeTeam.name} vs ${game.awayTeam.name} - ${game.homeScore.current} : ${game.awayScore.current}`);
+            console.log(`Game ${index + 1}: ${game.homeTeam.name} vs ${game.awayTeam.name} - ${game.homeScore.current} : ${game.awayScore.current}`);
         });
-    // Calculate stats
-    const teamStats = calculateStats(games);
 
-    // Generate match result string
-const matchResults = games.map((game) => getMatchResult(game, teamId)).join('');
-// Update stats table
-return updateTeamStatsTable(teamStats, teamId, matchResults);
-  } catch (error) {
-    console.error(`Error fetching team stats: ${error}`);
-  }
+        // Calculate stats
+        const teamStats = calculateStats(games);
+
+        // Generate match result string
+        const matchResults = games.map((game) => getMatchResult(game, teamId)).join('');
+
+        // Update stats table (Assuming there's a function to update the UI)
+        return updateTeamStatsTable(teamStats, teamId, matchResults);
+    } catch (error) {
+        console.error(`Error fetching team stats: ${error}`);
+    }
 };
+
 // Usage
 /**
  * Updates the stats table for a team.
@@ -564,13 +637,13 @@ return updateTeamStatsTable(teamStats, teamId, matchResults);
   cells[2].innerText = `${stats.goalsScored} - ${stats.goalsConceded}`; // G
   cells[3].innerText = `${stats.goalsScoredFirstHalf} - ${stats.goalsConcededFirstHalf}`; // 1H G
   cells[4].innerText = `${stats.goalsScoredSecondHalf} - ${stats.goalsConcededSecondHalf}`; // 2H G
-  cells[5].innerText = `${stats.cleanSheets} (${stats.cleanSheetsPercentage.toFixed(2)}%)`; // CS
-  cells[6].innerText = `${stats.failedToScore} (${stats.failedToScorePercentage.toFixed(2)}%)`; // FTS
-  cells[7].innerText = `${stats.btts} (${stats.bttsPercentage.toFixed(2)}%)`; // BTS
-  cells[8].innerText = `${stats.overs1_5} (${stats.overs1_5Percentage.toFixed(2)}%)`; // O 1.5
-  cells[9].innerText = `${stats.overs2_5} (${stats.overs2_5Percentage.toFixed(2)}%)`; // O 2.5
-  cells[10].innerText = `${stats.overs3_5} (${stats.overs3_5Percentage.toFixed(2)}%)`; // O 3.5
-  cells[11].innerText = `${stats.bttsAndOver2_5} (${stats.bttsAndOver2_5Percentage.toFixed(2)}%)`; // BTS & O 2.5
+  cells[5].innerText = `${stats.cleanSheets} / ${stats.cleanSheetsPercentage.toFixed(0)}`; // CS
+  cells[6].innerText = `${stats.failedToScore} / ${stats.failedToScorePercentage.toFixed(0)}`; // FTS
+  cells[7].innerText = `${stats.btts} / ${stats.bttsPercentage.toFixed(0)}`; // BTS
+  cells[8].innerText = `${stats.overs1_5} / ${stats.overs1_5Percentage.toFixed(0)}`; // O 1.5
+  cells[9].innerText = `${stats.overs2_5} / ${stats.overs2_5Percentage.toFixed(0)}`; // O 2.5
+  cells[10].innerText = `${stats.overs3_5} / ${stats.overs3_5Percentage.toFixed(0)}`; // O 3.5
+  cells[11].innerText = `${stats.bttsAndOver2_5} / ${stats.bttsAndOver2_5Percentage.toFixed(0)}`; // BTS & O 2.5
 };
 </script>
 

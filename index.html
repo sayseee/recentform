@@ -1810,7 +1810,9 @@ table th {
                             } catch (error) {
                                 console.error('Error fetching odds:', error);
                             }
-                        } function renderChart(odds) {
+                        } 
+                        
+                        function renderChart(odds) {
     const ctx = document.getElementById('oddsChart').getContext('2d');
     const timestamps = odds.map(entry => new Date(entry.timestamp * 1000));  // Convert Unix timestamp to Date
     const choice1 = odds.map(entry => fractionalToDecimal(entry.choice1.fractionalValue));
@@ -1921,7 +1923,7 @@ table th {
                                 // Fetch and render odds for the current match
                                 const odds = await fetchOdds(currentMatchId);
                                 if (odds) {
-                                    renderChart(odds);
+                                    //renderChart(odds);
                                 }
 
                             // Fetch standings and events
