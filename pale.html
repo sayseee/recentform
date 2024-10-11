@@ -446,8 +446,9 @@ main {
 }
 .tableOdds {
     display: flex;
-    justify-content: space-between;
-    gap: 10px; 
+    flex-direction: column;
+    text-align: right;
+    min-width: 35px;
 }
 .tableOdds span {
     flex: 1; 
@@ -900,6 +901,11 @@ const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayT
                     <span>${awayTeamStats.over25}</span>
                 </div>  
             </div> 
+            <div class="match-odds">
+                <span class="odds">${homeOdds}</span>
+                <span class="odds">${drawOdds}</span>
+                <span class="odds">${awayOdds}</span>
+            </div> 
             <div class="team-events">
                 <div class="home-team-forms">
                 <h4>Last 5 Games - ${event.homeTeam.shortName}</h4>
@@ -912,11 +918,6 @@ const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayT
             </div>
                 <h4 style="text-align:center;">Head to Head</h4>
             <div class="h2h-event" id="${uniqueEventId}"> 
-            </div>
-            <div class="match-odds">
-                <span class="odds">${homeOdds}</span>
-                <span class="odds">${drawOdds}</span>
-                <span class="odds">${awayOdds}</span>
             </div>
         `;
 
@@ -954,7 +955,7 @@ const generateGamesHtml = (games, teamId) => {
                     return `
                         <tr>
                             <td class="tableDate">${new Date(game.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit'}).replace('/', '.').replace('/', '.')}</td>
-                            <td style="min-width:120px;">${game.homeTeam.shortName}<br />${game.awayTeam.shortName}</td>
+                            <td style="min-width:130px;">${game.homeTeam.shortName}<br />${game.awayTeam.shortName}</td>
                             <td class="${resultText}">${game.homeScore.current} - ${game.awayScore.current}</td>
                             <td>
                                 <div class="tableOdds">
@@ -1091,7 +1092,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                 return `
                                     <tr>
                                         <td class="tableDate">${eventDate}</td>
-                                        <td style="min-width:120px;">${homeTeam}<br />${awayTeam}</td>
+                                        <td style="min-width:130px;">${homeTeam}<br />${awayTeam}</td>
                                         <td>${homeScore} - ${awayScore}</td>
                                         <td>
                                             <div class="tableOdds" style="min-width:30px;">
