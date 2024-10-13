@@ -7,8 +7,8 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.json">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
         
     <script src="https://cdn.jsdelivr.net/npm/luxon@2.0.2/build/global/luxon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,15 +19,15 @@
     --bg-color-2: #00141d;   
     --bg-active: #555e61;
     --color-highlight: #01203e;
-    --color-support-1: #1b1b1b;
+    --color-support-1: #b9b9b9;
     --color-support-2-rgb: 200, 205, 205;
-    --color-support-3: #ccdbd8;
+    --color-support-3: #001e28;
     --color-support-4: #555e61;
     --color-support-5: #fff;
     --color-4: #ddf1fc; /* Medium shade */
-    --win-color: #47ab99; /* Wins */
-    --draw-color: #f3ca05;/* Draws */
-    --loss-color: #e47454;/* Losses */
+    --win-color: #00a83f; /* Wins */
+    --draw-color: #f3a000;/* Draws */
+    --loss-color: #dc0000;/* Losses */
     --blue-5:  #F2F3FA;  /* Blue (5) */
     --blue-100: #020F2A; /* Blue (100) */
     --color-tabs-secondary-background-base: #0f2d37;
@@ -37,11 +37,9 @@
     --color-combination-8: #0f2d37;
 }
 body {
-  font-family: "Arimo", sans-serif;
-  font-optical-sizing: auto;
+    font-family: "Poppins", sans-serif; 
     font-weight: 400;
     font-style: normal;
-    -webkit-font-smoothing: antialiased;
     font-size: 12px; 
     line-height: 1.5;
     color: var(--color-support-1);
@@ -55,7 +53,8 @@ body {
 .W, .D, .L {  
     color: #fff;
     align-items: center; 
-    display: flex; 
+    display: flex;
+    height: 20px;
     justify-content: center;
     overflow: hidden;
     position: relative; 
@@ -63,11 +62,11 @@ body {
 }
 .win, .draw, .loss, .pos, .neg { 
     color: #fff;
-    height: 14px;
+    height: 16px;
     overflow: hidden;
     position: relative;
     padding: 2px 0;
-    width: 18px;
+    width: 20px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -122,12 +121,13 @@ a {
     color: var(--color-support-1);
     text-decoration: none;
 }
-a:hover { 
+a:hover {
+    color: var(--color-support-5);
     text-decoration: none;
 }
 header#superheader {
     background: var(--bg-color-2);
-    padding: 5px 0;
+    padding: 20px 0;
     display: flex;
 }
 header .logo {
@@ -175,24 +175,26 @@ header .logo {
 }
 /* Categories container */
 main {
-    height: 100%;
+    height: calc(100vh - 76px); /* Fill the viewport height minus 76px */  
     display: grid;
-    grid-template-areas: "categories mainAnalysis sideRight";
-    grid-template-columns: 20.22% 45.31% 35.47%;
+    grid-template-areas:
+        "categories mainAnalysis sideRight";
+    grid-template-columns: 22.22% 49.31% 28.47%;
     grid-template-rows: minmax(calc(100vh - 310px), 1fr);
     position: relative;
 }
 
 /* Categories container */
 .categories {
-    height: calc(100vh - 46px); /* Fill the viewport height minus 76px */
-    overflow-y: auto; /* Enable vertical scrolling */ 
-    padding: 0; 
-    background: #e9efed;
+    height: calc(100vh - 95px); /* Fill the viewport height minus 76px */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 5px; /* Optional padding */ 
+    border-right: var(--color-support-3) 1px solid;
+    padding-top: 20px; 
 }
 
 .categories::-webkit-scrollbar, #events-tabs::-webkit-scrollbar, .tab-content::-webkit-scrollbar, .sideRight::-webkit-scrollbar {
-    width: 0px; /* Set the width of the scrollbar */
+    width: 2px; /* Set the width of the scrollbar */
 }
 
 .categories::-webkit-scrollbar-track, #events-tabs::-webkit-scrollbar-track, .tab-content::-webkit-scrollbar-track, .sideRight::-webkit-scrollbar-track {
@@ -205,18 +207,18 @@ main {
     height: 40px;
 }
 .categories h3 {
-    font-size: 12px; 
+    font-size: 13px; 
 }
 .category-header {
     padding: 10px; 
     font-weight: 700;
-    font-size: 12px;
+    font-size: 14px;
     background-color: var(--color-support-3); 
 }
 .tournament h3 {
     margin: 0;
     padding: 10px;
-    background-color: #dae6e4;
+    background-color: var(--bg-color-2);
     display: flex;
     align-items: center;
 }
@@ -277,7 +279,6 @@ main {
     text-align: center;
     flex: 0 0 45px;
     -webkit-box-flex: 0;
-    font-size: 11px;
     color: #555;
     border-right: 1px solid rgba(34, 34, 38, 0.5);
 }
@@ -307,19 +308,24 @@ main {
     height: 16px;
     margin-right: 8px;
 }
- 
+
+.team-name {
+    font-size: 12px; 
+}
+
 .match-odds {
     display: flex;
-    align-items: center;
-    border-left: 1px solid rgba(34, 34, 38, 0.15);
-    padding-left: 5px;
-    flex-direction: column;
-    font-size: 10px;
+    justify-content: space-between;
+    align-items: center;  
+    width: 105px;
+    border-right: 1px solid rgba(34, 34, 38, 0.15);
+    padding-right: 5px;
 }
 
 .odds {
-    margin: 0 4px; 
-    font-weight: 500;
+    margin: 0 4px;
+    font-size: 12px;
+    font-weight: 600;
 }
 .odd-choice {
     display: flex;
@@ -337,19 +343,19 @@ main {
     flex-direction: column;
     align-items: center;
     margin-left: 8px;
-    flex: 0 0 20px; 
-    font-weight: 700;
-    color: #000;
+    flex: 0 0 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-tabs-secondary-fill-base);
     justify-content: space-around;
     gap: 5px;
 } 
 .mainAnalysis {
     grid-area: mainAnalysis;
-    border-left: #e1ece8 1px solid;
-    border-right: #e1ece8 1px solid;
-    height: 100%; /* Fill the viewport height minus 76px */ 
-    border-top: 0;
-    background-color: #ffffff;
+    border-right: var(--color-support-3) 1px solid;
+    height: 100vh; /* Fill the viewport height minus 76px */ 
+    border-top: 1px solid var(--bg-color-1);
+    background-color: #000;
 }
 nav {    
     align-items: center;
@@ -379,13 +385,14 @@ nav li {
 nav li a {    
     align-items: center;
     background-color: var(--color-combination-8);
-    border-radius: 1px;
+    border-radius: 5px;
     color: var(--color-tabs-secondary-fill-base);
     cursor: pointer;
     display: flex;
-    height: 24px;
+    font-size: 12px;
+    height: 28px;
     margin-right: 8px;
-    padding: 0 8px;
+    padding: 0 12px;
 }
 nav li a.active {    
     align-items: center;
@@ -457,11 +464,10 @@ nav li a.active {
 }
 #next-match h3 {
     text-align: center;
-    font-size: 12px;
+    font-size: 0.675rem;
     text-transform: uppercase;
     background-color: var(--color-support-3);
-    padding: 10px;
-    margin-bottom: 0;   
+    padding: 10px;     
 }
 #home-next-match, #away-next-match {
     flex: 1;
@@ -469,7 +475,7 @@ nav li a.active {
 }
 .form-container h3, .h2h h3 {
     text-align: left;
-    font-size: 12px;
+    font-size: 0.675rem;
     text-transform: uppercase;
     background-color: var(--color-support-3);
     padding: 10px;    
@@ -508,11 +514,6 @@ nav li a.active {
 .time { 
     margin: 0;
     width: 55px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 10px;
 }
 
 .homeParticipant, .awayParticipant { 
@@ -520,7 +521,7 @@ nav li a.active {
 }  
 .form-result {
     align-items: center; 
-    border-radius: 1px; 
+    border-radius: 4px; 
     display: flex;
     height: 16px;
     justify-content: center;
@@ -532,13 +533,13 @@ nav li a.active {
     grid-area: sideRight;
     height: 100%; /* Fill the viewport height minus 76px */
     overflow-y: auto; /* Enable vertical scrolling */
-    padding-right: 10px;  
-    background-color: #f5f7f6;
+    padding: 0 5px; 
+    border-top: 1px solid var(--bg-color-1); /* Light gray border */
 } 
 
 .tab-menu {
     display: flex;
-    border-bottom: 1px solid #b9bbbd; /* Light gray border */ 
+    border-bottom: 1px solid var(--bg-color-1); /* Light gray border */ 
     background-color: var(--color-support-3);
     padding: 10px;
 }
@@ -547,13 +548,13 @@ nav li a.active {
 .tab-button {
     align-items: center;
     background-color: var(--color-tabs-secondary-background-base);
-    border-radius: 1px;
+    border-radius: 6px;
     color: var(--color-tabs-secondary-fill-base);
     display: flex;
     gap: 8px;
-    height: 22px;
-    padding: 0 8px;
-    font-weight: 500;
+    height: 28px;
+    padding: 0 12px;
+    font-weight: 600;
     font-size: 12px;
     cursor: pointer;
     border: unset;
@@ -582,11 +583,11 @@ nav li a.active {
 }
 
 #events-tabs {
-    height: calc(100vh - 350px);
+    height: calc(100vh - 450px);
     overflow-y: auto;
 }   
 #events-tabs .tab-content { 
-    padding: 0;
+    padding: 0 5px;
 }
 
 .tab-content.active {
@@ -604,7 +605,7 @@ nav li a.active {
 }
 
 .our-team {
-    background-color: #bad8f5 !important;
+    background-color: var(--color-highlight) !important;
     font-weight: 600;
 }
 /* Additional CSS for table styling */
@@ -612,21 +613,19 @@ table {
     width: 100%;
     border-collapse: collapse;
 }
-#standings-container table {
-    font-size: 11px;
-}
+
 table tr {
     display: flex;
     width: 100%;
 }
 
 table th, table td { 
-    border-bottom: 1px solid #e1ece8;
+    border-bottom: 1px solid rgba(34, 34, 38, 0.5); 
     align-items: center;
     align-self: center;
     display: inline-flex;
-    height: 25px;
-    width: 25px;
+    height: 32px;
+    width: 32px;
     justify-content: center;
 } 
 
@@ -638,7 +637,7 @@ table th.--participant, table td.--participant {
     flex-grow: 1;
     flex-shrink: 0;
     left: 32px;
-    padding: 1px 10px;
+    padding: 0 10px;
     width: 100px;
     justify-content: left;
 }
@@ -664,7 +663,7 @@ table th {
     height: 85vh; /* Set the height to the full viewport height */ 
 }
 #results-table table th, #results-table table td {
-    border-bottom: 1px solid 1px solid #e1ece8;
+    border-bottom: 1px solid rgba(34, 34, 38, 0.5);
     align-items: center;
     align-self: center;
     display: inline-flex; 
@@ -672,7 +671,7 @@ table th {
     justify-content: center;
 }
 #results-table table th:nth-child(2), #results-table table td:nth-child(2) {
-    border-bottom: 1px solid 1px solid #e1ece8;
+    border-bottom: 1px solid rgba(34, 34, 38, 0.5);
     align-items: center;
     align-self: center;
     display: inline-flex; 
@@ -685,7 +684,7 @@ table th {
     height: inherit;
 }
 #results-table .highlight {
-    background-color: #bad8f5 !important;
+    background-color: var(--color-highlight) !important;
     font-weight: 600;
 }
      </style>
@@ -695,23 +694,18 @@ table th {
             <div class="logo">FUTBOL</div>
             <div class="filter-bar">
                 <div>
-                    <button class="calendar__navigation calendar__navigation--yesterday" title="Previous day">&#8249;</button>
-                    <button id="calendarMenu" aria-expanded="false" class="calendar__datepicker">
-                        <span id="current-day"></span> <!-- Current date dynamically displayed here -->
-                    </button>
-                    <ul aria-labelledby="calendarMenu" class="calendar__days" id="date-list" hidden>
-                        <!-- Dates will be appended here dynamically -->
-                    </ul>
-                    <button class="calendar__navigation calendar__navigation--tomorrow" title="Next day">&#8250;</button>
+                    From:                     
+                    <input type="date" id="start-date" name="start-date">
+                     To:<input type="date" id="end-date" name="end-date"> 
                 </div>
-                <div> 
+                <div>
                     <select id="time-range">
                         <option value="">Select Time</option>
                         <option value="3">3 Hours</option>
                         <option value="6">6 Hours</option>
                         <option value="12">12 Hours</option>
                     </select>
-                    <button id="filter-btn">Filter</button> 
+                    <button id="filter-btn">Filter</button>
                 </div> 
             </div>
         </header>
@@ -754,18 +748,18 @@ table th {
         const filterEventsByTime = (events, hours) => {
             const now = new Date().getTime();
             const timeRange = hours * 60 * 60 * 1000; // Convert hours to milliseconds
-
+        
             return events.filter(event => {
                 const eventTime = new Date(event.startTimestamp * 1000).getTime();
                 return eventTime >= now && eventTime <= now + timeRange;
             });
         };
         
-        const displayCategories = async (date, hours, status) => {
+        const displayCategories = async (startDate, endDate, hours, status) => {
     const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
-    const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${date}`;
-    const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${date}/inverse`;
-    const oddsResponse = `${baseURL}/sport/football/odds/1/${date}`;
+    const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${startDate}`;
+    const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${startDate}/inverse`;
+    const oddsResponse = `${baseURL}/sport/football/odds/1/${startDate}`;
 
     let filteredEvents = [];
     let odds = {};
@@ -780,24 +774,14 @@ table th {
             const events = [...scheduledEventsData.events, ...scheduledEventsData2.events];
             odds = oddsData?.odds || {};
 
-            // Filter by date range for the selected day
-            const startDate = new Date(date).setHours(0, 0, 0);
-            const endDate = new Date(date).setHours(23, 59, 59);
-
+            // Filter events
             filteredEvents = events.filter(event => {
-                const eventTime = new Date(event.startTimestamp * 1000).getTime();
-                return eventTime >= startDate && eventTime <= endDate;
+                const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
+                return eventDate >= startDate && eventDate <= endDate;
             });
 
-            // If hours are specified, filter further by time range
             if (hours) {
-                const timeRangeStart = new Date(date).setHours(0, 0, 0);
-                const timeRangeEnd = new Date(date).setHours(hours, 59, 59);
-
-                filteredEvents = filteredEvents.filter(event => {
-                    const eventTime = new Date(event.startTimestamp * 1000).getTime();
-                    return eventTime >= timeRangeStart && eventTime <= timeRangeEnd;
-                });
+                filteredEvents = filterEventsByTime(filteredEvents, hours);
             }
 
             if (status) {
@@ -829,7 +813,7 @@ table th {
             filteredEvents.forEach(event => {
                 const categoryName = event.tournament.category.name;
                 const tournamentId = event.tournament.uniqueTournament.id;
-                const uniqueTournamentName = event.tournament.uniqueTournament.name;
+                const tournamentName = event.tournament.name;
 
                 const targetMap = topTournamentIds.includes(tournamentId) ? topTournamentsMap : otherCategoriesMap;
 
@@ -838,14 +822,14 @@ table th {
                 }
 
                 const tournaments = targetMap.get(categoryName);
-                if (!tournaments.has(uniqueTournamentName)) {
-                    tournaments.set(uniqueTournamentName, {
+                if (!tournaments.has(tournamentName)) {
+                    tournaments.set(tournamentName, {
                         id: tournamentId,
                         events: []
                     });
                 }
 
-                tournaments.get(uniqueTournamentName).events.push(event);
+                tournaments.get(tournamentName).events.push(event);
             });
 
             const createCategorySection = (tournaments, categoryName) => {
@@ -870,7 +854,7 @@ table th {
                 const tournamentsContainer = document.createElement('div');
                 tournamentsContainer.classList.add('tournaments-container');
 
-                tournaments.forEach((tournament, uniqueTournamentName) => {
+                tournaments.forEach((tournament, tournamentName) => {
                     const tournamentSection = document.createElement('div');
                     tournamentSection.classList.add('tournament');
 
@@ -878,8 +862,8 @@ table th {
                     tournamentHeader.classList.add('flex', '_F_ac');
                     const tournamentImage = `${baseURL}/unique-tournament/${tournament.id}/image`;
                     tournamentHeader.innerHTML = `
-                        <img class="tourn" src="${tournamentImage}" alt="${uniqueTournamentName}" width="16" height="16" loading="lazy" />
-                        ${uniqueTournamentName}
+                        <img class="tourn" src="${tournamentImage}" alt="${tournamentName}" width="16" height="16" loading="lazy" />
+                        ${tournamentName}
                     `;
                     tournamentSection.appendChild(tournamentHeader);
 
@@ -925,20 +909,23 @@ table th {
                                         <span class="team-name">${awayTeamName}</span>
                                     </div>
                                 </div>
+                                <div class="match-odds">
+                                    <div class="odd-choice">
+                                        <span class="odds">1</span>
+                                        <span class="odds">${homeOdds}</span>
+                                    </div>
+                                    <div class="odd-choice">
+                                        <span class="odds">X</span>
+                                        <span class="odds">${drawOdds}</span>
+                                    </div>
+                                    <div class="odd-choice">
+                                        <span class="odds">2</span>
+                                        <span class="odds">${awayOdds}</span>
+                                    </div>
+                                </div>
                                 <div class="match-score" id="${event.status.type}">
                                     <span class="score" id="homeScore-${event.id}">${event.homeScore?.current ?? ''}</span>
                                     <span class="score" id="awayScore-${event.id}">${event.awayScore?.current ?? ''}</span>
-                                </div>
-                                <div class="match-odds">
-                                    <div class="odd-choice"> 
-                                        <span class="odds">${homeOdds}</span>
-                                    </div>
-                                    <div class="odd-choice"> 
-                                        <span class="odds">${drawOdds}</span>
-                                    </div>
-                                    <div class="odd-choice"> 
-                                        <span class="odds">${awayOdds}</span>
-                                    </div>
                                 </div>
                             </div> 
                         `; 
@@ -1088,94 +1075,92 @@ table th {
                 // Update the match container's HTML content with the match details
                 matchContainer.innerHTML = matchInfoHtml; // Update existing match container
             };
-            const fetchTeamStats = async (teamId, tournamentId, seasonId, currentMatchId, currentMatchTimestamp) => {
-            const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
-            const eventsData = await fetchJson(eventsUrl);
-            if (!eventsData || !eventsData.events) return {}; 
 
-            // Filter the events to include only those where the team was involved
-            const teamEvents = eventsData.events.reverse().filter(event =>
-                event.homeTeam.id === teamId || event.awayTeam.id === teamId
-            );
+            const fetchTeamStats = async (teamId, currentMatchId, currentMatchTimestamp) => {
+                const teamEventsUrl = `${baseURL}/team/${teamId}/events/last/0`;
+                const teamEventsData = await fetchJson(teamEventsUrl);
+                if (!teamEventsData || !teamEventsData.events) return {}; 
 
-            // Get the last 5 events, reversing to get them in chronological order
-            const overallEvents = teamEvents;
+                // Assuming teamEventsData is an object with an events array
+                const teamEvents = teamEventsData.events;
 
-            // Filter and slice home and away events separately
-            const homeEvents = teamEvents.filter(event => event.homeTeam.id === teamId);
-            const awayEvents = teamEvents.filter(event => event.awayTeam.id === teamId);
+                // Get the last 5 events from the team's data, reversing to get them in chronological order
+                const overallEvents = teamEvents.slice(-5).reverse();
 
-            // Function to calculate stats from the events
-            const calculateStats = (events) => {
-                const stats = {
-                    wins: 0,
-                    draws: 0,
-                    losses: 0,
-                    cleanSheets: 0,
-                    failedToScore: 0,
-                    btts: 0,
-                    over1_5: 0,
-                    over2_5: 0,
-                    over3_5: 0,
-                    results: [],
-                    totalGoalsScored: 0,
-                    totalGoalsConceded: 0,
-                    fatigue: 0,
-                    avgDaysBetweenMatches: 0,
+                // Filter and slice home and away events separately
+                const homeEvents = teamEvents.filter(event => event.homeTeam.id === teamId).slice(-5).reverse();
+                const awayEvents = teamEvents.filter(event => event.awayTeam.id === teamId).slice(-5).reverse();
+
+
+                const calculateStats = (events) => {
+                    const stats = {
+                        wins: 0,
+                        draws: 0,
+                        losses: 0,
+                        cleanSheets: 0,
+                        failedToScore: 0,
+                        btts: 0,
+                        over1_5: 0,
+                        over2_5: 0,
+                        over3_5: 0,
+                        results: [],
+                        totalGoalsScored: 0,
+                        totalGoalsConceded: 0,
+                        fatigue: 0,
+                        avgDaysBetweenMatches: 0,
+                    };
+
+                    events.forEach(event => {
+                        if ((event.homeTeam.id === teamId || event.awayTeam.id === teamId) && event.status.type === 'finished' && event.id !== currentMatchId) {
+                            const isHome = event.homeTeam.id === teamId;
+                            const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
+                            const opponentScore = isHome ? event.awayScore.current : event.homeScore.current;
+                            let result;
+                            if (teamScore > opponentScore) {
+                                stats.wins++;
+                                result = 'W';
+                            } else if (teamScore < opponentScore) {
+                                stats.losses++;
+                                result = 'L';
+                            } else {
+                                stats.draws++;
+                                result = 'D';
+                            }
+
+                            stats.results.push({
+                                result,
+                                timeStamp: event.startTimestamp,
+                                uniqueTournamentId: event.tournament.uniqueTournament?.id,
+                                uniqueTournamentName: event.tournament.uniqueTournament?.name,
+                                categoryName: event.tournament.category.name,
+                                homeTeam: event.homeTeam.shortName,
+                                awayTeam: event.awayTeam.shortName,
+                                homeScore: event.homeScore.current,
+                                awayScore: event.awayScore.current
+                            });
+
+                            if (teamScore === 0) stats.failedToScore++;
+                            if (opponentScore === 0) stats.cleanSheets++;
+
+                            if (teamScore > 0 && opponentScore > 0) stats.btts++;
+                            if (teamScore + opponentScore >= 2) stats.over1_5++;
+                            if (teamScore + opponentScore >= 3) stats.over2_5++;
+                            if (teamScore + opponentScore >= 4) stats.over3_5++;
+
+                            stats.totalGoalsScored += teamScore;
+                            stats.totalGoalsConceded += opponentScore;
+                        }
+                    });
+
+                    return stats;
                 };
 
-                events.forEach(event => {
-                    if (event.status.type === 'finished' && event.id !== currentMatchId) {
-                        const isHome = event.homeTeam.id === teamId;
-                        const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
-                        const opponentScore = isHome ? event.awayScore.current : event.homeScore.current;
-                        let result;
-                        
-                        if (teamScore > opponentScore) {
-                            stats.wins++;
-                            result = 'W';
-                        } else if (teamScore < opponentScore) {
-                            stats.losses++;
-                            result = 'L';
-                        } else {
-                            stats.draws++;
-                            result = 'D';
-                        }
-
-                        stats.results.push({
-                            result,
-                            timeStamp: event.startTimestamp,
-                            uniqueTournamentId: event.tournament.uniqueTournament?.id,
-                            uniqueTournamentName: event.tournament.uniqueTournament?.name,
-                            categoryName: event.tournament.category.name,
-                            homeTeam: event.homeTeam.shortName,
-                            awayTeam: event.awayTeam.shortName,
-                            homeScore: event.homeScore.current,
-                            awayScore: event.awayScore.current
-                        });
-
-                        if (teamScore === 0) stats.failedToScore++;
-                        if (opponentScore === 0) stats.cleanSheets++;
-
-                        if (teamScore > 0 && opponentScore > 0) stats.btts++;
-                        if (teamScore + opponentScore >= 2) stats.over1_5++;
-                        if (teamScore + opponentScore >= 3) stats.over2_5++;
-                        if (teamScore + opponentScore >= 4) stats.over3_5++;
-
-                        stats.totalGoalsScored += teamScore;
-                        stats.totalGoalsConceded += opponentScore;
-                    }
-                });
-
-                return stats;
+                return {
+                    overall: calculateStats(overallEvents),
+                    home: calculateStats(homeEvents),
+                    away: calculateStats(awayEvents)
+                };
             };
-
-            return {
-                overall: calculateStats(overallEvents),
-                home: calculateStats(homeEvents),
-                away: calculateStats(awayEvents)
-            };
-        };
 
 
                     const displayLast5Events = (teamStats, containerId) => {
@@ -1202,14 +1187,7 @@ table th {
                             eventElem.className = 'event-row'; // Updated class name to match HTML/CSS
                             eventElem.innerHTML = `  
                                         <div class="event__row flex _F_r gT10 _F_ac">
-                                            <span class="event-date time">
-                                                <span>    ${new Date(event.timeStamp * 1000).toLocaleDateString('en-GB', { 
-                                                    day: '2-digit', month: '2-digit', year: '2-digit' 
-                                                }).replace(',', '.').replace('/', '.').replace('/', '.')}
-                                            
-                                            </span>
-                                            <span class="form-result ${event.result}">${event.result}</span>
-                                            </span>
+                                            <span class="event-date time">${new Date(event.timeStamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
                                             <span class="tourn"><img src="${baseURL}/unique-tournament/${event.uniqueTournamentId}/image" alt="${event.uniqueTournamentName}"
                                                 width="20" 
                                                 height="20" 
@@ -1224,6 +1202,7 @@ table th {
                                                 <span>${homeTeamScore}</span>
                                                 <span>${awayTeamScore}</span>
                                             </span>
+                                            <span class="form-result ${event.result}">${event.result}</span>
                                         </div> 
                             `;
                             container.appendChild(eventElem);
@@ -1385,8 +1364,7 @@ const displayH2H = (h2hData, containerId, teamId, filterHomeOnly = false) => {
                                         <th>W</th>
                                         <th>D</th>
                                         <th>L</th>
-                                        <th>GF</th> 
-                                        <th>GA</th> 
+                                        <th>G</th> 
                                         <th>GD</th>
                                         <th>PTS</th>
                                         <th class="--form">FORM</th>
@@ -1451,8 +1429,7 @@ const displayH2H = (h2hData, containerId, teamId, filterHomeOnly = false) => {
                                     <td>${team.L}</td>
                                     
                                     <!-- Calculate averages for goals scored and goals against -->
-                                    <td>${(team.G / team.GP).toFixed(2)}</td>
-                                    <td>${(team.GA / team.GP).toFixed(2)}</td>
+                                    <td>${(team.G / team.GP).toFixed(2)}:${(team.GA / team.GP).toFixed(2)}</td>
                                     
                                     <td>${team.GD}</td>
                                     <td>${team.PTS}</td>
@@ -1947,13 +1924,11 @@ const displayH2H = (h2hData, containerId, teamId, filterHomeOnly = false) => {
                             await displayNextMatch(homeTeamId, 'home-next-match');
                             await displayNextMatch(awayTeamId, 'away-next-match'); 
                     
-                            // Fetch and display home team stats
-                            const homeTeamStats = await fetchTeamStats(homeTeamId, tournamentId, seasonId, currentMatchId, currentMatchTimestamp);
+                            const homeTeamStats = await fetchTeamStats(homeTeamId, currentMatchId, currentMatchTimestamp);
                             displayLast5Events(homeTeamStats.overall, 'home-team-form');
                             displayLast5Events(homeTeamStats.home, 'at-home-form');
 
-                            // Fetch and display away team stats
-                            const awayTeamStats = await fetchTeamStats(awayTeamId, tournamentId, seasonId, currentMatchId, currentMatchTimestamp);
+                            const awayTeamStats = await fetchTeamStats(awayTeamId, currentMatchId, currentMatchTimestamp);
                             displayLast5Events(awayTeamStats.overall, 'away-team-form');
                             displayLast5Events(awayTeamStats.away, 'at-away-form');
 
@@ -2378,15 +2353,14 @@ const displayH2H = (h2hData, containerId, teamId, filterHomeOnly = false) => {
                                         </div>
                                         <div class="tab-content active" id="overall-events">
                                             <!-- Tab content for Overall Events -->
-                                            <div class="form-container">
-                                                    <h3>Last matches</h3>
-                                                <div class=" flex _F_r _F_jc gT20">
-                                                    <div class="home-form">
-                                                        <div id="home-team-form"></div>
-                                                    </div>
-                                                    <div class="away-form"> 
-                                                        <div id="away-team-form"></div>
-                                                    </div>
+                                            <div class="form-container flex _F_r _F_jc gT20">
+                                                <div class="home-form">
+                                                    <h3>Last matches: ${eventData.homeTeam.shortName}</h3>
+                                                    <div id="home-team-form"></div>
+                                                </div>
+                                                <div class="away-form">
+                                                    <h3>Last matches: ${eventData.awayTeam.shortName}</h3>
+                                                    <div id="away-team-form"></div>
                                                 </div>
                                             </div> 
                                             <div class="h2h">
@@ -2396,15 +2370,14 @@ const displayH2H = (h2hData, containerId, teamId, filterHomeOnly = false) => {
                                         </div>
                                         <div class="tab-content" id="home-vs-away-events">
                                             <!-- Tab content for Home vs Away Events -->
-                                            <div class="form-container">
-                                                    <h3>Last matches</h3>
-                                                <div class=" flex _F_r _F_jc gT20">
-                                                <div class="atHome-form"> 
+                                            <div class="form-container flex _F_r _F_jc gT20">
+                                                <div class="atHome-form">
+                                                    <h3>Last Home matches: ${eventData.homeTeam.shortName}</h3>
                                                     <div id="at-home-form"></div>
                                                 </div>
-                                                <div class="atAway-form"> 
+                                                <div class="atAway-form">
+                                                    <h3>Last Away matches: ${eventData.awayTeam.shortName}</h3>
                                                     <div id="at-away-form"></div>
-                                                </div>
                                                 </div>
                                             </div>                                        
                                             <div class="h2h">
@@ -2461,105 +2434,63 @@ const displayH2H = (h2hData, containerId, teamId, filterHomeOnly = false) => {
                     };
 
  
-                    document.addEventListener('DOMContentLoaded', () => {
-    const today = new Date();
-    let selectedDate = today;
-    let selectedHours = '';
+            document.addEventListener('DOMContentLoaded', () => {
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('start-date').value = today;
+                document.getElementById('end-date').value = today;
 
-    // Function to update the displayed date
-    function updateCalendarDisplay(date) {
-        const formattedDate = formatDate(date);
-        const currentDayElem = document.getElementById('current-day');
-        if (currentDayElem) currentDayElem.innerText = formattedDate;
-    }
+                // Initial data load
+                displayCategories(today, today, '');
 
-    // Function to format the date to YYYY-MM-DD
-    function formatDate(date) {
-        return date.toISOString().split('T')[0]; // Format date as 'YYYY-MM-DD'
-    }
+                document.getElementById('filter-btn').addEventListener('click', () => {
+                    const startDate = document.getElementById('start-date').value;
+                    const endDate = document.getElementById('end-date').value;
+                    const hours = document.getElementById('time-range').value;
+                    displayCategories(startDate, endDate, hours);
+                });
 
-    // Fetch and display events for the selected date
-    function fetchEventsByDate(date, hours) {
-        console.log('Fetching events for date:', date, 'with hours:', hours);
-        // Ensure displayCategories can handle optional status argument
-        displayCategories(date, hours);
-    }
+                document.querySelectorAll('.main-nav a').forEach(link => {
+                    link.addEventListener('click', async event => {
+                        event.preventDefault();
+                        const filterType = link.getAttribute('href').replace('#', '');
 
-    // Initial data load: Display today's date and fetch events
-    updateCalendarDisplay(today);
-    fetchEventsByDate(formatDate(today), selectedHours);
+                        let startDate = today;
+                        let endDate = today;
+                        let hours = '';
 
-    // Handle 'yesterday' button click
-    const yesterdayBtn = document.querySelector('.calendar__navigation--yesterday');
-    if (yesterdayBtn) {
-        yesterdayBtn.addEventListener('click', () => {
-            selectedDate.setDate(selectedDate.getDate() - 1); // Move to the previous day
-            updateCalendarDisplay(selectedDate);
-            fetchEventsByDate(formatDate(selectedDate), selectedHours);
-        });
-    }
+                        switch (filterType) {
+                            case 'all-games':
+                                displayCategories(startDate, endDate, hours);
+                                break;
+                            case 'live-games':
+                                displayCategories(startDate, endDate, hours, 'live');
+                                break;
+                            case 'finished-games':
+                                displayCategories(startDate, endDate, hours, 'finished');
+                                break;
+                            case 'scheduled-games':
+                                displayCategories(startDate, endDate, hours, 'scheduled');
+                                break;
+                            default:
+                                displayCategories(startDate, endDate, hours);
+                                break;
+                        }
 
-    // Handle 'tomorrow' button click
-    const tomorrowBtn = document.querySelector('.calendar__navigation--tomorrow');
-    if (tomorrowBtn) {
-        tomorrowBtn.addEventListener('click', () => {
-            selectedDate.setDate(selectedDate.getDate() + 1); // Move to the next day
-            updateCalendarDisplay(selectedDate);
-            fetchEventsByDate(formatDate(selectedDate), selectedHours);
-        });
-    }
+                        // Remove 'active' class from all links
+                        document.querySelectorAll('.main-nav a').forEach(link => {
+                            link.classList.remove('active');
+                        });
 
-    // Filter events based on the selected time range
-    const filterBtn = document.getElementById('filter-btn');
-    if (filterBtn) {
-        filterBtn.addEventListener('click', () => {
-            selectedHours = document.getElementById('time-range').value;
-            fetchEventsByDate(formatDate(selectedDate), selectedHours);
-        });
-    }
+                        // Add 'active' class to the clicked link
+                        event.target.classList.add('active');
+                    });
+                });
 
-    // Main navigation click for filtering by game type (all, live, finished, scheduled)
-    document.querySelectorAll('.main-nav a').forEach(link => {
-        link.addEventListener('click', async event => {
-            event.preventDefault();
-            const filterType = link.getAttribute('href').replace('#', '');
+                
 
-            const date = document.getElementById('current-day').innerText;
-            let hours = '';
-            let status = ''; // Define default status as an empty string
-
-            // Handle different types of game filters
-            switch (filterType) {
-                case 'all-games':
-                    displayCategories(date, hours);
-                    break;
-                case 'live-games':
-                    status = 'live';
-                    displayCategories(date, hours, status);
-                    break;
-                case 'finished-games':
-                    status = 'finished';
-                    displayCategories(date, hours, status);
-                    break;
-                case 'scheduled-games':
-                    status = 'scheduled';
-                    displayCategories(date, hours, status);
-                    break;
-                default:
-                    displayCategories(date, hours);
-                    break;
-            }
-
-            // Remove 'active' class from all links
-            document.querySelectorAll('.main-nav a').forEach(link => {
-                link.classList.remove('active');
             });
 
-            // Add 'active' class to the clicked link
-            event.target.classList.add('active');
-        });
-    });
-});
+
 
 
 
@@ -2572,3 +2503,5 @@ function fractionalToDecimal(fractionalOdds) {
         </script> 
     </body>
 </html>
+
+
