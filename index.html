@@ -187,7 +187,7 @@ main {
     height: 100%;
     display: grid;
     grid-template-areas: "categories mainAnalysis sideRight";
-    grid-template-columns: 22.22% 47.31% 31.47%;
+    grid-template-columns: 22.22% 48.31% 30.47%;
     grid-template-rows: minmax(calc(100vh - 310px), 1fr);
     position: relative;
 }
@@ -515,7 +515,11 @@ nav li a.active {
     width: 16px;
     text-align: center;
 }
-
+.event-row .odds {
+    display: flex;
+    flex-direction: column;
+    font-size: 10px;
+}
 
 .time { 
     margin: 0;
@@ -594,7 +598,7 @@ nav li a.active {
 }
 
 #events-tabs .container-events  {
-    height: calc(100vh - 315px);
+    height: calc(100vh - 355px);
     overflow-y: auto;
 }   
 #events-tabs .tab-content { 
@@ -797,6 +801,34 @@ table th {
             }
         };
         
+// Helper function to convert fractional odds to decimal
+function fractionalToDecimal(fractionalOdds) {
+    const [numerator, denominator] = fractionalOdds.split('/');
+    return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
+}
+
+// Function to fetch odds for an event
+const fetchOddsForEvent = async (eventId) => {
+    const url = `${baseURL}/event/${eventId}/odds/1/all`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data && data.markets) {
+            const fullTimeMarket = data.markets.find(market => market.marketName === 'Full time');
+            if (fullTimeMarket && fullTimeMarket.choices) {
+                return fullTimeMarket.choices.map(choice => ({
+                    name: choice.name,
+                    odds: fractionalToDecimal(choice.fractionalValue)
+                }));
+            }
+        }
+        return null; // Return null if no odds found
+    } catch (error) {
+        console.error('Error fetching odds:', error.message);
+        return null;
+    }
+};
+
         const filterEventsByTime = (events, hours) => {
             const now = new Date().getTime();
             const timeRange = hours * 60 * 60 * 1000; // Convert hours to milliseconds
@@ -807,7 +839,7 @@ table th {
             });
         };
         
-        const displayCategories = async (date, hours, status) => {
+const displayCategories = async (date, hours, status) => {
     const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
     const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${date}`;
     const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${date}/inverse`;
@@ -1272,6 +1304,7 @@ table th {
 
                         stats.results.push({
                             result,
+                            eventId: event.id,
                             timeStamp: event.startTimestamp,
                             uniqueTournamentId: event.tournament.uniqueTournament?.id,
                             uniqueTournamentName: event.tournament.uniqueTournament?.name,
@@ -1306,14 +1339,14 @@ table th {
         };
 
 
-        const displayLast5Events = (teamStats, containerId) => {
+        // Function to display the last 5 events with odds
+        const displayLast5Events = async (teamStats, containerId) => {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
 
-            const events = teamStats.results.slice(0, 5); // Get the last 5 events
-            events.forEach(event => {
-
-                
+            const events = teamStats.results.reverse().slice(0, 5); // Get the last 5 events
+            for (const event of events) { 
+                 
                 const homeScore = event.homeScore ?? 0;
                 const awayScore = event.awayScore ?? 0;
 
@@ -1326,10 +1359,20 @@ table th {
                 const homeTeamScore = isHomeTeamWinner ? `<strong>${event.homeScore}</strong>` : event.homeScore;
                 const awayTeamScore = isAwayTeamWinner ? `<strong>${event.awayScore}</strong>` : event.awayScore;
 
+
+                // Fetch odds for this event
+                const odds = await fetchOddsForEvent(event.eventId);
+                let oddsDisplay = '';
+                if (odds) {
+                    oddsDisplay = `<span>${odds[0]?.odds}</span><span>${odds[1]?.odds}</span><span>${odds[2]?.odds}</span>`;
+                } else {
+                    oddsDisplay = '<span>-</span><span>-</span><span>-</span>';
+                }
+
                 const eventElem = document.createElement('div');
                 eventElem.className = 'event-row'; // Updated class name to match HTML/CSS
                 eventElem.innerHTML = `  
-                            <div class="event__row flex _F_r gT10 _F_ac">
+                            <div class="event__row flex _F_r gT10 _F_ac" data-id="${event.eventId}">
                                 <span class="event-date time">
                                     <span>    ${new Date(event.timeStamp * 1000).toLocaleDateString('en-GB', { 
                                         day: '2-digit', month: '2-digit', year: '2-digit' 
@@ -1352,11 +1395,14 @@ table th {
                                     <span>${homeTeamScore}</span>
                                     <span>${awayTeamScore}</span>
                                 </span>
+                                <span class="odds">
+                                    ${oddsDisplay}
+                                </span>
                             </div> 
-                `;
-                container.appendChild(eventElem);
-            });
-        };
+                            `;
+                    container.appendChild(eventElem);
+                }
+            };
 
         // Function to fetch H2H events
         const fetchH2HEvents = async (customId, currentMatchId, teamId) => {
@@ -1389,9 +1435,9 @@ table th {
                 return 'D';
             }
         };
-        // Function to display H2H events in the specified container
-        const displayH2H = (h2hData, containerId, teamId, filterHomeOnly = false) => {
-            const container = document.getElementById(containerId);
+        // Function to display H2H events in the specified container, including odds
+    const displayH2H = async (h2hData, containerId, teamId, filterHomeOnly = false) => {
+    const container = document.getElementById(containerId);
             container.innerHTML = '';
 
             // Check if h2hData is empty or undefined
@@ -1407,7 +1453,7 @@ table th {
             }
 
     // Calculate the UNIX timestamp for 3 years ago
-    const threeYearsAgoTimestamp = Math.floor(Date.now() / 1000) - (3 * 365 * 24 * 60 * 60);
+    const threeYearsAgoTimestamp = Math.floor(Date.now() / 1000) - (4 * 365 * 24 * 60 * 60);
 
     // Filter events based on the last 3 years and home/away preference
     const filteredEvents = h2hData
@@ -1427,7 +1473,7 @@ table th {
     }
 
     // Display events in reverse chronological order
-    filteredEvents.reverse().forEach(event => {
+    for (const event of filteredEvents.reverse()) {
         const homeScore = event.homeScore?.current ?? 0;
         const awayScore = event.awayScore?.current ?? 0;
 
@@ -1443,12 +1489,24 @@ table th {
         const homeTeamScore = isHomeTeamWinner ? `<strong>${homeScore}</strong>` : homeScore;
         const awayTeamScore = isAwayTeamWinner ? `<strong>${awayScore}</strong>` : awayScore;
 
+        // Fetch odds for the current event
+        const odds = await fetchOddsForEvent(event.id);
+
+        const oddsInfo = odds ? `
+            <div class="odds-info">
+                <span>${odds.find(o => o.name === '1')?.odds || '-'}</span>
+                <span>${odds.find(o => o.name === 'X')?.odds || '-'}</span>
+                <span>${odds.find(o => o.name === '2')?.odds || '-'}</span>
+            </div>
+        ` : '<div class="odds-info">No odds available</div>';
+
+
         const eventElem = document.createElement('div');
         eventElem.className = 'event-row';
         eventElem.innerHTML = `
-            <div class="event__row flex _F_r gT10 _F_ac">
+            <div class="event__row flex _F_r gT10 _F_ac" data-id="${event.id}">
                 <span class="event-date time">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
-                <span class="tourn"><img src="${baseURL}/unique-tournament/${event.tournament.uniqueTournament.id}/image" alt="${event.tournament.uniqueTournament.name}"
+                <span class="tourn"><img src="${baseURL}/unique-tournament/${event.tournament.uniqueTournament?.id}/image" alt="${event.tournament.uniqueTournament?.name}"
                             width="20" 
                             height="20" 
                             loading="lazy"
@@ -1463,10 +1521,11 @@ table th {
                     <span>${awayTeamScore}</span>
                 </span>
                 <span class="form-result ${result}">${result}</span>
+                ${oddsInfo}  <!-- Display odds -->
             </div> 
         `;
         container.appendChild(eventElem);
-    });
+    }
 };
 
                     
@@ -2386,12 +2445,6 @@ table th {
 });
 
 
-
-// Helper function to convert fractional odds to decimal
-function fractionalToDecimal(fractionalOdds) {
-    const [numerator, denominator] = fractionalOdds.split('/');
-    return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
-}
 
         </script> 
     </body>
