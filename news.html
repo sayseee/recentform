@@ -1,185 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTTS & Over 2.5 Goals Betting Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .match-info {
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .stat {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        .stat h3 {
+            margin: 0 0 10px;
+        }
+        .last-matches {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
 
-.Data h3 {
-    padding: 0;
-    margin: 0;
-}
-.team-stats-block {
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-.top-team-data {
-        display: flex;
-        justify-content: space-between;
-        color: white; 
-        flex-direction: column;
-    }
-    
-.last-data-column {
-        display: flex; 
-        color: white; 
-        flex-direction: column;
-    }
-.top-labels {display: flex; }
-.teams-labels {
-    flex: 1; 
-}
-    .top-team-data .team {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        flex-basis: 40%;
-    }
+    <h1>BTTS & Over 2.5 Goals Guide</h1>
+    <div class="match-info">
+        <h2>Match: Vitória SC vs Rio Ave</h2>
+        <p>Tournament: Liga Portugal Betclic (24/25 Season)</p>
+        <p>Round: 31</p>
+    </div>
 
-.top-team-data .home-team, .top-team-data .away-team {
-    display: flex;
-    flex-direction: row;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-.top-team-data .home-team {
-    background-color: #003366;
-}
-
-.top-team-data .away-team {
-    background-color: #d8000d;
-}
-.top-team-data .home-team .teamInfo, .top-team-data .away-team .teamInfo {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    flex: 1;
-}
-.top-team-data .home-team .teamData, .top-team-data .away-team .teamData {
-    display: flex;
-    flex-direction: row;
-    gap: 5px; 
-    flex: 2;
-}
-.teamInfo {
-    align-items: center;
-    gap: 5px; 
-}
-    .top-team-data .team img {
-        width: 50px;
-        height: 50px;
-        margin-bottom: 10px;
-    }
-
-    .team-stats-block {
-        text-align: center;
-        margin-top: 10px;
-    }
-
-    .team-stats-block h3 {
-        margin: 0;
-        background-color: #c8102e;
-        padding: 5px;
-    }
-
-    .stats-labels {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #ffffff;
-        color: #000;
-        padding: 10px;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .stats-labels div {
-        flex-basis: 14%;
-    }
-
-    .team-data {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 5px;
-    }
-
-    .team-data div {
-        flex-basis: 14%;
-        text-align: center;
-    }
-    .teamData, .stats-teamData-labels {
-        display: flex;
-    } 
-    
-    .stats-teamData-labels {
-        flex: 2;
-    }
-    .top-Data {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-    }
-
-<div class="top-Data">
-    <div class="top-labels">
-        <div class="teams-labels">
+    <div class="stats">
+        <div class="stat" id="btts-percentage-vitoria">
+            <h3>BTTS Percentage (Overall) - Vitória SC</h3>
+            <p>Calculating...</p>
         </div>
-        <div class="stats-teamData-labels">
-            <div>GP</div>
-            <div>PTS</div>
-            <div>PPG</div>
-            <div>Avg Sc.</div>
-            <div>Avg Co.</div>
-            <div>W</div>
-            <div>D</div>
-            <div>L</div>
+        <div class="stat" id="over-2-5-percentage-vitoria">
+            <h3>Over 2.5 Goals Percentage (Overall) - Vitória SC</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="goals-scored-vitoria">
+            <h3>Goals Scored per Game (Overall) - Vitória SC</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="goals-conceded-vitoria">
+            <h3>Goals Conceded per Game (Overall) - Vitória SC</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="clean-sheets-vitoria">
+            <h3>Clean Sheets (Overall) - Vitória SC</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="win-loss-margin-vitoria">
+            <h3>Win/Loss Margin (Overall) - Vitória SC</h3>
+            <p>Calculating...</p>
         </div>
     </div>
-    <div class="top-team-data">
-        <div class="home-team">
-            <div class="teamInfo">
-            <div class="team-logo">
-                <img src='${baseURL}/team/${teamId1}/image/small' alt='${teamName1}'>
-            </div>
-            <h3>${teamName1}</h3> 
-            </div> 
 
-            <div class="team-stats-block teamData">
-               <div>${gamesPlayed1}</div>
-                <div>${points1}</div>
-                <div>${pointsPerGame1.toFixed(2)}</div>
-                <div>${averageScored1.toFixed(2)}</div>
-                <div>${averageConceded1.toFixed(2)}</div>
-                <div>${wins1}</div>
-                <div>${draws1}</div>
-                <div>${losses1}</div>
-            </div>
+    <div class="stats">
+        <div class="stat" id="btts-percentage-rio">
+            <h3>BTTS Percentage (Overall) - Rio Ave</h3>
+            <p>Calculating...</p>
         </div>
-
-        <div class="away-team">
-            <div class="teamInfo">
-                <div class="team-logo">
-                    <img src='${baseURL}/team/${teamId2}/image/small' alt='${teamName2}'>
-                </div>
-                <h3>${teamName2}</h3> 
-            </div> 
-
-            <div class="team-stats-block teamData">
-                <div>${gamesPlayed2}</div>
-                <div>${points2}</div>
-                <div>${pointsPerGame2.toFixed(2)}</div>
-                <div>${averageScored2.toFixed(2)}</div>
-                <div>${averageConceded2.toFixed(2)}</div>
-                <div>${wins2}</div>
-                <div>${draws2}</div>
-                <div>${losses2}</div>
-            </div>
+        <div class="stat" id="over-2-5-percentage-rio">
+            <h3>Over 2.5 Goals Percentage (Overall) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="goals-scored-rio">
+            <h3>Goals Scored per Game (Overall) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="goals-conceded-rio">
+            <h3>Goals Conceded per Game (Overall) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="clean-sheets-rio">
+            <h3>Clean Sheets (Overall) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="win-loss-margin-rio">
+            <h3>Win/Loss Margin (Overall) - Rio Ave</h3>
+            <p>Calculating...</p>
         </div>
     </div>
+
+    <div class="last-matches">
+        <h3>Last 5 Matches</h3>
+        <div id="last-5-matches-vitoria">Vitória SC: Calculating...</div>
+        <div id="last-5-matches-rio">Rio Ave: Calculating...</div>
     </div>
-    <div class="last-data-column">
-        <div class="stats-last">
-            <div>Last</div> 
+
+    <div class="stats">
+        <div class="stat" id="btts-percentage-last-5-vitoria">
+            <h3>BTTS Percentage (Last 5) - Vitória SC</h3>
+            <p>Calculating...</p>
         </div>
-        <div class="last-data">
-            <p>${lastMatchTotalGoals1}Total Goals  ${lastMatchTotalGoals2}</p>
-            <p>${lastMatchBTTS1 ? 'Yes' : 'No'}Last Match BTTS: ${lastMatchBTTS2 ? 'Yes' : 'No'}</p>
-            <p>${lastMatchOver2_51 ? 'Yes' : 'No'}Last Match Over 2.5 Goals: ${lastMatchOver2_52 ? 'Yes' : 'No'}</p>
+        <div class="stat" id="over-2-5-percentage-last-5-vitoria">
+            <h3>Over 2.5 Goals Percentage (Last 5) - Vitória SC</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="goals-scored-last-5-vitoria">
+            <h3>Goals Scored per Game (Last 5) - Vitória SC</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="goals-conceded-last-5-vitoria">
+            <h3>Goals Conceded per Game (Last 5) - Vitória SC</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="clean-sheets-last-5-vitoria">
+            <h3>Clean Sheets (Last 5) - Vitória SC</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="win-loss-margin-last-5-vitoria">
+            <h3>Win/Loss Margin (Last 5) - Vitória SC</h3>
+            <p>Calculating...</p>
         </div>
     </div>
+
+    <div class="stats">
+        <div class="stat" id="btts-percentage-last-5-rio">
+            <h3>BTTS Percentage (Last 5) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="over-2-5-percentage-last-5-rio">
+            <h3>Over 2.5 Goals Percentage (Last 5) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="goals-scored-last-5-rio">
+            <h3>Goals Scored per Game (Last 5) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="goals-conceded-last-5-rio">
+            <h3>Goals Conceded per Game (Last 5) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="clean-sheets-last-5-rio">
+            <h3>Clean Sheets (Last 5) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+        <div class="stat" id="win-loss-margin-last-5-rio">
+            <h3>Win/Loss Margin (Last 5) - Rio Ave</h3>
+            <p>Calculating...</p>
+        </div>
+    </div>
+
+    <script>
+        // The API URL
+        const apiUrl = 'https://api.sofascore.com/api/v1/tournament/52/season/63670/events';
+
+        // Team IDs for Vitória SC and Rio Ave
+        const vitoriaSCId = 3009;
+        const rioAveId = 3036;
+
+        // Fetch the event data from Sofascore API
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const events = data.events;
+                let totalGamesVitoria = 0, totalGamesRio = 0;
+                let bttsGamesVitoria = 0, bttsGamesRio = 0;
+                let over25GamesVitoria = 0, over25GamesRio = 0;
+                let totalGoalsScoredVitoria = 0, totalGoalsScoredRio = 0;
+                let totalGoalsConcededVitoria = 0, totalGoalsConcededRio = 0;
+                let cleanSheetsVitoria = 0, cleanSheetsRio = 0;
+                let winLossMarginsVitoria = [], winLossMarginsRio = [];
+                
+                // Store last 5 matches for both teams
+const last5MatchesVitoria = [];
+const last5MatchesRio = [];
+
+// Inside your event loop, replace the last5Matches logic with this
+events.forEach(event => {
+    const isFinished = event.status.type === "finished"; // Check if the event is finished
+
+    if (isFinished) {
+        const homeTeamId = event.homeTeam.id;
+        const awayTeamId = event.awayTeam.id;
+        const homeScore = event.homeScore?.current ?? 0;
+        const awayScore = event.awayScore?.current ?? 0;
+
+        // Handling Vitória SC
+        if (homeTeamId === vitoriaSCId || awayTeamId === vitoriaSCId) {
+            totalGamesVitoria++;
+            totalGoalsScoredVitoria += (homeTeamId === vitoriaSCId ? homeScore : awayScore);
+            totalGoalsConcededVitoria += (homeTeamId === vitoriaSCId ? awayScore : homeScore);
+            winLossMarginsVitoria.push(homeScore - awayScore);
+            if (homeScore > 0 && awayScore > 0) bttsGamesVitoria++;
+            if (homeScore + awayScore > 2.5) over25GamesVitoria++;
+            if ((homeTeamId === vitoriaSCId && awayScore === 0) || (awayTeamId === vitoriaSCId && homeScore === 0)) cleanSheetsVitoria++;
+
+            // Store last 5 matches
+            last5MatchesVitoria.push(event);
+            if (last5MatchesVitoria.length > 5) {
+                last5MatchesVitoria.shift(); // Remove the oldest match
+            }
+        }
+
+        // Handling Rio Ave
+        if (homeTeamId === rioAveId || awayTeamId === rioAveId) {
+            totalGamesRio++;
+            totalGoalsScoredRio += (homeTeamId === rioAveId ? homeScore : awayScore);
+            totalGoalsConcededRio += (homeTeamId === rioAveId ? awayScore : homeScore);
+            winLossMarginsRio.push(homeScore - awayScore);
+            if (homeScore > 0 && awayScore > 0) bttsGamesRio++;
+            if (homeScore + awayScore > 2.5) over25GamesRio++;
+            if ((homeTeamId === rioAveId && awayScore === 0) || (awayTeamId === rioAveId && homeScore === 0)) cleanSheetsRio++;
+
+            // Store last 5 matches
+            last5MatchesRio.push(event);
+            if (last5MatchesRio.length > 5) {
+                last5MatchesRio.shift(); // Remove the oldest match
+            }
+        }
+    }
+});
+
+
+                // Calculate overall statistics
+                const bttsPercentageVitoria = (bttsGamesVitoria / totalGamesVitoria) * 100 || 0;
+                const over25PercentageVitoria = (over25GamesVitoria / totalGamesVitoria) * 100 || 0;
+                const avgGoalsScoredVitoria = totalGoalsScoredVitoria / totalGamesVitoria || 0;
+                const avgGoalsConcededVitoria = totalGoalsConcededVitoria / totalGamesVitoria || 0;
+                const cleanSheetPercentageVitoria = (cleanSheetsVitoria / totalGamesVitoria) * 100 || 0;
+                const avgWinLossMarginVitoria = winLossMarginsVitoria.reduce((a, b) => a + b, 0) / winLossMarginsVitoria.length || 0;
+
+                const bttsPercentageRio = (bttsGamesRio / totalGamesRio) * 100 || 0;
+                const over25PercentageRio = (over25GamesRio / totalGamesRio) * 100 || 0;
+                const avgGoalsScoredRio = totalGoalsScoredRio / totalGamesRio || 0;
+                const avgGoalsConcededRio = totalGoalsConcededRio / totalGamesRio || 0;
+                const cleanSheetPercentageRio = (cleanSheetsRio / totalGamesRio) * 100 || 0;
+                const avgWinLossMarginRio = winLossMarginsRio.reduce((a, b) => a + b, 0) / winLossMarginsRio.length || 0;
+
+                // Calculate statistics for last 5 matches
+                const calculateLast5Stats = (matches) => {
+                    let totalGames = matches.length;
+                    let bttsGames = 0;
+                    let over25Games = 0;
+                    let totalGoalsScored = 0;
+                    let totalGoalsConceded = 0;
+                    let cleanSheets = 0;
+                    let winLossMargins = [];
+
+                    matches.forEach(match => {
+                        const homeTeamId = match.homeTeam.id;
+                        const awayTeamId = match.awayTeam.id;
+                        const homeScore = match.homeScore?.current ?? 0;
+                        const awayScore = match.awayScore?.current ?? 0;
+
+                        totalGoalsScored += (homeTeamId === vitoriaSCId ? homeScore : awayScore);
+                        totalGoalsConceded += (homeTeamId === vitoriaSCId ? awayScore : homeScore);
+                        winLossMargins.push(homeScore - awayScore);
+                        if (homeScore > 0 && awayScore > 0) bttsGames++;
+                        if (homeScore + awayScore > 2.5) over25Games++;
+                        if ((homeTeamId === vitoriaSCId && awayScore === 0) || (awayTeamId === vitoriaSCId && homeScore === 0)) cleanSheets++;
+                    });
+
+                    return {
+                        bttsPercentage: (bttsGames / totalGames) * 100 || 0,
+                        over25Percentage: (over25Games / totalGames) * 100 || 0,
+                        avgGoalsScored: totalGoalsScored / totalGames || 0,
+                        avgGoalsConceded: totalGoalsConceded / totalGames || 0,
+                        cleanSheetPercentage: (cleanSheets / totalGames) * 100 || 0,
+                        avgWinLossMargin: winLossMargins.reduce((a, b) => a + b, 0) / winLossMargins.length || 0
+                    };
+                };
+
+                const last5StatsVitoria = calculateLast5Stats(last5MatchesVitoria);
+                const last5StatsRio = calculateLast5Stats(last5MatchesRio);
+
+                // Display statistics on the page (Overall)
+                document.getElementById('btts-percentage-vitoria').querySelector('p').innerText = `${bttsPercentageVitoria.toFixed(2)}%`;
+                document.getElementById('over-2-5-percentage-vitoria').querySelector('p').innerText = `${over25PercentageVitoria.toFixed(2)}%`;
+                document.getElementById('goals-scored-vitoria').querySelector('p').innerText = `${avgGoalsScoredVitoria.toFixed(2)} goals/game`;
+                document.getElementById('goals-conceded-vitoria').querySelector('p').innerText = `${avgGoalsConcededVitoria.toFixed(2)} goals/game`;
+                document.getElementById('clean-sheets-vitoria').querySelector('p').innerText = `${cleanSheetPercentageVitoria.toFixed(2)}%`;
+                document.getElementById('win-loss-margin-vitoria').querySelector('p').innerText = `${avgWinLossMarginVitoria.toFixed(2)} goals`;
+
+                // Display statistics on the page (Rio Ave)
+                document.getElementById('btts-percentage-rio').querySelector('p').innerText = `${bttsPercentageRio.toFixed(2)}%`;
+                document.getElementById('over-2-5-percentage-rio').querySelector('p').innerText = `${over25PercentageRio.toFixed(2)}%`;
+                document.getElementById('goals-scored-rio').querySelector('p').innerText = `${avgGoalsScoredRio.toFixed(2)} goals/game`;
+                document.getElementById('goals-conceded-rio').querySelector('p').innerText = `${avgGoalsConcededRio.toFixed(2)} goals/game`;
+                document.getElementById('clean-sheets-rio').querySelector('p').innerText = `${cleanSheetPercentageRio.toFixed(2)}%`;
+                document.getElementById('win-loss-margin-rio').querySelector('p').innerText = `${avgWinLossMarginRio.toFixed(2)} goals`;
+
+                
+// Display last 5 matches logic remains the same
+document.getElementById('last-5-matches-vitoria').innerHTML = last5MatchesVitoria.map(match => {
+    const opponent = (match.homeTeam.id === vitoriaSCId) ? match.awayTeam.name : match.homeTeam.name;
+    const homeScore = match.homeScore?.current ?? 0;
+    const awayScore = match.awayScore?.current ?? 0;
+    return `Vitória SC vs ${opponent} | Score: ${homeScore} - ${awayScore}`;
+}).join('<br>');
+
+document.getElementById('last-5-matches-rio').innerHTML = last5MatchesRio.map(match => {
+    const opponent = (match.homeTeam.id === rioAveId) ? match.awayTeam.name : match.homeTeam.name;
+    const homeScore = match.homeScore?.current ?? 0;
+    const awayScore = match.awayScore?.current ?? 0;
+    return `Rio Ave vs ${opponent} | Score: ${homeScore} - ${awayScore}`;
+}).join('<br>');
+
+
+                // Display last 5 stats
+                document.getElementById('btts-percentage-last-5-vitoria').querySelector('p').innerText = `${last5StatsVitoria.bttsPercentage.toFixed(2)}%`;
+                document.getElementById('over-2-5-percentage-last-5-vitoria').querySelector('p').innerText = `${last5StatsVitoria.over25Percentage.toFixed(2)}%`;
+                document.getElementById('goals-scored-last-5-vitoria').querySelector('p').innerText = `${last5StatsVitoria.avgGoalsScored.toFixed(2)} goals/game`;
+                document.getElementById('goals-conceded-last-5-vitoria').querySelector('p').innerText = `${last5StatsVitoria.avgGoalsConceded.toFixed(2)} goals/game`;
+                document.getElementById('clean-sheets-last-5-vitoria').querySelector('p').innerText = `${last5StatsVitoria.cleanSheetPercentage.toFixed(2)}%`;
+                document.getElementById('win-loss-margin-last-5-vitoria').querySelector('p').innerText = `${last5StatsVitoria.avgWinLossMargin.toFixed(2)} goals`;
+
+                document.getElementById('btts-percentage-last-5-rio').querySelector('p').innerText = `${last5StatsRio.bttsPercentage.toFixed(2)}%`;
+                document.getElementById('over-2-5-percentage-last-5-rio').querySelector('p').innerText = `${last5StatsRio.over25Percentage.toFixed(2)}%`;
+                document.getElementById('goals-scored-last-5-rio').querySelector('p').innerText = `${last5StatsRio.avgGoalsScored.toFixed(2)} goals/game`;
+                document.getElementById('goals-conceded-last-5-rio').querySelector('p').innerText = `${last5StatsRio.avgGoalsConceded.toFixed(2)} goals/game`;
+                document.getElementById('clean-sheets-last-5-rio').querySelector('p').innerText = `${last5StatsRio.cleanSheetPercentage.toFixed(2)}%`;
+                document.getElementById('win-loss-margin-last-5-rio').querySelector('p').innerText = `${last5StatsRio.avgWinLossMargin.toFixed(2)} goals`;
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+</body>
+</html>
