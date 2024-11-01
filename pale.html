@@ -888,16 +888,16 @@ const loadEvents = async (events, odds, eventsContainer) => {
         const awayTeamWonStats = calculateWinStats(awayTeamWonEvents, event.awayTeam.id);
 
         
-        const homeStats = await calculateStatistics(homeTeamId, tournamentId, seasonId);
-        const awayStats = await calculateStatistics(awayTeamId, tournamentId, seasonId);
-        const overallStats = await calculateStatistics(null, tournamentId, seasonId);
+        const homeStats = await calculateStatistics(homeTeamId, tournamentId, seasonId, event.id);
+        const awayStats = await calculateStatistics(awayTeamId, tournamentId, seasonId, event.id);
+        const overallStats = await calculateStatistics(null, tournamentId, seasonId, event.id);
 
-            const combinedStats = {
-                goalsScored: ((parseFloat(homeStats.teamStats.goalsScored) + parseFloat(awayStats.teamStats.goalsScored))).toFixed(2),
-                BTTS: ((parseFloat(homeStats.teamStats.BTTS) + parseFloat(awayStats.teamStats.BTTS)) / 2).toFixed(0),
-                over1_5: ((parseFloat(homeStats.teamStats.over1_5) + parseFloat(awayStats.teamStats.over1_5)) / 2).toFixed(0),
-                over2_5: ((parseFloat(homeStats.teamStats.over2_5) + parseFloat(awayStats.teamStats.over2_5)) / 2).toFixed(0)
-            };
+        const combinedStats = {
+            goalsScored: ((parseFloat(homeStats.teamStats.goalsScored) + parseFloat(awayStats.teamStats.goalsScored))).toFixed(2),
+            BTTS: ((parseFloat(homeStats.teamStats.BTTS) + parseFloat(awayStats.teamStats.BTTS)) / 2),
+            over1_5: ((parseFloat(homeStats.teamStats.over1_5) + parseFloat(awayStats.teamStats.over1_5)) / 2),
+            over2_5: ((parseFloat(homeStats.teamStats.over2_5) + parseFloat(awayStats.teamStats.over2_5)) / 2)
+        };
 
             const leagueStats = overallStats.leagueStats;
   
@@ -916,7 +916,7 @@ const loadEvents = async (events, odds, eventsContainer) => {
 
         const homeTeamName = homeScore > awayScore ? `<strong>${event.homeTeam.shortName}</strong>` : event.homeTeam.shortName;
         const awayTeamName = awayScore > homeScore ? `<strong>${event.awayTeam.shortName}</strong>` : event.awayTeam.shortName;
-
+        const tolerance = 0.01;
         eventLink.innerHTML = `
             <div class="match-info-container">
                 <div class="team-info">
@@ -951,48 +951,49 @@ const loadEvents = async (events, odds, eventsContainer) => {
                      </div>
                 </div>
             </div>   
-            <div class="stats-container">
-                        <div class="stat-card">
-                            <div class="stat-title">GOALS</div>
-                            <div class="stat-value">
-                                <span class="team-value">${combinedStats.goalsScored}</span>
-                                <span class="trend-arrow ${combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down'}">
-                                    ${combinedStats.goalsScored > leagueStats.goalsScored ? '▲' : '▼'}
-                                </span>
-                            </div>
-                            <div class="league-average">L - ${leagueStats.goalsScored}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-title">BTTS</div>
-                            <div class="stat-value">
-                                <span class="team-value">${combinedStats.BTTS}%</span>
-                                <span class="trend-arrow ${combinedStats.BTTS > leagueStats.BTTS ? 'up' : 'down'}">
-                                    ${combinedStats.BTTS > leagueStats.BTTS ? '▲' : '▼'}
-                                </span>
-                            </div>
-                            <div class="league-average">L - ${leagueStats.BTTS}%</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-title">OVER 1.5</div>
-                            <div class="stat-value">
-                                <span class="team-value">${combinedStats.over1_5}%</span>
-                                <span class="trend-arrow ${combinedStats.over1_5 > leagueStats.over1_5 ? 'up' : 'down'}">
-                                    ${combinedStats.over1_5 > leagueStats.over1_5 ? '▲' : '▼'}
-                                </span>
-                            </div>
-                            <div class="league-average">L - ${leagueStats.over1_5}%</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-title">OVER 2.5</div>
-                            <div class="stat-value">
-                                <span class="team-value">${combinedStats.over2_5}%</span>
-                                <span class="trend-arrow ${combinedStats.over2_5 > leagueStats.over2_5 ? 'up' : 'down'}">
-                                    ${combinedStats.over2_5 > leagueStats.over2_5 ? '▲' : '▼'}
-                                </span>
-                            </div>
-                            <div class="league-average">L - ${leagueStats.over2_5}%</div>
-                        </div>
+           <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-title">GOALS</div>
+                    <div class="stat-value">
+                        <span class="team-value">${combinedStats.goalsScored}</span>
+                        <span class="trend-arrow ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
+                            ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? '▲' : '▼')}
+                        </span>
                     </div>
+                    <div class="league-average">L - ${leagueStats.goalsScored}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">BTTS</div>
+                    <div class="stat-value">
+                        <span class="team-value">${combinedStats.BTTS}%</span>
+                        <span class="trend-arrow ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? 'up' : 'down')}">
+                            ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? '▲' : '▼')}
+                        </span>
+                    </div>
+                    <div class="league-average">L - ${leagueStats.BTTS}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">OVER 1.5</div>
+                    <div class="stat-value">
+                        <span class="team-value">${combinedStats.over1_5}%</span>
+                        <span class="trend-arrow ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? 'up' : 'down')}">
+                            ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? '▲' : '▼')}
+                        </span>
+                    </div>
+                    <div class="league-average">L - ${leagueStats.over1_5}%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">OVER 2.5</div>
+                    <div class="stat-value">
+                        <span class="team-value">${combinedStats.over2_5}%</span>
+                        <span class="trend-arrow ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? 'up' : 'down')}">
+                            ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? '▲' : '▼')}
+                        </span>
+                    </div>
+                    <div class="league-average">L - ${leagueStats.over2_5}%</div>
+                </div>
+            </div>
+
             <div class="match-odds">
                 <span class="odds">${homeOdds}</span>
                 <span class="odds">${drawOdds}</span>
@@ -1003,8 +1004,7 @@ const loadEvents = async (events, odds, eventsContainer) => {
         `;
 
         // Fetch and display most recent H2H event for the current event
-        fetchAndDisplayMostRecentH2HEvent(event.customId, event.id, uniqueEventId);
-
+        fetchAndDisplayMostRecentH2HEvent(event.customId, event.id, uniqueEventId); 
          
 
         eventListItem.appendChild(eventLink);
@@ -1192,14 +1192,14 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                 // Display the HTML for all events
                 document.getElementById(elementId).innerHTML = eventsHtml;
             } else {
-                document.getElementById(elementId).innerHTML = '<span>No finished H2H events from the last 3 years found.</span>';
+                document.getElementById(elementId).innerHTML = '<p style="text-align:center;">No finished H2H events from the last 3 years found.</p>';
             }
         } else {
-            document.getElementById(elementId).innerHTML = '<span>No events data available.</span>';
+            document.getElementById(elementId).innerHTML = '<p>No events data available.</p>';
         }
     } catch (error) {
         console.error('Error fetching H2H events:', error.message);
-        document.getElementById(elementId).innerHTML = '<span>Error fetching H2H events.</span>';
+        document.getElementById(elementId).innerHTML = '<p>Error fetching H2H events.</p>';
     }
 };
 
@@ -1215,22 +1215,25 @@ const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     return filteredEvents;
 };
 
- // Utility function to fetch events data and filter for finished events
- const fetchEventsData = async (tournamentId, seasonId) => {
+      // Utility function to fetch events data and filter for finished events excluding the current match
+      const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
                 const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
                 const eventsData = await fetchJson(eventsUrl);
 
                 // Check if eventsData exists and contains events
                 if (!eventsData || !eventsData.events) return [];
 
-                // Filter only finished events
-                const finishedEvents = eventsData.events.reverse().filter(event => event.status.type === 'finished');
+                // Filter only finished events and exclude the current match
+                const finishedEvents = eventsData.events.reverse().filter(event => 
+                    event.status.type === 'finished' && event.id !== currentMatchId
+                );
 
                 return finishedEvents;
             };
+
  
 const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchId) => {
-    const finishedEvents = await fetchEventsData(tournamentId, seasonId);
+    const finishedEvents = await fetchEventsData(tournamentId, seasonId, currentMatchId);
 
     if (finishedEvents.length === 0) return null;
 
