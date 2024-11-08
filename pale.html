@@ -38,11 +38,14 @@ body {
     background-color: var(--color-light-gray-bg);
     color: var(--color-dark-gray-text);
     -webkit-font-smoothing: antialiased;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
 }
-
+h4 {
+    margin: 0;
+}
 .W, .D, .L {   
     align-items: center;  
     justify-content: center;
@@ -539,36 +542,31 @@ main {
 }
 
 .stats-container {
-  display: flex;
-  gap: 10px;
-  background-color: transparent;
-  padding: 10px;
+    background-color: #091c3d;
+    display: flex;
+    background-color: transparent; 
+    gap: 11px;
 }
 
-.stat-card {
-  background-color: #091c3d;
-  color: white;
-  padding: 10px;
-  width: 100px;
-  text-align: center;
-  border-radius: 5px; 
+.stat-card {  
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .stat-title {
   font-size: 11px;
-  font-weight: bold;
+  font-weight: 600;
   color: #ccc;
 }
 
-.stat-value {
-  font-size: 14px;
-  font-weight: bold;
-  margin-top: 5px;
+.stat-value { 
+    font-size: 11px;
+  font-weight: 500; 
 }
  
 .trend-arrow {
-  font-size: 14px;
-  margin-left: 5px;
+    font-size: 11px; 
 }
 
 .trend-arrow.down { 
@@ -673,6 +671,17 @@ main {
 
         .bottom-nav div.active {
             color: #F44336; /* Red color to indicate active section */
+        }
+        .stat-league {  
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            width: 80%;
+            justify-content: space-around;
+            padding: 5px 0;
+        }
+        .stat-league span { 
+            color: #091c3d !important;
         }
      </style>
     </head>
@@ -876,7 +885,7 @@ const displayCategories = async (date, hours, status) => {
     }
 };
 
-// Function to create category section
+const leagueStatsCache = {}; // Cache object for league stats
 const createCategorySection = (tournaments, categoryName, odds) => {
     const categoryItem = document.createElement('div');
     categoryItem.classList.add('category');
@@ -887,7 +896,7 @@ const createCategorySection = (tournaments, categoryName, odds) => {
     tournaments.forEach((tournament, tournamentName) => {
         const tournamentSection = document.createElement('div');
         tournamentSection.classList.add('tournament');
-
+        
         const tournamentHeader = document.createElement('h3');
         tournamentHeader.classList.add('flex', '_F_ac');
         const tournamentImage = `${baseURL}/unique-tournament/${tournament.id}/image`;
@@ -897,19 +906,53 @@ const createCategorySection = (tournaments, categoryName, odds) => {
         `;
         tournamentSection.appendChild(tournamentHeader);
 
+        // League stats container
+        const leagueStatsContainer = document.createElement('div');
+        leagueStatsContainer.classList.add('league-stats-container');
+        leagueStatsContainer.style.display = 'none'; // Hidden by default
+        tournamentSection.appendChild(leagueStatsContainer);
+
         const eventsContainer = document.createElement('div');
         eventsContainer.classList.add('events-container');
         eventsContainer.style.display = 'none'; // Hidden by default
         tournamentSection.appendChild(eventsContainer);
 
-        // Add click event listener to load and display events
-        tournamentHeader.addEventListener('click', () => {
+        tournamentHeader.addEventListener('click', async () => {
             tournamentSection.classList.toggle('show');
-            eventsContainer.style.display = eventsContainer.style.display === 'none' ? 'flex' : 'none';
+            const isEventsVisible = eventsContainer.style.display === 'none';
+            eventsContainer.style.display = isEventsVisible ? 'flex' : 'none';
+            leagueStatsContainer.style.display = isEventsVisible ? 'block' : 'none';
+
+            let seasonId;
+            let uniqueTournamentId;
+            if (tournament.events && tournament.events.length > 0) {
+                const event = tournament.events[0];
+                seasonId = event.season?.id;
+                uniqueTournamentId = event.tournament.id;
+                console.log(seasonId);
+                console.log(uniqueTournamentId);
+
+                if (!seasonId) {
+                    console.warn(`Season ID is missing for event ID ${event.id}`);
+                }
+            }
+
+            if (!leagueStatsCache[tournament.id]) {
+                // Fetch league stats only once
+                const overallStats = await calculateStatistics(null, uniqueTournamentId, seasonId);
+                leagueStatsCache[tournament.id] = overallStats.leagueStats;
+            }
+
+            if (leagueStatsContainer.innerHTML === '') {
+                displayLeagueStats(leagueStatsCache[tournament.id], leagueStatsContainer);
+            }
+
             if (eventsContainer.children.length === 0) {
-                loadEvents(tournament.events, odds, eventsContainer);
+                const leagueStats = leagueStatsCache[tournament.id];
+                loadEvents(tournament.events, odds, eventsContainer, leagueStats);
             }
         });
+
 
         tournamentsContainer.appendChild(tournamentSection);
     });
@@ -917,8 +960,25 @@ const createCategorySection = (tournaments, categoryName, odds) => {
     categoryItem.appendChild(tournamentsContainer);
     return categoryItem;
 };
+
+// Function to display league stats
+const displayLeagueStats = (leagueStats, container) => {
+    container.innerHTML = ` 
+        <div class="stat-league">
+            <div class="stat-title">AG <span>${leagueStats.goalsScored}</span></div>
+              
+            <div class="stat-title">BTTS <span>${leagueStats.BTTS}%</span></div>
+             
+            <div class="stat-title">+1.5 <span>${leagueStats.over1_5}%</span></div>
+             
+            <div class="stat-title">+2.5 <span>${leagueStats.over2_5}%</span></div> 
+        </div>
+    `;
+};
+
+
 // Function to load events into a container
-const loadEvents = async (events, odds, eventsContainer) => {
+const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
     for (const event of events) {
         const eventListItem = document.createElement('li');
         const eventLink = document.createElement('div');
@@ -972,8 +1032,6 @@ const loadEvents = async (events, odds, eventsContainer) => {
             over1_5: ((parseFloat(homeStats.teamStats.over1_5) + parseFloat(awayStats.teamStats.over1_5)) / 2),
             over2_5: ((parseFloat(homeStats.teamStats.over2_5) + parseFloat(awayStats.teamStats.over2_5)) / 2)
         };
-
-            const leagueStats = overallStats.leagueStats;
   
         // Get odds data
         const oddsData = odds[event.id] || {};
@@ -1027,14 +1085,13 @@ const loadEvents = async (events, odds, eventsContainer) => {
             </div>   
            <div class="stats-container">
                 <div class="stat-card">
-                    <div class="stat-title">GOALS</div>
+                    <div class="stat-title">TAGS</div>
                     <div class="stat-value">
                         <span class="team-value">${combinedStats.goalsScored}</span>
                         <span class="trend-arrow ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
                             ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? '▲' : '▼')}
                         </span>
                     </div>
-                    <div class="league-average">L - ${leagueStats.goalsScored}</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-title">BTTS</div>
@@ -1044,29 +1101,27 @@ const loadEvents = async (events, odds, eventsContainer) => {
                             ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? '▲' : '▼')}
                         </span>
                     </div>
-                    <div class="league-average">L - ${leagueStats.BTTS}%</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-title">OVER 1.5</div>
+                    <div class="stat-title">+1.5</div>
                     <div class="stat-value">
                         <span class="team-value">${combinedStats.over1_5}%</span>
                         <span class="trend-arrow ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? 'up' : 'down')}">
                             ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? '▲' : '▼')}
                         </span>
                     </div>
-                    <div class="league-average">L - ${leagueStats.over1_5}%</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-title">OVER 2.5</div>
+                    <div class="stat-title">+2.5</div>
                     <div class="stat-value">
                         <span class="team-value">${combinedStats.over2_5}%</span>
                         <span class="trend-arrow ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? 'up' : 'down')}">
                             ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? '▲' : '▼')}
                         </span>
                     </div>
-                    <div class="league-average">L - ${leagueStats.over2_5}%</div>
                 </div>
             </div>
+
 
             <div class="match-odds">
                 <span class="odds">${homeOdds}</span>
