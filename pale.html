@@ -373,10 +373,10 @@ main {
 .match-status {
     margin-top: 5px;
 }
-.match-status.done {
-    background-color: var(--color-light-gray-bg);
+.match-status.live { 
     border-radius: 25px;
     padding: 5px 0;
+    color: #FB0000;
 }
 .team-forms, .team-wins {
     display: flex;
@@ -1090,9 +1090,10 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                             : `
                                  <div class="match-time">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
                             `}
-                    <div class="match-status${event.status.type === 'inprogress' || event.status.type === 'finished' ? ' done' : ''}">
-                        ${event.status.type === 'inprogress' ? 'Live' : event.status.type === 'finished' ? 'FT' : ''}
+                    <div class="match-status ${event.status.type === 'inprogress' ? 'live' : 'default'}">
+                        <span id="live-timer-${event.id}"></span>
                     </div>
+
                 </div>
                 <div class="team-info">
                     <div class="team">
@@ -1148,15 +1149,70 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 <span class="odds">${awayOdds}</span>
             </div> 
         `;
-
+            
         // Fetch and display most recent H2H event for the current event
         fetchAndDisplayMostRecentH2HEvent(event.customId, event.id, uniqueEventId); 
          
 
         eventListItem.appendChild(eventLink);
         eventsContainer.appendChild(eventListItem);
+        
+        // Start the live timer if the match is in progress
+            if (event.status.type === 'inprogress') {
+                startLiveTimer(event);
+            } else if (event.status.description === 'Ended') {
+                const timerElement = document.getElementById(`live-timer-${event.id}`);
+                timerElement.innerHTML = 'Ended';
+            }
     }
 };
+
+
+const formatTime = (time) => {
+        return time < 10 ? `0${time}` : time; // Add leading zero if less than 10
+    };
+
+    const calculateElapsedTime = (event) => {
+        const now = Math.floor(Date.now() / 1000);
+        let elapsedSeconds = now - event.time.currentPeriodStartTimestamp;
+            console.log(event.time.currentPeriodStartTimestamp);
+        // Check for match status descriptions
+        if (event.status.description === 'Halftime') {
+            return "Halftime"; // Display Halftime when it's halftime
+        } else if (event.status.description === 'Ended') {
+            return "Ended"; // Display Ended when the match has ended
+        } else if (event.status.description === '1st half') {
+            if (elapsedSeconds < 2700) {
+                const minutes = Math.floor(elapsedSeconds / 60);
+                const seconds = elapsedSeconds % 60;
+                return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
+            }
+            return "Halftime"; // Full time for 1st half
+        } else if (event.status.description === '2nd half') {
+            if (elapsedSeconds < 5400) {
+                const minutes = Math.floor((elapsedSeconds + 2700) / 60); // Add 2700 seconds for the 1st half
+                const seconds = (elapsedSeconds + 2700) % 60;
+                return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
+            }
+            return "Ended"; // Full time for 2nd half
+        } 
+        return "00:00"; // Default if not in progress
+    };
+
+    const startLiveTimer = (event) => {
+        const timerElement = document.getElementById(`live-timer-${event.id}`);
+        const interval = setInterval(() => {
+            if (event.status.type === 'inprogress') {
+                const elapsedTime = calculateElapsedTime(event);
+                timerElement.innerHTML = `${elapsedTime}`;
+            } else {
+                clearInterval(interval); // Stop the timer if the game is finished
+                timerElement.innerHTML = calculateElapsedTime(event); // Display the final state (FT)
+            }
+        }, 1000); // Update every second
+    };
+
+
 const calculateGameResult = (game, teamId) => {
     if (game.winnerCode === 3) {
         return 'D'; // Draw
