@@ -44,7 +44,7 @@ body {
     width: 100vw;
 }
 h4 {
-    margin: 0;
+    margin: 10px 0 5px;
 }
 .W, .D, .L {   
     align-items: center;  
@@ -436,9 +436,15 @@ main {
     border-collapse: collapse;
     font-size: 12px;
 }
-.team-events table th, .team-events table td, .h2h-event table th, .h2h-event table td {
+.team-events table th, .team-events table td, .h2h-event table th {
     border: 1px solid #eaecf1;
     padding: 2px 4px;
+}
+.h2h-event table td {
+    border: 0; 
+}
+.h2h-event table tr:not(:last-child) {
+    border-bottom: 1px solid #eaecf1; 
 }
 .team-events table th:nth-child(3), .team-events table td:nth-child(3) {
     text-align: center;
@@ -446,10 +452,19 @@ main {
 .tableOdds {
     display: flex;
     flex-direction: row;
-    text-align: right; 
+    text-align: right;
+    justify-content: space-between;
+    background-color: var(--color-light-gray-bg);
+    padding: 5px;
 }
 .tableOdds span {
     flex: 1; 
+    text-align: center;
+    font-weight: 600;
+}
+.tableOdds span:nth-child(2) {
+    border-left: 1px solid #c4c7c9;
+    border-right: 1px solid #c4c7c9;
 }
 .team-events .tableOdds span.won {
     font-weight: 700;
@@ -1290,7 +1305,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
 
                 // Create HTML for the table with all filtered events with odds
                 const eventsHtml = `
-                    <table border="1" style="width: 100%; border-collapse: collapse;"> 
+                    <table border="0" style="width: 100%; border-collapse: collapse;"> 
                         <tbody>
                             ${eventsWithOdds.map(event => {
                                 const homeTeam = event.homeTeam.nameCode;
@@ -1306,7 +1321,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                         <td style="min-width:130px;">${homeTeam} - ${awayTeam}</td>
                                         <td>${homeScore} - ${awayScore}</td>
                                         <td>
-                                            <div class="tableOdds" style="min-width:30px;">
+                                            <div class="tableOdds" style="min-width:120px;">
                                                 <span class="home-odds">${fractionalToDecimal(event.homeOdds)}</span>
                                                 <span class="draw-odds">${fractionalToDecimal(event.drawOdds)}</span>
                                                 <span class="away-odds">${fractionalToDecimal(event.awayOdds)}</span>
