@@ -704,6 +704,25 @@ main {
         .stat-league span { 
             color: #091c3d !important;
         }
+        .teams-form {
+            display: flex;
+            flex-direction: row; 
+        }
+        .teams-form .homes-team-form, .teams-form .aways-team-form { 
+            flex: 1;
+            display: flex; 
+            font-size: 11px;
+        }
+        .team-forms .homes-team-form .data, .team-forms .aways-team-form .data {
+            position: absolute;
+            top: -10px;
+        } 
+        .teams-form .homes-team-form>div { 
+            margin-left: auto;  
+        }
+        .teams-form .aways-team-form>div { 
+            margin-right: auto;  
+        }
      </style>
     </head>
     <body> 
@@ -1024,7 +1043,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const homeTeamPoints = getLastFiveGamesPoints(homeTeamLastEvents, event.homeTeam.id);
         const awayTeamPoints = getLastFiveGamesPoints(awayTeamLastEvents, event.awayTeam.id);
 
-
+        const homeTeamForm = ((homeTeamPoints / 15) * 100).toFixed(0);
+        const awayTeamForm = ((awayTeamPoints / 15) * 100).toFixed(0);
         // Fetch last 5 games with odds for each team
         const homeTeamLastFiveGames = await getLastFiveGames(homeTeamLastEvents, 'home', event.homeTeam.id);
         const awayTeamLastFiveGames = await getLastFiveGames(awayTeamLastEvents, 'away', event.awayTeam.id);
@@ -1103,7 +1123,24 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <span class="team-name">${awayTeamName}</span>
                      </div>
                 </div>
-            </div>   
+            </div> 
+                <div class="teams-form">
+                    <div class="homes-team-form"> 
+                        <div style="margin-right:4px;">${homeTeamForm}%</div>
+                    </div>
+                    <div class="aways-team-form"> 
+                        <div style="margin-left:4px;">${awayTeamForm}%</div>
+                    </div>
+                </div>
+                <div class="teams-form">
+                    <div class="homes-team-form">
+                        <div style="width:${homeTeamForm}%;background-color: #9CE800;height: 5px;"></div> 
+                    </div>
+                    <div class="aways-team-form">
+                        <div style="width:${awayTeamForm}%;background-color: #FF7A00;height: 5px;"></div> 
+                    </div>
+                </div>
+
            <div class="stats-container">
                 <div class="stat-card">
                     <div class="stat-title">TAGS</div>
@@ -1683,9 +1720,9 @@ const getLastFiveGamesPoints = (events, teamId) => {
 };  
 
         const fetchEventDetails = async (eventId) => { 
-    await displayEventDetails(eventId);
-};
- 
+            await displayEventDetails(eventId);
+        };
+        
         const displayEventDetails = async (eventId) => {
                         // Function to fetch and display event details
                         const fetchAndDisplayDetails = async () => {
