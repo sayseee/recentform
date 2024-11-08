@@ -272,7 +272,7 @@ main {
 .events-container  li:not(:first-child) a {
     border-top: var(--color-support-3) 1px solid;   
 } 
-.events-container li a {
+.events-container li .match-card {
     background: none;
     border: none;
     cursor: pointer;
@@ -288,12 +288,12 @@ main {
 .events-container li:not(:first-child) a { 
     border-radius: 8px;  
 }
-.events-container li:first-child a { 
+.events-container li:first-child .match-card { 
     border-bottom-left-radius: 8px;  
     border-bottom-right-radius: 8px;  
 }
 
-.tournament a {
+.tournament .match-card {
     text-decoration: none;
     display: flex;
     justify-content: space-between;
@@ -607,13 +607,6 @@ main {
     </head>
     <body> 
     <header id="superheader">
-            <!-- Logo -->
-    <div class="logo-filter" style="display:flex; width:100%">
-    <div class="logo-icons">
-        <div class="logo">
-            FUTBOL
-        </div> 
-    </div>
 
         <!-- Filter Container -->
         <div class="filter-bar">
@@ -636,7 +629,6 @@ main {
                 </select>
                 <button id="filter-btn">Filter</button> 
             </div> 
-        </div>
         </div>
         <div class="main-nav">
             <nav class="filters">
@@ -858,7 +850,7 @@ const createCategorySection = (tournaments, categoryName, odds) => {
 const loadEvents = async (events, odds, eventsContainer) => {
     for (const event of events) {
         const eventListItem = document.createElement('li');
-        const eventLink = document.createElement('a');
+        const eventLink = document.createElement('div');
         const uniqueEventId = `eventInfo-${event.id}`; // Unique ID for the event's info container
         eventLink.className = 'match-card';
         eventLink.dataset.eventId = event.id;
