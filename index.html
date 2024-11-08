@@ -1429,30 +1429,9 @@ const displayCategories = async (date, hours, status) => {
 
         const generateLast5OffStatsHTML = (stats, teamId) => {
             // Calculate percentages for the stats based on the total number of events
-            const totalEvents = stats.results.length;
-            const overs1_5Percent = (stats.over1_5 / totalEvents) * 100;
-            const overs2_5Percent = (stats.over2_5 / totalEvents) * 100;
-            const overs3_5Percent = (stats.over3_5 / totalEvents) * 100;
-            const bttsPercent = (stats.btts / totalEvents) * 100;
+            const totalEvents = stats.results.length; 
 
             const failedToScorePercent = (stats.failedToScore / totalEvents) * 100;
-
-            return ` 
-                <tr class="stats">
-                    <td>${overs1_5Percent.toFixed(0)}%</td>
-                    <td>${overs2_5Percent.toFixed(0)}%</td>
-                    <td>${overs3_5Percent.toFixed(0)}%</td>
-                    <td>${bttsPercent.toFixed(0)}%</td>
-                    <td>${failedToScorePercent.toFixed(0)}%</td> 
-                </tr>
-            `;
-        };
-
-
-
-        const generateLast5DefStatsHTML = (stats, teamId) => {
-            // Calculate percentages for the stats based on the total number of events
-            const totalEvents = stats.results.length;
 
             // Count how many times the team has scored 2 or more goals in a match
             const twoPlusGoalsEvents = stats.results.filter(event => {
@@ -1469,18 +1448,19 @@ const displayCategories = async (date, hours, status) => {
             }).length;
             const twoPlusGoalsConcededPercent = (twoPlusGoalsConceded / totalEvents) * 100;
 
-            const cleanSheetsPercent = (stats.cleanSheets / totalEvents) * 100;
-
             return ` 
-                <tr class="stats">
+                <tr class="stats"> 
+                    <td>${failedToScorePercent.toFixed(0)}%</td>
+                    <td>${stats.totalGoalsScored} / ${stats.totalGoalsPeriod1Scored}</td>
+                    <td>${stats.totalGoalsConceded} / ${stats.totalGoalsPeriod1Conceded}</td> 
                     <td>${twoPlusGoalsPercent.toFixed(0)}%</td>
                     <td>${twoPlusGoalsConcededPercent.toFixed(0)}%</td>
-                    <td>${cleanSheetsPercent.toFixed(0)}%</td>
-                    <td>${stats.totalGoalsScored} / ${stats.totalGoalsPeriod1Scored}</td>
-                    <td>${stats.totalGoalsConceded} / ${stats.totalGoalsPeriod1Conceded}</td>
                 </tr>
             `;
         };
+
+
+ 
 
 
         // Function to display the last 5 events with odds
@@ -1885,11 +1865,7 @@ const displayCategories = async (date, hours, status) => {
  
         // Generate HTML for home and away team stats
         const homeTeamOffStatsHTML = generateLast5OffStatsHTML(homeTeamStats.overall, homeTeamId);
-        const awayTeamOffStatsHTML = generateLast5OffStatsHTML(awayTeamStats.overall, awayTeamId);
-        // Generate HTML for home and away team stats
-        const homeTeamDefStatsHTML = generateLast5DefStatsHTML(homeTeamStats.overall, homeTeamId);
-        const awayTeamDefStatsHTML = generateLast5DefStatsHTML(awayTeamStats.overall, awayTeamId);
-
+        const awayTeamOffStatsHTML = generateLast5OffStatsHTML(awayTeamStats.overall, awayTeamId); 
         const h2hEvents = await fetchH2HEvents(eventData.customId, currentMatchId, homeTeamId);
 
         // Filter H2H events from the last 5 years
@@ -1966,7 +1942,7 @@ const displayCategories = async (date, hours, status) => {
                          <table>
                             <thead>
                                 <tr>
-                                    <th>+1.5</th> <th>+2.5</th> <th>+3.5</th> <th>BTTS</th> <th>FTS</th>
+                                    <th>FTS</th> <th>TGF</th> <th>TGA</th> <th>S2+</th> <th>C2+</th>
                                 </tr>
                             </thead>
                             <tbody> 
@@ -1974,20 +1950,7 @@ const displayCategories = async (date, hours, status) => {
                                 ${awayTeamOffStatsHTML}
                             </tbody>
                         </table>
-                    </div>
-                    <div id="stats-details">
-                         <table>
-                            <thead>
-                                <tr>
-                                    <th>S+2</th> <th>C+2</th> <th>CS</th> <th>TGF</th> <th>TGA</th>
-                                </tr>
-                            </thead>
-                            <tbody> 
-                                ${homeTeamDefStatsHTML}
-                                ${awayTeamDefStatsHTML}
-                            </tbody>
-                        </table>
-                    </div>
+                    </div> 
                     
                     <div id="results-table"></div>
                 </div>

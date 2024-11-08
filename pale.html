@@ -588,48 +588,55 @@ main {
   color: #ccc;
   margin-top: 5px;
 }
-
+.filter-bar button {
+    background-color: var(--color-support-4);
+    color: var(--color-tabs-secondary-fill-base);
+    font-weight: bold;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.filter-bar input[type=date], .filter-bar input[type=select], button, .filter-bar select {
+    height: 30px;
+    border: 0;
+    background-color: #000;
+    color: var(--color-support-1);
+    padding: 0 10px;
+    border-radius: 4px;
+}
      </style>
     </head>
     <body> 
     <header id="superheader">
             <!-- Logo -->
+    <div class="logo-filter" style="display:flex; width:100%">
     <div class="logo-icons">
         <div class="logo">
             FUTBOL
-        </div>
-
-        <!-- Icons -->
-        <div class="icons">
-            <!-- Calendar Icon -->
-            <svg id="calendarIcon" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M19 3h-1V2h-2v1H8V2H6v1H5c-1.1 0-2 .9-2 2v17c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 4h14v2H5V4zm14 16H5V9h14v11z" fill="#dcdde0"/>
-            </svg>
-            <!-- Time Icon -->
-            <svg id="timeIcon" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13H11v6h6v-1.5H12z" fill="#dcdde0"/>
-            </svg>
-        </div>
+        </div> 
     </div>
 
         <!-- Filter Container -->
         <div class="filter-bar">
-            <!-- Date Filter -->
-            <div class="date-filter hidden"> 
-                <input type="date" id="start-date" name="start-date">
-                <span>TO:</span>
-                <input type="date" id="end-date" name="end-date">
+            <div>
+                <button class="calendar__navigation calendar__navigation--yesterday" title="Previous day">&#8249;</button>
+                <button id="calendarMenu" aria-expanded="false" class="calendar__datepicker">
+                    <span id="current-day"></span> <!-- Current date dynamically displayed here -->
+                </button>
+                <ul aria-labelledby="calendarMenu" class="calendar__days" id="date-list" hidden>
+                    <!-- Dates will be appended here dynamically -->
+                </ul>
+                <button class="calendar__navigation calendar__navigation--tomorrow" title="Next day">&#8250;</button>
             </div>
-            <!-- Time Filter -->
-            <div class="time-filter hidden">
+            <div> 
                 <select id="time-range">
                     <option value="">Select Time</option>
                     <option value="3">3 Hours</option>
                     <option value="6">6 Hours</option>
                     <option value="12">12 Hours</option>
                 </select>
-            </div>
-            <button id="filter-btn" class="hidden">Filter</button>
+                <button id="filter-btn">Filter</button> 
+            </div> 
+        </div>
         </div>
         <div class="main-nav">
             <nav class="filters">
@@ -659,15 +666,7 @@ main {
       });
     });
   }
-document.getElementById('calendarIcon').addEventListener('click', function () {
-    // Toggle date filter visibility
-    toggleFilter('date-filter');
-});
-
-document.getElementById('timeIcon').addEventListener('click', function () {
-    // Toggle time filter visibility
-    toggleFilter('time-filter');
-});
+ 
 
 function toggleFilter(filterClass) {
     // Hide all filters first
@@ -714,11 +713,11 @@ const filterEventsByTime = (events, hours) => {
         return eventTime >= now && eventTime <= now + timeRange;
     });
 };
-const displayCategories = async (startDate, endDate, hours, status) => {
+const displayCategories = async (date, hours, status) => {
     const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
-    const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${startDate}`;
+    const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${date}`;
      
-    const oddsResponseUrl = `${baseURL}/sport/football/odds/1/${startDate}`;
+    const oddsResponseUrl = `${baseURL}/sport/football/odds/1/${date}`;
 
     try {
         const topTournamentsData = await fetch(topTournamentsUrl).then(response => response.json());
@@ -731,31 +730,43 @@ const displayCategories = async (startDate, endDate, hours, status) => {
         ];
         const odds = oddsData?.odds || {};
 
-        let filteredEvents = allEvents.filter(event => {
-            const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
-            return eventDate >= startDate && eventDate <= endDate;
-        });
+            // Filter by date range for the selected day
+            const startDate = new Date(date).setHours(0, 0, 0);
+            const endDate = new Date(date).setHours(23, 59, 59);
+ 
 
-        if (hours) {
-            filteredEvents = filterEventsByTime(filteredEvents, hours);
-        }
-
-        if (status) {
-            filteredEvents = filteredEvents.filter(event => {
-                switch (status) {
-                    case 'live':
-                        return event.status.type === 'inprogress';
-                    case 'finished':
-                        return event.status.type === 'finished';
-                    case 'scheduled':
-                        return event.status.type === 'notstarted';
-                    default:
-                        return true;
-                }
+            filteredEvents = allEvents.filter(event => {
+                const eventTime = new Date(event.startTimestamp * 1000).getTime();
+                return eventTime >= startDate && eventTime <= endDate;
             });
-        }
 
-        filteredEvents = filteredEvents.filter(event => odds[event.id]);
+            // If hours are specified, filter further by time range
+            if (hours) {
+                const timeRangeStart = new Date(date).setHours(0, 0, 0);
+                const timeRangeEnd = new Date(date).setHours(hours, 59, 59);
+
+                filteredEvents = filteredEvents.filter(event => {
+                    const eventTime = new Date(event.startTimestamp * 1000).getTime();
+                    return eventTime >= timeRangeStart && eventTime <= timeRangeEnd;
+                });
+            }
+
+            if (status) {
+                filteredEvents = filteredEvents.filter(event => {
+                    switch (status) {
+                        case 'live':
+                            return event.status.type === 'inprogress';
+                        case 'finished':
+                            return event.status.type === 'finished';
+                        case 'scheduled':
+                            return event.status.type === 'notstarted';
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            filteredEvents = filteredEvents.filter(event => odds[event.id]);
 
         const topTournaments = topTournamentsData.uniqueTournaments || [];
         const topTournamentIds = new Set(topTournaments.map(tournament => tournament.id));
@@ -1583,46 +1594,95 @@ const getLastFiveGamesPoints = (events, teamId) => {
 
  
             document.addEventListener('DOMContentLoaded', () => {
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('start-date').value = today;
-                document.getElementById('end-date').value = today;
+                const today = new Date();
+                let selectedDate = today;
+                let selectedHours = '';
 
-                // Initial data load
-                displayCategories(today, today, '');
+                // Function to update the displayed date
+                function updateCalendarDisplay(date) {
+                    const formattedDate = formatDate(date);
+                    const currentDayElem = document.getElementById('current-day');
+                    if (currentDayElem) currentDayElem.innerText = formattedDate;
+                }
 
-                document.getElementById('filter-btn').addEventListener('click', () => {
-                    const startDate = document.getElementById('start-date').value;
-                    const endDate = document.getElementById('end-date').value;
-                    const hours = document.getElementById('time-range').value;
-                    displayCategories(startDate, endDate, hours);
-                });
+                // Function to format the date to YYYY-MM-DD
+                function formatDate(date) {
+                    return date.toISOString().split('T')[0]; // Format date as 'YYYY-MM-DD'
+                }
+
+                // Fetch and display events for the selected date
+                function fetchEventsByDate(date, hours) {
+                    //console.log('Fetching events for date:', date, 'with hours:', hours);
+                    // Ensure displayCategories can handle optional status argument
+                    displayCategories(date, hours);
+                }
+
+                // Initial data load: Display today's date and fetch events
+                updateCalendarDisplay(today);
+                fetchEventsByDate(formatDate(today), selectedHours);
+
+                // Handle 'yesterday' button click
+                const yesterdayBtn = document.querySelector('.calendar__navigation--yesterday');
+                if (yesterdayBtn) {
+                    yesterdayBtn.addEventListener('click', () => {
+                        selectedDate.setDate(selectedDate.getDate() - 1); // Move to the previous day
+                        updateCalendarDisplay(selectedDate);
+                        fetchEventsByDate(formatDate(selectedDate), selectedHours);
+                    });
+                }
+
+                // Handle 'tomorrow' button click
+                const tomorrowBtn = document.querySelector('.calendar__navigation--tomorrow');
+                if (tomorrowBtn) {
+                    tomorrowBtn.addEventListener('click', () => {
+                        selectedDate.setDate(selectedDate.getDate() + 1); // Move to the next day
+                        updateCalendarDisplay(selectedDate);
+                        fetchEventsByDate(formatDate(selectedDate), selectedHours);
+                    });
+                }
+
+                // Filter events based on the selected time range
+                const filterBtn = document.getElementById('filter-btn');
+                if (filterBtn) {
+                    filterBtn.addEventListener('click', () => {
+                        selectedHours = document.getElementById('time-range').value;
+                        fetchEventsByDate(formatDate(selectedDate), selectedHours);
+                    });
+                }
 
                 document.querySelectorAll('.main-nav a').forEach(link => {
                     link.addEventListener('click', async event => {
-                        event.preventDefault();
-                        const filterType = link.getAttribute('href').replace('#', '');
+                        
+                    event.preventDefault();
+                    const filterType = link.getAttribute('href').replace('#', '');
 
-                        let startDate = today;
-                        let endDate = today;
-                        let hours = '';
+                    const date = document.getElementById('current-day').innerText;
+                    let hours = '';
+                    let status = ''; // Define default status as an empty string
 
-                        switch (filterType) {
-                            case 'all-games':
-                                displayCategories(startDate, endDate, hours);
-                                break;
-                            case 'live-games':
-                                displayCategories(startDate, endDate, hours, 'live');
-                                break;
-                            case 'finished-games':
-                                displayCategories(startDate, endDate, hours, 'finished');
-                                break;
-                            case 'scheduled-games':
-                                displayCategories(startDate, endDate, hours, 'scheduled');
-                                break;
-                            default:
-                                displayCategories(startDate, endDate, hours);
-                                break;
-                        }
+
+                       // Handle different types of game filters
+            switch (filterType) {
+                case 'all-games':
+                    displayCategories(date, hours);
+                    break;
+                case 'live-games':
+                    status = 'live';
+                    displayCategories(date, hours, status);
+                    break;
+                case 'finished-games':
+                    status = 'finished';
+                    displayCategories(date, hours, status);
+                    break;
+                case 'scheduled-games':
+                    status = 'scheduled';
+                    displayCategories(date, hours, status);
+                    break;
+                default:
+                    displayCategories(date, hours);
+                    break;
+            }
+
 
                         // Remove 'active' class from all links
                         document.querySelectorAll('.main-nav a').forEach(link => {
