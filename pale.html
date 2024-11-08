@@ -544,8 +544,9 @@ main {
 .stats-container {
     background-color: #091c3d;
     display: flex;
-    background-color: transparent; 
+    background-color: transparent;
     gap: 11px;
+    justify-content: space-evenly;
 }
 
 .stat-card {  
@@ -555,9 +556,12 @@ main {
 }
 
 .stat-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: #ccc;
+    display: flex;
+    font-size: 11px;
+    font-weight: 600;
+    color: #9f9f9f;
+    flex: 1;
+    justify-content: space-evenly;
 }
 
 .stat-value { 
@@ -676,9 +680,9 @@ main {
             display: flex;
             flex-direction: row;
             gap: 10px;
-            width: 80%;
-            justify-content: space-around;
+            justify-content: space-evenly;
             padding: 5px 0;
+            align-items: center;
         }
         .stat-league span { 
             color: #091c3d !important;
