@@ -706,7 +706,9 @@ main {
         }
         .teams-form {
             display: flex;
-            flex-direction: row; 
+            flex-direction: row;
+            width: 80%;
+            margin: 0 auto;
         }
         .teams-form .homes-team-form, .teams-form .aways-team-form { 
             flex: 1;
@@ -1040,8 +1042,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const homeTeamHomeForm = getHomeAwayForm(homeTeamLastEvents, 'home', event.homeTeam.id);
         const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayTeam.id);
 
-        const homeTeamPoints = getLastFiveGamesPoints(homeTeamLastEvents, event.homeTeam.id);
-        const awayTeamPoints = getLastFiveGamesPoints(awayTeamLastEvents, event.awayTeam.id);
+        const homeTeamPoints = getLastFiveGamesPoints(homeTeamLastEvents, event.homeTeam.id, event.id);
+        const awayTeamPoints = getLastFiveGamesPoints(awayTeamLastEvents, event.awayTeam.id, event.id);
 
         const homeTeamForm = ((homeTeamPoints / 15) * 100).toFixed(0);
         const awayTeamForm = ((awayTeamPoints / 15) * 100).toFixed(0);
@@ -1695,8 +1697,8 @@ const getHomeAwayForm = (events, type, teamId) => {
 };
         
     
-const getLastFiveGamesPoints = (events, teamId) => {
-    const finishedEvents = events.filter((event) => event.status.type === 'finished');
+const getLastFiveGamesPoints = (events, teamId, currentMatchId) => {
+    const finishedEvents = events.filter((event) => event.status.type === 'finished' && event.id !== currentMatchId);
     const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
 
     let points = 0;
