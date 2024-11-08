@@ -344,8 +344,8 @@ main {
 }
 
 .team-logo {
-    width: 30px;
-    height: 30px;
+    width: 20px;
+    height: 20px;
     margin-bottom: 5px;
 }
 
@@ -445,9 +445,8 @@ main {
 }
 .tableOdds {
     display: flex;
-    flex-direction: column;
-    text-align: right;
-    min-width: 35px;
+    flex-direction: row;
+    text-align: right; 
 }
 .tableOdds span {
     flex: 1; 
@@ -1057,7 +1056,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
             <div class="match-info-container">
                 <div class="team-info">
                     <div class="team">
-                        <img src="${baseURL}/team/${event.homeTeam.id}/image" width="30" height="30" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
+                        <img src="${baseURL}/team/${event.homeTeam.id}/image" width="20" height="20" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${homeTeamName}</span>
                    </div> 
                 </div>
@@ -1073,8 +1072,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                                 <span class="score" id="awayScores-${event.id}">${awayScore}</span>
                               </div>` 
                             : `
-                                <div class="match-date">${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
-                                <div class="match-time">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
+                                 <div class="match-time">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
                             `}
                     <div class="match-status${event.status.type === 'inprogress' || event.status.type === 'finished' ? ' done' : ''}">
                         ${event.status.type === 'inprogress' ? 'Live' : event.status.type === 'finished' ? 'FT' : ''}
@@ -1082,7 +1080,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 </div>
                 <div class="team-info">
                     <div class="team">
-                        <img src="${baseURL}/team/${event.awayTeam.id}/image" width="30" height="30" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
+                        <img src="${baseURL}/team/${event.awayTeam.id}/image" width="20" height="20" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${awayTeamName}</span>
                      </div>
                 </div>
@@ -1124,16 +1122,15 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         </span>
                     </div>
                 </div>
-            </div>
+            </div> 
 
-
+                <h4 style="text-align:center;">Head to Head</h4>
+            <div class="h2h-event" id="${uniqueEventId}"></div>
             <div class="match-odds">
                 <span class="odds">${homeOdds}</span>
                 <span class="odds">${drawOdds}</span>
                 <span class="odds">${awayOdds}</span>
-            </div>
-                <h4 style="text-align:center;">Head to Head</h4>
-            <div class="h2h-event" id="${uniqueEventId}"></div> 
+            </div> 
         `;
 
         // Fetch and display most recent H2H event for the current event
@@ -1296,8 +1293,8 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                     <table border="1" style="width: 100%; border-collapse: collapse;"> 
                         <tbody>
                             ${eventsWithOdds.map(event => {
-                                const homeTeam = event.homeTeam.shortName;
-                                const awayTeam = event.awayTeam.shortName;
+                                const homeTeam = event.homeTeam.nameCode;
+                                const awayTeam = event.awayTeam.nameCode;
                                 const homeScore = event.homeScore.current;
                                 const awayScore = event.awayScore.current;
                                 const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { month: '2-digit', year: '2-digit' })
@@ -1306,7 +1303,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                 return `
                                     <tr>
                                         <td class="tableDate">${eventDate}</td>
-                                        <td style="min-width:130px;">${homeTeam}<br />${awayTeam}</td>
+                                        <td style="min-width:130px;">${homeTeam} - ${awayTeam}</td>
                                         <td>${homeScore} - ${awayScore}</td>
                                         <td>
                                             <div class="tableOdds" style="min-width:30px;">
