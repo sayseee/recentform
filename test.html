@@ -1,226 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Football Matches Layout</title>
-  <style>
-    body {
-  font-family: Roboto, sans-serif;
-  background-color: #121212;
-  color: #fff;
-  margin: 0;
-  padding: 0;
-  font-size: 0.75rem;
-} 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Layout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-.matches-container {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-}
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #0A1E2D; /* Dark background similar to screenshot */
+            color: #fff;
+        }
 
-.match-category {
-  margin-bottom: 20px;
-}
+        /* Top Bar */
+        .top-bar {
+            background-color: #0A1E2D;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-.category-header {
-  display: flex;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #333;
-  justify-content: space-between;
-}
+        .top-bar h1 {
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+        }
 
-.category-flag {
-  width: 24px;
-  height: auto;
-  margin-right: 10px;
-}
+        .top-bar h1::before {
+            content: "⚽"; /* Ball icon for illustration */
+            margin-right: 8px;
+        }
 
-.category-title {
-  flex-grow: 1; 
-}
+        .top-bar-icons {
+            display: flex;
+            gap: 10px;
+        }
 
-.standings-link { 
-  color: #00bfa5;
-  text-decoration: none;
-}
+        .top-bar-icons i {
+            font-size: 1.2em;
+            cursor: pointer;
+        }
 
-.match-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #333;
-    gap: 10px;
-}
+        /* Date Bar */
+        .date-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: #102531;
+            font-size: 0.9em;
+            border-bottom: 1px solid #1C3548;
+        }
 
-.match-row:last-child {
-  border-bottom: none;
-}
+        .date-bar div {
+            text-align: center;
+            cursor: pointer;
+        }
 
-.tournament-info {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    align-items: center;
-    flex: 2.3;
-}
-.match-info {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    align-items: center;
-    flex: 2;
-}
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: #0A1E2D;
+            border-top: 1px solid #1C3548;
+        }
 
-.match-time,
-.match-status { 
-  color: #aaa;
-  width: 72px;
-}
+        .bottom-nav div {
+            text-align: center;
+            cursor: pointer;
+            color: #fff;
+        }
 
-.team-names {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-.match-scores {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 0.2;
-    text-align: center;
-}
-
-.team-names span { 
-  margin-bottom: 2px;
-}
-
-.odds, .odds-title {
-    display: flex;
-    gap: 15px;
-    flex: 1;
-    justify-content: space-around;
-    text-align: center;
-}
-
-.odd {
-  background-color: #222;
-  padding: 5px 10px;
-  border-radius: 4px;
-  color: #00e676;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  gap: 5px;
-}
-
-.odd.negative {
-  color: #ff1744;
-}
-
-.odd.highlighted {
-  border: 0 solid #ffc400;
-}
-
-.finished .match-info .team-names {
-  color: #f5f5f5;
-}
-
-.finished .match-info .match-status {
-  color: #ff9100;
-}
-
-  </style>
+        .bottom-nav div.active {
+            color: #F44336; /* Red color to indicate active section */
+        }
+    </style>
 </head>
 <body>
-  <div class="matches-container">
-    <!-- Ireland Division 1 Section -->
-    <div class="match-category">
-      <div class="category-header">
-        <div class="tournament-info">
-        <img src="ireland-flag.png" alt="" class="category-flag">
-        <span class="category-title">IRELAND: Division 1</span>
-      </div>
-        <span></span>
-        <div class="odds-title">
-          <span>1</span>
-          <span>X</span>
-          <span>2</span>
-        </div>
-      </div>
 
-      <div class="match-row">
-        <div class="match-info">
-          <span class="match-time">21:45</span>
-          <span class="team-names">
-            <span class="home-team">Wexford</span>
-            <span class="away-team">Bray</span>
-          </span>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <h1>Football</h1>
+        <div class="top-bar-icons">
+            <i>🔍</i> <!-- Search icon -->
+            <i>👤</i> <!-- User icon -->
         </div>
-        <div class="match-scores">
-          <span class="home-score">-</span>
-          <span class="away-score">-</span>
-        </div>
-        <div class="odds">
-          <span class="odd">2.04</span>
-          <span class="odd">3.30</span>
-          <span class="odd">3.50</span>
-        </div>
-      </div>
     </div>
 
-    <!-- Israel Liga Alef North Section -->
-    <div class="match-category">
-      <div class="category-header">
-        <img src="israel-flag.png" alt="Israel Flag" class="category-flag">
-        <span class="category-title">ISRAEL: Liga Alef North</span>
-        <a href="#" class="standings-link">Standings</a>
-      </div>
+    <!-- Date Selection Bar -->
+    <div class="date-bar">
+        <div>SU<br>10.11.</div>
+        <div>MO<br>11.11.</div>
+        <div>TU<br>12.11.</div>
+        <div>WE<br>13.11.</div>
+        <div>TH<br>14.11.</div>
+        <div>FR<br>15.11.</div>
+    </div>
 
-      <div class="match-row finished">
-        <div class="match-info">
-          <span class="match-status">Finished</span>
-          <span class="team-names">
-            <span class="home-team">Hapoel Kafr</span>
-            <span class="away-team">KannaAraba</span>
-          </span>
-        </div>
-        <div class="match-scores">
-          <span class="home-score">2</span>
-          <span class="away-score">3</span>
-        </div>
-        <div class="odds">
-          <span class="odd highlighted">5.00</span>
-          <span class="odd highlighted">5.00</span>
-          <span class="odd highlighted negative">1.50</span>
-        </div>
-      </div>
+    <!-- Spacer to push bottom nav to the bottom -->
+    <div style="flex: 1;"></div>
 
-      <!-- Other matches -->
-      <div class="match-row">
-        <div class="match-info">
-          <span class="match-time">15:30</span>
-          <span class="team-names">
-            <span class="home-team">H. Migdal HaEmek</span>
-            <span class="away-team">Maccabi Nujeidat Ahmad</span>
-          </span>
-        </div>
-        <div class="match-scores">
-          <span class="home-score">-</span>
-          <span class="away-score">-</span>
-        </div>
-        <div class="odds">
-          <span class="odd">1.69</span>
-          <span class="odd">3.60</span>
-          <span class="odd">4.46</span>
-        </div>
-      </div>
-      </div>
-    </div> 
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <div class="active">All Games</div>
+        <div>Live</div> 
+        <div>Results</div>
+        <div>Upcoming</div>
+    </div>
+
 </body>
 </html>
