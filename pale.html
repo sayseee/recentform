@@ -269,6 +269,7 @@ main {
     .events-container li { 
     display: flex;
     align-items: center;
+    background-color: var(--color-white); 
 }
 
 .events-container  li:not(:first-child) a {
@@ -284,7 +285,6 @@ main {
     display: flex;
     width: 100%;
     flex-direction: column; 
-    background-color: var(--color-white); 
 } 
 
 .events-container li:not(:first-child) a { 
@@ -294,7 +294,11 @@ main {
     border-bottom-left-radius: 0;  
     border-bottom-right-radius: 0;  
 }
-
+.events-container li:nth-child(odd) {
+    display: flex;
+    align-items: center;
+    background: #fafafa;
+}
 .tournament .match-card {
     text-decoration: none;
     display: flex;
@@ -710,6 +714,8 @@ main {
             justify-content: space-evenly;
             padding: 5px 0;
             align-items: center;
+            background: white;
+            border-bottom: 1px solid #eaecf1;
         }
         .stat-league span { 
             color: #091c3d !important;
