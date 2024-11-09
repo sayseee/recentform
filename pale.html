@@ -723,7 +723,7 @@ main {
         .teams-form .homes-team-form, .teams-form .aways-team-form { 
             flex: 1;
             display: flex; 
-            font-size: 11px;
+            font-size: 12px;
         }
         .team-forms .homes-team-form .data, .team-forms .aways-team-form .data {
             position: absolute;
@@ -1194,17 +1194,18 @@ const renderManagerInfo = (manager, containerId) => {
         const { total = 0, wins = 0, draws = 0, losses = 0 } = performance;
 
         // Calculate percentages for wins, draws, and losses
-        const winPercentage = total ? ((wins / total) * 100).toFixed(1) : 0;
-        const drawPercentage = total ? ((draws / total) * 100).toFixed(1) : 0;
-        const lossPercentage = total ? ((losses / total) * 100).toFixed(1) : 0;
+        const winPercentage = total ? ((wins / total) * 100).toFixed(0) : 0;
+        const drawPercentage = total ? ((draws / total) * 100).toFixed(0) : 0;
+        const lossPercentage = total ? ((losses / total) * 100).toFixed(0) : 0;
 
         // Render the manager info
         container.innerHTML = `
             <div><strong>Manager: </strong>${shortName || name} ${preferredFormation || ""}</div>
             <div>
-                <span><strong>Win: </strong> ${winPercentage}%</span>
-                <span><strong>Draw: </strong> ${drawPercentage}%</span>
-                <span><strong>Loss: </strong> ${lossPercentage}%</span>
+                <span><strong>TG: </strong> ${total}</span>
+                <span><strong>W: </strong> ${winPercentage}</span>
+                <span><strong>D: </strong> ${drawPercentage}</span>
+                <span><strong>L: </strong> ${lossPercentage}</span>
             </div>
         `;
     } else {
