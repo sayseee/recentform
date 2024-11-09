@@ -1450,40 +1450,38 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>
            <div class="stats-container">
                 <div class="stat-card ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
-                    <div class="stat-title">TAGS</div>
                     <div class="stat-value">
                         <span class="team-value">${combinedStats.goalsScored}</span>
                         <span class="trend-arrow ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
                             ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? '▲' : '▼')}
                         </span>
                     </div>
+                    <div class="stat-title">Goals</div>                    
                 </div>
                 <div class="stat-card ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? 'up' : 'down')}">
-                    <div class="stat-title">BTTS</div>
                     <div class="stat-value">
                         <span class="team-value">${combinedStats.BTTS}%</span>
                         <span class="trend-arrow ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? 'up' : 'down')}">
                             ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? '▲' : '▼')}
                         </span>
-                    </div>
+                    </div><div class="stat-title">BTTS</div>                    
                 </div>
                 <div class="stat-card ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? 'up' : 'down')}">
-                    <div class="stat-title">+1.5</div>
                     <div class="stat-value">
                         <span class="team-value">${combinedStats.over1_5}%</span>
                         <span class="trend-arrow ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? 'up' : 'down')}">
                             ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? '▲' : '▼')}
                         </span>
                     </div>
+                    <div class="stat-title">Over 1.5</div>
                 </div>
                 <div class="stat-card ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? 'up' : 'down')}">
-                    <div class="stat-title">+2.5</div>
-                    <div class="stat-value">
+                   <div class="stat-value">
                         <span class="team-value">${combinedStats.over2_5}%</span>
                         <span class="trend-arrow ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? 'up' : 'down')}">
                             ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? '▲' : '▼')}
                         </span>
-                    </div>
+                    </div> <div class="stat-title">Over 2.5</div>                    
                 </div>
             </div> 
 
