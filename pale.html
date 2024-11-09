@@ -1335,7 +1335,8 @@ const renderTeamStats = (statistics, containerId) => {
         successfulDribbles,
         dribbleAttempts,
         accuratePassesPercentage,
-        averageBallPossession
+        averageBallPossession,
+        matches
     } = statistics;
 
     // Round all values to 0 decimal places
@@ -1345,6 +1346,7 @@ const renderTeamStats = (statistics, containerId) => {
 
     const statsHTML = ` 
         <div> 
+            Matches : ${matches}
         <div>
             <span><strong>GF:</strong> ${Math.round(goalsScored) || 0}</span>
             <span><strong>GA:</strong> ${Math.round(goalsConceded) || 0}</span>
