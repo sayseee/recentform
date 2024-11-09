@@ -1254,10 +1254,10 @@ const fetchHeadToHead = async (eventId, h2hContainerId) => {
         const { teamDuel, managerDuel } = h2hData;
 
         // Render team duel data if available
-        const teamDuelHTML = teamDuel ? renderTeamDuelStats(teamDuel) : '<div><p></p></div>';
+        const teamDuelHTML = teamDuel ? renderTeamDuelStats(teamDuel) : '<div></div>';
 
         // Render manager duel data if available
-        const managerDuelHTML = managerDuel ? renderManagerDuelStats(managerDuel) : '<div><p></p></div>';
+        const managerDuelHTML = managerDuel ? renderManagerDuelStats(managerDuel) : '<div></div>';
 
         // Insert the HTML into the H2H container
         document.getElementById(h2hContainerId).innerHTML = teamDuelHTML + managerDuelHTML;
