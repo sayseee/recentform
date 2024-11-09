@@ -1310,6 +1310,58 @@ const renderManagerDuelStats = (managerDuel) => {
     `; 
 };
 
+const fetchTeamOverallStats = async (teamId, uniqueTournamentId, seasonId, containerId) => {
+    try {
+        const response = await fetch(`https://api.sofascore.com/api/v1/team/${teamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
+        if (!response.ok) throw new Error(`Failed to fetch team stats: ${response.statusText}`);
+        
+        const statsData = await response.json();
+        const { statistics } = statsData;
+
+        renderTeamStats(statistics, containerId);
+
+    } catch (error) {
+        console.error("Error fetching team stats:", error);
+    }
+};
+
+const renderTeamStats = (statistics, containerId) => {
+    const container = document.getElementById(containerId);
+
+    const {
+        goalsScored,
+        goalsConceded,
+        assists,
+        successfulDribbles,
+        dribbleAttempts,
+        accuratePassesPercentage,
+        averageBallPossession
+    } = statistics;
+
+    // Round all values to 0 decimal places
+    const successfulDribblesPercentage = Math.round((successfulDribbles / dribbleAttempts) * 100);
+    const roundedAccuratePassesPercentage = Math.round(accuratePassesPercentage);
+    const roundedAverageBallPossession = Math.round(averageBallPossession);
+
+    const statsHTML = ` 
+        <div> 
+        <div>
+            <span><strong>GF:</strong> ${Math.round(goalsScored)}</span>
+            <span><strong>GA:</strong> ${Math.round(goalsConceded)}</span>
+            <span><strong>AST:</strong> ${Math.round(assists)}</span>
+        </div>
+        <div> 
+        <div>
+            <span><strong>Dr:</strong> ${successfulDribblesPercentage}%</span>
+            <span><strong>Pa:</strong> ${roundedAccuratePassesPercentage}%</span>
+            <span><strong>Po:</strong> ${roundedAverageBallPossession}%</span>
+        </div>
+    </div>
+    `;
+
+    container.innerHTML = statsHTML;
+};
+
 
 // Function to load events into a container
 const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
@@ -1434,6 +1486,15 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayManager-${event.id}" class="manager-info"></div> 
                     </div>
                 </div>
+                <h4 style="text-align:center;">Overall Team Stats</h4>
+                <div class="teams-form">
+                    <div class="homes-team-form">  
+                        <div id="home-team-stats-container-${event.id}" class="teams-info"></div>
+                    </div>
+                    <div class="aways-team-form">  
+                        <div id="away-team-stats-container-${event.id}" class="teams-info"></div> 
+                    </div>
+                </div>
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>
            <div class="stats-container">
                 <div class="stat-card ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
@@ -1491,6 +1552,12 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         // Fetch pregame form and manager details
             fetchPregameForm(homeTeamId, `homePregameForm-${event.id}`, `homeManager-${event.id}`);
             fetchPregameForm(awayTeamId, `awayPregameForm-${event.id}`, `awayManager-${event.id}`);
+
+            
+        // Example usage
+        fetchTeamOverallStats(homeTeamId, event.tournament.uniqueTournament.id, seasonId, `home-team-stats-container-${event.id}`);
+        fetchTeamOverallStats(awayTeamId, event.tournament.uniqueTournament.id, seasonId, `away-team-stats-container-${event.id}`);
+
         // Start the live timer if the match is in progress
         if (event.status.type === 'inprogress') {
             startLiveTimer(event);
