@@ -1346,17 +1346,17 @@ const renderTeamStats = (statistics, containerId) => {
 
     const statsHTML = ` 
         <div> 
-            Matches : ${matches}
-        <div>
-            <span><strong>GF:</strong> ${Math.round(goalsScored) || 0}</span>
-            <span><strong>GA:</strong> ${Math.round(goalsConceded) || 0}</span>
-            <span><strong>AST:</strong> ${Math.round(assists) || 0}</span>
+            <span class="stat-title">Matches : <span class="value">${matches}</span></span>
+        <div class="stat-title">
+            <span><strong>GF:</strong> <span class="value">${Math.round(goalsScored) || 0}</span></span>
+            <span><strong>GA:</strong> <span class="value">${Math.round(goalsConceded) || 0}</span></span>
+            <span><strong>AST:</strong> <span class="value">${Math.round(assists) || 0}</span></span>
         </div>
         <div> 
-        <div>
-            <span><strong>Dr:</strong> ${successfulDribblesPercentage || 0}</span>
-            <span><strong>Pa:</strong> ${roundedAccuratePassesPercentage || 0}</span>
-            <span><strong>Po:</strong> ${roundedAverageBallPossession || 0}</span>
+        <div class="stat-title">
+            <span><strong>Dr:</strong> <span class="value">${successfulDribblesPercentage || 0}</span></span>
+            <span><strong>Pa:</strong> <span class="value">${roundedAccuratePassesPercentage || 0}</span></span>
+            <span><strong>Po:</strong> <span class="value">${roundedAverageBallPossession || 0}</span></span>
         </div>
     </div>
     `;
