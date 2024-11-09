@@ -1491,6 +1491,16 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayManager-${event.id}" class="manager-info"></div> 
                     </div>
                 </div>
+                
+                <h4 style="text-align:center;">Overall Team Stats</h4>
+                <div class="teams-form">
+                    <div class="homes-team-form">  
+                        <div id="home-team-stats-container-${event.id}" class="teams-info"></div>
+                    </div>
+                    <div class="aways-team-form">  
+                        <div id="away-team-stats-container-${event.id}" class="teams-info"></div> 
+                    </div>
+                </div>
                 <div class="stats-container">
                 <div class="stat-card ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
                     <div class="stat-value">
@@ -1527,17 +1537,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div> <div class="stat-title">Over 2.5</div>                    
                 </div>
             </div>
-                <h4 style="text-align:center;">Overall Team Stats</h4>
-                <div class="teams-form">
-                    <div class="homes-team-form">  
-                        <div id="home-team-stats-container-${event.id}" class="teams-info"></div>
-                    </div>
-                    <div class="aways-team-form">  
-                        <div id="away-team-stats-container-${event.id}" class="teams-info"></div> 
-                    </div>
-                </div>
-                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>
-            
+                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
 
                 <h4 style="text-align:center;">H2H last 3 years</h4>
             <div class="h2h-event" id="${uniqueEventId}"></div>
