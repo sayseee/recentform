@@ -53,7 +53,11 @@ h4 {
     overflow: hidden;
     position: relative; 
     padding:2px 0;
-    border-radius: 2px;
+    border-radius: 1px;
+    width: 16px !important;
+    height: 12px !important;
+    display: inline-flex;
+    font-weight: 600;
 } 
 .W, .win, .pos {
     background-color: var(--win-color);
@@ -564,6 +568,7 @@ main {
     background-color: transparent;
     gap: 11px;
     justify-content: space-evenly;
+    margin-top: 15px;
 }
 
 .stat-card {  
@@ -579,6 +584,11 @@ main {
     color: #9f9f9f;
     flex: 1;
     justify-content: space-evenly;
+    gap: 10px;
+}
+
+.stat-title .value { 
+    color:#091c3d !important;
 }
 
 .stat-value { 
@@ -719,11 +729,82 @@ main {
             position: absolute;
             top: -10px;
         } 
+        .teams-form .homes-team-form>div, .teams-form .aways-team-form>div {  
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
         .teams-form .homes-team-form>div { 
-            margin-left: auto;  
+            margin-left: auto; 
         }
         .teams-form .aways-team-form>div { 
             margin-right: auto;  
+        }
+        .teams-form .homes-team-form .team-cent { 
+            text-align: right;
+            margin-right: 3px;
+            margin-left: auto; 
+        }
+        .teams-form .aways-team-form .team-cent {
+            margin-left: 3px;
+            margin-right: auto;
+        }
+        .teams-form .homes-team-form .bar {  
+            margin-left: auto;  
+            background-color: #9CE800;
+        }
+        .teams-form .aways-team-form .bar {  
+            margin-right: auto;   
+            background-color: #FF7A00; 
+        }
+        .box.animate { 
+            width: 14px;
+            height: 14px;
+            position: relative;
+        }
+        .box.animate::before {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: calc(100% - 1px);
+            height: 50%;
+            border-top: 1px solid rgb(217, 175, 0);
+            border-left: 1px solid rgb(217, 175, 0);
+            transform: translate3d(0px, 0px, 0px);
+            animation: 660ms ease-in-out 0s 1 normal none running kCNzYT;
+            z-index: 1;
+        }
+        .box.animate::after {
+            content: "";
+            display: block;
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: calc(100% - 1px);
+            height: 50%;
+            transform: translate3d(0px, 0px, 0px);
+            animation-timeline: auto;
+            animation-range-start: normal;
+            animation-range-end: normal;
+            z-index: 1;
+            border-right: 1px solid rgb(217, 175, 0);
+            border-bottom: 1px solid rgb(217, 175, 0);
+            animation: 660ms ease-in-out 0s 1 normal none running llWbcW;
+        }
+        .box.animate > .sideBox-inner {
+            position: relative;
+            width: 14px;
+            height: 14px;
+            background-size: 100% 200%;
+            animation-timeline: auto;
+            animation-range-start: normal;
+            animation-range-end: normal;
+            transform: translate3d(0px, 0px, 0px);
+            z-index: 0;
+            animation: 330ms ease-in-out 330ms 1 normal forwards running fwrfeI, 330ms ease-in 0ms 1 normal running bIXSM;
         }
      </style>
     </head>
@@ -971,8 +1052,8 @@ const createCategorySection = (tournaments, categoryName, odds) => {
                 const event = tournament.events[0];
                 seasonId = event.season?.id;
                 uniqueTournamentId = event.tournament.id;
-                console.log(seasonId);
-                console.log(uniqueTournamentId);
+                //console.log(seasonId);
+                //console.log(uniqueTournamentId);
 
                 if (!seasonId) {
                     console.warn(`Season ID is missing for event ID ${event.id}`);
@@ -1017,6 +1098,118 @@ const displayLeagueStats = (leagueStats, container) => {
         </div>
     `;
 };
+const fetchPregameForm = async (teamId, containerId, managerContainerId) => {
+    try {
+        const response = await fetch(`${baseURL}/team/${teamId}`);
+        if (!response.ok) throw new Error(`Failed to fetch pregame form: ${response.statusText}`);
+        
+        const data = await response.json();
+        const { team, pregameForm } = data; 
+        const { name, shortName, manager } = team;
+        const { avgRating, form = [], value, position } = pregameForm || {};
+
+        const formPercentage = calculateFormPercentage(form);
+
+        renderPregameForm({
+            name,
+            shortName,
+            avgRating,
+            form,
+            formPercentage,
+            value,
+            position,
+            containerId
+        });
+
+        // Fetch and render manager details
+        if (manager) {
+            fetchManagerData(manager.id, managerContainerId);
+        }
+
+    } catch (error) {
+        console.error("Error fetching pregame form:", error);
+    }
+};
+
+const calculateFormPercentage = (form) => {
+    const expectedPoints = 3 * form.length; 
+    const actualPoints = form.reduce((points, result) => {
+        switch (result) {
+            case "W": return points + 3;
+            case "D": return points + 1;
+            default: return points;
+        }
+    }, 0);
+    return ((actualPoints / expectedPoints) * 100).toFixed(0);
+};
+
+const renderPregameForm = ({ name, shortName, avgRating, form, formPercentage, value, position, containerId }) => {
+    const container = document.getElementById(containerId);
+    const formDisplayId = `${containerId}-form-display`; 
+    // Use fallback values if `value` or `position` are missing
+    const displayValue = value !== undefined && value !== null ? value : "-";
+    const displayPosition = position !== undefined && position !== null ? position : "-";
+
+    container.innerHTML = `  
+        <div class="team-cent">${formPercentage}%</div>
+        <div class="bar-wrapper" style="width:100%;height: 5px; background-color:#ededed;">
+            <div class="bar" style="width:${formPercentage}%;height: 5px;"></div>
+        </div>  
+        <div class="stat-title" style="margin-top:10px;">Pts: <span class="value">${displayValue}</span> Pos: <span class="value">${displayPosition}</span> ${avgRating ? `<div class="box animate" cursor="default"><div class="sideBox-inner"></div></div> <strong class="value">${avgRating}</strong>` : ""}</div>
+        <p><span id="${formDisplayId}"></span></p> 
+    `;
+
+    renderFormDisplay(form, formDisplayId);
+};
+
+const renderFormDisplay = (form, formDisplayId) => {
+    const formDisplay = document.getElementById(formDisplayId);
+    formDisplay.innerHTML = '';
+    form.forEach(result => {
+        const span = document.createElement('span');
+        span.className = result; 
+        span.textContent = result;
+        span.style.marginRight = "5px";
+        formDisplay.appendChild(span);
+    });
+};
+
+const fetchManagerData = async (managerId, managerContainerId) => {
+    try {
+        const response = await fetch(`${baseURL}/manager/${managerId}`);
+        if (!response.ok) throw new Error(`Failed to fetch manager data: ${response.statusText}`);
+        
+        const managerData = await response.json();
+        renderManagerInfo(managerData.manager, managerContainerId);
+    } catch (error) {
+        console.error("Error fetching manager data:", error);
+    }
+};
+
+const renderManagerInfo = (manager, containerId) => {
+    const container = document.getElementById(containerId);
+    if (manager && container) {
+        const { name, shortName, preferredFormation, performance = {} } = manager;
+        const { total = 0, wins = 0, draws = 0, losses = 0 } = performance;
+
+        // Calculate percentages for wins, draws, and losses
+        const winPercentage = total ? ((wins / total) * 100).toFixed(1) : 0;
+        const drawPercentage = total ? ((draws / total) * 100).toFixed(1) : 0;
+        const lossPercentage = total ? ((losses / total) * 100).toFixed(1) : 0;
+
+        // Render the manager info
+        container.innerHTML = `
+            <div><strong>Manager: </strong>${shortName || name} ${preferredFormation || ""}</div>
+            <div>
+                <span><strong>Win: </strong> ${winPercentage}%</span>
+                <span><strong>Draw: </strong> ${drawPercentage}%</span>
+                <span><strong>Loss: </strong> ${lossPercentage}%</span>
+            </div>
+        `;
+    } else {
+        container.innerHTML = "<p>Manager data not available</p>";
+    }
+};
 
 
 // Function to load events into a container
@@ -1050,8 +1243,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         // Fetch last 5 games with odds for each team
         const homeTeamLastFiveGames = await getLastFiveGames(homeTeamLastEvents, 'home', event.homeTeam.id);
         const awayTeamLastFiveGames = await getLastFiveGames(awayTeamLastEvents, 'away', event.awayTeam.id);
-
-
+ 
         // Calculate home and away win statistics
         const homeTeamStats = calculateWinStats(homeTeamLastEvents, event.homeTeam.id);
         const awayTeamStats = calculateWinStats(awayTeamLastEvents, event.awayTeam.id);
@@ -1125,24 +1317,23 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <span class="team-name">${awayTeamName}</span>
                      </div>
                 </div>
-            </div> 
+            </div>  
                 <div class="teams-form">
                     <div class="homes-team-form"> 
-                        <div style="margin-right:4px;">${homeTeamForm}%</div>
+                        <div id="homePregameForm-${event.id}" class="pregame-form"></div> 
                     </div>
                     <div class="aways-team-form"> 
-                        <div style="margin-left:4px;">${awayTeamForm}%</div>
+                        <div id="awayPregameForm-${event.id}" class="pregame-form"></div> 
                     </div>
                 </div>
                 <div class="teams-form">
-                    <div class="homes-team-form">
-                        <div style="width:${homeTeamForm}%;background-color: #9CE800;height: 5px;"></div> 
+                    <div class="homes-team-form">  
+                        <div id="homeManager-${event.id}" class="manager-info"></div>
                     </div>
-                    <div class="aways-team-form">
-                        <div style="width:${awayTeamForm}%;background-color: #FF7A00;height: 5px;"></div> 
+                    <div class="aways-team-form">  
+                        <div id="awayManager-${event.id}" class="manager-info"></div> 
                     </div>
                 </div>
-
            <div class="stats-container">
                 <div class="stat-card">
                     <div class="stat-title">TAGS</div>
@@ -1198,7 +1389,10 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         eventListItem.appendChild(eventLink);
         eventsContainer.appendChild(eventListItem);
         
-        // Start the live timer if the match is in progress
+            // Fetch pregame form and manager details
+            fetchPregameForm(homeTeamId, `homePregameForm-${event.id}`, `homeManager-${event.id}`);
+        fetchPregameForm(awayTeamId, `awayPregameForm-${event.id}`, `awayManager-${event.id}`);
+    // Start the live timer if the match is in progress
             if (event.status.type === 'inprogress') {
                 startLiveTimer(event);
             } else if (event.status.description === 'Ended') {
@@ -1699,20 +1893,19 @@ const getHomeAwayForm = (events, type, teamId) => {
     
 const getLastFiveGamesPoints = (events, teamId, currentMatchId) => {
     const finishedEvents = events.filter((event) => event.status.type === 'finished' && event.id !== currentMatchId);
-    const lastFiveFinishedEvents = finishedEvents.slice(0, 5);
-
+    const lastFiveFinishedEvents = finishedEvents.slice(0, 5); 
     let points = 0;
     const form = lastFiveFinishedEvents
         .reverse()
-        .map((event) => {
+        .map((event) => { 
             if (event.winnerCode === 3) {
                 points += 1; // Draw
             } else if (
                 (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
                 (event.winnerCode === 2 && event.awayTeam.id === teamId)
-            ) {
+            ) { 
                 points += 3; // Win
-            } else {
+            } else { 
                 points += 0; // Win
             }
         })
@@ -1720,6 +1913,7 @@ const getLastFiveGamesPoints = (events, teamId, currentMatchId) => {
 
     return points;
 };  
+     
 
         const fetchEventDetails = async (eventId) => { 
             await displayEventDetails(eventId);
