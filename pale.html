@@ -46,6 +46,10 @@ body {
 h4 {
     margin: 10px 0 0;
     font-weight: 700;
+    background: #e4ecf5;
+    padding: 3px 0;
+    border-top: 1px solid #c1d2e6;
+    border-bottom: 1px solid #c1d2e6;
 }
 .W, .D, .L {   
     align-items: center;  
@@ -830,7 +834,7 @@ main {
             display: flex;
             flex-direction: column;
             text-align: center;
-            width: 90%;
+            width: 100%;
         }
         .team-manager-h2h>div span {
             font-weight: 800;
@@ -838,10 +842,9 @@ main {
         .team-manager-h2h>div>div {
             display: flex;
             -webkit-box-pack: justify;
-            justify-content: space-between;
+            justify-content: space-evenly;
         }
         .team-manager-h2h>div>div p {
-            flex: 1;
             text-align: center;
             font-size: 15px;
             margin: 5px;
@@ -1286,7 +1289,7 @@ const renderTeamDuelStats = (teamDuel) => {
     const { homeWins, awayWins, draws } = teamDuel;
     return `
     <div>
-        <span>Head 2 head</span>
+        <h4>Head 2 head</h4>
         <div>
             <p><strong>${homeWins}</strong></p>
             <p><strong>${awayWins}</strong></p>
@@ -1300,7 +1303,7 @@ const renderManagerDuelStats = (managerDuel) => {
     const { homeWins, awayWins, draws } = managerDuel;
     return `
     <div>
-        <span>Manager head 2 head</span>
+        <span>Manager head 2 head</h4>
         <div>
             <p><strong>${homeWins}</strong></p>
             <p><strong>${awayWins}</strong></p>
