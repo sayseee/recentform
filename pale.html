@@ -807,6 +807,38 @@ main {
             z-index: 0;
             animation: 330ms ease-in-out 330ms 1 normal forwards running fwrfeI, 330ms ease-in 0ms 1 normal running bIXSM;
         }
+        .team-manager-h2h {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .team-manager-h2h>div {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+        .team-manager-h2h>div span {
+            font-weight: 800;
+        }
+        .team-manager-h2h>div>div {
+            display: flex;
+            -webkit-box-pack: justify;
+            justify-content: space-between;
+        }
+        .team-manager-h2h>div>div p {
+            flex: 1;
+            text-align: center;
+            font-size: 14px;
+        }
+        .team-manager-h2h>div>div p:first-child {
+            color: #0bb32a;
+        }
+        .team-manager-h2h>div>div p:last-child {
+            color: #374df5;
+        }
+        .team-manager-h2h>div>div p:nth-child(2) {
+            color: #a4a9b3;
+        } 
      </style>
     </head>
     <body> 
@@ -1213,6 +1245,55 @@ const renderManagerInfo = (manager, containerId) => {
     }
 };
 
+const fetchHeadToHead = async (eventId, h2hContainerId) => {
+    try {
+        const response = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/h2h`);
+        if (!response.ok) throw new Error(`Failed to fetch H2H data: ${response.statusText}`);
+        
+        const h2hData = await response.json();
+        const { teamDuel, managerDuel } = h2hData;
+
+        // Render team duel data if available
+        const teamDuelHTML = teamDuel ? renderTeamDuelStats(teamDuel) : '<div><p></p></div>';
+
+        // Render manager duel data if available
+        const managerDuelHTML = managerDuel ? renderManagerDuelStats(managerDuel) : '<div><p></p></div>';
+
+        // Insert the HTML into the H2H container
+        document.getElementById(h2hContainerId).innerHTML = teamDuelHTML + managerDuelHTML;
+    } catch (error) {
+        console.error("Error fetching head-to-head data:", error);
+    }
+};
+
+const renderTeamDuelStats = (teamDuel) => { 
+    const { homeWins, awayWins, draws } = teamDuel;
+    return `
+    <div>
+        <span>Head 2 head duels</span>
+        <div>
+            <p><strong>${homeWins}</strong></p>
+            <p><strong>${awayWins}</strong></p>
+            <p><strong>${draws}</strong></p>
+        </div>
+    </div>
+    `;
+};
+
+const renderManagerDuelStats = (managerDuel) => { 
+    const { homeWins, awayWins, draws } = managerDuel;
+    return `
+    <div>
+        <span>Manager head 2 head duels</span>
+        <div>
+            <p><strong>${homeWins}</strong></p>
+            <p><strong>${awayWins}</strong></p>
+            <p><strong>${draws}</strong></p>
+        </div>
+    </div>
+    `; 
+};
+
 
 // Function to load events into a container
 const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
@@ -1220,6 +1301,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const eventListItem = document.createElement('li');
         const eventLink = document.createElement('div');
         const uniqueEventId = `eventInfo-${event.id}`; // Unique ID for the event's info container
+        const uniqueH2hContainer = `h2h-container-${event.id}`; // Unique ID for the event's info container
         eventLink.className = 'match-card';
         eventLink.dataset.eventId = event.id;
 
@@ -1281,7 +1363,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
 
         const homeScore = event.homeScore?.current ?? '';
-        const awayScore = event.awayScore?.current ?? '';
+        const awayScore = event.awayScore?.current ?? ''; 
 
         const homeTeamName = homeScore > awayScore ? `<strong>${event.homeTeam.shortName}</strong>` : event.homeTeam.shortName;
         const awayTeamName = awayScore > homeScore ? `<strong>${event.awayTeam.shortName}</strong>` : event.awayTeam.shortName;
@@ -1336,6 +1418,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayManager-${event.id}" class="manager-info"></div> 
                     </div>
                 </div>
+                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>
            <div class="stats-container">
                 <div class="stat-card">
                     <div class="stat-title">TAGS</div>
@@ -1375,7 +1458,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 </div>
             </div> 
 
-                <h4 style="text-align:center;">Head to Head</h4>
+                <h4 style="text-align:center;">H2H last 3 years</h4>
             <div class="h2h-event" id="${uniqueEventId}"></div>
             <div class="match-odds">
                 <span class="odds">${homeOdds}</span>
@@ -1385,22 +1468,22 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         `;
             
         // Fetch and display most recent H2H event for the current event
-        fetchAndDisplayMostRecentH2HEvent(event.customId, event.id, uniqueEventId); 
-         
+        fetchAndDisplayMostRecentH2HEvent(event.customId, event.id, uniqueEventId);  
+        fetchHeadToHead(event.id, uniqueH2hContainer);  // Pass the correct ID to fetchHeadToHead 
+        eventListItem.appendChild(eventLink); 
 
-        eventListItem.appendChild(eventLink);
         eventsContainer.appendChild(eventListItem);
-        
-            // Fetch pregame form and manager details
+         
+        // Fetch pregame form and manager details
             fetchPregameForm(homeTeamId, `homePregameForm-${event.id}`, `homeManager-${event.id}`);
-        fetchPregameForm(awayTeamId, `awayPregameForm-${event.id}`, `awayManager-${event.id}`);
-    // Start the live timer if the match is in progress
-            if (event.status.type === 'inprogress') {
-                startLiveTimer(event);
-            } else if (event.status.description === 'Ended') {
-                const timerElement = document.getElementById(`live-timer-${event.id}`);
-                timerElement.innerHTML = 'Ended';
-            }
+            fetchPregameForm(awayTeamId, `awayPregameForm-${event.id}`, `awayManager-${event.id}`);
+        // Start the live timer if the match is in progress
+        if (event.status.type === 'inprogress') {
+            startLiveTimer(event);
+        } else if (event.status.description === 'Ended') {
+            const timerElement = document.getElementById(`live-timer-${event.id}`);
+            timerElement.innerHTML = 'Ended';
+        }
     }
 };
 
