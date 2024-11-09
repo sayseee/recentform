@@ -1346,15 +1346,15 @@ const renderTeamStats = (statistics, containerId) => {
     const statsHTML = ` 
         <div> 
         <div>
-            <span><strong>GF:</strong> ${Math.round(goalsScored)}</span>
-            <span><strong>GA:</strong> ${Math.round(goalsConceded)}</span>
-            <span><strong>AST:</strong> ${Math.round(assists)}</span>
+            <span><strong>GF:</strong> ${Math.round(goalsScored) || 0}</span>
+            <span><strong>GA:</strong> ${Math.round(goalsConceded) || 0}</span>
+            <span><strong>AST:</strong> ${Math.round(assists) || 0}</span>
         </div>
         <div> 
         <div>
-            <span><strong>Dr:</strong> ${successfulDribblesPercentage}%</span>
-            <span><strong>Pa:</strong> ${roundedAccuratePassesPercentage}%</span>
-            <span><strong>Po:</strong> ${roundedAverageBallPossession}%</span>
+            <span><strong>Dr:</strong> ${successfulDribblesPercentage || 0}</span>
+            <span><strong>Pa:</strong> ${roundedAccuratePassesPercentage || 0}</span>
+            <span><strong>Po:</strong> ${roundedAverageBallPossession || 0}</span>
         </div>
     </div>
     `;
