@@ -1381,6 +1381,7 @@ const renderTeamStats = (statistics, containerId) => {
 
     // Round all values to 0 decimal places
     const successfulDribblesPercentage = Math.round((successfulDribbles / dribbleAttempts) * 100);
+    const averageShotsAgainst = (shotsAgainst / matches).toFixed(1);
     const roundedAccuratePassesPercentage = Math.round(accuratePassesPercentage);
     const roundedAverageBallPossession = Math.round(averageBallPossession);
 
@@ -1394,7 +1395,7 @@ const renderTeamStats = (statistics, containerId) => {
         </div>
         <div> 
         <div class="stat-title">
-            <span><strong>SA:</strong> <span class="value">${shotsAgainst || 0}</span></span>
+            <span><strong>SA:</strong> <span class="value">${averageShotsAgainst || 0}</span></span>
             <span><strong>Dr:</strong> <span class="value">${successfulDribblesPercentage || 0}</span></span>
             <span><strong>Pa:</strong> <span class="value">${roundedAccuratePassesPercentage || 0}</span></span>
             <span><strong>Po:</strong> <span class="value">${roundedAverageBallPossession || 0}</span></span>
