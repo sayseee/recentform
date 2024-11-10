@@ -124,6 +124,7 @@ a:hover {
     display: flex;
     justify-content: space-between;
     width: 100%; 
+    gap: 10px;
 }
 .filter-bar>div { 
     justify-content: flex-end;
@@ -638,7 +639,7 @@ main {
     background-color: var(--color-support-4);
     color: var(--color-tabs-secondary-fill-base);
     font-weight: bold;
-    padding: 5px 10px;
+    padding: 5px 8px;
     cursor: pointer;
 }
 .filter-bar input[type=date], .filter-bar input[type=select], button, .filter-bar select {
@@ -646,16 +647,20 @@ main {
     border: 0;
     background-color: #000;
     color: var(--color-support-1);
-    padding: 0 10px;
+    padding: 0 4px;
     border-radius: 4px;
 }
-
+.calendar__navigation  {
+    font-size: 22px;
+    line-height: 0;
+}
 
         /* Top Bar */
         .top-bar {  
             display: flex;
             justify-content: flex-end;
             padding-right: 10px;
+            gap: 10px;
         }
 
         .top-bar h1 {
