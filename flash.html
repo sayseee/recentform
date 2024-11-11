@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+<style>
+ :root {     
+    --color-dark-bg: #1F1F24;       /* Dark background for navigation */
+    --color-light-gray-bg: #eaecf1; /* Light gray background for sections */
+    --color-primary-blue: #007AFF;  /* Primary blue used in buttons and highlights */
+    --color-secondary-blue: #82B1FF;/* Light blue used in progress circles */
+    --color-dark-gray-text: #0d0c22;/* Dark gray text */
+    --color-medium-gray-text: #666666; /* Medium gray text */
+    --color-light-gray-text: #B2B2B2; /* Light gray text */
+    --color-white: #FFFFFF;         /* White for text and backgrounds */
+    --win-color: #a5cd99; /* Wins */
+    --draw-color: #e0ae55;/* Draws */
+    --loss-color: #f2afa9;/* Losses */ 
+    --color-support-1: #f5f6f8;
+} 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Tahoma, Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Open Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  background-color: #f1f0f6;
+    margin: 0;
+    color: #100d2c;
+    height: -moz-fit-content;
+    height: fit-content;
+    -webkit-font-smoothing: antialiased;
+    font-size: 12px;
+    overflow: hidden;
+}
+h3 {
+    font-weight: 600;
+}
+
+.W, .D, .L {   
+    align-items: center;  
+    justify-content: center;
+    overflow: hidden;
+    position: relative; 
+    padding:2px 0;
+    border-radius: 1px;
+    width: 16px !important;
+    height: 12px !important;
+    display: inline-flex;
+    font-weight: 600;
+} 
+.W, .win, .pos {
+    background-color: var(--win-color);
+}
+.D, .draw {
+    background-color: var(--draw-color);
+}
+.L, .loss, .neg {
+    background-color: var(--loss-color);
+}
+.left-column::-webkit-scrollbar, .tab-content::-webkit-scrollbar, .sideRight::-webkit-scrollbar {
+    width: 2px; /* Set the width of the scrollbar */
+}
+
+.left-column::-webkit-scrollbar-track, .tab-content::-webkit-scrollbar-track, .sideRight::-webkit-scrollbar-track {
+    background: transparent; /* Color of the track */
+}
+
+.left-column::-webkit-scrollbar-thumb, .tab-content::-webkit-scrollbar-thumb, .sideRight::-webkit-scrollbar-thumb {
+    background: var(--color-support-3); /* Color of the thumb */
+    border-radius: 1px; 
+    height: 40px;
+}
+.top-bar {
+    background-color: #030229;  
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;  
+}
+
+.top-bar h1 {
+    font-size: 1.4em;
+    display: flex;
+    align-items: center;
+}
+
+.top-bar h1::before {
+    content: "⚽"; /* Ball icon for illustration */
+    margin-right: 5px;
+}
+
+.top-bar-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.top-bar-icons i {
+    font-size: 1.2em;
+    cursor: pointer;
+}
+.filter-bar {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+.filter-bar>div { 
+    justify-content: flex-end;
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+}
+
+.filter-bar button {
+    background-color: var(--color-support-4);
+    color: var(--color-tabs-secondary-fill-base);
+    font-weight: bold;
+    padding: 5px 8px;
+    cursor: pointer;
+}
+.filter-bar input[type=date], .filter-bar input[type=select], button, .filter-bar select {
+    height: 30px;
+    border: 0;
+    background-color: #000;
+    color: var(--color-support-1);
+    padding: 0 4px;
+    border-radius: 4px;
+}
+.calendar__navigation  {
+    font-size: 22px;
+    line-height: 0;
+}
+.calendar__datepicker {
+    font-size: 13px;
+}
+.date-filter, .time-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between elements */
+}
+
+.date-filter span, .time-filter span { 
+    margin-right: 5px; /* Space between label and input */
+}
+
+input[type="date"], select {
+    background-color: #2b3034;
+    color: #747e8a;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+button#filter-btn {
+    background-color: #007bff; /* Blue button similar to common design */
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button#filter-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.search-icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+}
+
+.circle {
+    width: 8px;
+    height: 8px;
+    border: 3px solid #007AFF;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.handle { 
+    width: 10px;
+    height: 3px;
+    background-color: #007AFF;
+    position: absolute;
+    bottom: 8px;
+    right: -2px;
+    transform: rotate(45deg);
+    transform-origin: top left;
+} 
+.main-nav {
+    display: flex;
+    align-items: center;
+}
+
+.filters {
+    display: flex;
+    justify-content: center;
+}
+
+.filters__group {
+    list-style: none;
+    display: flex;
+    gap: 23px; /* Space between navigation items */
+    padding: 0;
+    margin: 0;
+}
+
+.filters__group li { 
+    min-width: 50px;
+}
+
+.filters__group li a {
+    text-decoration: none;
+    color: #ccc; 
+    padding: 5px 10px;
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
+.filters__group li a.active, .filters__group li a:hover {
+    color: #007bff;
+    border-radius: 25px;
+    font-weight: 600;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Space between columns */
+  padding: 10px;
+  height: calc(100vh - 58px);
+}
+
+.left-column,
+.center-column,
+.right-column {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  flex: 1; /* Makes all columns take equal width */
+  overflow-y: auto;
+}
+
+.center-column {
+  flex: 2.8; /* Make the center column wider */ 
+}
+
+.ad-banner {
+  background-color: #004b8d;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.left-column {
+    flex: 1.2; /* Make the center column wider */
+    padding: 10px 0;
+    background-color: transparent;
+}
+.left-column h3 {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 6px 0;
+    justify-content: flex-start;
+    color: var(--color-medium-gray-text);
+    font-weight: normal;
+}
+.left-column h3 img {
+    margin-right: 6px;
+}
+.left-column h3:not(:last-child) {
+    border-bottom: 1px solid var(--color-light-gray-bg);
+} 
+.center-column .event {
+    cursor: pointer;
+}
+.right-column {
+    flex: 1.5; /* Make the center column wider */
+}
+.right-column a {
+  color: #007bff;
+  text-decoration: none;
+}
+.tournament .catName {
+    color: var(--color-dark-bg);
+    font-weight: 700;
+    text-transform: uppercase; 
+    font-size: 11px;
+}     
+.event-list {
+    display: flex;
+    padding: 5px 0;
+}
+   
+.event-list>div {
+    flex: 1;
+}  
+  
+.event-list>div strong { 
+    width: 25px;    
+}  
+.event-list>div:last-child {
+    font-size: 0.678rem;
+}
+.home-value, .away-value { 
+    display: inline-flex;
+    border: 1px solid #e6e6e9;
+    color: #00002b;  
+    padding: 2px 7px; 
+    width: 12px;    
+    font-weight: 500;
+    justify-content: center;
+}
+.teams-form {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .teams-form .homes-team-form, .teams-form .aways-team-form { 
+            flex: 1;
+            display: flex;  
+        }
+        .team-forms .homes-team-form .data, .team-forms .aways-team-form .data {
+            position: absolute;
+            top: -10px;
+        } 
+        .teams-form .homes-team-form>div, .teams-form .aways-team-form>div {  
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .teams-form .homes-team-form>div { 
+            margin-left: auto; 
+        }
+        .teams-form .aways-team-form>div { 
+            margin-right: auto;  
+        }
+        .teams-form .homes-team-form .team-cent { 
+            text-align: right;
+            margin-right: 3px;
+            margin-left: auto; 
+        }
+        .teams-form .aways-team-form .team-cent {
+            margin-left: 3px;
+            margin-right: auto;
+        }
+        .teams-form .homes-team-form .bar {  
+            margin-left: auto;  
+            background-color: #9CE800;
+        }
+        .teams-form .aways-team-form .bar {  
+            margin-right: auto;   
+            background-color: #FF7A00; 
+        }
+        .box.animate { 
+            width: 10px;
+            height: 10px;
+            position: relative;
+            margin-top: 3px;
+        }
+        .box.animate::before {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: calc(100% - 1px);
+            height: 50%;
+            border-top: 1px solid rgb(217, 175, 0);
+            border-left: 1px solid rgb(217, 175, 0);
+            transform: translate3d(0px, 0px, 0px);
+            animation: 660ms ease-in-out 0s 1 normal none running kCNzYT;
+            z-index: 1;
+        }
+        .box.animate::after {
+            content: "";
+            display: block;
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: calc(100% - 1px);
+            height: 50%;
+            transform: translate3d(0px, 0px, 0px);
+            animation-timeline: auto;
+            animation-range-start: normal;
+            animation-range-end: normal;
+            z-index: 1;
+            border-right: 1px solid rgb(217, 175, 0);
+            border-bottom: 1px solid rgb(217, 175, 0);
+            animation: 660ms ease-in-out 0s 1 normal none running llWbcW;
+        }
+        .box.animate > .sideBox-inner {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            background-size: 100% 200%;
+            animation-timeline: auto;
+            animation-range-start: normal;
+            animation-range-end: normal;
+            transform: translate3d(0px, 0px, 0px);
+            z-index: 0;
+            animation: 330ms ease-in-out 330ms 1 normal forwards running fwrfeI, 330ms ease-in 0ms 1 normal running bIXSM;
+        }
+        .team-manager-h2h {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .team-manager-h2h>div {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            width: 100%;
+        }
+        .team-manager-h2h>div span {
+            font-weight: 800;
+        }
+        .team-manager-h2h>div>div {
+            display: flex;
+            -webkit-box-pack: justify;
+            justify-content: space-evenly;
+        }
+        .team-manager-h2h>div>div p {
+            text-align: center;
+            font-size: 15px;
+            margin: 5px;
+        }
+        .team-manager-h2h>div>div p:first-child {
+            color: #0bb32a;
+        }
+        .team-manager-h2h>div>div p:last-child {
+            color: #374df5;
+        }
+        .team-manager-h2h>div>div p:nth-child(2) {
+            color: #a4a9b3;
+        } 
+        
+.stats-container {
+    background-color: #091c3d;
+    display: flex;
+    background-color: transparent;
+    gap: 11px;
+    justify-content: space-evenly;
+    margin-top: 5px;
+}
+
+.stat-card {  
+    display: flex;
+    align-items: center;
+    position: relative;
+    display: -ms-flexbox;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background: #FFF;
+    border-radius: 2px;
+    border: 1px solid #dde0e7;
+    -webkit-box-shadow: 0 1px 1px 0 rgba(30, 55, 86, 0.12);
+    box-shadow: 0 1px 1px 0 rgba(30, 55, 86, 0.12);
+    padding: 3px;
+    min-width: 18%;
+} 
+
+.stat-title {
+    display: flex;
+    font-weight: 600;
+    color: #9f9f9f;
+    flex: 1;
+    justify-content: space-evenly;
+    gap: 5px;
+    line-height: 1.8;
+}
+
+.stat-title .value { 
+    color:#091c3d !important;
+}
+
+.stat-value {  
+  font-weight: 500; 
+}
+ 
+.trend-arrow {
+    font-size: 12px; 
+}
+
+.trend-arrow.down { 
+    color: #FB0000; 
+}
+
+.trend-arrow.up {
+  color: #00AB00; /* Green color for up arrow */
+}
+.stat-card.up {
+    border-bottom: 3px solid #00AB00;
+}
+.stat-card.down {
+    border-bottom: 3px solid #FB0000;
+}
+.team-stats {
+    width: 100%;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+.possession-bar {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    background-color: #e6e6e6;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.possession {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: white;
+    font-weight: bold;
+}
+
+.home-possession {
+    background-color: #4d9bf9;
+}
+
+.away-possession {
+    background-color: #ff6b6b;
+}
+
+.possession-separator {
+    width: 1px;
+    height: 100%;
+    background-color: white;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-direction: column;
+}
+
+.stat-label {
+    flex: 1;
+    text-align: left;
+}
+
+.stat-bar { 
+    flex: 1;
+    display: flex;
+    position: relative;
+    height: 10px;
+    background-color: #e6e6e6;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.stat {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    height: 100%;
+}
+
+.home-stat {
+    background-color: #4d9bf9;
+    border-radius: 10px 0 0 10px;
+}
+
+.away-stat {
+    background-color: #ff6b6b;
+    border-radius: 0 10px 10px 0;
+    margin-left: -1px; /* slight overlap to hide gaps */
+}
+
+</style>
+    </head>
+    <body>
+        <div class="top-bar">
+            
+        <!-- Filter Container -->
+         <h1>Soccer</h1>
+         <div class="filter-bar">
+             <div>
+                 <button class="calendar__navigation calendar__navigation--yesterday" title="Previous day">&#8249;</button>
+                 <button id="calendarMenu" aria-expanded="false" class="calendar__datepicker">
+                     <span id="current-day"></span> <!-- Current date dynamically displayed here -->
+                 </button>
+                 <ul aria-labelledby="calendarMenu" class="calendar__days" id="date-list" hidden>
+                     <!-- Dates will be appended here dynamically -->
+                 </ul>
+                 <button class="calendar__navigation calendar__navigation--tomorrow" title="Next day">&#8250;</button>
+             </div>
+             <div> 
+                 <select id="time-range">
+                     <option value="">Select Time</option>
+                     <option value="3">3 Hours</option>
+                     <option value="6">6 Hours</option>
+                     <option value="12">12 Hours</option>
+                 </select> 
+                 <div class="search-icon" id="filter-btn">
+                     <div class="circle"></div>
+                     <div class="handle"></div>
+                   </div>
+             </div> 
+         </div>
+         
+        <div class="main-nav">
+            <nav class="filters">
+                <ul class="filters__group">
+                    <li><a href="#all-games" data-status="all" class="active">All</a></li>
+                    <li><a href="#live-games" data-status="live">Live</a></li>
+                    <li><a href="#finished-games" data-status="finished">Results</a></li>
+                    <li><a href="#scheduled-games" data-status="scheduled">Upcoming</a></li>
+                </ul>
+            </nav>
+        </div>
+        </div>
+        <div class="container">
+            <div class="left-column" id="categories-container">
+              <!-- Categories will be dynamically loaded here -->
+            </div>
+          
+            <div class="center-column" id="events-container">
+              <!-- Events for the selected category will be dynamically displayed here -->
+            </div>
+          
+            <div class="right-column" id="event-details"> 
+            </div>
+          </div> 
+        
+        <script>
+
+function toggleFilter(filterClass) {
+    // Hide all filters first
+    document.querySelectorAll('.date-filter, .time-filter').forEach(function (filter) {
+        filter.classList.add('hidden');
+    });
+    document.getElementById('filter-btn').classList.add('hidden');
+
+    // Show the selected filter if it exists
+    const selectedFilter = document.querySelector(`.${filterClass}`);
+    if (selectedFilter) {
+        selectedFilter.classList.toggle('hidden');
+    }
+
+    // Show the filter button if any filter is visible
+    if (
+        document.querySelector('.date-filter:not(.hidden)') ||
+        document.querySelector('.time-filter:not(.hidden)')
+    ) {
+        document.getElementById('filter-btn').classList.remove('hidden');
+    }
+}
+
+        const baseURL = 'https://api.sofascore.com/api/v1';
+
+const fetchJson = async (url) => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error ${response.status}: ${errorData.message}`);
+        }
+        return response.json();
+    } catch (error) {
+        console.error('Fetch error:', error.message);
+        return null;
+    }
+};
+const displayCategories = async (date, hours, status) => {
+    const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
+    const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${date}`;
+    const oddsResponseUrl = `${baseURL}/sport/football/odds/1/${date}`;
+
+    try {
+        const [topTournamentsData, scheduledEventsData, oddsData] = await Promise.all([
+            fetchJson(topTournamentsUrl),
+            fetchJson(scheduledEventsUrl),
+            fetchJson(oddsResponseUrl)
+        ]);
+
+        const allEvents = scheduledEventsData.events || [];
+        const odds = oddsData?.odds || {};
+
+        // Filter by date range for the selected day
+        const startDate = new Date(date).setHours(0, 0, 0);
+        const endDate = new Date(date).setHours(23, 59, 59);
+
+        let filteredEvents = allEvents.filter(event => {
+            const eventTime = new Date(event.startTimestamp * 1000).getTime();
+            return eventTime >= startDate && eventTime <= endDate;
+        });
+
+        // If hours are specified, filter further by time range
+        if (hours) {
+            const timeRangeStart = new Date(date).setHours(0, 0, 0);
+            const timeRangeEnd = new Date(date).setHours(hours, 59, 59);
+
+            filteredEvents = filteredEvents.filter(event => {
+                const eventTime = new Date(event.startTimestamp * 1000).getTime();
+                return eventTime >= timeRangeStart && eventTime <= timeRangeEnd;
+            });
+        }
+
+        // If status is specified, filter by event status
+        if (status) {
+            filteredEvents = filteredEvents.filter(event => {
+                switch (status) {
+                    case 'live':
+                        return event.status.type === 'inprogress';
+                    case 'finished':
+                        return event.status.type === 'finished';
+                    case 'scheduled':
+                        return event.status.type === 'notstarted';
+                    default:
+                        return true;
+                }
+            });
+        }
+
+        // Filter out events without odds
+        filteredEvents = filteredEvents.filter(event => odds[event.id]);
+
+        // Filter and organize events based on top tournaments
+        const topTournaments = topTournamentsData.uniqueTournaments || [];
+        const topTournamentIds = new Set(topTournaments.map(t => t.id));
+
+        const topTournamentsMap = buildCategoryMap(filteredEvents, topTournamentIds);
+
+        // Update the categories container
+        const container = document.getElementById('categories-container');
+        container.innerHTML = '';
+
+        topTournamentsMap.forEach((tournaments, categoryName) => {
+            const categoryItem = createCategorySection(tournaments, categoryName, odds);
+            container.appendChild(categoryItem);
+        });
+
+        // Automatically load the first category and its events
+        const firstCategory = container.querySelector('.category');
+        if (firstCategory) {
+            firstCategory.querySelector('h3').click(); // Trigger click to load events
+        }
+    } catch (error) {
+        console.error('Error displaying categories:', error);
+    }
+};
+      // Utility function to fetch events data and filter for finished events excluding the current match
+      const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
+                const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
+                const eventsData = await fetchJson(eventsUrl);
+
+                // Check if eventsData exists and contains events
+                if (!eventsData || !eventsData.events) return [];
+
+                // Filter only finished events and exclude the current match
+                const finishedEvents = eventsData.events.reverse().filter(event => 
+                    event.status.type === 'finished' && event.id !== currentMatchId
+                );
+
+                return finishedEvents;
+            };
+ 
+
+const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchId) => {
+    const finishedEvents = await fetchEventsData(tournamentId, seasonId, currentMatchId);
+
+    if (finishedEvents.length === 0) return null;
+
+    // Initialize variables for calculating team and league stats
+    let teamGoalsScored = 0, teamGoalsConceded = 0, teamMatches = 0;
+    let teamBTTS = 0, teamOver1_5 = 0, teamOver2_5 = 0;
+
+    let leagueGoals = 0, leagueMatches = 0, leagueBTTS = 0;
+    let leagueOver1_5 = 0, leagueOver2_5 = 0;
+
+    finishedEvents.forEach(event => {
+        // Check if the event is the current match; if so, skip it
+        if (event.id === currentMatchId) return;
+
+        const isHome = event.homeTeam.id === teamId;
+        const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
+        const opponentScore = isHome ? event.awayScore.current : event.homeScore.current;
+        const totalGoals = event.homeScore.current + event.awayScore.current;
+
+        // If teamId is provided, calculate team-specific stats
+        if (teamId && (event.homeTeam.id === teamId || event.awayTeam.id === teamId)) {
+            teamGoalsScored += teamScore;
+            teamGoalsConceded += opponentScore;
+            teamMatches += 1;
+            if (teamScore > 0 && opponentScore > 0) teamBTTS += 1;
+            if (totalGoals > 1.5) teamOver1_5 += 1;
+            if (totalGoals > 2.5) teamOver2_5 += 1;
+        }
+
+        // Calculate league-wide stats for every event
+        leagueGoals += totalGoals;
+        leagueMatches += 1;
+        if (event.homeScore.current > 0 && event.awayScore.current > 0) leagueBTTS += 1;
+        if (totalGoals > 1.5) leagueOver1_5 += 1;
+        if (totalGoals > 2.5) leagueOver2_5 += 1;
+    });
+
+    // Calculate averages for the team, if team-specific data is being calculated
+    const teamStats = teamId ? {
+        goalsScored: (teamMatches > 0) ? (teamGoalsScored / teamMatches).toFixed(2) : 0,
+        BTTS: (teamMatches > 0) ? ((teamBTTS / teamMatches) * 100).toFixed(0) : 0,
+        over1_5: (teamMatches > 0) ? ((teamOver1_5 / teamMatches) * 100).toFixed(0) : 0,
+        over2_5: (teamMatches > 0) ? ((teamOver2_5 / teamMatches) * 100).toFixed(0) : 0
+    } : null;
+
+    // Calculate league-wide averages
+    const leagueStats = {
+        goalsScored: (leagueMatches > 0) ? (leagueGoals / leagueMatches).toFixed(2) : 0,
+        BTTS: (leagueMatches > 0) ? ((leagueBTTS / leagueMatches) * 100).toFixed(0) : 0,
+        over1_5: (leagueMatches > 0) ? ((leagueOver1_5 / leagueMatches) * 100).toFixed(0) : 0,
+        over2_5: (leagueMatches > 0) ? ((leagueOver2_5 / leagueMatches) * 100).toFixed(0) : 0
+    };
+
+    return { teamStats, leagueStats };
+};
+
+ 
+const leagueStatsCache = {}; // Cache object for league stats
+const createCategorySection = (tournaments, categoryName, odds) => {
+    const categoryItem = document.createElement('div');
+    categoryItem.classList.add('category');
+
+    const tournamentsContainer = document.createElement('div');
+    tournamentsContainer.classList.add('tournaments-container');
+
+    tournaments.forEach((tournament, tournamentName) => {
+        const tournamentSection = document.createElement('div');
+        tournamentSection.classList.add('tournament');
+        
+        const tournamentHeader = document.createElement('h3');
+        tournamentHeader.classList.add('flex', '_F_ac');
+        const tournamentImage = `${baseURL}/unique-tournament/${tournament.id}/image`;
+        tournamentHeader.innerHTML = `
+            <img class="tourn" src="${tournamentImage}" alt="${tournamentName}" width="20" height="20" loading="lazy" />
+            <span class="catName">${categoryName}</span> - ${tournamentName}
+        `;
+        tournamentSection.appendChild(tournamentHeader);
+ 
+        tournamentHeader.addEventListener('click', async () => {  
+            const firstEvent = tournament.events[0];
+            
+            let seasonId;
+            let uniqueTournamentId;
+            if (tournament.events && tournament.events.length > 0) {
+                const event = tournament.events[0];
+                seasonId = event.season?.id;
+                uniqueTournamentId = event.tournament.id;
+                console.log(seasonId);
+                console.log(uniqueTournamentId);
+
+                if (!seasonId) {
+                    console.warn(`Season ID is missing for event ID ${event.id}`);
+                }
+            }
+
+            if (!leagueStatsCache[tournament.id]) {
+                // Fetch league stats only once
+                const overallStats = await calculateStatistics(null, uniqueTournamentId, seasonId);
+                leagueStatsCache[tournament.id] = overallStats.leagueStats;
+            }
+ 
+            if (firstEvent) {
+                const leagueStats = leagueStatsCache[tournament.id];
+                loadEventDetailsToRightColumn(firstEvent, odds, leagueStats);
+            }
+            const leagueStats = leagueStatsCache[tournament.id];
+            loadEventsToCenterColumn(tournament.events, odds, leagueStats);
+        });
+
+        tournamentsContainer.appendChild(tournamentSection);
+    });
+
+    categoryItem.appendChild(tournamentsContainer);
+    return categoryItem;
+};
+
+
+// Function to display league stats
+const displayLeagueStats = (leagueStats, container) => {
+    container.innerHTML = ` 
+        <div class="stat-league">
+            <div class="stat-title">AG <span>${leagueStats.goalsScored}</span></div>
+              
+            <div class="stat-title">BTTS <span>${leagueStats.BTTS}%</span></div>
+             
+            <div class="stat-title">+1.5 <span>${leagueStats.over1_5}%</span></div>
+             
+            <div class="stat-title">+2.5 <span>${leagueStats.over2_5}%</span></div> 
+        </div>
+    `;
+};
+const fetchPregameForm = async (teamId, containerId, managerContainerId) => {
+    try {
+        const response = await fetch(`${baseURL}/team/${teamId}`);
+        if (!response.ok) throw new Error(`Failed to fetch pregame form: ${response.statusText}`);
+        
+        const data = await response.json();
+        const { team, pregameForm } = data; 
+        const { name, shortName, manager } = team;
+        const { avgRating, form = [], value, position } = pregameForm || {};
+
+        const formPercentage = calculateFormPercentage(form);
+
+        renderPregameForm({
+            name,
+            shortName,
+            avgRating,
+            form,
+            formPercentage,
+            value,
+            position,
+            containerId
+        });
+
+        // Fetch and render manager details
+        if (manager) {
+            fetchManagerData(manager.id, managerContainerId);
+        }
+
+    } catch (error) {
+        console.error("Error fetching pregame form:", error);
+    }
+};
+
+const calculateFormPercentage = (form) => {
+    const expectedPoints = 3 * form.length; 
+    const actualPoints = form.reduce((points, result) => {
+        switch (result) {
+            case "W": return points + 3;
+            case "D": return points + 1;
+            default: return points;
+        }
+    }, 0);
+    return ((actualPoints / expectedPoints) * 100).toFixed(0);
+};
+
+const renderPregameForm = ({ name, shortName, avgRating, form, formPercentage, value, position, containerId }) => {
+    const container = document.getElementById(containerId);
+    const formDisplayId = `${containerId}-form-display`; 
+    // Use fallback values if `value` or `position` are missing
+    const displayValue = value !== undefined && value !== null ? value : "-";
+    const displayPosition = position !== undefined && position !== null ? position : "-";
+
+    container.innerHTML = `  
+        <div class="team-cent">${formPercentage}%</div>
+        <div class="bar-wrapper" style="width:90%;height: 5px; background-color:#ededed;">
+            <div class="bar" style="width:${formPercentage}%;height: 5px;"></div>
+        </div>  
+        <div class="stat-title" style="margin-top:10px;">Pts: <span class="value">${displayValue}</span> Pos: <span class="value">${displayPosition}</span> ${avgRating ? `<div class="box animate" cursor="default"><div class="sideBox-inner"></div></div> <strong class="value">${avgRating}</strong>` : ""}</div>
+        <p><span id="${formDisplayId}"></span></p> 
+    `;
+
+    renderFormDisplay(form, formDisplayId);
+};
+
+const renderFormDisplay = (form, formDisplayId) => {
+    const formDisplay = document.getElementById(formDisplayId);
+    formDisplay.innerHTML = '';
+    form.forEach(result => {
+        const span = document.createElement('span');
+        span.className = result; 
+        span.textContent = result;
+        span.style.marginRight = "5px";
+        formDisplay.appendChild(span);
+    });
+};
+
+const fetchManagerData = async (managerId, managerContainerId) => {
+    try {
+        const response = await fetch(`${baseURL}/manager/${managerId}`);
+        if (!response.ok) throw new Error(`Failed to fetch manager data: ${response.statusText}`);
+        
+        const managerData = await response.json();
+        renderManagerInfo(managerData.manager, managerContainerId);
+    } catch (error) {
+        console.error("Error fetching manager data:", error);
+    }
+};
+
+const renderManagerInfo = (manager, containerId) => {
+    const container = document.getElementById(containerId);
+    if (manager && container) {
+        const { name, shortName, preferredFormation, performance = {} } = manager;
+        const { total = 0, wins = 0, draws = 0, losses = 0 } = performance;
+
+        // Calculate percentages for wins, draws, and losses
+        const winPercentage = total ? ((wins / total) * 100).toFixed(0) : 0;
+        const drawPercentage = total ? ((draws / total) * 100).toFixed(0) : 0;
+        const lossPercentage = total ? ((losses / total) * 100).toFixed(0) : 0;
+
+        // Render the manager info
+        container.innerHTML = `
+            <div><strong>M: </strong>${shortName || name} ${preferredFormation || ""}</div>
+            <div>
+                <span><strong>TG: </strong> ${total}</span>
+                <span><strong>W: </strong> ${winPercentage}</span>
+                <span><strong>D: </strong> ${drawPercentage}</span>
+                <span><strong>L: </strong> ${lossPercentage}</span>
+            </div>
+        `;
+    } else {
+        container.innerHTML = "<p>Manager data not available</p>";
+    }
+};
+
+const fetchHeadToHead = async (eventId, h2hContainerId) => {
+    try {
+        const response = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/h2h`);
+        if (!response.ok) throw new Error(`Failed to fetch H2H data: ${response.statusText}`);
+        
+        const h2hData = await response.json();
+        const { teamDuel, managerDuel } = h2hData;
+
+        // Render team duel data if available
+        const teamDuelHTML = teamDuel ? renderTeamDuelStats(teamDuel) : '<div></div>';
+
+        // Render manager duel data if available
+        const managerDuelHTML = managerDuel ? renderManagerDuelStats(managerDuel) : '<div></div>';
+
+        // Insert the HTML into the H2H container
+        document.getElementById(h2hContainerId).innerHTML = teamDuelHTML + managerDuelHTML;
+    } catch (error) {
+        console.error("Error fetching head-to-head data:", error);
+    }
+};
+
+const renderTeamDuelStats = (teamDuel) => { 
+    const { homeWins, awayWins, draws } = teamDuel;
+    return `
+    <div>
+        <h4>Head 2 head</h4>
+        <div>
+            <p><strong>${homeWins}</strong></p>
+            <p><strong>${awayWins}</strong></p>
+            <p><strong>${draws}</strong></p>
+        </div>
+    </div>
+    `;
+};
+
+const renderManagerDuelStats = (managerDuel) => { 
+    const { homeWins, awayWins, draws } = managerDuel;
+    return `
+    <div>
+        <span>Manager head 2 head</span>
+        <div>
+            <p><strong>${homeWins}</strong></p>
+            <p><strong>${awayWins}</strong></p>
+            <p><strong>${draws}</strong></p>
+        </div>
+    </div>
+    `; 
+};
+
+// Function to fetch team stats for home and away teams
+const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId, seasonId, containerId, columnType = 'center') => {
+    try {
+        // Fetch stats for the home team
+        const homeResponse = await fetch(`${baseURL}/team/${homeTeamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
+        if (!homeResponse.ok) throw new Error(`Failed to fetch home team stats: ${homeResponse.statusText}`);
+        const homeStats = await homeResponse.json();
+        
+        // Fetch stats for the away team
+        const awayResponse = await fetch(`${baseURL}/team/${awayTeamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
+        if (!awayResponse.ok) throw new Error(`Failed to fetch away team stats: ${awayResponse.statusText}`);
+        const awayStats = await awayResponse.json();
+        
+        // Extract the statistics for both teams
+        const homeStatsData = homeStats.statistics;
+        const awayStatsData = awayStats.statistics;
+        
+        // Call the render function based on column type
+        if (columnType === 'center') {
+            renderStats(homeStatsData, awayStatsData, containerId);
+        } else {
+            renderStatsRightColumn(homeStatsData, awayStatsData, containerId);
+        }
+    } catch (error) {
+        console.error("Error fetching team stats:", error);
+    }
+};
+
+const renderStats = (homeStats, awayStats, containerId) => {
+    const container = document.getElementById(containerId);
+    
+    // Clear previous stats
+    container.innerHTML = '';
+    
+    // Render only basic stats (up to assists)
+    const statsHTML = `
+        <div class="team-stats-row">
+            <div class="team-stat">
+                <strong>MP:</strong>
+                <span class="home-value">${homeStats.matches || '0'}</span>
+                <span class="away-value">${awayStats.matches || '0'}</span> 
+                <strong>GF:</strong>
+                <span class="home-value">${homeStats.goalsScored || '0'}</span>
+                <span class="away-value">${awayStats.goalsScored || '0'}</span> 
+                <strong>GA:</strong>
+                <span class="home-value">${homeStats.goalsConceded || '0'}</span>
+                <span class="away-value">${awayStats.goalsConceded || '0'}</span> 
+                <strong>AST:</strong>
+                <span class="home-value">${homeStats.assists || '0'}</span>
+                <span class="away-value">${awayStats.assists || '0'}</span>
+            </div>
+        </div>
+    `;
+    
+    // Insert the stats into the container
+    container.innerHTML = statsHTML;
+};
+
+const renderStatsRightColumn = (homeStats, awayStats, containerId) => {
+    const container = document.getElementById(containerId);
+    
+    // Clear previous stats
+    container.innerHTML = '';
+    
+    // Render full stats
+    const statsHTML = `
+        <div class="team-stats-container">
+<div class="team-stats">
+    <!-- Possession Bar -->
+    <div class="possession-bar">
+        <div class="possession home-possession" style="width: ${Math.round(homeStats.averageBallPossession) || '0'}%">${Math.round(homeStats.averageBallPossession) || '0'}%</div>
+        <div class="possession-separator"></div>
+        <div class="possession away-possession" style="width: ${Math.round(awayStats.averageBallPossession) || '0'}%;">${Math.round(awayStats.averageBallPossession) || '0'}%</div>
+    </div>
+
+    <!-- Stats Rows -->
+    <div class="stat-row">
+        <span class="stat-label">Matches Played</span>
+        <div class="stat-bar">
+            <div class="stat home-stat" style="width: 74%;">${homeStats.matches || '0'}</div>
+            <div class="stat away-stat" style="width: 26%;">${awayStats.matches || '0'}</div>
+        </div>
+    </div>
+    <!-- Stats Rows -->
+    <div class="stat-row">
+        <span class="stat-label">Assists</span>
+        <div class="stat-bar">
+            <div class="stat home-stat" style="width: 74%;">${homeStats.assists || '0'}</div>
+            <div class="stat away-stat" style="width: 26%;">${awayStats.assists || '0'}</div>
+        </div>
+    </div>
+    <!-- Stats Rows -->
+    <div class="stat-row">
+        <span class="stat-label">Goals Scored</span>
+        <div class="stat-bar">
+            <div class="stat home-stat" style="width: 74%;">${homeStats.goalsScored || '0'}</div>
+            <div class="stat away-stat" style="width: 26%;">${awayStats.goalsScored || '0'}</div>
+        </div>
+    </div>
+    <!-- Stats Rows -->
+    <div class="stat-row">
+        <span class="stat-label">Goals Conceded</span>
+        <div class="stat-bar">
+            <div class="stat home-stat" style="width: 74%;">${homeStats.goalsConceded || '0'}</div>
+            <div class="stat away-stat" style="width: 26%;">${awayStats.goalsConceded || '0'}</div>
+        </div>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label">Accurate Passes</span>
+        <div class="stat-bar">
+            <div class="stat home-stat" style="width: ${Math.round(homeStats.accuratePassesPercentage) || '0'}%;">${Math.round(homeStats.accuratePassesPercentage) || '0'}%</div>
+            <div class="stat away-stat" style="width: ${Math.round(awayStats.accuratePassesPercentage) || '0'}%;">${Math.round(awayStats.accuratePassesPercentage) || '0'}%</div>
+        </div>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label">Successful Dribbles</span>
+        <div class="stat-bar">
+            <div class="stat home-stat" style="width: ${homeStats.successfulDribbles || '0'}%;">${homeStats.successfulDribbles || '0'}</div>
+            <div class="stat away-stat" style="width: ${awayStats.successfulDribbles || '0'}%;">${awayStats.successfulDribbles || '0'}</div>
+        </div>
+    </div> 
+</div>
+ 
+</div> 
+
+    `;
+    
+    // Insert the stats into the container
+    container.innerHTML = statsHTML;
+};
+
+
+
+// Function to load events to center column
+const loadEventsToCenterColumn = (events, odds, leagueStats) => {
+    const eventsContainer = document.getElementById('events-container');
+    eventsContainer.innerHTML = ''; // Clear previous events
+
+    for (const event of events) {
+        const eventItem = document.createElement('div');
+        eventItem.classList.add('event');
+        
+        const homeTeamId = event.homeTeam.id;
+        const awayTeamId = event.awayTeam.id;
+        const currentMatchId = event.id;
+        const tournamentId = event.tournament.id;
+        const uniqueTournamentId = event.tournament.uniqueTournament.id;
+        const seasonId = event.season.id;
+
+        // Add event details and load stats for each event
+        eventItem.innerHTML = `
+            <div class="event-list">
+                <div class="event-info">
+                    ${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace(',', ' ').replace('/', ' ')} - ${event.homeTeam.shortName} vs ${event.awayTeam.shortName}
+                </div>
+                <div id="stats-container-${event.id}"></div>
+            </div>
+        `;
+
+        // Add click event to load event details in the right column
+        eventItem.addEventListener('click', () => {
+            loadEventDetailsToRightColumn(event, odds, leagueStats);
+        });
+
+        eventsContainer.appendChild(eventItem); 
+        
+        // Fetch stats for home and away teams
+        fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, `stats-container-${event.id}`, 'center');
+    }
+
+    // Automatically load the first event details in the center column
+    if (events.length > 0) {
+        loadEventDetailsToRightColumn(events[0], odds, leagueStats);
+    }
+};
+
+// Function to load details of a specific event into the right column
+const loadEventDetailsToRightColumn = async (event, odds, leagueStats) => {
+    
+    const homeTeamId = event.homeTeam.id;
+    const awayTeamId = event.awayTeam.id;
+    const currentMatchId = event.id;
+    const tournamentId = event.tournament.id;
+    const uniqueTournamentId = event.tournament.uniqueTournament.id;
+    const seasonId = event.season.id; 
+        
+    const homeStats = await calculateStatistics(homeTeamId, tournamentId, seasonId, event.id);
+        const awayStats = await calculateStatistics(awayTeamId, tournamentId, seasonId, event.id);
+        const overallStats = await calculateStatistics(null, tournamentId, seasonId, event.id);
+
+        const combinedStats = {
+            goalsScored: ((parseFloat(homeStats.teamStats.goalsScored) + parseFloat(awayStats.teamStats.goalsScored))).toFixed(2),
+            BTTS: ((parseFloat(homeStats.teamStats.BTTS) + parseFloat(awayStats.teamStats.BTTS)) / 2),
+            over1_5: ((parseFloat(homeStats.teamStats.over1_5) + parseFloat(awayStats.teamStats.over1_5)) / 2),
+            over2_5: ((parseFloat(homeStats.teamStats.over2_5) + parseFloat(awayStats.teamStats.over2_5)) / 2)
+        };
+  
+    
+    const detailContainer = document.getElementById('event-details'); // Right column container
+    detailContainer.innerHTML = ''; // Clear previous details
+    const tolerance = 0.01;
+    const eventDetails = `
+        <h2>${event.homeTeam.shortName} vs ${event.awayTeam.shortName}</h2>
+                <div class="teams-form">
+                    <div class="homes-team-form"> 
+                        <div id="homePregameForm-${event.id}" class="pregame-form"></div> 
+                    </div>
+                    <div class="aways-team-form"> 
+                        <div id="awayPregameForm-${event.id}" class="pregame-form"></div> 
+                    </div>
+                </div>
+                
+                <div class="teams-form">
+                    <div class="homes-team-form">  
+                        <div id="homeManager-${event.id}" class="manager-info"></div>
+                    </div>
+                    <div class="aways-team-form">  
+                        <div id="awayManager-${event.id}" class="manager-info"></div> 
+                    </div>
+                </div>
+        <p><strong>Start Time:</strong> ${new Date(event.startTimestamp * 1000).toLocaleString()}</p>
+        <p><strong>Odds:</strong> 
+        Home Win: ${odds[event.id]?.homeWin || "N/A"}, Draw: ${odds[event.id]?.draw || "N/A"}, 
+        Away Win: ${odds[event.id]?.awayWin || "N/A"}</p>
+ 
+    <h3>Team Statistics</h3>
+        <div id="team-stats-container-${event.id}"></div> <!-- Stats will be rendered here -->
+        
+                
+                <h4 style="text-align:center;">Overall Team Stats</h4>
+                <div class="teams-form">
+                    <div class="homes-team-form">  
+                        <div id="home-team-stats-container-${event.id}" class="teams-info"></div>
+                    </div>
+                    <div class="aways-team-form">  
+                        <div id="away-team-stats-container-${event.id}" class="teams-info"></div> 
+                    </div>
+                </div>
+                <div class="stats-container">
+                <div class="stat-card ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
+                    <div class="stat-value">
+                        <span class="team-value">${combinedStats.goalsScored}</span>
+                        <span class="trend-arrow ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
+                            ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? '▲' : '▼')}
+                        </span>
+                    </div>
+                    <div class="stat-title">Goals</div>                    
+                </div>
+                <div class="stat-card ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? 'up' : 'down')}">
+                    <div class="stat-value">
+                        <span class="team-value">${combinedStats.BTTS}%</span>
+                        <span class="trend-arrow ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? 'up' : 'down')}">
+                            ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? '▲' : '▼')}
+                        </span>
+                    </div><div class="stat-title">BTTS</div>                    
+                </div>
+                <div class="stat-card ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? 'up' : 'down')}">
+                    <div class="stat-value">
+                        <span class="team-value">${combinedStats.over1_5}%</span>
+                        <span class="trend-arrow ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? 'up' : 'down')}">
+                            ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? '▲' : '▼')}
+                        </span>
+                    </div>
+                    <div class="stat-title">Over 1.5</div>
+                </div>
+                <div class="stat-card ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? 'up' : 'down')}">
+                   <div class="stat-value">
+                        <span class="team-value">${combinedStats.over2_5}%</span>
+                        <span class="trend-arrow ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? 'up' : 'down')}">
+                            ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? '▲' : '▼')}
+                        </span>
+                    </div> <div class="stat-title">Over 2.5</div>                    
+                </div>
+            </div>
+    `;
+
+    detailContainer.innerHTML = eventDetails;
+ 
+        // Fetch pregame form and manager details
+        fetchPregameForm(homeTeamId, `homePregameForm-${event.id}`, `homeManager-${event.id}`);
+        fetchPregameForm(awayTeamId, `awayPregameForm-${event.id}`, `awayManager-${event.id}`);
+
+    // Fetch and render full stats for the home and away teams in the right column
+    fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, `team-stats-container-${event.id}`, 'right');
+
+};
+
+
+const filterEvents = (events, date, hours, status, odds) => {
+    const startDate = new Date(date).setHours(0, 0, 0);
+    const endDate = new Date(date).setHours(23, 59, 59);
+
+    let filteredEvents = events.filter(event => {
+        const eventTime = new Date(event.startTimestamp * 1000).getTime();
+        return eventTime >= startDate && eventTime <= endDate && odds[event.id];
+    });
+
+    if (hours) {
+        const now = new Date().getTime();
+        const timeRange = hours * 60 * 60 * 1000;
+        filteredEvents = filteredEvents.filter(event => {
+            const eventTime = new Date(event.startTimestamp * 1000).getTime();
+            return eventTime >= now && eventTime <= now + timeRange;
+        });
+    }
+
+    return filteredEvents;
+};
+
+const buildCategoryMap = (events, topTournamentIds) => {
+    const map = new Map();
+    events.forEach(event => {
+        const categoryName = event.tournament.category.name;
+        const tournamentId = event.tournament.uniqueTournament.id;
+        const tournamentName = event.tournament.uniqueTournament.name;
+
+        if (!map.has(categoryName)) {
+            map.set(categoryName, new Map());
+        }
+
+        const tournaments = map.get(categoryName);
+        if (!tournaments.has(tournamentName)) {
+            tournaments.set(tournamentName, { id: tournamentId, events: [] });
+        }
+
+        tournaments.get(tournamentName).events.push(event);
+    });
+
+    return map;
+};
+
+ 
+document.addEventListener('DOMContentLoaded', () => {
+                const today = new Date();
+                let selectedDate = today;
+                let selectedHours = '';
+
+                // Function to update the displayed date
+                function updateCalendarDisplay(date) {
+                    const formattedDate = formatDate(date);
+                    const currentDayElem = document.getElementById('current-day');
+                    if (currentDayElem) currentDayElem.innerText = formattedDate;
+                }
+
+                // Function to format the date to YYYY-MM-DD
+                function formatDate(date) {
+                    return date.toISOString().split('T')[0]; // Format date as 'YYYY-MM-DD'
+                }
+
+                // Fetch and display events for the selected date
+                function fetchEventsByDate(date, hours) {
+                    //console.log('Fetching events for date:', date, 'with hours:', hours);
+                    // Ensure displayCategories can handle optional status argument
+                    displayCategories(date, hours);
+                }
+
+                // Initial data load: Display today's date and fetch events
+                updateCalendarDisplay(today);
+                fetchEventsByDate(formatDate(today), selectedHours);
+
+                // Handle 'yesterday' button click
+                const yesterdayBtn = document.querySelector('.calendar__navigation--yesterday');
+                if (yesterdayBtn) {
+                    yesterdayBtn.addEventListener('click', () => {
+                        selectedDate.setDate(selectedDate.getDate() - 1); // Move to the previous day
+                        updateCalendarDisplay(selectedDate);
+                        fetchEventsByDate(formatDate(selectedDate), selectedHours);
+                    });
+                }
+
+                // Handle 'tomorrow' button click
+                const tomorrowBtn = document.querySelector('.calendar__navigation--tomorrow');
+                if (tomorrowBtn) {
+                    tomorrowBtn.addEventListener('click', () => {
+                        selectedDate.setDate(selectedDate.getDate() + 1); // Move to the next day
+                        updateCalendarDisplay(selectedDate);
+                        fetchEventsByDate(formatDate(selectedDate), selectedHours);
+                    });
+                }
+
+                // Filter events based on the selected time range
+                const filterBtn = document.getElementById('filter-btn');
+                if (filterBtn) {
+                    filterBtn.addEventListener('click', () => {
+                        selectedHours = document.getElementById('time-range').value;
+                        fetchEventsByDate(formatDate(selectedDate), selectedHours);
+                    });
+                }
+
+                document.querySelectorAll('.main-nav a').forEach(link => {
+                    link.addEventListener('click', async event => {
+                        
+                    event.preventDefault();
+                    const filterType = link.getAttribute('href').replace('#', '');
+
+                    const date = document.getElementById('current-day').innerText;
+                    let hours = '';
+                    let status = ''; // Define default status as an empty string
+
+
+                       // Handle different types of game filters
+            switch (filterType) {
+                case 'all-games':
+                    displayCategories(date, hours);
+                    break;
+                case 'live-games':
+                    status = 'live';
+                    displayCategories(date, hours, status);
+                    break;
+                case 'finished-games':
+                    status = 'finished';
+                    displayCategories(date, hours, status);
+                    break;
+                case 'scheduled-games':
+                    status = 'scheduled';
+                    displayCategories(date, hours, status);
+                    break;
+                default:
+                    displayCategories(date, hours);
+                    break;
+            }
+
+
+                        // Remove 'active' class from all links
+                        document.querySelectorAll('.main-nav a').forEach(link => {
+                            link.classList.remove('active');
+                        });
+
+                        // Add 'active' class to the clicked link
+                        event.target.classList.add('active');
+                    });
+                }); 
+                
+
+            });
+ 
+
+// Helper function to convert fractional odds to decimal
+function fractionalToDecimal(fractionalOdds) {
+    const [numerator, denominator] = fractionalOdds.split('/');
+    return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
+}
+
+        </script>
+    </body>
+</html>

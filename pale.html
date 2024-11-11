@@ -1135,36 +1135,36 @@ const createCategorySection = (tournaments, categoryName, odds) => {
             eventsContainer.style.display = isEventsVisible ? 'flex' : 'none';
             leagueStatsContainer.style.display = isEventsVisible ? 'block' : 'none';
 
-            let seasonId;
-            let uniqueTournamentId;
+            let seasonId, uniqueTournamentId;
             if (tournament.events && tournament.events.length > 0) {
                 const event = tournament.events[0];
                 seasonId = event.season?.id;
                 uniqueTournamentId = event.tournament.id;
-                //console.log(seasonId);
+                tournamentIds = event.tournament.uniqueTournament.id;
+                console.log(seasonId);
                 //console.log(uniqueTournamentId);
-
-                if (!seasonId) {
-                    console.warn(`Season ID is missing for event ID ${event.id}`);
-                }
+                console.log(tournamentIds);
             }
 
             if (!leagueStatsCache[tournament.id]) {
-                // Fetch league stats only once
-                const overallStats = await calculateStatistics(null, uniqueTournamentId, seasonId);
-                leagueStatsCache[tournament.id] = overallStats.leagueStats;
+                // Fetch league stats and tournament info only once
+                const [overallStats, tournamentInfo] = await Promise.all([
+                    calculateStatistics(null, uniqueTournamentId, seasonId),
+                    fetchTournamentInfo(tournamentIds, seasonId)
+                ]);
+
+                leagueStatsCache[tournament.id] = { leagueStats: overallStats.leagueStats, tournamentInfo };
             }
 
+            const { leagueStats, tournamentInfo } = leagueStatsCache[tournament.id];
             if (leagueStatsContainer.innerHTML === '') {
-                displayLeagueStats(leagueStatsCache[tournament.id], leagueStatsContainer);
+                displayLeagueStats(leagueStats, tournamentInfo, leagueStatsContainer);
             }
 
             if (eventsContainer.children.length === 0) {
-                const leagueStats = leagueStatsCache[tournament.id];
                 loadEvents(tournament.events, odds, eventsContainer, leagueStats);
             }
-        });
-
+        }); 
 
         tournamentsContainer.appendChild(tournamentSection);
     });
@@ -1173,20 +1173,30 @@ const createCategorySection = (tournaments, categoryName, odds) => {
     return categoryItem;
 };
 
-// Function to display league stats
-const displayLeagueStats = (leagueStats, container) => {
-    container.innerHTML = ` 
+const displayLeagueStats = (leagueStats, tournamentInfo, container) => {
+    // Calculate total matches
+    const totalMatches = tournamentInfo.homeTeamWins + tournamentInfo.awayTeamWins + tournamentInfo.draws;
+
+    // Calculate averages and percentages 
+    const homeWinsPercentage = totalMatches > 0 ? ((tournamentInfo.homeTeamWins / totalMatches) * 100).toFixed(0) : '0';
+    const awayWinsPercentage = totalMatches > 0 ? ((tournamentInfo.awayTeamWins / totalMatches) * 100).toFixed(0) : '0';
+    const drawsPercentage = totalMatches > 0 ? ((tournamentInfo.draws / totalMatches) * 100).toFixed(0) : '0';
+
+    container.innerHTML = `
         <div class="stat-league">
             <div class="stat-title">AG <span>${leagueStats.goalsScored}</span></div>
-              
             <div class="stat-title">BTTS <span>${leagueStats.BTTS}%</span></div>
-             
             <div class="stat-title">+1.5 <span>${leagueStats.over1_5}%</span></div>
-             
             <div class="stat-title">+2.5 <span>${leagueStats.over2_5}%</span></div> 
+        </div>
+        <div class="stat-league">  
+            <div class="stat-title">HW <span>${homeWinsPercentage}%</span></div>
+            <div class="stat-title">AW <span>${awayWinsPercentage}%</span></div>
+            <div class="stat-title">DR <span>${drawsPercentage}%</span></div> 
         </div>
     `;
 };
+
 const fetchPregameForm = async (teamId, containerId, managerContainerId) => {
     try {
         const response = await fetch(`${baseURL}/team/${teamId}`);
@@ -1279,18 +1289,19 @@ const renderManagerInfo = (manager, containerId) => {
     const container = document.getElementById(containerId);
     if (manager && container) {
         const { name, shortName, preferredFormation, performance = {} } = manager;
-        const { total = 0, wins = 0, draws = 0, losses = 0 } = performance;
+        const { total = 0, wins = 0, draws = 0, losses = 0, totalPoints = 0 } = performance;
 
         // Calculate percentages for wins, draws, and losses
         const winPercentage = total ? ((wins / total) * 100).toFixed(0) : 0;
         const drawPercentage = total ? ((draws / total) * 100).toFixed(0) : 0;
         const lossPercentage = total ? ((losses / total) * 100).toFixed(0) : 0;
+        const pointsPerGame = total ? (totalPoints / total).toFixed(2) : 0;
 
         // Render the manager info
         container.innerHTML = `
-            <div><strong>M: </strong>${shortName || name} ${preferredFormation || ""}</div>
-            <div>
-                <span><strong>TG: </strong> ${total}</span>
+            <div><strong>M: </strong>${shortName || name}<span><strong> F: </strong>${preferredFormation || ""}</div>
+            <div> 
+                <span><strong>PPG: </strong> ${pointsPerGame}</span>
                 <span><strong>W: </strong> ${winPercentage}</span>
                 <span><strong>D: </strong> ${drawPercentage}</span>
                 <span><strong>L: </strong> ${lossPercentage}</span>
@@ -1881,6 +1892,13 @@ const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
 
                 return finishedEvents;
             };
+
+const fetchTournamentInfo = async (uniqueTournamentId, seasonId) => {
+    const url = `${baseURL}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/info`;
+    const data = await fetchJson(url);
+    console.log(data);
+    return data.info || {};
+};
 
  
 const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchId) => {
