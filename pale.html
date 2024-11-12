@@ -1658,7 +1658,7 @@ const renderStats = (homeStats, awayStats, containerId) => {
                 `;
             })()}
             ${(() => {
-                const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeConceded, averageGoalsAwayConceded);
+                const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeConceded, averageGoalsAwayConceded, false, true);
                 return `
                     <div>
                         ${homeSpan}
