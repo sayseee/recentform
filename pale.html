@@ -1597,6 +1597,8 @@ const renderStats = (homeStats, awayStats, containerId) => {
     const averageGoalsAwayConceded = (awayStats.goalsConceded / awayStats.matches).toFixed(2);
     const cornersHomePerGame = (homeStats.corners / homeStats.matches).toFixed(2);
     const cornersAwayPerGame = (awayStats.corners / awayStats.matches).toFixed(2);
+    const averageHomeShots = (homeStats.shots / homeStats.matches).toFixed(1);
+    const averageAwayShots = (awayStats.shots / awayStats.matches).toFixed(1);
     const averageHomeShotsAgainst = (homeStats.shotsAgainst / homeStats.matches).toFixed(1);
     const averageAwayShotsAgainst = (awayStats.shotsAgainst / awayStats.matches).toFixed(1);
     const roundedAccurateHomePassesPercentage = Math.round(homeStats.accuratePassesPercentage);
@@ -1614,6 +1616,11 @@ const renderStats = (homeStats, awayStats, containerId) => {
                     <span class="home-value">${homeStats.matches || '0'}</span>
                     <span>Games Played</span>
                     <span class="away-value">${awayStats.matches || '0'}</span>
+                </div>
+                <div>
+                    <span class="home-value">${averageHomeShots || '0'}</span>
+                    <span>Shots For</span>
+                    <span class="away-value">${averageAwayShots || '0'}</span>
                 </div>
                 <div>
                     <span class="home-value">${averageHomeShotsAgainst || '0'}</span>
