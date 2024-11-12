@@ -1584,7 +1584,6 @@ const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId,
         console.error("Error fetching team stats:", error);
     }
 };
-
 const renderStats = (homeStats, awayStats, containerId) => {
     const container = document.getElementById(containerId);
     
@@ -1605,64 +1604,116 @@ const renderStats = (homeStats, awayStats, containerId) => {
     const roundedAverageHomeBallPossession = Math.round(homeStats.averageBallPossession);
     const roundedAccurateAwayPassesPercentage = Math.round(awayStats.accuratePassesPercentage);
     const roundedAverageAwayBallPossession = Math.round(awayStats.averageBallPossession);
+
     // Clear previous stats
     container.innerHTML = '';
-    
-    // Render only basic stats (up to assists)
+
+    // Helper function for conditional styling
+    const getColoredSpan = (homeValue, awayValue, isPercentage = false, reverse = false) => {
+        const homeColor = reverse ? (homeValue < awayValue ? 'green' : 'red') : (homeValue > awayValue ? 'green' : 'red');
+        const awayColor = reverse ? (awayValue < homeValue ? 'green' : 'red') : (awayValue > homeValue ? 'green' : 'red');
+
+        const homeSpan = `<span class="home-value" style="color: ${homeColor};">${homeValue}${isPercentage ? '%' : ''}</span>`;
+        const awaySpan = `<span class="away-value" style="color: ${awayColor};">${awayValue}${isPercentage ? '%' : ''}</span>`;
+        return { homeSpan, awaySpan };
+    };
+
+    // Build stats HTML
     const statsHTML = `  
-                <h4 style="text-align:center;">Overall Team Statistics</h4> 
-            <div class="team-stat overall-stats">
-                <div>
-                    <span class="home-value">${homeStats.matches || '0'}</span>
-                    <span>Games Played</span>
-                    <span class="away-value">${awayStats.matches || '0'}</span>
-                </div>
-                <div>
-                    <span class="home-value">${averageHomeShots || '0'}</span>
-                    <span>Shots For</span>
-                    <span class="away-value">${averageAwayShots || '0'}</span>
-                </div>
-                <div>
-                    <span class="home-value">${averageHomeShotsAgainst || '0'}</span>
-                    <span>Shots Against</span>
-                    <span class="away-value">${averageAwayShotsAgainst || '0'}</span>
-                </div>
-                <div>
-                    <span class="home-value">${averageGoalsHomeScored || '0'}</span>
-                    <span>Av Goals Scored</span>
-                    <span class="away-value">${averageGoalsAwayScored || '0'}</span>
-                </div>
-                <div>
-                    <span class="home-value">${averageGoalsHomeConceded || '0'}</span>
-                    <span>Av Goals Conceded</span>
-                    <span class="away-value">${averageGoalsAwayConceded || '0'}</span>
-                </div>
-                <div>
-                    <span class="home-value">${successfulDribblesHomePercentage || '0'}%</span>
-                    <span>Dribbles%</span>
-                    <span class="away-value">${successfulDribblesAwayPercentage || '0'}%</span>
-                </div>
-                <div>
-                    <span class="home-value">${roundedAccurateHomePassesPercentage || '0'}%</span>
-                    <span>Passess%</span>
-                    <span class="away-value">${roundedAccurateAwayPassesPercentage || '0'}%</span>
-                </div>
-                <div>
-                    <span class="home-value">${roundedAverageHomeBallPossession || '0'}%</span>
-                    <span>Possession%</span>
-                    <span class="away-value">${roundedAverageAwayBallPossession || '0'}%</span>
-                </div> 
-                <div>
-                    <span class="home-value">${cornersHomePerGame || '0'}</span>
-                    <span>Corners Per Game</span>
-                    <span class="away-value">${cornersAwayPerGame || '0'}</span>
-                </div>
-            </div> 
+        <h4 style="text-align:center;">Overall Team Statistics</h4> 
+        <div class="team-stat overall-stats">
+            <div>
+                <span class="home-value">${homeStats.matches || '0'}</span>
+                <span>Games Played</span>
+                <span class="away-value">${awayStats.matches || '0'}</span>
+            </div>
+            ${(() => {
+                const { homeSpan, awaySpan } = getColoredSpan(averageHomeShots, averageAwayShots);
+                return `
+                    <div>
+                        ${homeSpan}
+                        <span>Shots For</span>
+                        ${awaySpan}
+                    </div>
+                `;
+            })()}
+            ${(() => {
+                const { homeSpan, awaySpan } = getColoredSpan(averageHomeShotsAgainst, averageAwayShotsAgainst, false, true);
+                return `
+                    <div>
+                        ${homeSpan}
+                        <span>Shots Against</span>
+                        ${awaySpan}
+                    </div>
+                `;
+            })()}
+            ${(() => {
+                const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeScored, averageGoalsAwayScored);
+                return `
+                    <div>
+                        ${homeSpan}
+                        <span>Av Goals Scored</span>
+                        ${awaySpan}
+                    </div>
+                `;
+            })()}
+            ${(() => {
+                const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeConceded, averageGoalsAwayConceded);
+                return `
+                    <div>
+                        ${homeSpan}
+                        <span>Av Goals Conceded</span>
+                        ${awaySpan}
+                    </div>
+                `;
+            })()}
+            ${(() => {
+                const { homeSpan, awaySpan } = getColoredSpan(successfulDribblesHomePercentage, successfulDribblesAwayPercentage, true);
+                return `
+                    <div>
+                        ${homeSpan}
+                        <span>Dribbles%</span>
+                        ${awaySpan}
+                    </div>
+                `;
+            })()}
+            ${(() => {
+                const { homeSpan, awaySpan } = getColoredSpan(roundedAccurateHomePassesPercentage, roundedAccurateAwayPassesPercentage, true);
+                return `
+                    <div>
+                        ${homeSpan}
+                        <span>Passes%</span>
+                        ${awaySpan}
+                    </div>
+                `;
+            })()}
+            ${(() => {
+                const { homeSpan, awaySpan } = getColoredSpan(roundedAverageHomeBallPossession, roundedAverageAwayBallPossession, true);
+                return `
+                    <div>
+                        ${homeSpan}
+                        <span>Possession%</span>
+                        ${awaySpan}
+                    </div>
+                `;
+            })()}
+            ${(() => {
+                const { homeSpan, awaySpan } = getColoredSpan(cornersHomePerGame, cornersAwayPerGame);
+                return `
+                    <div>
+                        ${homeSpan}
+                        <span>Corners Per Game</span>
+                        ${awaySpan}
+                    </div>
+                `;
+            })()}
+        </div> 
     `;
-    
+
     // Insert the stats into the container
     container.innerHTML = statsHTML;
 };
+
 
 const renderTeamStats = (statistics, containerId) => {
     const container = document.getElementById(containerId);
