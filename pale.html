@@ -1204,39 +1204,66 @@ const displayLeagueStats = (leagueStats, tournamentInfo, container) => {
     `;
 };
 
-const fetchPregameForm = async (teamId, containerId, managerContainerId) => {
+const fetchPregameForm = async (eventId, teamId, homeContainerId, awayContainerId, managerContainerId) => {
     try {
-        const response = await fetch(`${baseURL}/team/${teamId}`);
-        if (!response.ok) throw new Error(`Failed to fetch pregame form: ${response.statusText}`);
+        // Fetch manager data using teamId
+        const teamResponse = await fetch(`${baseURL}/team/${teamId}`);
+        if (!teamResponse.ok) throw new Error(`Failed to fetch team data: ${teamResponse.statusText}`);
         
-        const data = await response.json();
-        const { team, pregameForm } = data; 
-        const { name, shortName, manager } = team;
-        const { avgRating, form = [], value, position } = pregameForm || {};
+        const teamData = await teamResponse.json();
+        const { team } = teamData;
+        const { manager } = team;
 
-        const formPercentage = calculateFormPercentage(form);
+        // Fetch pregame form data using eventId
+        const formResponse = await fetch(`${baseURL}/event/${eventId}/pregame-form`);
+        if (!formResponse.ok) throw new Error(`Failed to fetch pregame form data: ${formResponse.statusText}`);
+        
+        const formData = await formResponse.json();
+        const { homeTeam, awayTeam } = formData;
 
-        renderPregameForm({
-            name,
-            shortName,
-            avgRating,
-            form,
-            formPercentage,
-            value,
-            position,
-            containerId
-        });
+        // Render pregame form for home team
+        if (homeTeam) {
+            const { avgRating, form = [], value, position } = homeTeam;
+            const formPercentage = calculateFormPercentage(form);
 
-        // Fetch and render manager details
+            renderPregameForm({
+                name: "Home Team",
+                avgRating,
+                form,
+                formPercentage,
+                value,
+                position,
+                containerId: homeContainerId
+            });
+        }
+
+        // Render pregame form for away team
+        if (awayTeam) {
+            const { avgRating, form = [], value, position } = awayTeam;
+            const formPercentage = calculateFormPercentage(form);
+
+            renderPregameForm({
+                name: "Away Team",
+                avgRating,
+                form,
+                formPercentage,
+                value,
+                position,
+                containerId: awayContainerId
+            });
+        }
+
+        // Render manager details if available
         if (manager) {
             fetchManagerData(manager.id, managerContainerId);
         }
 
     } catch (error) {
-        console.error("Error fetching pregame form:", error);
+        console.error("Error fetching pregame form or manager data:", error);
     }
 };
 
+// Calculate form percentage based on the form array
 const calculateFormPercentage = (form) => {
     const expectedPoints = 3 * form.length; 
     const actualPoints = form.reduce((points, result) => {
@@ -1249,10 +1276,11 @@ const calculateFormPercentage = (form) => {
     return ((actualPoints / expectedPoints) * 100).toFixed(0);
 };
 
-const renderPregameForm = ({ name, shortName, avgRating, form, formPercentage, value, position, containerId }) => {
+// Render pregame form with stats and bar display
+const renderPregameForm = ({ name, avgRating, form, formPercentage, value, position, containerId }) => {
     const container = document.getElementById(containerId);
     const formDisplayId = `${containerId}-form-display`; 
-    // Use fallback values if `value` or `position` are missing
+
     const displayValue = value !== undefined && value !== null ? value : "-";
     const displayPosition = position !== undefined && position !== null ? position : "-";
 
@@ -1268,13 +1296,13 @@ const renderPregameForm = ({ name, shortName, avgRating, form, formPercentage, v
     renderFormDisplay(form, formDisplayId);
 };
 
+// Display form history (Win, Draw, Loss) with icons and styles
 const renderFormDisplay = (form, formDisplayId) => {
     const formDisplay = document.getElementById(formDisplayId);
     formDisplay.innerHTML = '';
     form.forEach(result => {
         const span = document.createElement('span');
         
-        // Set the display symbol based on the result type
         if (result === "W") {
             span.textContent = "✓"; // Tick for Win
         } else if (result === "L") {
@@ -1283,14 +1311,13 @@ const renderFormDisplay = (form, formDisplayId) => {
             span.textContent = "–"; // Dash for Draw
         }
         
-        // Add class based on result type
-        span.classList.add(result);
+        span.classList.add(result); // Add class based on result type
         span.style.marginRight = "5px";
         formDisplay.appendChild(span);
     });
 };
 
-
+// Fetch manager details using managerId
 const fetchManagerData = async (managerId, managerContainerId) => {
     try {
         const response = await fetch(`${baseURL}/manager/${managerId}`);
@@ -1303,19 +1330,18 @@ const fetchManagerData = async (managerId, managerContainerId) => {
     }
 };
 
+// Render manager details with performance stats
 const renderManagerInfo = (manager, containerId) => {
     const container = document.getElementById(containerId);
     if (manager && container) {
         const { name, shortName, preferredFormation, performance = {} } = manager;
         const { total = 0, wins = 0, draws = 0, losses = 0, totalPoints = 0 } = performance;
 
-        // Calculate percentages for wins, draws, and losses
         const winPercentage = total ? ((wins / total) * 100).toFixed(0) : 0;
         const drawPercentage = total ? ((draws / total) * 100).toFixed(0) : 0;
         const lossPercentage = total ? ((losses / total) * 100).toFixed(0) : 0;
         const pointsPerGame = total ? (totalPoints / total).toFixed(2) : 0;
 
-        // Render the manager info
         container.innerHTML = `
             <div><strong>M: </strong>${shortName || name}<span><strong> F: </strong>${preferredFormation || ""}</div>
             <div> 
@@ -1329,6 +1355,7 @@ const renderManagerInfo = (manager, containerId) => {
         container.innerHTML = "<p>Manager data not available</p>";
     }
 };
+
 
 const fetchHeadToHead = async (eventId, h2hContainerId) => {
     try {
@@ -1628,12 +1655,24 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         eventListItem.appendChild(eventLink); 
 
         eventsContainer.appendChild(eventListItem);
-         
-        // Fetch pregame form and manager details
-            fetchPregameForm(homeTeamId, `homePregameForm-${event.id}`, `homeManager-${event.id}`);
-            fetchPregameForm(awayTeamId, `awayPregameForm-${event.id}`, `awayManager-${event.id}`);
+      
+        // Fetch pregame form and manager details for both teams using the updated fetchPregameForm function
+        fetchPregameForm(
+            event.id,             // Pass eventId to fetch form data for both teams
+            homeTeamId,           // Pass home teamId to fetch manager data for the home team
+            `homePregameForm-${event.id}`,   // Container ID for the home team’s pregame form
+            `awayPregameForm-${event.id}`,   // Container ID for the away team’s pregame form
+            `homeManager-${event.id}`        // Container ID for the home team’s manager details
+        );
 
-            
+        fetchPregameForm(
+            event.id,             // Pass eventId to fetch form data for both teams
+            awayTeamId,           // Pass away teamId to fetch manager data for the away team
+            `homePregameForm-${event.id}`,   // Container ID for the home team’s pregame form
+            `awayPregameForm-${event.id}`,   // Container ID for the away team’s pregame form
+            `awayManager-${event.id}`        // Container ID for the away team’s manager details
+        );
+
         // Example usage
         fetchTeamOverallStats(homeTeamId, event.tournament.uniqueTournament.id, seasonId, `home-team-stats-container-${event.id}`);
         fetchTeamOverallStats(awayTeamId, event.tournament.uniqueTournament.id, seasonId, `away-team-stats-container-${event.id}`);
