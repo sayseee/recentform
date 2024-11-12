@@ -1595,20 +1595,20 @@ const renderStats = (homeStats, awayStats, containerId) => {
     // Round all values to 0 decimal places or return blank
     const successfulDribblesHomePercentage = safeCalcPercentage(Math.round((homeStats.successfulDribbles / homeStats.dribbleAttempts) * 100));
     const successfulDribblesAwayPercentage = safeCalcPercentage(Math.round((awayStats.successfulDribbles / awayStats.dribbleAttempts) * 100));
-    const averageGoalsHomeScored = safeCalc((homeStats.goalsScored / homeStats.matches).toFixed(2));
-    const averageGoalsHomeConceded = safeCalc((homeStats.goalsConceded / homeStats.matches).toFixed(2));
+    const averageGoalsHomeScored = safeCalc(Math.round(homeStats.goalsScored / homeStats.matches).toFixed(2));
+    const averageGoalsHomeConceded = safeCalc(Math.round(homeStats.goalsConceded / homeStats.matches).toFixed(2));
     const averageGoalsAwayScored = safeCalc((awayStats.goalsScored / awayStats.matches).toFixed(2));
     const averageGoalsAwayConceded = safeCalc((awayStats.goalsConceded / awayStats.matches).toFixed(2));
-    const cornersHomePerGame = safeCalc((homeStats.corners / homeStats.matches).toFixed(2));
-    const cornersAwayPerGame = safeCalc((awayStats.corners / awayStats.matches).toFixed(2));
+    const cornersHomePerGame = safeCalc(Math.round(homeStats.corners / homeStats.matches).toFixed(2));
+    const cornersAwayPerGame = safeCalc(Math.round(awayStats.corners / awayStats.matches).toFixed(2));
     const homeAssists = safeCalc(Math.round(homeStats.assists));
     const awayAssists = safeCalc(Math.round(awayStats.assists));
     const homeCleanSheets = safeCalc(Math.round(homeStats.cleanSheets));
     const awayCleanSheets = safeCalc(Math.round(awayStats.cleanSheets));
-    const averageHomeShots = safeCalc((homeStats.shots / homeStats.matches).toFixed(1));
-    const averageAwayShots = safeCalc((awayStats.shots / awayStats.matches).toFixed(1));
-    const averageHomeShotsAgainst = safeCalc((homeStats.shotsAgainst / homeStats.matches).toFixed(1));
-    const averageAwayShotsAgainst = safeCalc((awayStats.shotsAgainst / awayStats.matches).toFixed(1));
+    const averageHomeShots = safeCalc(Math.round(homeStats.shots / homeStats.matches).toFixed(1));
+    const averageAwayShots = safeCalc(Math.round(awayStats.shots / awayStats.matches).toFixed(1));
+    const averageHomeShotsAgainst = safeCalc(Math.round(homeStats.shotsAgainst / homeStats.matches).toFixed(1));
+    const averageAwayShotsAgainst = safeCalc(Math.round(awayStats.shotsAgainst / awayStats.matches).toFixed(1));
     const roundedAccurateHomePassesPercentage = safeCalcPercentage(Math.round(homeStats.accuratePassesPercentage));
     const roundedAverageHomeBallPossession = safeCalcPercentage(Math.round(homeStats.averageBallPossession));
     const roundedAccurateAwayPassesPercentage = safeCalcPercentage(Math.round(awayStats.accuratePassesPercentage));
@@ -1617,15 +1617,33 @@ const renderStats = (homeStats, awayStats, containerId) => {
     // Clear previous stats
     container.innerHTML = '';
 
-    // Helper function for conditional styling
-    const getColoredSpan = (homeValue, awayValue, isPercentage = false, reverse = false) => {
-        const homeColor = reverse ? (homeValue < awayValue ? 'green' : 'red') : (homeValue > awayValue ? 'green' : 'red');
-        const awayColor = reverse ? (awayValue < homeValue ? 'green' : 'red') : (awayValue > homeValue ? 'green' : 'red');
+    
+        // Helper function for conditional styling with specific rules for Shots For and Shots Against
+        const getColoredSpan = (homeValue, awayValue, statType = '') => {
+        let homeColor, awayColor;
 
-        const homeSpan = `<span class="home-value" style="color: ${homeColor};">${homeValue || ''}</span>`;
-        const awaySpan = `<span class="away-value" style="color: ${awayColor};">${awayValue || ''}</span>`;
-        return { homeSpan, awaySpan };
-    };
+        if (statType === 'Shots For') {
+        // Higher value should be green, lower value should be red
+        homeColor = homeValue > awayValue ? '' : '';
+        awayColor = awayValue > homeValue ? '' : '';
+        console.log(`Shots For - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
+    } else if (statType === 'Shots Against') {
+        // For Shots Against, lower value is green, higher value is red
+        homeColor = homeValue < awayValue ? 'green' : 'red';
+        awayColor = awayValue < homeValue ? 'green' : 'red';
+        console.log(`Shots Against - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
+    } else {
+        // Default for other stats - higher is better
+        homeColor = homeValue > awayValue ? 'green' : 'red';
+        awayColor = awayValue > homeValue ? 'green' : 'red';
+        console.log(`Other Stat - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
+    }
+
+    const homeSpan = `<span class="home-value" style="color: ${homeColor};">${homeValue || ''}</span>`;
+    const awaySpan = `<span class="away-value" style="color: ${awayColor};">${awayValue || ''}</span>`;
+    return { homeSpan, awaySpan };
+};
+
 
     // Build stats HTML
     const statsHTML = `  
@@ -1637,7 +1655,7 @@ const renderStats = (homeStats, awayStats, containerId) => {
                 <span class="away-value">${awayStats.matches || '0'}</span>
             </div>
                 ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(averageHomeShots, averageAwayShots);
+                    const { homeSpan, awaySpan } = getColoredSpan(averageHomeShots, averageAwayShots, 'Shots For');
                     return `
                         <div>
                             ${homeSpan}
@@ -1710,7 +1728,7 @@ const renderStats = (homeStats, awayStats, containerId) => {
                 <!-- Defense Stats -->
                 <hr />
                 ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(averageHomeShotsAgainst, averageAwayShotsAgainst, false, true);
+                    const { homeSpan, awaySpan } = getColoredSpan(averageHomeShotsAgainst, averageAwayShotsAgainst);
                     return `
                         <div>
                             ${homeSpan}
@@ -1720,7 +1738,7 @@ const renderStats = (homeStats, awayStats, containerId) => {
                     `;
                 })()}
                 ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeConceded, averageGoalsAwayConceded, false, true);
+                    const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeConceded, averageGoalsAwayConceded, 'Shots Against');
                     return `
                         <div>
                             ${homeSpan}
