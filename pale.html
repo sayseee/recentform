@@ -1425,9 +1425,9 @@ const renderFormDisplay = (form, formDisplayId) => {
         if (result === "W") {
             span.innerHTML = "<i class='fas fa-check'></i>"; // FontAwesome check mark
         } else if (result === "L") {
-            span.textContent = "X"; // Cross for Loss
+            span.innerHTML = "<i class='fas fa-times'></i>"; // Cross for Loss
         } else if (result === "D") {
-            span.textContent = "–"; // Dash for Draw
+            span.innerHTML = "<i class='fas fa-minus'></i>"; // Dash for Draw
         }
         
         span.classList.add(result); // Add class based on result type
