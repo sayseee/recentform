@@ -1825,23 +1825,6 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div> 
                     </div>
                 </div>
-                <div class="teams-form ppg">
-                    <div class="homes-team-form"> 
-                        <div id="homePPG-${event.id}" class="pregame-form"></div> 
-                    </div>
-                    <div class="aways-team-form"> 
-                        <div id="awayPPG-${event.id}" class="pregame-form"></div> 
-                    </div>
-                </div>
-                <div class="teams-form manager">
-                    <div class="homes-team-form">  
-                        <div id="homeManager-${event.id}" class="manager-info"></div>
-                    </div>
-                    <div class="aways-team-form">  
-                        <div id="awayManager-${event.id}" class="manager-info"></div> 
-                    </div>
-                </div>
-                
                 <h4 style="text-align:center;">Goal Statistics</h4>
                 <div class="stats-container">
                 <div class="stat-card ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
@@ -1879,6 +1862,24 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div> <div class="stat-title">Over 2.5</div>                    
                 </div>
             </div>
+                <h4 style="text-align:center; margin-top:10px;">Manager Statistics</h4>
+                <div class="teams-form ppg">
+                    <div class="homes-team-form"> 
+                        <div id="homePPG-${event.id}" class="pregame-form"></div> 
+                    </div>
+                    <div class="aways-team-form"> 
+                        <div id="awayPPG-${event.id}" class="pregame-form"></div> 
+                    </div>
+                </div>
+                <div class="teams-form manager">
+                    <div class="homes-team-form">  
+                        <div id="homeManager-${event.id}" class="manager-info"></div>
+                    </div>
+                    <div class="aways-team-form">  
+                        <div id="awayManager-${event.id}" class="manager-info"></div> 
+                    </div>
+                </div>
+                
             <div class="overall-stats-wrapper">
                 <div id="stats-container-${event.id}"></div>
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}" style="width:30%;"></div> 
