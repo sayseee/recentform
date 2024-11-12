@@ -1174,7 +1174,7 @@ const createCategorySection = (tournaments, categoryName, odds) => {
         const tournamentImage = `${baseURL}/unique-tournament/${tournament.id}/image`;
         tournamentHeader.innerHTML = `
             <img class="tourn" src="${tournamentImage}" alt="${tournamentName}" width="20" height="20" loading="lazy" />
-            <span class="catName">${categoryName} </span> - ${tournamentName}
+            <span class="catName">${categoryName} </span> ${tournamentName}
         `;
         tournamentSection.appendChild(tournamentHeader);
 
