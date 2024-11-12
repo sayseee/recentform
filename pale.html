@@ -1469,7 +1469,7 @@ const updatePPG = (manager, ppgContainerId) => {
 
 const fetchHeadToHead = async (eventId, h2hContainerId) => {
     try {
-        const response = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/h2h`);
+        const response = await fetch(`${baseURL}/event/${eventId}/h2h`);
         if (!response.ok) throw new Error(`Failed to fetch H2H data: ${response.statusText}`);
         
         const h2hData = await response.json();
@@ -1518,7 +1518,7 @@ const renderManagerDuelStats = (managerDuel) => {
 
 const fetchTeamOverallStats = async (teamId, uniqueTournamentId, seasonId, containerId) => {
     try {
-        const response = await fetch(`https://api.sofascore.com/api/v1/team/${teamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
+        const response = await fetch(`${baseURL}/team/${teamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
         if (!response.ok) throw new Error(`Failed to fetch team stats: ${response.statusText}`);
         
         const statsData = await response.json();
@@ -1538,6 +1538,7 @@ const renderTeamStats = (statistics, containerId) => {
         goalsScored,
         goalsConceded,
         assists,
+        corners,
         successfulDribbles,
         dribbleAttempts,
         shotsAgainst,
@@ -1550,6 +1551,7 @@ const renderTeamStats = (statistics, containerId) => {
     const successfulDribblesPercentage = Math.round((successfulDribbles / dribbleAttempts) * 100);
     const averageGoalsScored = (goalsScored / matches).toFixed(2);
     const averageGoalsConceded = (goalsConceded / matches).toFixed(2);
+    const cornersPerGame = (corners / matches).toFixed(2);
     const averageShotsAgainst = (shotsAgainst / matches).toFixed(1);
     const roundedAccuratePassesPercentage = Math.round(accuratePassesPercentage);
     const roundedAverageBallPossession = Math.round(averageBallPossession);
@@ -1561,6 +1563,7 @@ const renderTeamStats = (statistics, containerId) => {
             <span><strong>GF:</strong> <span class="value">${averageGoalsScored || 0}</span></span>
             <span><strong>GA:</strong> <span class="value">${averageGoalsConceded || 0}</span></span>
             <span><strong>AST:</strong> <span class="value">${Math.round(assists) || 0}</span></span>
+            <span><strong>Cr:</strong> <span class="value">${cornersPerGame || 0}</span></span>
         </div>
         <div> 
         <div class="stat-title">
