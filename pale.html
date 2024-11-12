@@ -9,6 +9,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 <link rel="manifest" href="manifest.json">
         <style>
 :root {     
@@ -946,8 +948,9 @@ main {
             <div>
                 <button class="calendar__navigation calendar__navigation--yesterday" title="Previous day">&#8249;</button>
                 <button id="calendarMenu" aria-expanded="false" class="calendar__datepicker">
+                    <i class="fas fa-calendar-alt" aria-hidden="true" style="margin-right: 5px;"></i>
                     <span id="current-day"></span> <!-- Current date dynamically displayed here -->
-                </button>
+                </button>                
                 <ul aria-labelledby="calendarMenu" class="calendar__days" id="date-list" hidden>
                     <!-- Dates will be appended here dynamically -->
                 </ul>
