@@ -970,6 +970,25 @@ main {
     font-size:12px;
     font-weight: 600; 
 }
+.overall-stats * {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+}
+.overall-stats div span { 
+    flex: 1;
+    font-weight: 700;
+}
+.overall-stats div span:nth-child(2) { 
+    flex: 2;
+    font-weight: 400;
+}
+.overall-stats-wrapper { 
+    display: flex;
+}
+.overall-stats-wrapper>div:first-child {  
+    flex: 2;
+}
      </style>
     </head>
     <body> 
@@ -1497,7 +1516,7 @@ const renderTeamDuelStats = (teamDuel) => {
     const { homeWins, awayWins, draws } = teamDuel;
     return `
     <div>
-        <h4>Head 2 head</h4>
+        <h4 style="text-align:center; margin-top:10px;">Head 2 head</h4>
         <div>
             <p><strong>${homeWins}</strong></p>
             <p><strong>${awayWins}</strong></p>
@@ -1520,7 +1539,7 @@ const renderManagerDuelStats = (managerDuel) => {
     </div>
     `; 
 };
-
+/* 
 const fetchTeamOverallStats = async (teamId, uniqueTournamentId, seasonId, containerId) => {
     try {
         const response = await fetch(`${baseURL}/team/${teamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
@@ -1534,6 +1553,100 @@ const fetchTeamOverallStats = async (teamId, uniqueTournamentId, seasonId, conta
     } catch (error) {
         console.error("Error fetching team stats:", error);
     }
+};
+ */
+
+// Function to fetch team stats for home and away teams
+const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId, seasonId, containerId, columnType = 'center') => {
+    try {
+        // Fetch stats for the home team
+        const homeResponse = await fetch(`${baseURL}/team/${homeTeamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
+        if (!homeResponse.ok) throw new Error(`Failed to fetch home team stats: ${homeResponse.statusText}`);
+        const homeStats = await homeResponse.json();
+        
+        // Fetch stats for the away team
+        const awayResponse = await fetch(`${baseURL}/team/${awayTeamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
+        if (!awayResponse.ok) throw new Error(`Failed to fetch away team stats: ${awayResponse.statusText}`);
+        const awayStats = await awayResponse.json();
+        
+        // Extract the statistics for both teams
+        const homeStatsData = homeStats.statistics;
+        const awayStatsData = awayStats.statistics;
+        
+        // Call the render function based on column type
+        if (columnType === 'center') {
+            renderStats(homeStatsData, awayStatsData, containerId);
+        }  
+    } catch (error) {
+        console.error("Error fetching team stats:", error);
+    }
+};
+
+const renderStats = (homeStats, awayStats, containerId) => {
+    const container = document.getElementById(containerId);
+    
+    // Round all values to 0 decimal places
+    const successfulDribblesHomePercentage = Math.round((homeStats.successfulDribbles / homeStats.dribbleAttempts) * 100);
+    const successfulDribblesAwayPercentage = Math.round((awayStats.successfulDribbles / awayStats.dribbleAttempts) * 100);
+    const averageGoalsHomeScored = (homeStats.goalsScored / homeStats.matches).toFixed(2);
+    const averageGoalsHomeConceded = (homeStats.goalsConceded / homeStats.matches).toFixed(2);
+    const averageGoalsAwayScored = (awayStats.goalsScored / awayStats.matches).toFixed(2);
+    const averageGoalsAwayConceded = (awayStats.goalsConceded / awayStats.matches).toFixed(2);
+    const cornersHomePerGame = (homeStats.corners / homeStats.matches).toFixed(2);
+    const cornersAwayPerGame = (awayStats.corners / awayStats.matches).toFixed(2);
+    const averageHomeShotsAgainst = (homeStats.shotsAgainst / homeStats.matches).toFixed(1);
+    const averageAwayShotsAgainst = (awayStats.shotsAgainst / awayStats.matches).toFixed(1);
+    const roundedAccurateHomePassesPercentage = Math.round(homeStats.accuratePassesPercentage);
+    const roundedAverageHomeBallPossession = Math.round(homeStats.averageBallPossession);
+    const roundedAccurateAwayPassesPercentage = Math.round(awayStats.accuratePassesPercentage);
+    const roundedAverageAwayBallPossession = Math.round(awayStats.averageBallPossession);
+    // Clear previous stats
+    container.innerHTML = '';
+    
+    // Render only basic stats (up to assists)
+    const statsHTML = `  
+                <h4 style="text-align:center; margin-top:10px;">Overall Team Statistics</h4> 
+            <div class="team-stat overall-stats">
+                <div>
+                    <span class="home-value">${homeStats.matches || '0'}</span>
+                    <span>Games Played</span>
+                    <span class="away-value">${awayStats.matches || '0'}</span>
+                </div>
+                <div>
+                    <span class="home-value">${averageHomeShotsAgainst || '0'}</span>
+                    <span>Shots Against</span>
+                    <span class="away-value">${averageAwayShotsAgainst || '0'}</span>
+                </div>
+                <div>
+                    <span class="home-value">${averageGoalsHomeScored || '0'}</span>
+                    <span>Av Goals Scored</span>
+                    <span class="away-value">${averageGoalsAwayScored || '0'}</span>
+                </div>
+                <div>
+                    <span class="home-value">${averageGoalsHomeConceded || '0'}</span>
+                    <span>Av Goals Conceded</span>
+                    <span class="away-value">${averageGoalsAwayConceded || '0'}</span>
+                </div>
+                <div>
+                    <span class="home-value">${cornersHomePerGame || '0'}</span>
+                    <span>Corners Per Game</span>
+                    <span class="away-value">${cornersAwayPerGame || '0'}</span>
+                </div>
+                <div>
+                    <span class="home-value">${roundedAccurateHomePassesPercentage || '0'}%</span>
+                    <span>Passess%</span>
+                    <span class="away-value">${roundedAccurateAwayPassesPercentage || '0'}%</span>
+                </div>
+                <div>
+                    <span class="home-value">${roundedAverageHomeBallPossession || '0'}%</span>
+                    <span>Possession%</span>
+                    <span class="away-value">${roundedAverageAwayBallPossession || '0'}%</span>
+                </div> 
+            </div> 
+    `;
+    
+    // Insert the stats into the container
+    container.innerHTML = statsHTML;
 };
 
 const renderTeamStats = (statistics, containerId) => {
@@ -1761,18 +1874,10 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div> <div class="stat-title">Over 2.5</div>                    
                 </div>
             </div>
-            
-                <h4 style="text-align:center; margin-top:10px;">Overall Team Statistics</h4>
-                <div class="teams-form statsC">
-                    <div class="homes-team-form">  
-                        <div id="home-team-stats-container-${event.id}" class="teams-info"></div>
-                    </div>
-                    <div class="aways-team-form">  
-                        <div id="away-team-stats-container-${event.id}" class="teams-info"></div> 
-                    </div>
-                </div>
-                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
-
+            <div class="overall-stats-wrapper">
+                <div id="stats-container-${event.id}"></div>
+                <div class="team-manager-h2h" id="${uniqueH2hContainer}" style="width:30%;"></div> 
+            </div>
                 <h4 style="text-align:center;">H2H last 3 years</h4>
             <div class="h2h-event" id="${uniqueEventId}"></div>
         `;
@@ -1807,7 +1912,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         // Example usage
         fetchTeamOverallStats(homeTeamId, event.tournament.uniqueTournament.id, seasonId, `home-team-stats-container-${event.id}`);
         fetchTeamOverallStats(awayTeamId, event.tournament.uniqueTournament.id, seasonId, `away-team-stats-container-${event.id}`);
-
+        // Fetch stats for home and away teams
+        fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, `stats-container-${event.id}`, 'center');
+    
         // Start the live timer if the match is in progress
         if (event.status.type === 'inprogress') {
             startLiveTimer(event);
