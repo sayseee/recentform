@@ -1584,30 +1584,35 @@ const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId,
         console.error("Error fetching team stats:", error);
     }
 };
+
 const renderStats = (homeStats, awayStats, containerId) => {
     const container = document.getElementById(containerId);
     
-    // Round all values to 0 decimal places
-    const successfulDribblesHomePercentage = Math.round((homeStats.successfulDribbles / homeStats.dribbleAttempts) * 100);
-    const successfulDribblesAwayPercentage = Math.round((awayStats.successfulDribbles / awayStats.dribbleAttempts) * 100);
-    const averageGoalsHomeScored = (homeStats.goalsScored / homeStats.matches).toFixed(2);
-    const averageGoalsHomeConceded = (homeStats.goalsConceded / homeStats.matches).toFixed(2);
-    const averageGoalsAwayScored = (awayStats.goalsScored / awayStats.matches).toFixed(2);
-    const averageGoalsAwayConceded = (awayStats.goalsConceded / awayStats.matches).toFixed(2);
-    const cornersHomePerGame = (homeStats.corners / homeStats.matches).toFixed(2);
-    const cornersAwayPerGame = (awayStats.corners / awayStats.matches).toFixed(2);
-    const homeAssists = Math.round(homeStats.assists)
-    const awayAssists = Math.round(awayStats.assists);
-    const homeCleanSheets = Math.round(homeStats.cleanSheets)
-    const awayCleanSheets = Math.round(awayStats.cleanSheets);
-    const averageHomeShots = (homeStats.shots / homeStats.matches).toFixed(1);
-    const averageAwayShots = (awayStats.shots / awayStats.matches).toFixed(1);
-    const averageHomeShotsAgainst = (homeStats.shotsAgainst / homeStats.matches).toFixed(1);
-    const averageAwayShotsAgainst = (awayStats.shotsAgainst / awayStats.matches).toFixed(1);
-    const roundedAccurateHomePassesPercentage = Math.round(homeStats.accuratePassesPercentage);
-    const roundedAverageHomeBallPossession = Math.round(homeStats.averageBallPossession);
-    const roundedAccurateAwayPassesPercentage = Math.round(awayStats.accuratePassesPercentage);
-    const roundedAverageAwayBallPossession = Math.round(awayStats.averageBallPossession);
+    // Helper function to safely calculate and handle NaN, adding % only if there’s a valid value
+    const safeCalcPercentage = (value) => isNaN(value) || value === '' ? '' : `${value}%`;
+    const safeCalc = (value) => isNaN(value) || value === '' ? '' : value;
+
+    // Round all values to 0 decimal places or return blank
+    const successfulDribblesHomePercentage = safeCalcPercentage(Math.round((homeStats.successfulDribbles / homeStats.dribbleAttempts) * 100));
+    const successfulDribblesAwayPercentage = safeCalcPercentage(Math.round((awayStats.successfulDribbles / awayStats.dribbleAttempts) * 100));
+    const averageGoalsHomeScored = safeCalc((homeStats.goalsScored / homeStats.matches).toFixed(2));
+    const averageGoalsHomeConceded = safeCalc((homeStats.goalsConceded / homeStats.matches).toFixed(2));
+    const averageGoalsAwayScored = safeCalc((awayStats.goalsScored / awayStats.matches).toFixed(2));
+    const averageGoalsAwayConceded = safeCalc((awayStats.goalsConceded / awayStats.matches).toFixed(2));
+    const cornersHomePerGame = safeCalc((homeStats.corners / homeStats.matches).toFixed(2));
+    const cornersAwayPerGame = safeCalc((awayStats.corners / awayStats.matches).toFixed(2));
+    const homeAssists = safeCalc(Math.round(homeStats.assists));
+    const awayAssists = safeCalc(Math.round(awayStats.assists));
+    const homeCleanSheets = safeCalc(Math.round(homeStats.cleanSheets));
+    const awayCleanSheets = safeCalc(Math.round(awayStats.cleanSheets));
+    const averageHomeShots = safeCalc((homeStats.shots / homeStats.matches).toFixed(1));
+    const averageAwayShots = safeCalc((awayStats.shots / awayStats.matches).toFixed(1));
+    const averageHomeShotsAgainst = safeCalc((homeStats.shotsAgainst / homeStats.matches).toFixed(1));
+    const averageAwayShotsAgainst = safeCalc((awayStats.shotsAgainst / awayStats.matches).toFixed(1));
+    const roundedAccurateHomePassesPercentage = safeCalcPercentage(Math.round(homeStats.accuratePassesPercentage));
+    const roundedAverageHomeBallPossession = safeCalcPercentage(Math.round(homeStats.averageBallPossession));
+    const roundedAccurateAwayPassesPercentage = safeCalcPercentage(Math.round(awayStats.accuratePassesPercentage));
+    const roundedAverageAwayBallPossession = safeCalcPercentage(Math.round(awayStats.averageBallPossession));
 
     // Clear previous stats
     container.innerHTML = '';
@@ -1617,8 +1622,8 @@ const renderStats = (homeStats, awayStats, containerId) => {
         const homeColor = reverse ? (homeValue < awayValue ? 'green' : 'red') : (homeValue > awayValue ? 'green' : 'red');
         const awayColor = reverse ? (awayValue < homeValue ? 'green' : 'red') : (awayValue > homeValue ? 'green' : 'red');
 
-        const homeSpan = `<span class="home-value" style="color: ${homeColor};">${homeValue}${isPercentage ? '%' : ''}</span>`;
-        const awaySpan = `<span class="away-value" style="color: ${awayColor};">${awayValue}${isPercentage ? '%' : ''}</span>`;
+        const homeSpan = `<span class="home-value" style="color: ${homeColor};">${homeValue || ''}</span>`;
+        const awaySpan = `<span class="away-value" style="color: ${awayColor};">${awayValue || ''}</span>`;
         return { homeSpan, awaySpan };
     };
 
