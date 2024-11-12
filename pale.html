@@ -988,6 +988,9 @@ main {
     background: #eef4f9;
     margin-top: 10px;
 }
+hr { 
+    border-top: 1px solid #e6e7eb;
+}
      </style>
     </head>
     <body> 
@@ -1593,6 +1596,10 @@ const renderStats = (homeStats, awayStats, containerId) => {
     const averageGoalsAwayConceded = (awayStats.goalsConceded / awayStats.matches).toFixed(2);
     const cornersHomePerGame = (homeStats.corners / homeStats.matches).toFixed(2);
     const cornersAwayPerGame = (awayStats.corners / awayStats.matches).toFixed(2);
+    const homeAssists = Math.round(homeStats.assists)
+    const awayAssists = Math.round(awayStats.assists);
+    const homeCleanSheets = Math.round(homeStats.cleanSheets)
+    const awayCleanSheets = Math.round(awayStats.cleanSheets);
     const averageHomeShots = (homeStats.shots / homeStats.matches).toFixed(1);
     const averageAwayShots = (awayStats.shots / awayStats.matches).toFixed(1);
     const averageHomeShotsAgainst = (homeStats.shotsAgainst / homeStats.matches).toFixed(1);
@@ -1624,86 +1631,110 @@ const renderStats = (homeStats, awayStats, containerId) => {
                 <span>Games Played</span>
                 <span class="away-value">${awayStats.matches || '0'}</span>
             </div>
-            ${(() => {
-                const { homeSpan, awaySpan } = getColoredSpan(averageHomeShots, averageAwayShots);
-                return `
-                    <div>
-                        ${homeSpan}
-                        <span>Shots For</span>
-                        ${awaySpan}
-                    </div>
-                `;
-            })()}
-            ${(() => {
-                const { homeSpan, awaySpan } = getColoredSpan(averageHomeShotsAgainst, averageAwayShotsAgainst, false, true);
-                return `
-                    <div>
-                        ${homeSpan}
-                        <span>Shots Against</span>
-                        ${awaySpan}
-                    </div>
-                `;
-            })()}
-            ${(() => {
-                const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeScored, averageGoalsAwayScored);
-                return `
-                    <div>
-                        ${homeSpan}
-                        <span>Av Goals Scored</span>
-                        ${awaySpan}
-                    </div>
-                `;
-            })()}
-            ${(() => {
-                const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeConceded, averageGoalsAwayConceded, false, true);
-                return `
-                    <div>
-                        ${homeSpan}
-                        <span>Av Goals Conceded</span>
-                        ${awaySpan}
-                    </div>
-                `;
-            })()}
-            ${(() => {
-                const { homeSpan, awaySpan } = getColoredSpan(successfulDribblesHomePercentage, successfulDribblesAwayPercentage, true);
-                return `
-                    <div>
-                        ${homeSpan}
-                        <span>Dribbles%</span>
-                        ${awaySpan}
-                    </div>
-                `;
-            })()}
-            ${(() => {
-                const { homeSpan, awaySpan } = getColoredSpan(roundedAccurateHomePassesPercentage, roundedAccurateAwayPassesPercentage, true);
-                return `
-                    <div>
-                        ${homeSpan}
-                        <span>Passes%</span>
-                        ${awaySpan}
-                    </div>
-                `;
-            })()}
-            ${(() => {
-                const { homeSpan, awaySpan } = getColoredSpan(roundedAverageHomeBallPossession, roundedAverageAwayBallPossession, true);
-                return `
-                    <div>
-                        ${homeSpan}
-                        <span>Possession%</span>
-                        ${awaySpan}
-                    </div>
-                `;
-            })()}
-            ${(() => {
-                const { homeSpan, awaySpan } = getColoredSpan(cornersHomePerGame, cornersAwayPerGame);
-                return `
-                    <div>
-                        ${homeSpan}
-                        <span>Corners Per Game</span>
-                        ${awaySpan}
-                    </div>
-                `;
-            })()}
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(averageHomeShots, averageAwayShots);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Shots For</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeScored, averageGoalsAwayScored);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Av Goals Scored</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(homeAssists, awayAssists);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Assists</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(successfulDribblesHomePercentage, successfulDribblesAwayPercentage, true);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Dribbles%</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(roundedAccurateHomePassesPercentage, roundedAccurateAwayPassesPercentage, true);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Passes%</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(roundedAverageHomeBallPossession, roundedAverageAwayBallPossession, true);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Possession%</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(cornersHomePerGame, cornersAwayPerGame);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Corners Per Game</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+
+                <!-- Defense Stats -->
+                <hr />
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(averageHomeShotsAgainst, averageAwayShotsAgainst, false, true);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Shots Against</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeConceded, averageGoalsAwayConceded, false, true);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Av Goals Conceded</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+                ${(() => {
+                    const { homeSpan, awaySpan } = getColoredSpan(homeCleanSheets, awayCleanSheets);
+                    return `
+                        <div>
+                            ${homeSpan}
+                            <span>Clean Sheets</span>
+                            ${awaySpan}
+                        </div>
+                    `;
+                })()}
+
         </div> 
     `;
 
