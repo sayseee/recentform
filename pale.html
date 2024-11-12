@@ -413,8 +413,10 @@ main {
 } 
 .tournament .catName {
     color: var(--color-dark-bg);
-    font-weight: 600;
-    text-transform: uppercase;  
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 10px; 
+
 }
 /* Add this to your CSS file or inside a <style> tag in the HTML */
     .tournament ul {
@@ -1120,7 +1122,7 @@ const displayCategories = async (date, hours, status) => {
         filteredEvents.forEach(event => {
             const categoryName = event.tournament.category.name;
             const tournamentId = event.tournament.uniqueTournament.id;
-            const tournamentName = event.tournament.uniqueTournament.name;
+            const tournamentName = event.tournament.name;
 
             const targetMap = topTournamentIds.has(tournamentId) ? topTournamentsMap : otherCategoriesMap;
 
