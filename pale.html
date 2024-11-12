@@ -1631,9 +1631,9 @@ const renderStats = (homeStats, awayStats, containerId) => {
                     <span class="away-value">${averageGoalsAwayConceded || '0'}</span>
                 </div>
                 <div>
-                    <span class="home-value">${cornersHomePerGame || '0'}</span>
-                    <span>Corners Per Game</span>
-                    <span class="away-value">${cornersAwayPerGame || '0'}</span>
+                    <span class="home-value">${successfulDribblesHomePercentage || '0'}%</span>
+                    <span>Dribbles%</span>
+                    <span class="away-value">${successfulDribblesAwayPercentage || '0'}%</span>
                 </div>
                 <div>
                     <span class="home-value">${roundedAccurateHomePassesPercentage || '0'}%</span>
@@ -1645,6 +1645,11 @@ const renderStats = (homeStats, awayStats, containerId) => {
                     <span>Possession%</span>
                     <span class="away-value">${roundedAverageAwayBallPossession || '0'}%</span>
                 </div> 
+                <div>
+                    <span class="home-value">${cornersHomePerGame || '0'}</span>
+                    <span>Corners Per Game</span>
+                    <span class="away-value">${cornersAwayPerGame || '0'}</span>
+                </div>
             </div> 
     `;
     
