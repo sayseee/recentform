@@ -191,12 +191,16 @@ button#filter-btn:hover {
     width: 100%;
     display: block;
     text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 400;
 }
 
 .filters__group li a.active, .filters__group li a:hover {
     color: #007bff;
     border-radius: 25px;
-    font-weight: 600;
+    font-weight: 400;
 } 
 
 .filter-bar button {
@@ -226,6 +230,7 @@ button#filter-btn:hover {
     flex: 1;
     background-color: rgba(3, 2, 41);
     margin: 0 15px;
+    font-weight: 500;
 }
 /* Top Bar */
 .top-bar {  
@@ -968,25 +973,25 @@ main {
                 <ul class="filters__group">
                     <li>
                         <a href="#all-games" data-status="all" class="active">
-                            <i class="fas fa-landmark" aria-hidden="true" style="margin-right: 5px;"></i> <!-- Stadium icon -->
-                            All
+                            <i class="fas fa-landmark" aria-hidden="true"></i> <!-- Stadium icon -->
+                            All Games
                         </a>
                     </li>
                     <li>
                         <a href="#live-games" data-status="live">
-                            <i class="fas fa-broadcast-tower" aria-hidden="true" style="margin-right: 5px;"></i> <!-- Live icon -->
+                            <i class="fas fa-broadcast-tower" aria-hidden="true"></i> <!-- Live icon -->
                             Live
                         </a>
                     </li>
                     <li>
                         <a href="#finished-games" data-status="finished">
-                            <i class="fas fa-flag-checkered" aria-hidden="true" style="margin-right: 5px;"></i> <!-- Finished (Results) icon -->
+                            <i class="fas fa-flag-checkered" aria-hidden="true"></i> <!-- Finished (Results) icon -->
                             Results
                         </a>
                     </li>
                     <li>
                         <a href="#scheduled-games" data-status="scheduled">
-                            <i class="fas fa-clock" aria-hidden="true" style="margin-right: 5px;"></i> <!-- Clock icon for Upcoming -->
+                            <i class="fas fa-clock" aria-hidden="true"></i> <!-- Clock icon for Upcoming -->
                             Upcoming
                         </a>
                     </li>
