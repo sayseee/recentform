@@ -56,17 +56,18 @@ h4 {
     border-top: 1px solid #e6e7eb; 
 }
 .W, .D, .L {   
-    align-items: center;  
+    align-items: center;
     justify-content: center;
     overflow: hidden;
-    position: relative; 
-    padding:2px 0;
-    border-radius: 1px;
+    position: relative;
+    padding: 2px 0;
+    border-radius: 50%;
     width: 16px !important;
     height: 12px !important;
     display: inline-flex;
-    font-weight:700;
+    font-weight: 700;
     color: white;
+    font-size: 11px;
 } 
 .W, .win, .pos {
     background-color: var(--win-color);
@@ -739,207 +740,224 @@ main {
   color: #ccc;
   margin-top: 5px;
 }
-        /* Scrollable Content */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-        }
+/* Scrollable Content */
+.content {
+    flex: 1;
+    overflow-y: auto;
+}
 
-        .content p {
-            margin: 10px 0;
-            line-height: 1.5;
-        }
+.content p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
 
-        /* Bottom Navigation Bar */
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            padding: 5px 0;
-            background-color: #030229;
-            border-top: 1px solid #1C3548;
-        }
+/* Bottom Navigation Bar */
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 5px 0;
+    background-color: #030229;
+    border-top: 1px solid #1C3548;
+}
 
-        .bottom-nav div {
-            text-align: center;
-            cursor: pointer;
-            color: #fff;
-        }
+.bottom-nav div {
+    text-align: center;
+    cursor: pointer;
+    color: #fff;
+}
 
-        .bottom-nav div.active {
-            color: #F44336; /* Red color to indicate active section */
-        }
-        .stat-league {  
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-            justify-content: space-evenly;
-            padding: 5px 0;
-            align-items: center;
-            background: white;
-            border-bottom: 1px solid #eaecf1;
-        }
-        .stat-league span { 
-            color: #091c3d !important;
-        }
-        .teams-form {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            margin: 0 auto;
-        }
-        .teams-form .homes-team-form, .teams-form .aways-team-form { 
-            flex: 1;
-            display: flex;  
-        }
-        .team-forms .homes-team-form .data, .team-forms .aways-team-form .data {
-            position: absolute;
-            top: -10px;
-        } 
-        .teams-form .homes-team-form>div, .teams-form .aways-team-form>div {  
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .teams-form .homes-team-form>div { 
-            margin-left: auto; 
-        }
-        .teams-form .aways-team-form>div { 
-            margin-right: auto;  
-        }
-        .teams-form .homes-team-form .team-cent { 
-            text-align: right;
-            margin-right: 3px;
-            margin-left: auto; 
-        }
-        .teams-form .aways-team-form .team-cent {
-            margin-left: 3px;
-            margin-right: auto;
-        }
-        .teams-form .homes-team-form .bar {  
-            margin-left: auto;  
-            background-color: #93c0e6;
-        }
-        .teams-form .aways-team-form .bar {  
-            margin-right: auto;   
-            background-color: #3d65ad; 
-        }
-        .teams-form.manager {
-            background-color: #F0F2F4;
-            border-top: 1px solid #ebecf1;
-            padding: 10px 0;
-        }
-        .box.animate { 
-            width: 10px;
-            height: 10px;
-            position: relative;
-            margin-top: 3px;
-        }
-        .box.animate::before {
-            content: "";
-            display: block;
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: calc(100% - 1px);
-            height: 50%;
-            border-top: 1px solid rgb(217, 175, 0);
-            border-left: 1px solid rgb(217, 175, 0);
-            transform: translate3d(0px, 0px, 0px);
-            animation: 660ms ease-in-out 0s 1 normal none running kCNzYT;
-            z-index: 1;
-        }
-        .box.animate::after {
-            content: "";
-            display: block;
-            position: absolute;
-            bottom: 0px;
-            right: 0px;
-            width: calc(100% - 1px);
-            height: 50%;
-            transform: translate3d(0px, 0px, 0px);
-            animation-timeline: auto;
-            animation-range-start: normal;
-            animation-range-end: normal;
-            z-index: 1;
-            border-right: 1px solid rgb(217, 175, 0);
-            border-bottom: 1px solid rgb(217, 175, 0);
-            animation: 660ms ease-in-out 0s 1 normal none running llWbcW;
-        }
-        .box.animate > .sideBox-inner {
-            position: relative;
-            width: 10px;
-            height: 10px;
-            background-size: 100% 200%;
-            animation-timeline: auto;
-            animation-range-start: normal;
-            animation-range-end: normal;
-            transform: translate3d(0px, 0px, 0px);
-            z-index: 0;
-            animation: 330ms ease-in-out 330ms 1 normal forwards running fwrfeI, 330ms ease-in 0ms 1 normal running bIXSM;
-        }
-        .team-manager-h2h {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 10px;
-        }
-        .team-manager-h2h>div {
-            display: flex;
-            flex-direction: column;
-            text-align: center;
-            width: 100%;
-        }
-        .team-manager-h2h>div span {
-            font-weight: 800;
-        }
-        .team-manager-h2h>div>div {
-            display: flex;
-            -webkit-box-pack: justify;
-            justify-content: space-evenly;
-        }
-        .team-manager-h2h>div>div p {
-            text-align: center;
-            font-size: 15px;
-            margin: 5px;
-        }
-        .team-manager-h2h>div>div p:first-child {
-            color: #0bb32a;
-        }
-        .team-manager-h2h>div>div p:last-child {
-            color: #374df5;
-        }
-        .team-manager-h2h>div>div p:nth-child(2) {
-            color: #a4a9b3;
-        } 
-        .search-icon {
-                position: relative;
-                width: 20px;
-                height: 20px;
-                margin-left: 10px;
-            }
+.bottom-nav div.active {
+    color: #F44336; /* Red color to indicate active section */
+}
+.stat-league {  
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-evenly;
+    padding: 5px 0;
+    align-items: center;
+    background: white;
+    border-bottom: 1px solid #eaecf1;
+}
+.stat-league span { 
+    color: #091c3d !important;
+}
+.teams-form {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0 auto;
+}
+.teams-form .homes-team-form, .teams-form .aways-team-form { 
+    flex: 1;
+    display: flex;  
+}
+.team-forms .homes-team-form .data, .team-forms .aways-team-form .data {
+    position: absolute;
+    top: -10px;
+} 
+.teams-form .homes-team-form>div, .teams-form .aways-team-form>div {  
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.teams-form .homes-team-form>div { 
+    margin-left: auto; 
+}
+.teams-form .aways-team-form>div { 
+    margin-right: auto;  
+}
+.teams-form .homes-team-form .team-cent { 
+    text-align: right;
+    margin-right: 3px;
+    margin-left: auto; 
+}
+.teams-form .aways-team-form .team-cent {
+    margin-left: 3px;
+    margin-right: auto;
+}
+.teams-form .homes-team-form .bar {  
+    margin-left: auto;  
+    background-color: #93c0e6;
+}
+.teams-form .aways-team-form .bar {  
+    margin-right: auto;   
+    background-color: #3d65ad; 
+}
+.teams-form.manager {
+    background-color: #F0F2F4;
+    border-top: 1px solid #ebecf1;
+    padding: 10px 0;
+}
+.box.animate { 
+    width: 10px;
+    height: 10px;
+    position: relative;
+    margin-top: 5px;
+}
+.box.animate::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: calc(100% - 1px);
+    height: 50%;
+    border-top: 1px solid rgb(217, 175, 0);
+    border-left: 1px solid rgb(217, 175, 0);
+    transform: translate3d(0px, 0px, 0px);
+    animation: 660ms ease-in-out 0s 1 normal none running kCNzYT;
+    z-index: 1;
+}
+.box.animate::after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: calc(100% - 1px);
+    height: 50%;
+    transform: translate3d(0px, 0px, 0px);
+    animation-timeline: auto;
+    animation-range-start: normal;
+    animation-range-end: normal;
+    z-index: 1;
+    border-right: 1px solid rgb(217, 175, 0);
+    border-bottom: 1px solid rgb(217, 175, 0);
+    animation: 660ms ease-in-out 0s 1 normal none running llWbcW;
+}
+.box.animate > .sideBox-inner {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    background-size: 100% 200%;
+    animation-timeline: auto;
+    animation-range-start: normal;
+    animation-range-end: normal;
+    transform: translate3d(0px, 0px, 0px);
+    z-index: 0;
+    animation: 330ms ease-in-out 330ms 1 normal forwards running fwrfeI, 330ms ease-in 0ms 1 normal running bIXSM;
+}
+.team-manager-h2h {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+.team-manager-h2h>div {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 100%;
+}
+.team-manager-h2h>div span {
+    font-weight: 800;
+}
+.team-manager-h2h>div>div {
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-evenly;
+}
+.team-manager-h2h>div>div p {
+    text-align: center;
+    font-size: 15px;
+    margin: 5px;
+}
+.team-manager-h2h>div>div p:first-child {
+    color: #0bb32a;
+}
+.team-manager-h2h>div>div p:last-child {
+    color: #374df5;
+}
+.team-manager-h2h>div>div p:nth-child(2) {
+    color: #a4a9b3;
+} 
+.search-icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+}
 
-            .circle {
-                width: 8px;
-                height: 8px;
-                border: 3px solid #007AFF;
-                border-radius: 50%;
-                position: absolute;
-                top: 0;
-                left: 0;
-            }
+.circle {
+    width: 8px;
+    height: 8px;
+    border: 3px solid #007AFF;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
 
-            .handle { 
-                width: 10px;
-                height: 3px;
-                background-color: #007AFF;
-                position: absolute;
-                bottom: 8px;
-                right: -2px;
-                transform: rotate(45deg);
-                transform-origin: top left;
-            } 
-
+.handle { 
+    width: 10px;
+    height: 3px;
+    background-color: #007AFF;
+    position: absolute;
+    bottom: 8px;
+    right: -2px;
+    transform: rotate(45deg);
+    transform-origin: top left;
+} 
+.ppg .homes-team-form span { 
+    color: #128571;
+    display: inline-block;
+    font-size:20px;
+    font-weight: 700;
+    margin: 0 0 10px;
+}
+.ppg .aways-team-form span { 
+    color: #60b68d;
+    display: inline-block;
+    font-size:20px;
+    font-weight: 700;
+    margin: 0 0 10px;
+}
+.ppg span small {   
+    font-size:12px;
+    font-weight: 600; 
+}
      </style>
     </head>
     <body> 
@@ -1270,10 +1288,10 @@ const displayLeagueStats = (leagueStats, tournamentInfo, container) => {
         </div>
     `;
 };
-
-const fetchPregameForm = async (eventId, teamId, homeContainerId, awayContainerId, managerContainerId) => {
+// Fetch pregame form and manager data
+const fetchPregameForm = async (eventId, teamId, homeContainerId, awayContainerId, managerContainerId, ppgContainerId) => {
     try {
-        // Fetch manager data using teamId
+        // Fetch team data using teamId
         const teamResponse = await fetch(`${baseURL}/team/${teamId}`);
         if (!teamResponse.ok) throw new Error(`Failed to fetch team data: ${teamResponse.statusText}`);
         
@@ -1322,13 +1340,14 @@ const fetchPregameForm = async (eventId, teamId, homeContainerId, awayContainerI
 
         // Render manager details if available
         if (manager) {
-            fetchManagerData(manager.id, managerContainerId);
+            fetchManagerData(manager.id, managerContainerId, ppgContainerId); // Pass ppgContainerId as well
         }
 
     } catch (error) {
         console.error("Error fetching pregame form or manager data:", error);
     }
 };
+
 
 // Calculate form percentage based on the form array
 const calculateFormPercentage = (form) => {
@@ -1385,13 +1404,17 @@ const renderFormDisplay = (form, formDisplayId) => {
 };
 
 // Fetch manager details using managerId
-const fetchManagerData = async (managerId, managerContainerId) => {
+const fetchManagerData = async (managerId, managerContainerId, ppgContainerId) => {
     try {
         const response = await fetch(`${baseURL}/manager/${managerId}`);
         if (!response.ok) throw new Error(`Failed to fetch manager data: ${response.statusText}`);
         
         const managerData = await response.json();
-        renderManagerInfo(managerData.manager, managerContainerId);
+        renderManagerInfo(managerData.manager, managerContainerId); 
+        
+        // Update the PPG value in the targeted div
+        updatePPG(managerData.manager, ppgContainerId); // Call the updatePPG function here
+
     } catch (error) {
         console.error("Error fetching manager data:", error);
     }
@@ -1402,17 +1425,15 @@ const renderManagerInfo = (manager, containerId) => {
     const container = document.getElementById(containerId);
     if (manager && container) {
         const { name, shortName, preferredFormation, performance = {} } = manager;
-        const { total = 0, wins = 0, draws = 0, losses = 0, totalPoints = 0 } = performance;
+        const { total = 0, wins = 0, draws = 0, losses = 0 } = performance;
 
         const winPercentage = total ? ((wins / total) * 100).toFixed(0) : 0;
         const drawPercentage = total ? ((draws / total) * 100).toFixed(0) : 0;
-        const lossPercentage = total ? ((losses / total) * 100).toFixed(0) : 0;
-        const pointsPerGame = total ? (totalPoints / total).toFixed(2) : 0;
+        const lossPercentage = total ? ((losses / total) * 100).toFixed(0) : 0; 
 
         container.innerHTML = `
             <div><strong>M: </strong>${shortName || name}<span><strong> F: </strong>${preferredFormation || ""}</div>
-            <div> 
-                <span><strong>PPG: </strong> ${pointsPerGame}</span>
+            <div>  
                 <span><strong>W: </strong> ${winPercentage}</span>
                 <span><strong>D: </strong> ${drawPercentage}</span>
                 <span><strong>L: </strong> ${lossPercentage}</span>
@@ -1423,6 +1444,18 @@ const renderManagerInfo = (manager, containerId) => {
     }
 };
 
+// Separate function to update the PPG in a targeted div
+const updatePPG = (manager, ppgContainerId) => {
+    const ppgContainer = document.getElementById(ppgContainerId);
+    if (manager && ppgContainer) {
+        const { performance = {} } = manager;
+        const { total = 0, totalPoints = 0 } = performance;
+        const pointsPerGame = total ? (totalPoints / total).toFixed(2) : 0;
+
+        // Update the PPG value in the targeted div
+        ppgContainer.innerHTML = `<span>${pointsPerGame} <small>PPG</small></span>`;
+    }
+};
 
 const fetchHeadToHead = async (eventId, h2hContainerId) => {
     try {
@@ -1651,6 +1684,14 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div> 
                     </div>
                 </div>
+                <div class="teams-form ppg">
+                    <div class="homes-team-form"> 
+                        <div id="homePPG-${event.id}" class="pregame-form"></div> 
+                    </div>
+                    <div class="aways-team-form"> 
+                        <div id="awayPPG-${event.id}" class="pregame-form"></div> 
+                    </div>
+                </div>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
                         <div id="homeManager-${event.id}" class="manager-info"></div>
@@ -1729,16 +1770,19 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
             homeTeamId,           // Pass home teamId to fetch manager data for the home team
             `homePregameForm-${event.id}`,   // Container ID for the home team’s pregame form
             `awayPregameForm-${event.id}`,   // Container ID for the away team’s pregame form
-            `homeManager-${event.id}`        // Container ID for the home team’s manager details
+            `homeManager-${event.id}`,        // Container ID for the home team’s manager details
+            `homePPG-${event.id}`            // Container ID for the home team’s PPG (Points per Game)
         );
 
         fetchPregameForm(
             event.id,             // Pass eventId to fetch form data for both teams
             awayTeamId,           // Pass away teamId to fetch manager data for the away team
-            `homePregameForm-${event.id}`,   // Container ID for the home team’s pregame form
+            `homePregameForm-${event.id}`,   // Container ID for the home team’s pregame form (no change)
             `awayPregameForm-${event.id}`,   // Container ID for the away team’s pregame form
-            `awayManager-${event.id}`        // Container ID for the away team’s manager details
+            `awayManager-${event.id}`,       // Container ID for the away team’s manager details
+            `awayPPG-${event.id}`           // Container ID for the away team’s PPG (Points per Game)
         );
+
 
         // Example usage
         fetchTeamOverallStats(homeTeamId, event.tournament.uniqueTournament.id, seasonId, `home-team-stats-container-${event.id}`);
