@@ -49,7 +49,7 @@ body {
     width: 100vw;
 }
 h4 {
-    margin: 10px 0 0;
+    margin: 0;
     font-weight: 700;
     /*background: #e4ecf5;*/
     padding: 3px 0;
@@ -443,6 +443,7 @@ main {
     padding: 10px;
     background-color: #091c3d;
     color: var(--color-support-1);
+    margin-bottom: 10px;
 }
 
 .team-info {
@@ -822,6 +823,11 @@ main {
         .teams-form .aways-team-form .bar {  
             margin-right: auto;   
             background-color: #3d65ad; 
+        }
+        .teams-form.manager {
+            background-color: #f5f6f8;
+            border-top: 1px solid #c1d2e6;
+            padding: 10px;
         }
         .box.animate { 
             width: 10px;
@@ -1645,7 +1651,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div> 
                     </div>
                 </div>
-                <div class="teams-form">
+                <div class="teams-form manager">
                     <div class="homes-team-form">  
                         <div id="homeManager-${event.id}" class="manager-info"></div>
                     </div>
