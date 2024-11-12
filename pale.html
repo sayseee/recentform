@@ -1001,17 +1001,18 @@ const filterEventsByTime = (events, hours) => {
 const displayCategories = async (date, hours, status) => {
     const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
     const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${date}`;
-     
+    const scheduledEventsUrl2 = `${baseURL}/sport/football/scheduled-events/${date}/inverse`;
     const oddsResponseUrl = `${baseURL}/sport/football/odds/1/${date}`;
 
     try {
         const topTournamentsData = await fetch(topTournamentsUrl).then(response => response.json());
         const scheduledEventsData = await fetch(scheduledEventsUrl).then(response => response.json());
+        const inverseScheduledEventsData = await fetch(scheduledEventsUrl2).then(response => response.json());
          
         const oddsData = await fetch(oddsResponseUrl).then(response => response.json());
 
         const allEvents = [...scheduledEventsData.events,
-         //...inverseScheduledEventsData.events
+         ...inverseScheduledEventsData.events
         ];
         const odds = oddsData?.odds || {};
 
