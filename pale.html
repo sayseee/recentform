@@ -1362,7 +1362,7 @@ const renderFormDisplay = (form, formDisplayId) => {
         const span = document.createElement('span');
         
         if (result === "W") {
-            span.textContent = "✓"; // Tick for Win
+            span.innerHTML = "<i class='fas fa-check'></i>"; // FontAwesome check mark
         } else if (result === "L") {
             span.textContent = "X"; // Cross for Loss
         } else if (result === "D") {
