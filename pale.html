@@ -822,10 +822,12 @@ main {
 .teams-form .homes-team-form .bar {  
     margin-left: auto;  
     background-color: #93c0e6;
+    border-radius: 25px;
 }
 .teams-form .aways-team-form .bar {  
     margin-right: auto;   
-    background-color: #3d65ad; 
+    background-color: #3d65ad;
+    border-radius: 25px;
 }
 .teams-form.manager {
     background-color: #F0F2F4;
@@ -1374,8 +1376,8 @@ const renderPregameForm = ({ name, avgRating, form, formPercentage, value, posit
 
     container.innerHTML = `  
         <div class="team-cent">${formPercentage}%</div>
-        <div class="bar-wrapper" style="width:90%;height: 5px; background-color:#ededed;">
-            <div class="bar" style="width:${formPercentage}%;height: 5px;"></div>
+        <div class="bar-wrapper" style="width:90%;height:6px; background-color:#ededed;border-radius:25px;">
+            <div class="bar" style="width:${formPercentage}%;height:6px;"></div>
         </div>  
         <div class="stat-title" style="margin-top:10px;">Pts: <span class="value">${displayValue}</span> Pos: <span class="value">${displayPosition}</span> ${avgRating ? `<div class="box animate" cursor="default"><div class="sideBox-inner"></div></div> <strong class="value">${avgRating}</strong>` : ""}</div>
         <p><span id="${formDisplayId}"></span></p> 
