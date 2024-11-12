@@ -596,10 +596,10 @@ main {
 .match-odds { 
     display: flex;
     justify-content: space-between;
-    background-color: var(--color-light-gray-bg);
+    background-color: #edeff1;
     margin: 0 10px 10px;
     padding: 05px;
-    border-radius: 25px;
+    border-radius: 5px;
 }
 
 .h2h-event { 
@@ -632,8 +632,8 @@ main {
 }
 
 .match-odds span:nth-child(2) { 
-    border-left: 1px solid #c4c7c9;
-    border-right: 1px solid #c4c7c9;
+    border-left: 1px solid #d7d7db;
+    border-right: 1px solid #d7d7db;
 }
 .logo {
     /* Add logo styling here */
@@ -1680,7 +1680,12 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <span class="team-name">${awayTeamName}</span>
                      </div>
                 </div>
-            </div>  
+            </div>
+            <div class="match-odds">
+                <span class="odds">${homeOdds}</span>
+                <span class="odds">${drawOdds}</span>
+                <span class="odds">${awayOdds}</span>
+            </div>   
                 <div class="teams-form">
                     <div class="homes-team-form"> 
                         <div id="homePregameForm-${event.id}" class="pregame-form"></div> 
@@ -1755,11 +1760,6 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
 
                 <h4 style="text-align:center;">H2H last 3 years</h4>
             <div class="h2h-event" id="${uniqueEventId}"></div>
-            <div class="match-odds">
-                <span class="odds">${homeOdds}</span>
-                <span class="odds">${drawOdds}</span>
-                <span class="odds">${awayOdds}</span>
-            </div> 
         `;
             
         // Fetch and display most recent H2H event for the current event
