@@ -1,6 +1,6 @@
  {
-    "short_name": "FUTBOL",
-    "name": "FUTBOL - Football Stats and Fixtures",
+    "short_name": "Soccer",
+    "name": "Soccer Stats",
     "icons": [
       {
         "src": "icons/icon-192x192.png",
@@ -15,7 +15,7 @@
     ],
     "start_url": "/recentform/pale.html",
     "display": "standalone",
-    "theme_color": "#091c3d",
-    "background_color": "#091c3d"
+    "theme_color": "#030229",
+    "background_color": "#030229"
   }
   
