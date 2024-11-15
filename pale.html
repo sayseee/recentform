@@ -837,7 +837,7 @@ main {
 } 
 .stats-conversion span {
     flex: 1;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     margin: 0 0 5px;
     text-align: center;
@@ -1511,7 +1511,7 @@ const updatePPG = (manager, ppgContainerId) => {
         const pointsPerGame = total ? (totalPoints / total).toFixed(2) : 0;
 
         // Update the PPG value in the targeted div
-        ppgContainer.innerHTML = `<span>${pointsPerGame} <small>M PPG</small></span>`;
+        ppgContainer.innerHTML = `<span>${pointsPerGame} <small>Per game</small></span>`;
     }
 };
 
