@@ -7,7 +7,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
+        <title>Soccer - Football Betting Analysis Portal</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,8 @@
     --color-support-1: #f5f6f8;
 } 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Tahoma, Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Open Sans", sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 0.715rem;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
@@ -38,14 +39,22 @@ body {
     color: #100d2c;
     height: -moz-fit-content;
     height: fit-content;
-    -webkit-font-smoothing: antialiased;
-    font-size: 12px;
+    -webkit-font-smoothing: antialiased;  
     overflow: hidden;
 }
 h3 {
     font-weight: 600;
 }
-
+table { 
+  border-collapse: collapse;
+}
+thead {
+    background-color: #030229;
+    color: #f1f0f6;  
+}
+thead th {
+    padding: 1px 3px; 
+}
 .W, .D, .L {   
     align-items: center;  
     justify-content: center;
@@ -278,10 +287,14 @@ button#filter-btn:hover {
     margin: 6px 0;
     justify-content: flex-start;
     color: var(--color-medium-gray-text);
-    font-weight: normal;
+    font-weight: normal;    padding: 0px;
+    font-family: "Lucida Grande", Verdana, Geneva, sans-serif;
+    font-size: 9px;
 }
 .left-column h3 img {
     margin-right: 6px;
+    width: 15px;
+    height: 15px;
 }
 .left-column h3:not(:last-child) {
     border-bottom: 1px solid var(--color-light-gray-bg);
@@ -298,9 +311,10 @@ button#filter-btn:hover {
 }
 .tournament .catName {
     color: var(--color-dark-bg);
-    font-weight: 700;
-    text-transform: uppercase; 
-    font-size: 11px;
+    font-weight: 700;  
+    font-family: "Lucida Grande", Verdana, Geneva, sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;  
 }     
 .event-list {
     display: flex;
@@ -317,14 +331,13 @@ button#filter-btn:hover {
 .event-list>div:last-child {
     font-size: 0.678rem;
 }
-.home-value, .away-value { 
-    display: inline-flex;
+.home-value, .away-value {  
     border: 1px solid #e6e6e9;
     color: #00002b;  
     padding: 2px 7px; 
     width: 12px;    
     font-weight: 500;
-    justify-content: center;
+    text-align: center;
 }
 .teams-form {
             display: flex;
@@ -598,7 +611,12 @@ button#filter-btn:hover {
     border-radius: 0 10px 10px 0;
     margin-left: -1px; /* slight overlap to hide gaps */
 }
-
+td.sc { 
+    text-align: center;
+}
+td.sc table td { 
+    width: 50%;
+}
 </style>
     </head>
     <body>
@@ -751,9 +769,9 @@ const displayCategories = async (date, hours, status) => {
         // Filter and organize events based on top tournaments
         const topTournaments = topTournamentsData.uniqueTournaments || [];
         const topTournamentIds = new Set(topTournaments.map(t => t.id));
-
         const topTournamentsMap = buildCategoryMap(filteredEvents, topTournamentIds);
 
+        console.log(topTournamentsMap);
         // Update the categories container
         const container = document.getElementById('categories-container');
         container.innerHTML = '';
@@ -788,64 +806,6 @@ const displayCategories = async (date, hours, status) => {
                 return finishedEvents;
             };
  
-
-const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchId) => {
-    const finishedEvents = await fetchEventsData(tournamentId, seasonId, currentMatchId);
-
-    if (finishedEvents.length === 0) return null;
-
-    // Initialize variables for calculating team and league stats
-    let teamGoalsScored = 0, teamGoalsConceded = 0, teamMatches = 0;
-    let teamBTTS = 0, teamOver1_5 = 0, teamOver2_5 = 0;
-
-    let leagueGoals = 0, leagueMatches = 0, leagueBTTS = 0;
-    let leagueOver1_5 = 0, leagueOver2_5 = 0;
-
-    finishedEvents.forEach(event => {
-        // Check if the event is the current match; if so, skip it
-        if (event.id === currentMatchId) return;
-
-        const isHome = event.homeTeam.id === teamId;
-        const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
-        const opponentScore = isHome ? event.awayScore.current : event.homeScore.current;
-        const totalGoals = event.homeScore.current + event.awayScore.current;
-
-        // If teamId is provided, calculate team-specific stats
-        if (teamId && (event.homeTeam.id === teamId || event.awayTeam.id === teamId)) {
-            teamGoalsScored += teamScore;
-            teamGoalsConceded += opponentScore;
-            teamMatches += 1;
-            if (teamScore > 0 && opponentScore > 0) teamBTTS += 1;
-            if (totalGoals > 1.5) teamOver1_5 += 1;
-            if (totalGoals > 2.5) teamOver2_5 += 1;
-        }
-
-        // Calculate league-wide stats for every event
-        leagueGoals += totalGoals;
-        leagueMatches += 1;
-        if (event.homeScore.current > 0 && event.awayScore.current > 0) leagueBTTS += 1;
-        if (totalGoals > 1.5) leagueOver1_5 += 1;
-        if (totalGoals > 2.5) leagueOver2_5 += 1;
-    });
-
-    // Calculate averages for the team, if team-specific data is being calculated
-    const teamStats = teamId ? {
-        goalsScored: (teamMatches > 0) ? (teamGoalsScored / teamMatches).toFixed(2) : 0,
-        BTTS: (teamMatches > 0) ? ((teamBTTS / teamMatches) * 100).toFixed(0) : 0,
-        over1_5: (teamMatches > 0) ? ((teamOver1_5 / teamMatches) * 100).toFixed(0) : 0,
-        over2_5: (teamMatches > 0) ? ((teamOver2_5 / teamMatches) * 100).toFixed(0) : 0
-    } : null;
-
-    // Calculate league-wide averages
-    const leagueStats = {
-        goalsScored: (leagueMatches > 0) ? (leagueGoals / leagueMatches).toFixed(2) : 0,
-        BTTS: (leagueMatches > 0) ? ((leagueBTTS / leagueMatches) * 100).toFixed(0) : 0,
-        over1_5: (leagueMatches > 0) ? ((leagueOver1_5 / leagueMatches) * 100).toFixed(0) : 0,
-        over2_5: (leagueMatches > 0) ? ((leagueOver2_5 / leagueMatches) * 100).toFixed(0) : 0
-    };
-
-    return { teamStats, leagueStats };
-};
 
  
 const leagueStatsCache = {}; // Cache object for league stats
@@ -905,6 +865,64 @@ const createCategorySection = (tournaments, categoryName, odds) => {
 
     categoryItem.appendChild(tournamentsContainer);
     return categoryItem;
+};
+
+const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchId) => {
+    const finishedEvents = await fetchEventsData(tournamentId, seasonId, currentMatchId);
+
+    if (finishedEvents.length === 0) return null;
+
+    // Initialize variables for calculating team and league stats
+    let teamGoalsScored = 0, teamGoalsConceded = 0, teamMatches = 0;
+    let teamBTTS = 0, teamOver1_5 = 0, teamOver2_5 = 0;
+
+    let leagueGoals = 0, leagueMatches = 0, leagueBTTS = 0;
+    let leagueOver1_5 = 0, leagueOver2_5 = 0;
+
+    finishedEvents.forEach(event => {
+        // Check if the event is the current match; if so, skip it
+        if (event.id === currentMatchId) return;
+
+        const isHome = event.homeTeam.id === teamId;
+        const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
+        const opponentScore = isHome ? event.awayScore.current : event.homeScore.current;
+        const totalGoals = event.homeScore.current + event.awayScore.current;
+
+        // If teamId is provided, calculate team-specific stats
+        if (teamId && (event.homeTeam.id === teamId || event.awayTeam.id === teamId)) {
+            teamGoalsScored += teamScore;
+            teamGoalsConceded += opponentScore;
+            teamMatches += 1;
+            if (teamScore > 0 && opponentScore > 0) teamBTTS += 1;
+            if (totalGoals > 1.5) teamOver1_5 += 1;
+            if (totalGoals > 2.5) teamOver2_5 += 1;
+        }
+
+        // Calculate league-wide stats for every event
+        leagueGoals += totalGoals;
+        leagueMatches += 1;
+        if (event.homeScore.current > 0 && event.awayScore.current > 0) leagueBTTS += 1;
+        if (totalGoals > 1.5) leagueOver1_5 += 1;
+        if (totalGoals > 2.5) leagueOver2_5 += 1;
+    });
+
+    // Calculate averages for the team, if team-specific data is being calculated
+    const teamStats = teamId ? {
+        goalsScored: (teamMatches > 0) ? (teamGoalsScored / teamMatches).toFixed(2) : 0,
+        BTTS: (teamMatches > 0) ? ((teamBTTS / teamMatches) * 100).toFixed(0) : 0,
+        over1_5: (teamMatches > 0) ? ((teamOver1_5 / teamMatches) * 100).toFixed(0) : 0,
+        over2_5: (teamMatches > 0) ? ((teamOver2_5 / teamMatches) * 100).toFixed(0) : 0
+    } : null;
+
+    // Calculate league-wide averages
+    const leagueStats = {
+        goalsScored: (leagueMatches > 0) ? (leagueGoals / leagueMatches).toFixed(2) : 0,
+        BTTS: (leagueMatches > 0) ? ((leagueBTTS / leagueMatches) * 100).toFixed(0) : 0,
+        over1_5: (leagueMatches > 0) ? ((leagueOver1_5 / leagueMatches) * 100).toFixed(0) : 0,
+        over2_5: (leagueMatches > 0) ? ((leagueOver2_5 / leagueMatches) * 100).toFixed(0) : 0
+    };
+
+    return { teamStats, leagueStats };
 };
 
 
@@ -1086,7 +1104,7 @@ const renderManagerDuelStats = (managerDuel) => {
 };
 
 // Function to fetch team stats for home and away teams
-const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId, seasonId, containerId, columnType = 'center') => {
+const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId, seasonId, containerId, columnType = 'center', event) => {
     try {
         // Fetch stats for the home team
         const homeResponse = await fetch(`${baseURL}/team/${homeTeamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
@@ -1104,7 +1122,7 @@ const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId,
         
         // Call the render function based on column type
         if (columnType === 'center') {
-            renderStats(homeStatsData, awayStatsData, containerId);
+            renderStats(homeStatsData, awayStatsData, containerId, event);
         } else {
             renderStatsRightColumn(homeStatsData, awayStatsData, containerId);
         }
@@ -1113,30 +1131,104 @@ const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId,
     }
 };
 
-const renderStats = (homeStats, awayStats, containerId) => {
+const renderStats = (homeStats, awayStats, containerId, event) => {
     const container = document.getElementById(containerId);
-    
+    const formatEventDate = (timestamp) => {
+        const eventDate = new Date(timestamp * 1000);
+
+        // Format date as "3 Oct"
+        const formattedDate = eventDate.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+        }).replace(',', '');
+
+        // Format time as "02:30"
+        const formattedTime = eventDate.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+
+        return `${formattedDate} ${formattedTime}`;
+    };
     // Clear previous stats
     container.innerHTML = '';
     
     // Render only basic stats (up to assists)
-    const statsHTML = `
-        <div class="team-stats-row">
-            <div class="team-stat">
-                <strong>MP:</strong>
-                <span class="home-value">${homeStats.matches || '0'}</span>
-                <span class="away-value">${awayStats.matches || '0'}</span> 
-                <strong>GF:</strong>
-                <span class="home-value">${homeStats.goalsScored || '0'}</span>
-                <span class="away-value">${awayStats.goalsScored || '0'}</span> 
-                <strong>GA:</strong>
-                <span class="home-value">${homeStats.goalsConceded || '0'}</span>
-                <span class="away-value">${awayStats.goalsConceded || '0'}</span> 
-                <strong>AST:</strong>
-                <span class="home-value">${homeStats.assists || '0'}</span>
-                <span class="away-value">${awayStats.assists || '0'}</span>
-            </div>
-        </div>
+    const statsHTML = ` 
+                <td>${formatEventDate(event.startTimestamp)}</td>
+                <td>${event.homeTeam.shortName}</td>
+                <td>${event.awayTeam.shortName}</td>
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${homeStats.matches || '0'}</td>
+                                <td>${awayStats.matches || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td> 
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${homeStats.goalsScored || '0'}</td>
+                                <td>${awayStats.goalsScored || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${homeStats.goalsConceded || '0'}</td>
+                                <td>${awayStats.goalsConceded || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${homeStats.assists || '0'}</td>
+                                <td>${awayStats.assists || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>   
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${Math.round(homeStats.averageBallPossession) || '0'}</td>
+                                <td>${Math.round(awayStats.averageBallPossession) || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>  
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${Math.round(homeStats.accuratePassesPercentage) || '0'}</td>
+                                <td>${Math.round(awayStats.accuratePassesPercentage) || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>  
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${Math.round(homeStats.successfulDribbles) || '0'}</td>
+                                <td>${Math.round(awayStats.successfulDribbles) || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>     
     `;
     
     // Insert the stats into the container
@@ -1221,44 +1313,66 @@ const renderStatsRightColumn = (homeStats, awayStats, containerId) => {
 // Function to load events to center column
 const loadEventsToCenterColumn = (events, odds, leagueStats) => {
     const eventsContainer = document.getElementById('events-container');
-    eventsContainer.innerHTML = ''; // Clear previous events
+eventsContainer.innerHTML = ''; // Clear previous events
 
-    for (const event of events) {
-        const eventItem = document.createElement('div');
-        eventItem.classList.add('event');
-        
-        const homeTeamId = event.homeTeam.id;
-        const awayTeamId = event.awayTeam.id;
-        const currentMatchId = event.id;
-        const tournamentId = event.tournament.id;
-        const uniqueTournamentId = event.tournament.uniqueTournament.id;
-        const seasonId = event.season.id;
+// Create the table element
+const table = document.createElement('table');
+table.classList.add('events-table');
 
-        // Add event details and load stats for each event
-        eventItem.innerHTML = `
-            <div class="event-list">
-                <div class="event-info">
-                    ${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace(',', ' ').replace('/', ' ')} - ${event.homeTeam.shortName} vs ${event.awayTeam.shortName}
-                </div>
-                <div id="stats-container-${event.id}"></div>
-            </div>
-        `;
+table.innerHTML = `
+    <thead>
+        <tr id="TCHDR">
+            <th width="120">Date</th>
+            <th width="120">Home Team</th>
+            <th width="120">Away Team</th>
+            <th width="50">Played</th>
+            <th width="70">G.Scored</th> 
+            <th width="85">G.Conceded</th>   
+            <th width="50">Assists</th>   
+            <th width="85">Possession</th>
+            <th width="65">Passes</th>
+            <th width="65">Dribbles</th>
+        </tr>
+    </thead>
+    <tbody id="events-tbody"></tbody>
+`;
 
-        // Add click event to load event details in the right column
-        eventItem.addEventListener('click', () => {
-            loadEventDetailsToRightColumn(event, odds, leagueStats);
-        });
+// Get the <tbody> element
+const tbody = table.querySelector('#events-tbody');
 
-        eventsContainer.appendChild(eventItem); 
-        
-        // Fetch stats for home and away teams
-        fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, `stats-container-${event.id}`, 'center');
-    }
+// Loop through the events and create a <tr> for each event
+for (const event of events) {
+    const homeTeamId = event.homeTeam.id;
+    const awayTeamId = event.awayTeam.id;
+    const currentMatchId = event.id;
+    const tournamentId = event.tournament.id;
+    const uniqueTournamentId = event.tournament.uniqueTournament.id;
+    const seasonId = event.season.id;
 
-    // Automatically load the first event details in the center column
-    if (events.length > 0) {
-        loadEventDetailsToRightColumn(events[0], odds, leagueStats);
-    }
+    // Create the <tr> element with a unique ID
+    const row = document.createElement('tr');
+    row.id = `stats-container-${event.id}`;
+
+    // Add click event to load event details in the right column
+    row.addEventListener('click', () => {
+        loadEventDetailsToRightColumn(event, odds, leagueStats);
+    });
+
+    // Append the row directly to the <tbody>
+    tbody.appendChild(row);
+
+    // Fetch stats for home and away teams
+    fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, row.id, 'center', event);
+}
+
+// Append the table to the events container
+eventsContainer.appendChild(table);
+
+// Automatically load the first event details in the center column
+if (events.length > 0) {
+    loadEventDetailsToRightColumn(events[0], odds, leagueStats);
+}
+
 };
 
 // Function to load details of a specific event into the right column

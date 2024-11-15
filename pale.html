@@ -832,6 +832,28 @@ main {
     background-color: #3d65ad;
     border-radius: 25px;
 }
+.stats-conversion {
+    display: flex;
+} 
+.stats-conversion span {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 5px;
+    text-align: center;
+}
+.stats-conversionspan:first-child {
+    color: rgb(8, 98, 114);
+}
+.stats-conversion span:first-child small {
+    color: rgba(8, 98, 114, 0.65);
+}
+.stats-conversion span:last-child {
+    color: rgba(11, 179, 42);
+}
+.stats-conversion span:last-child small {
+    color: rgba(11, 179, 42, 0.65);
+}
 .teams-form.manager {
     background-color: #F0F2F4;
     border-top: 1px solid #ebecf1;
@@ -1068,9 +1090,9 @@ hr {
  if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js').then((registration) => {
-        console.log('Service Worker registered with scope:', registration.scope);
+        //console.log('Service Worker registered with scope:', registration.scope);
       }).catch((error) => {
-        console.error('Service Worker registration failed:', error);
+        //console.error('Service Worker registration failed:', error);
       });
     });
   }
@@ -1266,9 +1288,9 @@ const createCategorySection = (tournaments, categoryName, odds) => {
                 seasonId = event.season?.id;
                 uniqueTournamentId = event.tournament.id;
                 tournamentIds = event.tournament.uniqueTournament.id;
-                console.log(seasonId);
+                //console.log(seasonId);
                 //console.log(uniqueTournamentId);
-                console.log(tournamentIds);
+                //console.log(tournamentIds);
             }
 
             if (!leagueStatsCache[tournament.id]) {
@@ -1521,8 +1543,8 @@ const renderTeamDuelStats = (teamDuel) => {
         <h4 style="text-align:center;margin-top: 10px;">Head 2 Head</h4>
         <div>
             <p><strong>${homeWins}</strong></p>
-            <p><strong>${awayWins}</strong></p>
             <p><strong>${draws}</strong></p>
+            <p><strong>${awayWins}</strong></p>
         </div>
     </div>
     `;
@@ -1535,8 +1557,8 @@ const renderManagerDuelStats = (managerDuel) => {
         <span>Manager Duel</span>
         <div>
             <p><strong>${homeWins}</strong></p>
-            <p><strong>${awayWins}</strong></p>
             <p><strong>${draws}</strong></p>
+            <p><strong>${awayWins}</strong></p>
         </div>
     </div>
     `; 
@@ -1560,7 +1582,7 @@ const fetchTeamOverallStats = async (teamId, uniqueTournamentId, seasonId, conta
  */
 
 // Function to fetch team stats for home and away teams
-const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId, seasonId, containerId, columnType = 'center') => {
+const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId, seasonId, containerId, conversionContainerId, columnType = 'center') => {
     try {
         // Fetch stats for the home team
         const homeResponse = await fetch(`${baseURL}/team/${homeTeamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
@@ -1579,11 +1601,51 @@ const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId,
         // Call the render function based on column type
         if (columnType === 'center') {
             renderStats(homeStatsData, awayStatsData, containerId);
+            goalConversionConceedStats(homeStatsData, awayStatsData, conversionContainerId);
         }  
     } catch (error) {
         console.error("Error fetching team stats:", error);
     }
 };
+
+const goalConversionConceedStats = (homeStats, awayStats, containerId) => {
+    const container = document.getElementById(containerId);
+    
+    // Helper function to safely calculate and handle NaN, adding % only if there’s a valid value
+    const safeCalcPercentage = (value) => isNaN(value) || value === '' ? '' : `${value}`;
+    const safeCalc = (value) => isNaN(value) || value === '' ? '' : value;
+
+    // Calculate goals conversion rate and round to 0 decimals
+    const goalsConversionHomeRate = safeCalcPercentage(Math.round((homeStats.goalsScored / homeStats.shots) * 100));
+    const goalsConversionAwayRate = safeCalcPercentage(Math.round((awayStats.goalsScored / awayStats.shots) * 100));
+
+    // Calculate goals conceded rate and round to 0 decimals
+    const goalsConceedHomeRate = safeCalcPercentage(Math.round((homeStats.goalsConceded / homeStats.shotsAgainst) * 100));
+    const goalsConceedAwayRate = safeCalcPercentage(Math.round((awayStats.goalsConceded / awayStats.shotsAgainst) * 100));
+
+    // Calculate sum and ensure that the sum is correctly rounded
+    const goalsConversionSum = Math.round(Number(goalsConversionHomeRate) + Number(goalsConversionAwayRate));
+    const goalsConceedSum = Math.round(Number(goalsConceedHomeRate) + Number(goalsConceedAwayRate));
+
+    // Clear previous stats
+    container.innerHTML = '';
+
+    // Build stats HTML with correct division and rounding
+    const statsHTML = `
+        <span>${(Math.round((Number(goalsConversionHomeRate) / goalsConversionSum) * 100))} 
+            <small>/${(Math.round((Number(goalsConceedHomeRate) / goalsConceedSum) * 100))}</small>
+        </span>
+        <span>${(Math.round((Number(goalsConversionAwayRate) / goalsConversionSum) * 100))} 
+            <small>/${(Math.round((Number(goalsConceedAwayRate) / goalsConceedSum) * 100))}</small>            
+        </span>
+    `;
+
+    // Insert the stats into the container
+    container.innerHTML = statsHTML;
+};
+
+ 
+
 
 const renderStats = (homeStats, awayStats, containerId) => {
     const container = document.getElementById(containerId);
@@ -1626,17 +1688,17 @@ const renderStats = (homeStats, awayStats, containerId) => {
         // Higher value should be green, lower value should be red
         homeColor = homeValue > awayValue ? '' : '';
         awayColor = awayValue > homeValue ? '' : '';
-        console.log(`Shots For - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
+        //console.log(`Shots For - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
     } else if (statType === 'Shots Against') {
         // For Shots Against, lower value is green, higher value is red
         homeColor = homeValue < awayValue ? 'green' : 'red';
         awayColor = awayValue < homeValue ? 'green' : 'red';
-        console.log(`Shots Against - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
+        //console.log(`Shots Against - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
     } else {
         // Default for other stats - higher is better
         homeColor = homeValue > awayValue ? 'green' : 'red';
         awayColor = awayValue > homeValue ? 'green' : 'red';
-        console.log(`Other Stat - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
+        //console.log(`Other Stat - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
     }
 
     const homeSpan = `<span class="home-value" style="color: ${homeColor};">${homeValue || ''}</span>`;
@@ -1983,6 +2045,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPPG-${event.id}" class="pregame-form"></div> 
                     </div>
                 </div>
+                
+                <div id="stats-conversion-${event.id}" class="stats-conversion"></div>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
                         <div id="homeManager-${event.id}" class="manager-info"></div>
@@ -2031,7 +2095,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
        // fetchTeamOverallStats(homeTeamId, event.tournament.uniqueTournament.id, seasonId, `home-team-stats-container-${event.id}`);
         //fetchTeamOverallStats(awayTeamId, event.tournament.uniqueTournament.id, seasonId, `away-team-stats-container-${event.id}`);
         // Fetch stats for home and away teams
-        fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, `stats-container-${event.id}`, 'center');
+        fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, `stats-container-${event.id}`, `stats-conversion-${event.id}`, 'center');
     
         // Start the live timer if the match is in progress
         if (event.status.type === 'inprogress') {
@@ -2051,7 +2115,7 @@ const formatTime = (time) => {
     const calculateElapsedTime = (event) => {
         const now = Math.floor(Date.now() / 1000);
         let elapsedSeconds = now - event.time.currentPeriodStartTimestamp;
-            console.log(event.time.currentPeriodStartTimestamp);
+            //console.log(event.time.currentPeriodStartTimestamp);
         // Check for match status descriptions
         if (event.status.description === 'Halftime') {
             return "Halftime"; // Display Halftime when it's halftime
@@ -2312,7 +2376,7 @@ const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
 const fetchTournamentInfo = async (uniqueTournamentId, seasonId) => {
     const url = `${baseURL}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/info`;
     const data = await fetchJson(url);
-    console.log(data);
+    //console.log(data);
     return data.info || {};
 };
 
