@@ -1145,6 +1145,7 @@ const filterEventsByTime = (events, hours) => {
         return eventTime >= now && eventTime <= now + timeRange;
     });
 };
+
 const displayCategories = async (date, hours, status) => {
     const topTournamentsUrl = `${baseURL}/config/top-unique-tournaments/UG/football`;
     const scheduledEventsUrl = `${baseURL}/sport/football/scheduled-events/${date}`;
@@ -1154,52 +1155,56 @@ const displayCategories = async (date, hours, status) => {
     try {
         const topTournamentsData = await fetch(topTournamentsUrl).then(response => response.json());
         const scheduledEventsData = await fetch(scheduledEventsUrl).then(response => response.json());
-        const inverseScheduledEventsData = await fetch(scheduledEventsUrl2).then(response => response.json());
-         
-        const oddsData = await fetch(oddsResponseUrl).then(response => response.json());
 
-        const allEvents = [...scheduledEventsData.events,
-         ...inverseScheduledEventsData.events
-        ];
+        let allEvents = [...scheduledEventsData.events];
+
+        // Check if the number of tournaments is less than 20 and add inverse events if true
+        if (scheduledEventsData.events.length < 20) {
+            const inverseScheduledEventsData = await fetch(scheduledEventsUrl2).then(response => response.json());
+            allEvents = [...allEvents, ...inverseScheduledEventsData.events];
+        }
+
+        const oddsData = await fetch(oddsResponseUrl).then(response => response.json());
         const odds = oddsData?.odds || {};
 
-            // Filter by date range for the selected day
-            const startDate = new Date(date).setHours(0, 0, 0);
-            const endDate = new Date(date).setHours(23, 59, 59);
- 
+        // Filter by date range for the selected day
+        const startDate = new Date(date).setHours(0, 0, 0);
+        const endDate = new Date(date).setHours(23, 59, 59);
 
-            filteredEvents = allEvents.filter(event => {
+        let filteredEvents = allEvents.filter(event => {
+            const eventTime = new Date(event.startTimestamp * 1000).getTime();
+            return eventTime >= startDate && eventTime <= endDate;
+        });
+
+        // If hours are specified, filter further by time range
+        if (hours) {
+            const timeRangeStart = new Date(date).setHours(0, 0, 0);
+            const timeRangeEnd = new Date(date).setHours(hours, 59, 59);
+
+            filteredEvents = filteredEvents.filter(event => {
                 const eventTime = new Date(event.startTimestamp * 1000).getTime();
-                return eventTime >= startDate && eventTime <= endDate;
+                return eventTime >= timeRangeStart && eventTime <= timeRangeEnd;
             });
+        }
 
-            // If hours are specified, filter further by time range
-            if (hours) {
-                const timeRangeStart = new Date(date).setHours(0, 0, 0);
-                const timeRangeEnd = new Date(date).setHours(hours, 59, 59);
+        // Filter by event status
+        if (status) {
+            filteredEvents = filteredEvents.filter(event => {
+                switch (status) {
+                    case 'live':
+                        return event.status.type === 'inprogress';
+                    case 'finished':
+                        return event.status.type === 'finished';
+                    case 'scheduled':
+                        return event.status.type === 'notstarted';
+                    default:
+                        return true;
+                }
+            });
+        }
 
-                filteredEvents = filteredEvents.filter(event => {
-                    const eventTime = new Date(event.startTimestamp * 1000).getTime();
-                    return eventTime >= timeRangeStart && eventTime <= timeRangeEnd;
-                });
-            }
-
-            if (status) {
-                filteredEvents = filteredEvents.filter(event => {
-                    switch (status) {
-                        case 'live':
-                            return event.status.type === 'inprogress';
-                        case 'finished':
-                            return event.status.type === 'finished';
-                        case 'scheduled':
-                            return event.status.type === 'notstarted';
-                        default:
-                            return true;
-                    }
-                });
-            }
-
-            filteredEvents = filteredEvents.filter(event => odds[event.id]);
+        // Filter to only include events with available odds
+        filteredEvents = filteredEvents.filter(event => odds[event.id]);
 
         const topTournaments = topTournamentsData.uniqueTournaments || [];
         const topTournamentIds = new Set(topTournaments.map(tournament => tournament.id));
@@ -1207,6 +1212,7 @@ const displayCategories = async (date, hours, status) => {
         const topTournamentsMap = new Map();
         const otherCategoriesMap = new Map();
 
+        // Organize filtered events by categories and tournaments
         filteredEvents.forEach(event => {
             const categoryName = event.tournament.category.name;
             const tournamentId = event.tournament.uniqueTournament.id;
@@ -1229,6 +1235,7 @@ const displayCategories = async (date, hours, status) => {
             tournaments.get(tournamentName).events.push(event);
         });
 
+        // Render the categories
         const container = document.getElementById('categories-container');
         container.innerHTML = '';
 
@@ -1245,6 +1252,7 @@ const displayCategories = async (date, hours, status) => {
         console.error('Error displaying categories:', error);
     }
 };
+
 
 const leagueStatsCache = {}; // Cache object for league stats
 const createCategorySection = (tournaments, categoryName, odds) => {
