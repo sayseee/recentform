@@ -790,6 +790,7 @@ main {
     flex-direction: row;
     width: 100%;
     margin: 0 auto;
+    align-items: center;
 }
 .teams-form .homes-team-form, .teams-form .aways-team-form { 
     flex: 1;
@@ -834,6 +835,7 @@ main {
 }
 .stats-conversion {
     display: flex;
+    align-items: center;
 } 
 .stats-conversion span {
     flex: 1;
@@ -1635,6 +1637,9 @@ const goalConversionConceedStats = (homeStats, awayStats, containerId) => {
         <span>${(Math.round((Number(goalsConversionHomeRate) / goalsConversionSum) * 100))} 
             <small>/${(Math.round((Number(goalsConceedHomeRate) / goalsConceedSum) * 100))}</small>
         </span>
+        <span style="font-size:12px;font-weight:400;color:#9f9f9f;">
+            Goal C.Rate
+        </span>
         <span>${(Math.round((Number(goalsConversionAwayRate) / goalsConversionSum) * 100))} 
             <small>/${(Math.round((Number(goalsConceedAwayRate) / goalsConceedSum) * 100))}</small>            
         </span>
@@ -2036,10 +2041,13 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div> <div class="stat-title">Over 2.5</div>                    
                 </div>
             </div>
-                <h4 style="text-align:center; margin-top:10px;">Manager Statistics</h4>
+                <h4 style="text-align:center; margin-top:10px;">Manager/Goals</h4>
                 <div class="teams-form ppg">
                     <div class="homes-team-form"> 
                         <div id="homePPG-${event.id}" class="pregame-form"></div> 
+                    </div>
+                    <div style="font-size:12px;font-weight:400;color:#9f9f9f;">
+                        Managers' Points/Game
                     </div>
                     <div class="aways-team-form"> 
                         <div id="awayPPG-${event.id}" class="pregame-form"></div> 
