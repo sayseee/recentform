@@ -1341,16 +1341,14 @@ const displayLeagueStats = (leagueStats, tournamentInfo, container) => {
 
     container.innerHTML = `
         <div class="stat-league">
-            <div class="stat-title">AG <span>${leagueStats.goalsScored}</span></div>
-            <div class="stat-title">BTTS <span>${leagueStats.BTTS}%</span></div>
-            <div class="stat-title">+1.5 <span>${leagueStats.over1_5}%</span></div>
-            <div class="stat-title">+2.5 <span>${leagueStats.over2_5}%</span></div> 
-        </div>
-        <div class="stat-league">  
-            <div class="stat-title">HW <span>${homeWinsPercentage}%</span></div>
-            <div class="stat-title">AW <span>${awayWinsPercentage}%</span></div>
-            <div class="stat-title">DR <span>${drawsPercentage}%</span></div> 
-        </div>
+            <div class="stat-title">HW:<span>${homeWinsPercentage}%</span></div>
+            <div class="stat-title">DR:<span>${drawsPercentage}%</span></div> 
+            <div class="stat-title">AW:<span>${awayWinsPercentage}%</span></div>
+            <div class="stat-title">AG:<span>${leagueStats.goalsScored}</span></div>
+            <div class="stat-title">BTTS:<span>${leagueStats.BTTS}%</span></div>
+            <div class="stat-title">+1.5:<span>${leagueStats.over1_5}%</span></div>
+            <div class="stat-title">+2.5:<span>${leagueStats.over2_5}%</span></div> 
+        </div> 
     `;
 };
 // Fetch pregame form and manager data
@@ -1663,13 +1661,13 @@ const goalConversionConceedStats = (homeStats, awayStats, containerId) => {
 
     // Build stats HTML, leaving values blank if any are invalid
     const statsHTML = `
-        <span>${homeConversionRating || ''} 
+        <span>${homeConversionRating || ''}
             <small>/${homeConceedRating || ''}</small>
         </span>
         <span style="font-size:12px;font-weight:400;color:#9f9f9f;">
             Goals Rating
         </span>
-        <span>${awayConversionRating || ''} 
+        <span>${awayConversionRating || ''}
             <small>/${awayConceedRating || ''}</small>
         </span>
     `;
