@@ -1617,39 +1617,60 @@ const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId,
         console.error("Error fetching team stats:", error);
     }
 };
-
 const goalConversionConceedStats = (homeStats, awayStats, containerId) => {
     const container = document.getElementById(containerId);
-    
-    // Helper function to safely calculate and handle NaN, adding % only if there’s a valid value
-    const safeCalcPercentage = (value) => isNaN(value) || value === '' ? '' : `${value}`;
-    const safeCalc = (value) => isNaN(value) || value === '' ? '' : value;
 
-    // Calculate goals conversion rate and round to 0 decimals
-    const goalsConversionHomeRate = safeCalcPercentage(Math.round((homeStats.goalsScored / homeStats.shots) * 100));
-    const goalsConversionAwayRate = safeCalcPercentage(Math.round((awayStats.goalsScored / awayStats.shots) * 100));
+    // Helper functions to safely calculate and return blank for invalid values
+    const safeCalcPercentage = (value) => (isNaN(value) || value === '' || value === Infinity) ? '' : `${value}`;
+    const safeCalc = (value) => (isNaN(value) || value === '' || value === Infinity) ? '' : value;
 
-    // Calculate goals conceded rate and round to 0 decimals
-    const goalsConceedHomeRate = safeCalcPercentage(Math.round((homeStats.goalsConceded / homeStats.shotsAgainst) * 100));
-    const goalsConceedAwayRate = safeCalcPercentage(Math.round((awayStats.goalsConceded / awayStats.shotsAgainst) * 100));
+    // Calculate goals conversion rate
+    const goalsConversionHomeRate = safeCalcPercentage(
+        Math.round((homeStats.goalsScored / homeStats.shots) * 100)
+    );
+    const goalsConversionAwayRate = safeCalcPercentage(
+        Math.round((awayStats.goalsScored / awayStats.shots) * 100)
+    );
 
-    // Calculate sum and ensure that the sum is correctly rounded
-    const goalsConversionSum = Math.round(Number(goalsConversionHomeRate) + Number(goalsConversionAwayRate));
-    const goalsConceedSum = Math.round(Number(goalsConceedHomeRate) + Number(goalsConceedAwayRate));
+    // Calculate goals conceded rate
+    const goalsConceedHomeRate = safeCalcPercentage(
+        Math.round((homeStats.goalsConceded / homeStats.shotsAgainst) * 100)
+    );
+    const goalsConceedAwayRate = safeCalcPercentage(
+        Math.round((awayStats.goalsConceded / awayStats.shotsAgainst) * 100)
+    );
+
+    // Safely calculate the sums of the rates
+    const goalsConversionSum = safeCalc(Number(goalsConversionHomeRate) + Number(goalsConversionAwayRate));
+    const goalsConceedSum = safeCalc(Number(goalsConceedHomeRate) + Number(goalsConceedAwayRate));
+
+    // Ensure the calculated ratings are valid percentages or blank
+    const homeConversionRating = goalsConversionSum
+        ? Math.round((Number(goalsConversionHomeRate) / goalsConversionSum) * 100)
+        : '-';
+    const homeConceedRating = goalsConceedSum
+        ? Math.round((Number(goalsConceedHomeRate) / goalsConceedSum) * 100)
+        : '-';
+    const awayConversionRating = goalsConversionSum
+        ? Math.round((Number(goalsConversionAwayRate) / goalsConversionSum) * 100)
+        : '-';
+    const awayConceedRating = goalsConceedSum
+        ? Math.round((Number(goalsConceedAwayRate) / goalsConceedSum) * 100)
+        : '-';
 
     // Clear previous stats
     container.innerHTML = '';
 
-    // Build stats HTML with correct division and rounding
+    // Build stats HTML, leaving values blank if any are invalid
     const statsHTML = `
-        <span>${(Math.round((Number(goalsConversionHomeRate) / goalsConversionSum) * 100))} 
-            <small>/${(Math.round((Number(goalsConceedHomeRate) / goalsConceedSum) * 100))}</small>
+        <span>${homeConversionRating || ''} 
+            <small>/${homeConceedRating || ''}</small>
         </span>
         <span style="font-size:12px;font-weight:400;color:#9f9f9f;">
             Goals Rating
         </span>
-        <span>${(Math.round((Number(goalsConversionAwayRate) / goalsConversionSum) * 100))} 
-            <small>/${(Math.round((Number(goalsConceedAwayRate) / goalsConceedSum) * 100))}</small>            
+        <span>${awayConversionRating || ''} 
+            <small>/${awayConceedRating || ''}</small>
         </span>
     `;
 
@@ -1658,60 +1679,35 @@ const goalConversionConceedStats = (homeStats, awayStats, containerId) => {
 };
 
  
-
-
 const renderStats = (homeStats, awayStats, containerId) => {
     const container = document.getElementById(containerId);
-    
-    // Helper function to safely calculate and handle NaN, adding % only if there’s a valid value
-    const safeCalcPercentage = (value) => isNaN(value) || value === '' ? '' : `${value}%`;
-    const safeCalc = (value) => isNaN(value) || value === '' ? '' : value;
 
-    // Round all values to 0 decimal places or return blank
-    const successfulDribblesHomePercentage = safeCalcPercentage(Math.round((homeStats.successfulDribbles / homeStats.dribbleAttempts) * 100));
-    const successfulDribblesAwayPercentage = safeCalcPercentage(Math.round((awayStats.successfulDribbles / awayStats.dribbleAttempts) * 100));
-    const averageGoalsHomeScored = safeCalc(Math.round(homeStats.goalsScored / homeStats.matches).toFixed(2));
-    const averageGoalsHomeConceded = safeCalc(Math.round(homeStats.goalsConceded / homeStats.matches).toFixed(2));
-    const averageGoalsAwayScored = safeCalc((awayStats.goalsScored / awayStats.matches).toFixed(2));
-    const averageGoalsAwayConceded = safeCalc((awayStats.goalsConceded / awayStats.matches).toFixed(2));
-    const cornersHomePerGame = safeCalc(Math.round(homeStats.corners / homeStats.matches).toFixed(2));
-    const cornersAwayPerGame = safeCalc(Math.round(awayStats.corners / awayStats.matches).toFixed(2));
-    const homeAssists = safeCalc(Math.round(homeStats.assists));
-    const awayAssists = safeCalc(Math.round(awayStats.assists));
-    const homeCleanSheets = safeCalc(Math.round(homeStats.cleanSheets));
-    const awayCleanSheets = safeCalc(Math.round(awayStats.cleanSheets));
-    const averageHomeShots = safeCalc(Math.round(homeStats.shots / homeStats.matches).toFixed(1));
-    const averageAwayShots = safeCalc(Math.round(awayStats.shots / awayStats.matches).toFixed(1));
-    const averageHomeShotsAgainst = safeCalc(Math.round(homeStats.shotsAgainst / homeStats.matches).toFixed(1));
-    const averageAwayShotsAgainst = safeCalc(Math.round(awayStats.shotsAgainst / awayStats.matches).toFixed(1));
-    const roundedAccurateHomePassesPercentage = safeCalcPercentage(Math.round(homeStats.accuratePassesPercentage));
-    const roundedAverageHomeBallPossession = safeCalcPercentage(Math.round(homeStats.averageBallPossession));
-    const roundedAccurateAwayPassesPercentage = safeCalcPercentage(Math.round(awayStats.accuratePassesPercentage));
-    const roundedAverageAwayBallPossession = safeCalcPercentage(Math.round(awayStats.averageBallPossession));
+// Helper to safely calculate percentages
+const safeCalcPercentage = (value) => (isNaN(value) || value === '' ? '' : `${Math.round(value)}%`);
 
-    // Clear previous stats
-    container.innerHTML = '';
+// Helper to safely calculate and return blank if invalid
+const safeCalc = (value) => (isNaN(value) || value === '' ? '' : value);
 
-    
-        // Helper function for conditional styling with specific rules for Shots For and Shots Against
-        const getColoredSpan = (homeValue, awayValue, statType = '') => {
-        let homeColor, awayColor;
+// Helper to color-code spans based on values
+const getColoredSpan = (homeValue, awayValue, statType = '') => {
+    let homeColor = '', awayColor = '';
 
-        if (statType === 'Shots For') {
-        // Higher value should be green, lower value should be red
-        homeColor = homeValue > awayValue ? '' : '';
-        awayColor = awayValue > homeValue ? '' : '';
-        //console.log(`Shots For - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
+    if (homeValue === awayValue) {
+        // No coloring if values are the same
+        homeColor = '';
+        awayColor = '';
     } else if (statType === 'Shots Against') {
-        // For Shots Against, lower value is green, higher value is red
+        // Lower is better for Shots Against
         homeColor = homeValue < awayValue ? 'green' : 'red';
         awayColor = awayValue < homeValue ? 'green' : 'red';
-        //console.log(`Shots Against - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
+    } else if (statType === 'Shots For') {
+        // Do not color Shots For
+        homeColor = homeValue < awayValue ? 'red' : 'green';
+        awayColor = awayValue < homeValue ? 'red' : 'green';
     } else {
-        // Default for other stats - higher is better
+        // Higher is better for other stats
         homeColor = homeValue > awayValue ? 'green' : 'red';
         awayColor = awayValue > homeValue ? 'green' : 'red';
-        //console.log(`Other Stat - Home: ${homeValue} (${homeColor}), Away: ${awayValue} (${awayColor})`);
     }
 
     const homeSpan = `<span class="home-value" style="color: ${homeColor};">${homeValue || ''}</span>`;
@@ -1719,127 +1715,94 @@ const renderStats = (homeStats, awayStats, containerId) => {
     return { homeSpan, awaySpan };
 };
 
-
-    // Build stats HTML
-    const statsHTML = `  
-        <h4 style="text-align:center;">Overall Team Statistics</h4> 
-        <div class="team-stat overall-stats">
+// Helper to add stats conditionally
+const addStat = (statsList, homeValue, awayValue, label, statType = '') => {
+    if (homeValue || awayValue) {
+        const { homeSpan, awaySpan } = getColoredSpan(homeValue, awayValue, statType);
+        statsList.push(`
             <div>
-                <span class="home-value">${homeStats.matches || '0'}</span>
-                <span>Games Played</span>
-                <span class="away-value">${awayStats.matches || '0'}</span>
+                ${homeSpan}
+                <span>${label}</span>
+                ${awaySpan}
             </div>
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(averageHomeShots, averageAwayShots, 'Shots For');
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Shots For</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeScored, averageGoalsAwayScored);
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Av Goals Scored</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(homeAssists, awayAssists);
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Assists</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(successfulDribblesHomePercentage, successfulDribblesAwayPercentage, true);
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Dribbles%</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(roundedAccurateHomePassesPercentage, roundedAccurateAwayPassesPercentage, true);
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Passes%</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(roundedAverageHomeBallPossession, roundedAverageAwayBallPossession, true);
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Possession%</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(cornersHomePerGame, cornersAwayPerGame);
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Corners Per Game</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
+        `);
+    }
+};
+    // Calculating Stats
+    const attackStats = [];
+    const defenseStats = [];
+    const successfulDribblesHomePercentage = homeStats.dribbleAttempts
+        ? safeCalcPercentage(Math.round((homeStats.successfulDribbles / homeStats.dribbleAttempts) * 100))
+        : '';
+    const successfulDribblesAwayPercentage = awayStats.dribbleAttempts
+        ? safeCalcPercentage(Math.round((awayStats.successfulDribbles / awayStats.dribbleAttempts) * 100))
+        : '';
+    const averageGoalsHomeScored = homeStats.matches
+        ? safeCalc((homeStats.goalsScored / homeStats.matches).toFixed(2))
+        : '';
+    const averageGoalsAwayScored = awayStats.matches
+        ? safeCalc((awayStats.goalsScored / awayStats.matches).toFixed(2))
+        : '';
+    const averageGoalsHomeConceded = homeStats.matches
+        ? safeCalc((homeStats.goalsConceded / homeStats.matches).toFixed(2))
+        : '';
+    const averageGoalsAwayConceded = awayStats.matches
+        ? safeCalc((awayStats.goalsConceded / awayStats.matches).toFixed(2))
+        : '';
+    const homeAssists = safeCalc(homeStats.assists);
+    const awayAssists = safeCalc(awayStats.assists);
+    const cornersHomePerGame = homeStats.matches
+        ? safeCalc((homeStats.corners / homeStats.matches).toFixed(2))
+        : '';
+    const cornersAwayPerGame = awayStats.matches
+        ? safeCalc((awayStats.corners / awayStats.matches).toFixed(2))
+        : '';
+    const shotsHomePerGame = homeStats.matches
+        ? safeCalc((homeStats.shots / homeStats.matches).toFixed(2))
+        : '';
+    const shotsAwayPerGame = awayStats.matches
+        ? safeCalc((awayStats.shots / awayStats.matches).toFixed(2))
+        : '';
+    const roundedAccurateHomePassesPercentage = safeCalcPercentage(homeStats.accuratePassesPercentage);
+    const roundedAccurateAwayPassesPercentage = safeCalcPercentage(awayStats.accuratePassesPercentage);
+    const averageHomeBallPossession = safeCalcPercentage(homeStats.averageBallPossession);
+    const averageAwayBallPossession = safeCalcPercentage(awayStats.averageBallPossession);
+    const averageHomeShotsAgainst = homeStats.matches
+        ? safeCalc((homeStats.shotsAgainst / homeStats.matches).toFixed(1))
+        : '';
+    const averageAwayShotsAgainst = awayStats.matches
+        ? safeCalc((awayStats.shotsAgainst / awayStats.matches).toFixed(1))
+        : '';
+    const homeCleanSheets = safeCalc(homeStats.cleanSheets);
+    const awayCleanSheets = safeCalc(awayStats.cleanSheets);
 
-                <!-- Defense Stats -->
-                <hr />
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(averageHomeShotsAgainst, averageAwayShotsAgainst);
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Shots Against</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(averageGoalsHomeConceded, averageGoalsAwayConceded, 'Shots Against');
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Av Goals Conceded</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
-                ${(() => {
-                    const { homeSpan, awaySpan } = getColoredSpan(homeCleanSheets, awayCleanSheets);
-                    return `
-                        <div>
-                            ${homeSpan}
-                            <span>Clean Sheets</span>
-                            ${awaySpan}
-                        </div>
-                    `;
-                })()}
+    // Add attack stats
+    addStat(attackStats, homeStats.matches, awayStats.matches, 'Games Played');
+    addStat(attackStats, shotsHomePerGame, shotsAwayPerGame, 'Shots For', 'Shots For');
+    addStat(attackStats, averageGoalsHomeScored, averageGoalsAwayScored, 'Av Goals Scored');
+    addStat(attackStats, homeAssists, awayAssists, 'Assists');
+    addStat(attackStats, averageHomeBallPossession, averageAwayBallPossession, 'Possession%');
+    addStat(attackStats, roundedAccurateHomePassesPercentage, roundedAccurateAwayPassesPercentage, 'Passes%');
+    addStat(attackStats, successfulDribblesHomePercentage, successfulDribblesAwayPercentage, 'Dribbles%');
+    addStat(attackStats, cornersHomePerGame, cornersAwayPerGame, 'Corners Per Game');
 
-        </div> 
+    // Add defense stats
+    addStat(defenseStats, averageGoalsHomeConceded, averageGoalsAwayConceded, 'Av Goals Conceded', 'Shots Against');
+    addStat(defenseStats, averageHomeShotsAgainst, averageAwayShotsAgainst, 'Shots Against', 'Shots Against');
+    addStat(defenseStats, homeCleanSheets, awayCleanSheets, 'Clean Sheets');
+
+    // Clear the container and render new stats
+    container.innerHTML = '';
+    const statsHTML = `
+        <h4 style="text-align:center;">Overall Team Statistics</h4>
+        <div class="team-stat overall-stats">
+            ${attackStats.join('')}
+            <hr />
+            ${defenseStats.join('')}
+        </div>
     `;
-
-    // Insert the stats into the container
     container.innerHTML = statsHTML;
 };
-
 
 const renderTeamStats = (statistics, containerId) => {
     const container = document.getElementById(containerId);
