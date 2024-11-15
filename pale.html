@@ -2093,7 +2093,7 @@ const formatTime = (time) => {
             //console.log(event.time.currentPeriodStartTimestamp);
         // Check for match status descriptions
         if (event.status.description === 'Halftime') {
-            return "Halftime"; // Display Halftime when it's halftime
+            return "HT"; // Display Halftime when it's halftime
         } else if (event.status.description === 'Ended') {
             return "Ended"; // Display Ended when the match has ended
         } else if (event.status.description === '1st half') {
@@ -2102,14 +2102,14 @@ const formatTime = (time) => {
                 const seconds = elapsedSeconds % 60;
                 return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
             }
-            return "Halftime"; // Full time for 1st half
+            return "HT"; // Full time for 1st half
         } else if (event.status.description === '2nd half') {
             if (elapsedSeconds < 5400) {
                 const minutes = Math.floor((elapsedSeconds + 2700) / 60); // Add 2700 seconds for the 1st half
                 const seconds = (elapsedSeconds + 2700) % 60;
                 return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
             }
-            return "Ended"; // Full time for 2nd half
+            return "FT"; // Full time for 2nd half
         } 
         return "00:00"; // Default if not in progress
     };
