@@ -249,24 +249,18 @@ button#filter-btn:hover {
   display: flex;
   justify-content: space-between;
   gap: 10px; /* Space between columns */
-  padding: 10px;
+  padding: 0 10px;
   height: calc(100vh - 58px);
 }
 
-.left-column,
-.center-column,
-.right-column {
+.left-column {
   background-color: #f5f5f5;
   padding: 10px;
   border-radius: 5px;
   flex: 1; /* Makes all columns take equal width */
   overflow-y: auto;
 }
-
-.center-column {
-  flex: 2.8; /* Make the center column wider */ 
-}
-
+ 
 .ad-banner {
   background-color: #004b8d;
   color: white;
@@ -275,7 +269,7 @@ button#filter-btn:hover {
 }
 
 .left-column {
-    flex: 1.2; /* Make the center column wider */
+    flex: 1; /* Make the center column wider */
     padding: 10px 0;
     background-color: transparent;
 }
@@ -302,9 +296,13 @@ button#filter-btn:hover {
 .center-column .event {
     cursor: pointer;
 }
-.right-column {
-    flex: 1.5; /* Make the center column wider */
-}
+.middle-column {
+    display: flex;
+    flex-direction: column;
+    flex:3;
+    background-color: white;
+    padding: 20px;
+} 
 .right-column a {
   color: #007bff;
   text-decoration: none;
@@ -315,7 +313,16 @@ button#filter-btn:hover {
     font-family: "Lucida Grande", Verdana, Geneva, sans-serif;
     font-size: 9px;
     text-transform: uppercase;  
-}     
+}   
+.events-table tr {
+    cursor: pointer;
+}    
+.events-table tbody>tr:nth-child(odd) {     
+    background: rgb(255, 255, 221);
+}   
+.events-table tbody tr table tr:nth-child(odd) {     
+    background: transparent;
+}  
 .event-list {
     display: flex;
     padding: 5px 0;
@@ -665,12 +672,14 @@ td.sc table td {
               <!-- Categories will be dynamically loaded here -->
             </div>
           
-            <div class="center-column" id="events-container">
-              <!-- Events for the selected category will be dynamically displayed here -->
+            <div class="middle-column">
+                <div class="center-column" id="events-container">
+                <!-- Events for the selected category will be dynamically displayed here -->
+                </div>
+                <div class="right-column" id="event-details"> 
+                </div>
             </div>
           
-            <div class="right-column" id="event-details"> 
-            </div>
           </div> 
         
         <script>
@@ -1168,7 +1177,71 @@ const renderStats = (homeStats, awayStats, containerId, event) => {
                             </tr>
                         </tbody>
                     </table>
+                </td>
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    ${
+                                        homeStats.shots > 0 
+                                            ? ((homeStats.goalsScored / homeStats.shots) * 100).toFixed(0) 
+                                            : '0'
+                                    }%
+                                </td>
+                                <td>
+                                    ${
+                                        awayStats.shots > 0 
+                                            ? ((awayStats.goalsScored / awayStats.shots) * 100).toFixed(0) 
+                                            : '0'
+                                    }%
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    ${
+                                        homeStats.shotsAgainst > 0 
+                                            ? ((homeStats.goalsConceded / homeStats.shotsAgainst) * 100).toFixed(0) 
+                                            : '0'
+                                    }%
+                                </td>
+                                <td>
+                                    ${
+                                        awayStats.shotsAgainst > 0 
+                                            ? ((awayStats.goalsConceded / awayStats.shotsAgainst) * 100).toFixed(0) 
+                                            : '0'
+                                    }%
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </td> 
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${homeStats.shots || '0'}</td>
+                                <td>${awayStats.shots || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${homeStats.shotsAgainst || '0'}</td>
+                                <td>${awayStats.shotsAgainst || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
                 <td class="sc">
                     <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
                         <tbody>
@@ -1228,6 +1301,9 @@ const renderStats = (homeStats, awayStats, containerId, event) => {
                             </tr>
                         </tbody>
                     </table>
+                </td> 
+                <td class="sc">
+                    ${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''}
                 </td>     
     `;
     
@@ -1326,12 +1402,17 @@ table.innerHTML = `
             <th width="120">Home Team</th>
             <th width="120">Away Team</th>
             <th width="50">Played</th>
+            <th width="70">Con S</th>  
+            <th width="70">Con C</th>
+            <th width="70">Shots For</th>  
+            <th width="70">Shots Agt</th>  
             <th width="70">G.Scored</th> 
             <th width="85">G.Conceded</th>   
             <th width="50">Assists</th>   
             <th width="85">Possession</th>
             <th width="65">Passes</th>
             <th width="65">Dribbles</th>
+            <th width="65">Result</th>
         </tr>
     </thead>
     <tbody id="events-tbody"></tbody>
@@ -1419,15 +1500,7 @@ const loadEventDetailsToRightColumn = async (event, odds, leagueStats) => {
                         <div id="awayManager-${event.id}" class="manager-info"></div> 
                     </div>
                 </div>
-        <p><strong>Start Time:</strong> ${new Date(event.startTimestamp * 1000).toLocaleString()}</p>
-        <p><strong>Odds:</strong> 
-        Home Win: ${odds[event.id]?.homeWin || "N/A"}, Draw: ${odds[event.id]?.draw || "N/A"}, 
-        Away Win: ${odds[event.id]?.awayWin || "N/A"}</p>
- 
-    <h3>Team Statistics</h3>
-        <div id="team-stats-container-${event.id}"></div> <!-- Stats will be rendered here -->
-        
-                
+         
                 <h4 style="text-align:center;">Overall Team Stats</h4>
                 <div class="teams-form">
                     <div class="homes-team-form">  
