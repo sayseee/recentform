@@ -311,8 +311,7 @@ button#filter-btn:hover {
     color: var(--color-dark-bg);
     font-weight: 700;  
     font-family: "Lucida Grande", Verdana, Geneva, sans-serif;
-    font-size: 9px;
-    text-transform: uppercase;  
+    font-size: 9px; 
 }   
 .events-table tr {
     cursor: pointer;
@@ -834,7 +833,7 @@ const createCategorySection = (tournaments, categoryName, odds) => {
         const tournamentImage = `${baseURL}/unique-tournament/${tournament.id}/image`;
         tournamentHeader.innerHTML = `
             <img class="tourn" src="${tournamentImage}" alt="${tournamentName}" width="20" height="20" loading="lazy" />
-            <span class="catName">${categoryName}</span> - ${tournamentName}
+            <span class="catName">${tournamentName}</span> 
         `;
         tournamentSection.appendChild(tournamentHeader);
  

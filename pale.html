@@ -1326,6 +1326,36 @@ const createCategorySection = (tournaments, categoryName, odds) => {
 
     categoryItem.appendChild(tournamentsContainer);
     return categoryItem;
+    
+    const updateScores = async () => {
+            try {
+                const updatedScores = await fetchJson(`${baseURL}/sport/football/events/live`);
+
+                // Check if updatedScores contains a list of events under a specific property
+                if (!updatedScores || !Array.isArray(updatedScores.events)) {
+                    console.error('Updated scores does not contain a list of events:', updatedScores);
+                    return;
+                }
+
+                updatedScores.events.forEach(updatedEvent => {
+                    const event = filteredEvents.find(event => event.id === updatedEvent.id);
+                    if (event) {
+                        const homeScoreElement = document.getElementById(`homeScore-${event.id}`);
+                        const awayScoreElement = document.getElementById(`awayScore-${event.id}`);
+                        if (homeScoreElement) {
+                            homeScoreElement.textContent = updatedEvent.homeScore?.current ?? '';
+                        }
+                        if (awayScoreElement) {
+                            awayScoreElement.textContent = updatedEvent.awayScore?.current ?? '';
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error updating scores:', error);
+            }
+        };
+
+            setInterval(updateScores, 5000);
 };
 
 const displayLeagueStats = (leagueStats, tournamentInfo, container) => {
@@ -2080,6 +2110,36 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
             timerElement.innerHTML = 'FT';
         }
     }
+
+    // Function to refresh scores
+    const refreshScores = async () => {
+        try {
+            const updatedEventDetails = await fetchJson(`${baseURL}/event/${eventId}`);
+            if (!updatedEventDetails) return;
+            const updatedEventData = updatedEventDetails.event;
+
+            const homeScoreElement = document.getElementById(`homeScores-${eventId}`);
+            const awayScoreElement = document.getElementById(`awayScores-${eventId}`);
+            if (homeScoreElement) {
+                homeScoreElement.textContent = updatedEventData.homeScore?.current ?? '';
+            }
+            if (awayScoreElement) {
+                awayScoreElement.textContent = updatedEventData.awayScore?.current ?? '';
+            }
+
+        } catch (error) {
+            console.error('Error refreshing scores:', error);
+        }
+    };
+
+    // Refresh scores every 5 seconds
+    const scoreUpdateInterval = setInterval(refreshScores, 5000);
+
+    // Clear interval when navigating away from the event details
+    const clearUpdateInterval = () => {
+        clearInterval(scoreUpdateInterval);
+    };
+    
 };
 
 
