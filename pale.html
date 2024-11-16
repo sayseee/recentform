@@ -1944,7 +1944,23 @@ const renderTeamStats = (statistics, containerId) => {
     container.innerHTML = statsHTML;
 };
 
+// Function to refresh match time div when the match starts
+const scheduleMatchStartRefresh = (event) => {
+    const matchStartTime = event.startTimestamp * 1000; // Convert to milliseconds
+    const currentTime = Date.now(); // Current time in milliseconds
+    const timeUntilStart = matchStartTime - currentTime;
 
+    if (timeUntilStart > 0) {
+        // Schedule the update at the match start time
+        setTimeout(() => {
+            const matchTimeElement = document.querySelector(`.match-time[data-event-id="${event.id}"]`);
+            if (matchTimeElement) {
+                matchTimeElement.innerHTML = `<span class="live-status">Live</span>`;
+                startLiveTimer(event); // Start the live timer
+            }
+        }, timeUntilStart);
+    }
+};
 // Function to load events into a container
 const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
     for (const event of events) {
@@ -2180,6 +2196,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         // Fetch stats for home and away teams
         fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, `stats-container-${event.id}`, `stats-conversion-${event.id}`, 'center');
     
+        // Schedule the match time refresh
+        scheduleMatchStartRefresh(event);
         // Start the live timer if the match is in progress
         if (event.status.type === 'inprogress') {
             startLiveTimer(event);

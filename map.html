@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Events</title>
+  <style>
+    body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    font-weight: 400;
+    font-style: normal;
+    background-color: #f1f0f6;
+    margin: 0;
+    color: #2c2c54;
+    height: fit-content;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+}
+
+h3 {
+    font-weight: 600;
+    color: #4c4c7f;
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+#container {
+    display: flex;
+    height: 100vh;
+}
+
+#categories {
+    width: 15%;
+    border-right: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+#events {
+    width: 85%;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #ffffff;
+}
+
+.category { 
+    cursor: pointer;
+    padding: 2px 0;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.category:hover {
+    background-color: #e6e6fa;
+}
+
+.event {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+}
+
+.event:hover {
+    background-color: #f9f9fc;
+}
+
+.tournament {
+    margin-top: 20px;
+}
+
+.tournament h3 {
+    font-size: 1.1rem;
+    color: #343a40;
+}
+
+.stats {
+    font-size: 0.75rem;
+    color: #555;
+}
+.stats table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #f9f9f9; 
+}
+
+.stats th, .stats td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 2px 8px;
+}
+
+.stats th {
+    background-color: #f0f0f0;
+    font-weight: 600;
+}
+
+.stats tr:nth-child(even) {
+    background-color: #fdfdfd;
+}
+
+.stats tr:hover {
+    background-color: #f1f7ff;
+}
+
+.event-detail {
+    margin-top: 5px;
+    font-size: 0.875rem;
+    color: #2d2d6d;
+}
+
+.event-detail span {
+    display: block;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="categories"></div>
+    <div id="events"></div>
+  </div>
+
+  <script>
+    async function fetchAndDisplayEvents(date) {
+      const url = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${date}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        // Group events by category ID
+        const groupedEvents = data.events.reduce((acc, event) => {
+          const categoryId = event.tournament.category.id;
+          if (!acc[categoryId]) {
+            acc[categoryId] = {
+              categoryName: event.tournament.category.name,
+              events: []
+            };
+          }
+          acc[categoryId].events.push(event);
+          return acc;
+        }, {});
+
+        renderCategories(groupedEvents);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    }
+
+    function renderCategories(groupedEvents) {
+      const categoriesContainer = document.getElementById("categories");
+      const eventsContainer = document.getElementById("events");
+
+      categoriesContainer.innerHTML = ""; 
+      eventsContainer.innerHTML = ""; 
+
+      let firstCategoryLoaded = false;
+
+      for (const categoryId in groupedEvents) {
+        const categoryGroup = groupedEvents[categoryId];
+
+        const categoryDiv = document.createElement("div");
+        categoryDiv.className = "category";
+        categoryDiv.textContent = categoryGroup.categoryName;
+        categoryDiv.dataset.categoryId = categoryId;
+
+        if (!firstCategoryLoaded) {
+          renderEvents(categoryGroup.events);
+          firstCategoryLoaded = true;
+        }
+
+        categoryDiv.addEventListener("click", () => {
+          renderEvents(groupedEvents[categoryId].events);
+        });
+
+        categoriesContainer.appendChild(categoryDiv);
+      }
+    }
+
+    async function fetchTeamStats(teamId, uniqueTournamentId, seasonId) {
+      const url = `https://api.sofascore.com/api/v1/team/${teamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const stats = data.statistics;
+        const goalConversion = ((stats.goalsScored / stats.shots) * 100).toFixed(2);
+        const goalConcedingRate = ((stats.goalsConceded / stats.shotsAgainst) * 100).toFixed(2);
+        return {
+          matches: stats.matches,
+          goalsScored: stats.goalsScored,
+          goalsConceded: stats.goalsConceded,
+          goalConversion,
+          goalConcedingRate
+        };
+      } catch (error) {
+        console.error(`Error fetching stats for team ${teamId}:`, error);
+        return null;
+      }
+    }
+
+    async function renderEvents(events) {
+      const eventsContainer = document.getElementById("events");
+      eventsContainer.innerHTML = ""; 
+
+      const groupedByTournament = events.reduce((acc, event) => {
+        const uniqueTournamentId = event.tournament.uniqueTournament.id;
+        if (!acc[uniqueTournamentId]) {
+          acc[uniqueTournamentId] = {
+            tournamentName: event.tournament.uniqueTournament.name,
+            events: []
+          };
+        }
+        acc[uniqueTournamentId].events.push(event);
+        return acc;
+      }, {});
+
+      for (const tournamentId in groupedByTournament) {
+        const tournamentGroup = groupedByTournament[tournamentId];
+
+        const tournamentDiv = document.createElement("div");
+        tournamentDiv.className = "tournament";
+
+        const tournamentTitle = document.createElement("h3");
+        tournamentTitle.textContent = tournamentGroup.tournamentName;
+        tournamentDiv.appendChild(tournamentTitle);
+
+        for (const event of tournamentGroup.events) { 
+                const eventDiv = document.createElement("div");
+                eventDiv.className = "event";
+                eventDiv.innerHTML = `<strong>${event.homeTeam.name} vs ${event.awayTeam.name}</strong> - Start Time: ${new Date(event.startTimestamp * 1000).toLocaleString()}`;
+
+                const homeStats = await fetchTeamStats(event.homeTeam.id, event.tournament?.uniqueTournament.id, event.season?.id);
+                const awayStats = await fetchTeamStats(event.awayTeam.id, event.tournament?.uniqueTournament.id, event.season?.id);
+
+                if (homeStats && awayStats) {
+                    const statsDiv = document.createElement("div");
+                    statsDiv.className = "stats";
+                    statsDiv.innerHTML = `
+                    <table>
+                        <thead>
+                        <tr>
+                            <th width="100">MP</th>
+                            <th>GS</th>
+                            <th>GC</th>
+                            <th>SC%</th>
+                            <th>CR%</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>${homeStats.matches}</td>
+                            <td>${homeStats.goalsScored}</td>
+                            <td>${homeStats.goalsConceded}</td>
+                            <td>${homeStats.goalConversion}%</td>
+                            <td>${homeStats.goalConcedingRate}%</td>
+                        </tr>
+                        <tr>
+                            <td>${awayStats.matches}</td>
+                            <td>${awayStats.goalsScored}</td>
+                            <td>${awayStats.goalsConceded}</td>
+                            <td>${awayStats.goalConversion}%</td>
+                            <td>${awayStats.goalConcedingRate}%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    `;
+                    eventDiv.appendChild(statsDiv);
+                }
+
+                tournamentDiv.appendChild(eventDiv);
+            }
+
+            eventsContainer.appendChild(tournamentDiv); 
+      }
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    fetchAndDisplayEvents(today);
+  </script>
+</body>
+</html>
