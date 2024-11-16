@@ -1156,11 +1156,16 @@ const displayCategories = async (date, hours, status) => {
 
         let allEvents = [...scheduledEventsData.events];
 
-        // Check if the number of tournaments is less than 20 and add inverse events if true
-        if (scheduledEventsData.events.length < 20) {
+        // Check if the number of unique tournaments is less than 20 and add inverse events if true
+        const uniqueTournamentIds = new Set(
+            scheduledEventsData.events.map(event => event.tournament.uniqueTournament.id)
+        );
+
+        if (uniqueTournamentIds.size < 20) {
             const inverseScheduledEventsData = await fetch(scheduledEventsUrl2).then(response => response.json());
             allEvents = [...allEvents, ...inverseScheduledEventsData.events];
         }
+
 
         const oddsData = await fetch(oddsResponseUrl).then(response => response.json());
         const odds = oddsData?.odds || {};
