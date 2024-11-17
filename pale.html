@@ -66,6 +66,7 @@ h4 {
     display: inline-flex;
     font-weight: 600;
     color: white;
+    font-size: 11px;
 } 
 .W, .win, .pos {
     background-color: var(--win-color);
@@ -1584,11 +1585,11 @@ const renderFormDisplay = (form, formDisplayId) => {
         const span = document.createElement('span');
         
         if (result === "W") {
-            span.innerHTML = "<i class='fas fa-check'></i>"; // FontAwesome check mark
+            span.innerHTML = "<span class='W'>W</span>"; // FontAwesome check mark
         } else if (result === "L") {
-            span.innerHTML = "<i class='fas fa-times'></i>"; // Cross for Loss
+            span.innerHTML = "<span class='L'>L</span>"; // Cross for Loss
         } else if (result === "D") {
-            span.innerHTML = "<i class='fas fa-minus'></i>"; // Dash for Draw
+            span.innerHTML = "<span class='D'>D</span>"; // Dash for Draw
         }
         
         span.classList.add(result); // Add class based on result type
@@ -1689,7 +1690,7 @@ const renderManagerInfo = (manager, containerId) => {
         const drawPercentage = total ? ((draws / total) * 100).toFixed(0) : 0;
         const lossPercentage = total ? ((losses / total) * 100).toFixed(0) : 0; 
 
-        container.innerHTML = `
+        container.innerHTML = ` 
             <div><strong>M: </strong>${shortName || name}<span><strong> F: </strong>${preferredFormation || ""}</div>
             <div>  
                 <span><strong>TM: </strong> ${total}</span>
@@ -2273,7 +2274,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div>
                 </div>
                 
-                <div id="stats-conversion-${event.id}" class="stats-conversion"></div>
+                <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
+                <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
                         <div id="homeManager-${event.id}" class="manager-info"></div>
@@ -2295,7 +2297,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 </div>
             <div class="overall-stats-wrapper">
                 <div id="stats-container-${event.id}"></div>
-                <div class="team-manager-h2h" id="${uniqueH2hContainer}" style="width:30%;"></div> 
+                <div class="team-manager-h2h" id="${uniqueH2hContainer}" style="width:40%;"></div> 
             </div>
                 <h4 style="text-align:center;">H2H last 3 years</h4>
             <div class="h2h-event" id="${uniqueEventId}"></div>
