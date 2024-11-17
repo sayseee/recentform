@@ -635,6 +635,7 @@ main {
     text-align: center;
     font-weight: 600;
     display: flex;
+    position: relative;
 }
 
 .match-odds>span:first-child div, .match-odds>span:last-child div { 
@@ -658,6 +659,7 @@ main {
     align-items: center;
     display: inline-flex;
     justify-content: center;
+    position: relative;
 }
 .match-odds>span:first-child span:nth-child(2), .match-odds>span:last-child span:nth-child(2) {  
     flex: 1;
@@ -1038,6 +1040,29 @@ main {
 }
 hr { 
     border-top: 1px solid #e6e7eb;
+}
+.icon {  
+    height: 11px;
+    left: 14px;
+    position: absolute;
+    top: 6px;
+    width: 11px;
+}
+
+.icon.increase{  
+    top: 4px;
+}
+
+.increase { 
+    background-image: url(icons/up.svg);
+    background-repeat: no-repeat;
+    transform: rotate(90deg);
+}
+
+.decrease { 
+    background-image: url(icons/down.svg);
+    background-repeat: no-repeat;
+    transform: rotate(-90deg);
 }
      </style>
     </head>
@@ -2030,6 +2055,23 @@ const getEventStats = async (homeTeamId, awayTeamId, tournamentId, seasonId, cur
     //console.log('Away Team Stats:', awayStats);
 };
 
+
+// Utility function to generate increase/decrease icon
+function getOddsChangeIcon(initialValue, currentValue) {
+    if (initialValue && currentValue) {
+        const initialDecimal = parseFloat(fractionalToDecimal(initialValue));
+        const currentDecimal = parseFloat(fractionalToDecimal(currentValue));
+        
+        if (currentDecimal > initialDecimal) {
+            return `<span class="icon increase"></span>`; // Green Up Icon
+        } else if (currentDecimal < initialDecimal) {
+            return `<span class="icon decrease"></span>`; // Red Down Icon
+        }
+    }
+    return ''; // No icon if values are the same or missing
+}
+
+
 // Function to load events into a container
 const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
     for (const event of events) {
@@ -2087,15 +2129,31 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
             over2_5: ((parseFloat(homeStats.teamStats.over2_5) + parseFloat(awayStats.teamStats.over2_5)) / 2)
         };
   
-        // Get odds data
+        // Get odds data 
         const oddsData = odds[event.id] || {};
-        const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.initialFractionalValue;
-        const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.initialFractionalValue;
-        const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.initialFractionalValue;
+        const homeOddsData = oddsData.choices?.find(choice => choice.name === '1');
+        const drawOddsData = oddsData.choices?.find(choice => choice.name === 'X');
+        const awayOddsData = oddsData.choices?.find(choice => choice.name === '2');
 
-        const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
-        const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
-        const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
+        const homeInitialFractional = homeOddsData?.initialFractionalValue;
+        const homeCurrentFractional = homeOddsData?.fractionalValue;
+
+        const drawInitialFractional = drawOddsData?.initialFractionalValue;
+        const drawCurrentFractional = drawOddsData?.fractionalValue;
+
+        const awayInitialFractional = awayOddsData?.initialFractionalValue;
+        const awayCurrentFractional = awayOddsData?.fractionalValue;
+
+        // Generate odds values with icons
+        const homeOdds = homeInitialFractional ? fractionalToDecimal(homeCurrentFractional) : '-';
+        const homeIcon = getOddsChangeIcon(homeInitialFractional, homeCurrentFractional);
+
+        const drawOdds = drawInitialFractional ? fractionalToDecimal(drawCurrentFractional) : '-';
+        const drawIcon = getOddsChangeIcon(drawInitialFractional, drawCurrentFractional);
+
+        const awayOdds = awayInitialFractional ? fractionalToDecimal(awayCurrentFractional) : '-';
+        const awayIcon = getOddsChangeIcon(awayInitialFractional, awayCurrentFractional);
+
 
         const homeScore = event.homeScore?.current ?? '';
         const awayScore = event.awayScore?.current ?? ''; 
@@ -2142,9 +2200,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 </div>
             </div>
             <div class="match-odds">
-                <span class="odds"><div id="home-odds-${event.id}"></div><span>${homeOdds}</span></span>
-                <span class="odds">${drawOdds}</span>
-                <span class="odds"><span>${awayOdds}</span><div id="away-odds-${event.id}"></div></span>
+                <span class="odds"><div id="home-odds-${event.id}"></div><span>${homeIcon} ${homeOdds}</span></span>
+                <span class="odds">${drawIcon} ${drawOdds}</span>
+                <span class="odds"><span>${awayIcon} ${awayOdds}</span><div id="away-odds-${event.id}"></div></span>
             </div>
                 <div class="teams-form">
                     <div class="homes-team-form"> 
