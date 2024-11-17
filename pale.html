@@ -67,6 +67,7 @@ h4 {
     font-weight: 600;
     color: white;
     font-size: 11px;
+    line-height: 0;
 } 
 .W, .win, .pos {
     background-color: var(--win-color);
@@ -449,12 +450,15 @@ main {
 .team-info {
     flex: 2;
     text-align: center;
-}
+    display: inline-flex;
+    align-items: stretch;
+} 
 
 .team {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
 }
 
 .team-logo {
@@ -477,10 +481,11 @@ main {
     margin-bottom: 5px;
 }
 .detailScore__wrapper {
-    display: flex;   
+    display: flex;
     justify-content: space-between;
     font-size: 20px;
     font-weight: 600;
+    margin: 0 10px;
 }
 .match-status {
     margin-top: 0;
@@ -637,7 +642,7 @@ main {
     border-top: 1px solid #e6e7eb;
     border-bottom: 1px solid #e6e7eb;
     position: relative;
-    min-height: 25px;
+    min-height: 22px;
 } 
 
 .match-odds>span:first-child, .match-odds>span:last-child { 
@@ -854,26 +859,33 @@ main {
 .teams-form .aways-team-form>div { 
     margin-right: auto;  
 }
-.teams-form .homes-team-form .team-cent { 
-    text-align: right;
-    margin-right: 3px;
-    margin-left: auto; 
-    font-weight: 500;
+.home-bar,
+.away-bar {
+    position: relative;
 }
-.teams-form .aways-team-form .team-cent {
-    margin-left: 3px;
-    margin-right: auto;
-    font-weight: 500;
+.home-bar .team-cent,
+.away-bar .team-cent {
+    font-size: 10px;
 }
-.teams-form .homes-team-form .bar {  
-    margin-left: auto;  
-    background-color: #93c0e6;
-    border-radius: 25px;
+.home-bar .team-cent {  
+    margin-left: auto;
+    font-weight: 600;
+    position: absolute;
+    left: -3px;         
 }
-.teams-form .aways-team-form .bar {  
-    margin-right: auto;   
-    background-color: #3d65ad;
-    border-radius: 25px;
+.away-bar .team-cent {
+    font-weight: 600;
+    position: absolute;
+    left: -3px;
+}
+.bar-wrapper {
+    margin-top: 15px;
+}
+.team-info .home-bar .bar { 
+    background-color: #93c0e6; 
+}
+.team-info .away-bar .bar { 
+    background-color: #3d65ad; 
 }
 .stats-conversion {
     display: flex;
@@ -1447,10 +1459,43 @@ const displayLeagueStats = (leagueStats, tournamentInfo, container) => {
         </div> 
     `;
 };
+
+// Render form percentage as a separate component
+const renderFormPercentage = (containerId, formPercentage) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="team-cent">${formPercentage}%</div>
+        <div class="bar-wrapper" style="width:8px;height:70%; background-color:#ededed;display:flex;align-items:flex-end"">
+            <div class="bar" style="width:8px;height:${formPercentage}%;"></div>
+        </div>
+    `;
+};
+
+// Render pregame form with stats and form display
+const renderPregameForm = ({ name, avgRating, form, value, position, containerId }) => {
+    const container = document.getElementById(containerId);
+    const formDisplayId = `${containerId}-form-display`;
+
+    const displayValue = value !== undefined && value !== null ? value : "-";
+    const displayPosition = position !== undefined && position !== null ? position : "-";
+
+    container.innerHTML = `
+        <div class="stat-title" style="margin-top:10px;">
+            Pos: <span class="value">${displayPosition}</span> 
+            Pts: <span class="value">${displayValue}</span> 
+            ${avgRating ? `<div class="box animate" cursor="default"><div class="sideBox-inner"></div></div> <strong class="value">${avgRating}</strong>` : ""}
+        </div>
+        <p><span id="${formDisplayId}"></span></p>
+    `;
+
+    renderFormDisplay(form, formDisplayId);
+};
+
 // Fetch pregame form and manager data
 const fetchPregameForm = async (eventId, teamId, homeContainerId, awayContainerId, managerContainerId, ppgContainerId, currentPpgContainerId) => {
     try {
-        // Fetch team data using teamId
         const teamResponse = await fetch(`${baseURL}/team/${teamId}`);
         if (!teamResponse.ok) throw new Error(`Failed to fetch team data: ${teamResponse.statusText}`);
         
@@ -1458,88 +1503,36 @@ const fetchPregameForm = async (eventId, teamId, homeContainerId, awayContainerI
         const { team } = teamData;
         const { manager } = team;
 
-        // Fetch pregame form data using eventId
         const formResponse = await fetch(`${baseURL}/event/${eventId}/pregame-form`);
         if (!formResponse.ok) throw new Error(`Failed to fetch pregame form data: ${formResponse.statusText}`);
         
         const formData = await formResponse.json();
         const { homeTeam, awayTeam } = formData;
 
-        // Render pregame form for home team
         if (homeTeam) {
             const { avgRating, form = [], value, position } = homeTeam;
             const formPercentage = calculateFormPercentage(form);
 
-            renderPregameForm({
-                name: "Home Team",
-                avgRating,
-                form,
-                formPercentage,
-                value,
-                position,
-                containerId: homeContainerId
-            });
+            renderFormPercentage(`home-team-form-${eventId}`, formPercentage);
+            renderPregameForm({ name: "Home Team", avgRating, form, value, position, containerId: homeContainerId });
         }
 
-        // Render pregame form for away team
         if (awayTeam) {
             const { avgRating, form = [], value, position } = awayTeam;
             const formPercentage = calculateFormPercentage(form);
 
-            renderPregameForm({
-                name: "Away Team",
-                avgRating,
-                form,
-                formPercentage,
-                value,
-                position,
-                containerId: awayContainerId
-            });
+            renderFormPercentage(`away-team-form-${eventId}`, formPercentage);
+            renderPregameForm({ name: "Away Team", avgRating, form, value, position, containerId: awayContainerId });
         }
 
-        // Render manager details if available
         if (manager) {
-            fetchManagerData(manager.id, managerContainerId, ppgContainerId, currentPpgContainerId); // Pass ppgContainerId as well
+            fetchManagerData(manager.id, managerContainerId, ppgContainerId, currentPpgContainerId);
         }
 
     } catch (error) {
         console.error("Error fetching pregame form or manager data:", error);
     }
 };
-
-const fetchWinningOdds = async (eventId) => {
-    try {
-        const winningOddsResponse = await fetch(`${baseURL}/event/${eventId}/provider/1/winning-odds`);
-        if (!winningOddsResponse.ok) {
-            throw new Error(`Failed to fetch winning odds: ${winningOddsResponse.statusText}`);
-        }
-        
-        const oddsData = await winningOddsResponse.json();
-        return oddsData;
-    } catch (error) {
-        console.error("Error fetching winning odds data:", error);
-    }
-};
-
-const renderWinningOdds = async (eventId) => {
-    try {
-        const oddsData = await fetchWinningOdds(eventId);
-        if (oddsData) {
-            const { home, away } = oddsData;
-
-            const getStyledSpan = (expected, actual) => `
-                <span style="background-color: ${actual > expected ? '#e59c0350' : '#a4a9b350'};">${expected}</span>
-                <span style="background-color: ${actual > expected ? '#e59c03' : '#a4a9b3'};">${actual}</span>
-            `;
-
-            document.getElementById(`home-odds-${eventId}`).innerHTML = getStyledSpan(home.expected, home.actual);
-            document.getElementById(`away-odds-${eventId}`).innerHTML = getStyledSpan(away.expected, away.actual);
-        }
-    } catch (error) {
-        console.error(`Failed to fetch or render odds for event ${eventId}:`, error);
-    }
-};
-
 
 
 // Calculate form percentage based on the form array
@@ -1554,28 +1547,7 @@ const calculateFormPercentage = (form) => {
     }, 0);
     return ((actualPoints / expectedPoints) * 100).toFixed(0);
 };
-
-// Render pregame form with stats and bar display
-const renderPregameForm = ({ name, avgRating, form, formPercentage, value, position, containerId }) => {
-    const container = document.getElementById(containerId);
-    const formDisplayId = `${containerId}-form-display`; 
-
-    const displayValue = value !== undefined && value !== null ? value : "-";
-    const displayPosition = position !== undefined && position !== null ? position : "-";
-
-    container.innerHTML = `  
-        <div class="team-cent">${formPercentage}%</div>
-        <div class="bar-wrapper" style="width:90%;height:6px; background-color:#ededed;border-radius:25px;">
-            <div class="bar" style="width:${formPercentage}%;height:6px;"></div>
-        </div>  
-        <div class="stat-title" style="margin-top:10px;">
-            Pos: <span class="value">${displayPosition}</span> 
-            Pts: <span class="value">${displayValue}</span> ${avgRating ? `<div class="box animate" cursor="default"><div class="sideBox-inner"></div></div> <strong class="value">${avgRating}</strong>` : ""}</div>
-        <p><span id="${formDisplayId}"></span></p> 
-    `;
-
-    renderFormDisplay(form, formDisplayId);
-};
+ 
 
 // Display form history (Win, Draw, Loss) with icons and styles
 const renderFormDisplay = (form, formDisplayId) => {
@@ -1619,6 +1591,40 @@ const fetchManagerData = async (managerId, managerContainerId, ppgContainerId, c
         updateCurrentTeamPPG(managerData, eventsData.events, currentPpgContainerId);
     } catch (error) {
         console.error("Error fetching manager data:", error);
+    }
+};
+
+
+const fetchWinningOdds = async (eventId) => {
+    try {
+        const winningOddsResponse = await fetch(`${baseURL}/event/${eventId}/provider/1/winning-odds`);
+        if (!winningOddsResponse.ok) {
+            throw new Error(`Failed to fetch winning odds: ${winningOddsResponse.statusText}`);
+        }
+        
+        const oddsData = await winningOddsResponse.json();
+        return oddsData;
+    } catch (error) {
+        console.error("Error fetching winning odds data:", error);
+    }
+};
+
+const renderWinningOdds = async (eventId) => {
+    try {
+        const oddsData = await fetchWinningOdds(eventId);
+        if (oddsData) {
+            const { home, away } = oddsData;
+
+            const getStyledSpan = (expected, actual) => `
+                <span style="background-color: ${actual > expected ? '#e59c0350' : '#a4a9b350'};">${expected}</span>
+                <span style="background-color: ${actual > expected ? '#e59c03' : '#a4a9b3'};">${actual}</span>
+            `;
+
+            document.getElementById(`home-odds-${eventId}`).innerHTML = getStyledSpan(home.expected, home.actual);
+            document.getElementById(`away-odds-${eventId}`).innerHTML = getStyledSpan(away.expected, away.actual);
+        }
+    } catch (error) {
+        console.error(`Failed to fetch or render odds for event ${eventId}:`, error);
     }
 };
 
@@ -2180,7 +2186,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     <div class="team">
                         <img src="${baseURL}/team/${event.homeTeam.id}/image" width="20" height="20" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${homeTeamName}</span>
-                   </div> 
+                   </div>
+                   <div id="home-team-form-${event.id}" class="home-bar"></div> 
                 </div>
                 <div class="match-details">
                     ${event.status.type === 'inprogress' 
@@ -2205,6 +2212,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
 
                 </div>
                 <div class="team-info">
+                   <div id="away-team-form-${event.id}" class="away-bar"></div>
                     <div class="team">
                         <img src="${baseURL}/team/${event.awayTeam.id}/image" width="20" height="20" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${awayTeamName}</span>
@@ -2313,26 +2321,26 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         getEventStats(homeTeamId, awayTeamId, tournamentId, seasonId, currentMatchId); 
         // Example usage:
         renderWinningOdds(event.id);
-        // Fetch pregame form and manager details for both teams using the updated fetchPregameForm function
         fetchPregameForm(
-            event.id,             // Pass eventId to fetch form data for both teams
-            homeTeamId,           // Pass home teamId to fetch manager data for the home team
-            `homePregameForm-${event.id}`,   // Container ID for the home team’s pregame form
-            `awayPregameForm-${event.id}`,   // Container ID for the away team’s pregame form
-            `homeManager-${event.id}`,        // Container ID for the home team’s manager details
-            `homePPG-${event.id}`     ,        // Container ID for the home team’s manager details
-            `homeCurrentPPG-${event.id}`            // Container ID for the home team’s PPG (Points per Game)
+            event.id,
+            homeTeamId,
+            `homePregameForm-${event.id}`,
+            `awayPregameForm-${event.id}`,
+            `homeManager-${event.id}`,
+            `homePPG-${event.id}`,
+            `homeCurrentPPG-${event.id}`
         );
 
         fetchPregameForm(
-            event.id,             // Pass eventId to fetch form data for both teams
-            awayTeamId,           // Pass away teamId to fetch manager data for the away team
-            `homePregameForm-${event.id}`,   // Container ID for the home team’s pregame form (no change)
-            `awayPregameForm-${event.id}`,   // Container ID for the away team’s pregame form
-            `awayManager-${event.id}`,       // Container ID for the away team’s manager details
-            `awayPPG-${event.id}`    ,       // Container ID for the away team’s manager details
-            `awayCurrentPPG-${event.id}`           // Container ID for the away team’s PPG (Points per Game)
+            event.id,
+            awayTeamId,
+            `homePregameForm-${event.id}`,
+            `awayPregameForm-${event.id}`,
+            `awayManager-${event.id}`,
+            `awayPPG-${event.id}`,
+            `awayCurrentPPG-${event.id}`
         );
+
 
         // Example usage
        // fetchTeamOverallStats(homeTeamId, event.tournament.uniqueTournament.id, seasonId, `home-team-stats-container-${event.id}`);
