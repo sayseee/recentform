@@ -593,10 +593,8 @@ main {
 .match-odds { 
     display: flex;
     justify-content: space-between;
-    background-color: #edeff1;
     margin: 0 10px 10px;
-    padding: 05px;
-    border-radius: 5px;
+    border: 1px solid #e6e7eb;
 }
 .statsC {
     background-color: #F0F2F4;
@@ -626,15 +624,45 @@ main {
     text-align: center;
 }
 
-.match-odds span { 
-    flex: 1;
+.match-odds span {
+    flex: 1;  
     text-align: center;
     font-weight: 600;
+    align-items: center;
+}
+
+.match-odds>span:first-child, .match-odds>span:last-child { 
+    text-align: center;
+    font-weight: 600;
+    display: flex;
+}
+
+.match-odds>span:first-child div, .match-odds>span:last-child div { 
+    display: flex;
+    min-height: 25px;
+}
+
+.match-odds>span:first-child div span, .match-odds>span:last-child div span {
+    display: inline-flex;
+    padding: 0 5px;
+    opacity: .85;
+    flex: 1 !important;
+    width: 20px;
+    justify-content: center;
 }
 
 .match-odds span:nth-child(2) { 
-    border-left: 1px solid #d7d7db;
-    border-right: 1px solid #d7d7db;
+    flex: 0.6;
+    border-left: 1px solid #e6e7eb;
+    border-right: 1px solid #e6e7eb;
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+}
+.match-odds>span:first-child span:nth-child(2), .match-odds>span:last-child span:nth-child(2) {  
+    flex: 1;
+    border-left: 0;
+    border-right: 0
 }
 .logo {
     /* Add logo styling here */
@@ -1442,6 +1470,40 @@ const fetchPregameForm = async (eventId, teamId, homeContainerId, awayContainerI
     }
 };
 
+const fetchWinningOdds = async (eventId) => {
+    try {
+        const winningOddsResponse = await fetch(`${baseURL}/event/${eventId}/provider/1/winning-odds`);
+        if (!winningOddsResponse.ok) {
+            throw new Error(`Failed to fetch winning odds: ${winningOddsResponse.statusText}`);
+        }
+        
+        const oddsData = await winningOddsResponse.json();
+        return oddsData;
+    } catch (error) {
+        console.error("Error fetching winning odds data:", error);
+    }
+};
+
+const renderWinningOdds = async (eventId) => {
+    try {
+        const oddsData = await fetchWinningOdds(eventId);
+        if (oddsData) {
+            const { home, away } = oddsData;
+
+            const getStyledSpan = (expected, actual) => `
+                <span style="background-color: ${actual > expected ? '#e59c0350' : '#a4a9b350'};">${expected}</span>
+                <span style="background-color: ${actual > expected ? '#e59c03' : '#a4a9b3'};">${actual}</span>
+            `;
+
+            document.getElementById(`home-odds-${eventId}`).innerHTML = getStyledSpan(home.expected, home.actual);
+            document.getElementById(`away-odds-${eventId}`).innerHTML = getStyledSpan(away.expected, away.actual);
+        }
+    } catch (error) {
+        console.error(`Failed to fetch or render odds for event ${eventId}:`, error);
+    }
+};
+
+
 
 // Calculate form percentage based on the form array
 const calculateFormPercentage = (form) => {
@@ -1959,6 +2021,15 @@ const scheduleMatchStartRefresh = (event) => {
         }, timeUntilStart);
     }
 };
+
+const getEventStats = async (homeTeamId, awayTeamId, tournamentId, seasonId, currentMatchId) => {
+    const homeStats = await calculateTeamPerformance(homeTeamId, true, tournamentId, seasonId, currentMatchId);
+    const awayStats = await calculateTeamPerformance(awayTeamId, false, tournamentId, seasonId, currentMatchId);
+
+    //console.log('Home Team Stats:', homeStats);
+    //console.log('Away Team Stats:', awayStats);
+};
+
 // Function to load events into a container
 const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
     for (const event of events) {
@@ -2031,7 +2102,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
 
         const homeTeamName = homeScore > awayScore ? `<strong>${event.homeTeam.shortName}</strong>` : event.homeTeam.shortName;
         const awayTeamName = awayScore > homeScore ? `<strong>${event.awayTeam.shortName}</strong>` : event.awayTeam.shortName;
-        const tolerance = 0.01;
+        const tolerance = 0.01; 
+
         eventLink.innerHTML = `
             <div class="match-info-container">
                 <div class="team-info">
@@ -2070,10 +2142,10 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 </div>
             </div>
             <div class="match-odds">
-                <span class="odds">${homeOdds}</span>
+                <span class="odds"><div id="home-odds-${event.id}"></div><span>${homeOdds}</span></span>
                 <span class="odds">${drawOdds}</span>
-                <span class="odds">${awayOdds}</span>
-            </div>   
+                <span class="odds"><span>${awayOdds}</span><div id="away-odds-${event.id}"></div></span>
+            </div>
                 <div class="teams-form">
                     <div class="homes-team-form"> 
                         <div id="homePregameForm-${event.id}" class="pregame-form"></div> 
@@ -2166,7 +2238,10 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         eventListItem.appendChild(eventLink); 
 
         eventsContainer.appendChild(eventListItem);
-      
+        
+        getEventStats(homeTeamId, awayTeamId, tournamentId, seasonId, currentMatchId); 
+        // Example usage:
+        renderWinningOdds(event.id);
         // Fetch pregame form and manager details for both teams using the updated fetchPregameForm function
         fetchPregameForm(
             event.id,             // Pass eventId to fetch form data for both teams
@@ -2486,28 +2561,28 @@ const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     return filteredEvents;
 };
 
-      // Utility function to fetch events data and filter for finished events excluding the current match
-      const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
-                const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
-                const eventsData = await fetchJson(eventsUrl);
-
-                // Check if eventsData exists and contains events
-                if (!eventsData || !eventsData.events) return [];
-
-                // Filter only finished events and exclude the current match
-                const finishedEvents = eventsData.events.reverse().filter(event => 
-                    event.status.type === 'finished' && event.id !== currentMatchId
-                );
-
-                return finishedEvents;
-            };
-
 const fetchTournamentInfo = async (uniqueTournamentId, seasonId) => {
     const url = `${baseURL}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/info`;
     const data = await fetchJson(url);
     //console.log(data);
     return data.info || {};
 };
+
+// Utility function to fetch events data and filter for finished events excluding the current match
+const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
+        const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
+        const eventsData = await fetchJson(eventsUrl);
+
+        // Check if eventsData exists and contains events
+        if (!eventsData || !eventsData.events) return [];
+
+        // Filter only finished events and exclude the current match
+        const finishedEvents = eventsData.events.reverse().filter(event => 
+            event.status.type === 'finished' && event.id !== currentMatchId
+        );
+
+        return finishedEvents;
+    };
 
  
 const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchId) => {
@@ -2568,6 +2643,51 @@ const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchI
     return { teamStats, leagueStats };
 };
 
+const calculateTeamPerformance = async (teamId, isHomeTeam, tournamentId, seasonId, currentMatchId) => {
+    const finishedEvents = await fetchEventsData(tournamentId, seasonId, currentMatchId);
+
+    if (finishedEvents.length === 0) return null;
+
+    let gamesPlayed = 0;
+    let wins = 0;
+    let draws = 0;
+    let losses = 0;
+    let goalsScored = 0;
+    let goalsConceded = 0;
+
+    finishedEvents.forEach(event => {
+        const isHome = event.homeTeam.id === parseInt(teamId);
+        const isRelevant = isHomeTeam ? isHome : event.awayTeam.id === parseInt(teamId);
+
+
+        if (isRelevant) {
+            gamesPlayed++;
+            const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
+            const opponentScore = isHome ? event.awayScore.current : event.homeScore.current;
+
+            goalsScored += teamScore;
+            goalsConceded += opponentScore;
+
+            if (teamScore > opponentScore) {
+                wins++;
+            } else if (teamScore === opponentScore) {
+                draws++;
+            } else {
+                losses++;
+            }
+        }
+    });
+
+    const goalDifference = goalsScored - goalsConceded;
+
+    return {
+        gamesPlayed,
+        wins,
+        draws,
+        losses,
+        goalDifference
+    };
+};
 
 const fetchWonEvents = async (teamId, currentMatchId, Wins) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
