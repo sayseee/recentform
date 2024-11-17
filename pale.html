@@ -474,6 +474,8 @@ main {
 .match-details {
     text-align: center;
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .match-date,
@@ -493,6 +495,7 @@ main {
     display: inline-flex;
     align-items: center;
     font-weight: normal;
+    justify-content: center;
 }
 .match-status.live { 
     border-radius: 25px;
@@ -2193,23 +2196,22 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     ${event.status.type === 'inprogress' 
                         ? `<div class="detailScore__wrapper">
                             <span class="score" id="homeScores-${event.id}">${homeScore}</span>
-                            <div class="match-status ${event.status.type === 'inprogress' ? 'live' : 'default'}">
-                                <span id="live-timer-${event.id}"></span>
-                            </div> 
+                            -
                             <span class="score" id="awayScores-${event.id}">${awayScore}</span>
                           </div>` 
                         : event.status.type === 'finished' 
                             ? `<div class="detailScore__wrapper">
-                                <span class="score" id="homeScores-${event.id}">${homeScore}</span>
-                            <div class="match-status ${event.status.type === 'inprogress' ? 'live' : 'default'}">
-                                <span id="live-timer-${event.id}"></span>
-                            </div>  
+                                <span class="score" id="homeScores-${event.id}">${homeScore}</span> 
+                                -
                                 <span class="score" id="awayScores-${event.id}">${awayScore}</span>
                               </div>` 
                             : `
                                  <div class="match-time">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
                             `} 
 
+                            <div class="match-status ${event.status.type === 'inprogress' ? 'live' : 'default'}">
+                                <span id="live-timer-${event.id}"></span>
+                            </div> 
                 </div>
                 <div class="team-info">
                    <div id="away-team-form-${event.id}" class="away-bar"></div>
