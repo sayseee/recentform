@@ -2209,7 +2209,7 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
     `;
 
     // Insert the table into a container on the page
-    document.getElementById('form-table-container').innerHTML = tableHTML;
+    document.getElementById(`form-table-container-${event.id}`).innerHTML = tableHTML;
 };
 
 
@@ -2388,7 +2388,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         </div>
                     </div>
                 </div>
-                <div id="form-table-container"></div>
+                <div id="form-table-container-${event.id}"></div>
                 <h4 style="text-align:center;margin-top:10px;">Goal Statistics</h4>
                 <div class="stats-container">
                 <div class="stat-card ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
