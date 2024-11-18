@@ -736,27 +736,14 @@ main {
     margin-top: 5px;
 }
 
-.stat-card {  
-    display: flex;
-    align-items: center;
-    position: relative;
-    display: -ms-flexbox;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    background: #FFF;
-    border-radius: 2px;
-    -webkit-box-shadow: 0 1px 2px 1px rgba(64, 60, 67, .16);
-    box-shadow: 0 1px 2px 1px rgba(64, 60, 67, .16);
-    padding: 3px;
-    min-width: 20%;
-} 
-
 .stat-title {
+    display: flex;
+    font-weight: 600;
+    color: #9f9f9f; 
+    line-height: 1.8;
+}
+
+.pregame-form .stat-title {
     display: flex;
     font-weight: 600;
     color: #9f9f9f;
@@ -1100,11 +1087,32 @@ hr {
     background-repeat: no-repeat;
     transform: rotate(-90deg);
 }
-.stats-container div {
+#stats-container div {
     flex: 1;
     width: 50%;
     margin: 0 0 0 5px;
 }
+
+.stat-card {  
+    display: flex;
+    align-items: center;
+    position: relative;
+    display: -ms-flexbox;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background: #FFF;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 1px 2px 1px rgba(64, 60, 67, .16);
+    box-shadow: 0 1px 2px 1px rgba(64, 60, 67, .16);
+    padding: 3px;
+    min-width: 20%;
+} 
+
 .stats-container div table {
     width: 100%;
     border-collapse: collapse;
@@ -2113,7 +2121,7 @@ const getEventStats = async (homeTeamId, awayTeamId, tournamentId, seasonId, cur
 const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStatsAway) => {
     const tableHTML = ` 
     <h4 style="text-align:center;margin-top:10px;">League Table</h4>
-        <div class="stats-container"> 
+        <div class="stats-container" id="stats-container"> 
             <!-- Home Team (Right Div) -->
             <div class="home-team-stats">
                 <table>
