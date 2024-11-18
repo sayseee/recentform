@@ -1133,7 +1133,8 @@ hr {
 .stats-container tr td:first-child {
     text-align: left;
     padding-left: 2px;
-}
+    font-weight: 700;
+} 
 .stats-container .home-team-stats table tbody tr:first-child, .stats-container .away-team-stats table tbody tr:last-child {
     background-color: bisque;
     font-weight: 500;
@@ -2146,11 +2147,12 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
                             <th>GF</th>
                             <th>GA</th>
                             <th>GD</th>
+                            <th>PTS</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Home</td>
+                            <td>H</td>
                             <td>${homeStatsHome.gamesPlayed}</td>
                             <td>${homeStatsHome.wins}</td>
                             <td>${homeStatsHome.draws}</td>
@@ -2158,9 +2160,10 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
                             <td>${homeStatsHome.goalsScored}</td> 
                             <td>${homeStatsHome.goalsConceded}</td> 
                             <td>${homeStatsHome.goalDifference}</td>
+                            <td>${homeStatsHome.points}</td>
                         </tr>
                         <tr>
-                            <td>Away</td> 
+                            <td>A</td> 
                             <td>${homeStatsAway.gamesPlayed}</td> 
                             <td>${homeStatsAway.wins}</td> 
                             <td>${homeStatsAway.draws}</td> 
@@ -2168,6 +2171,7 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
                             <td>${homeStatsAway.goalsScored}</td>
                             <td>${homeStatsAway.goalsConceded}</td>
                             <td>${homeStatsAway.goalDifference}</td>
+                            <td>${homeStatsAway.points}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -2185,11 +2189,12 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
                             <th>GF</th>
                             <th>GA</th>
                             <th>GD</th>
+                            <th>PTS</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Home</td>
+                            <td>H</td>
                             <td>${awayStatsHome.gamesPlayed}</td>
                             <td>${awayStatsHome.wins}</td>
                             <td>${awayStatsHome.draws}</td>
@@ -2197,9 +2202,10 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
                             <td>${awayStatsHome.goalsScored}</td> 
                             <td>${awayStatsHome.goalsConceded}</td> 
                             <td>${awayStatsHome.goalDifference}</td>
+                            <td>${awayStatsHome.points}</td>
                         </tr>
                         <tr>
-                            <td>Away</td>
+                            <td>A</td>
                             <td>${awayStatsAway.gamesPlayed}</td> 
                             <td>${awayStatsAway.wins}</td> 
                             <td>${awayStatsAway.draws}</td> 
@@ -2207,6 +2213,7 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
                             <td>${awayStatsAway.goalsScored}</td>
                             <td>${awayStatsAway.goalsConceded}</td>
                             <td>${awayStatsAway.goalDifference}</td>
+                            <td>${awayStatsAway.points}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -2897,6 +2904,7 @@ const calculateTeamPerformance = async (teamId, type, tournamentId, seasonId, cu
     let goalsScored = 0;
     let goalsConceded = 0;
 
+    let points = 0;
     // Filter events based on type and teamId
     const filteredEvents = events
         .filter((event) => 
@@ -2915,12 +2923,14 @@ const calculateTeamPerformance = async (teamId, type, tournamentId, seasonId, cu
             goalsConceded += opponentScore;
 
             if (event.winnerCode === 3) {
+                points += 1; // Draw
                 draws++;
             } else if (
                 (event.winnerCode === 1 && isHome) ||
                 (event.winnerCode === 2 && !isHome)
             ) {
                 wins++;
+                points += 3; // Win
             } else {
                 losses++;
             }
@@ -2931,6 +2941,7 @@ const calculateTeamPerformance = async (teamId, type, tournamentId, seasonId, cu
     const goalDifference = goalsScored - goalsConceded;
 
     return {
+        points,
         gamesPlayed,
         wins,
         draws,
