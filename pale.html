@@ -2911,7 +2911,8 @@ const calculateTeamPerformance = async (teamId, type, tournamentId, seasonId, cu
             type === 'home' ? event.homeTeam.id === teamId : event.awayTeam.id === teamId
         ) 
 
-    const form = filteredEvents 
+    const lastEvents = filteredEvents.slice(0, 6); // Return only the last 15 games 
+    const form = lastEvents 
         .map((event) => {
             gamesPlayed++;
 
