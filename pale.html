@@ -2356,7 +2356,6 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
                 </div>
-                <div id="form-table-container"></div>
                 <h4 style="text-align:center;margin-top:10px;">Last 5 Games</h4>
                 <div class="teams-form">
                     <div class="homes-team-form">  
@@ -2376,6 +2375,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         </div>
                     </div>
                 </div>
+                <div id="form-table-container"></div>
                 <h4 style="text-align:center;margin-top:10px;">Goal Statistics</h4>
                 <div class="stats-container">
                 <div class="stat-card ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
