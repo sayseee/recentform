@@ -852,6 +852,10 @@ main {
     align-items: center;
     justify-content: center;
 }
+.manager-info {
+    display: flex;
+    flex-direction: column;
+}
 .teams-form .homes-team-form>div { 
     margin-left: auto; 
 }
@@ -2368,7 +2372,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 <div class="teams-form">
                     <div class="homes-team-form">  
                         <div id="homeForm-${event.id}" class="pregameForm">${homeTeamPoints.form}</div>
-                        <div class="stat-title" style="margin-top:10px;">
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
                             GF: <span class="value">${homeTeamPoints.goalsFor}</span> 
                             GA: <span class="value">${homeTeamPoints.goalsAgainst}</span> 
                             GD: <span class="value">${homeTeamPoints.goalDifference}</span> 
@@ -2376,7 +2380,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div>
                     <div class="aways-team-form">  
                         <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div> 
-                        <div class="stat-title" style="margin-top:10px;">
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
                             GF: <span class="value">${awayTeamPoints.goalsFor}</span> 
                             GA: <span class="value">${awayTeamPoints.goalsAgainst}</span> 
                             GD: <span class="value">${awayTeamPoints.goalDifference}</span> 
