@@ -1638,7 +1638,7 @@ const fetchManagerData = async (managerId, managerContainerId, ppgContainerId, c
         const eventsData = await eventsResponse.json();
 
         // Update PPG for the current managed team
-        updateCurrentTeamPPG(managerData, eventsData.events, currentPpgContainerId);
+        //updateCurrentTeamPPG(managerData, eventsData.events, currentPpgContainerId);
     } catch (error) {
         console.error("Error fetching manager data:", error);
     }
@@ -1840,7 +1840,7 @@ const fetchTeamOverallStats = async (teamId, uniqueTournamentId, seasonId, conta
  */
 
 // Function to fetch team stats for home and away teams
-const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId, seasonId, containerId, conversionContainerId, columnType = 'center') => {
+const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId, seasonId, containerId, conversionContainerId, goalGameDiffContainerId, columnType = 'center') => {
     try {
         // Fetch stats for the home team
         const homeResponse = await fetch(`${baseURL}/team/${homeTeamId}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/statistics/overall`);
@@ -1860,11 +1860,13 @@ const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId,
         if (columnType === 'center') {
             renderStats(homeStatsData, awayStatsData, containerId);
             goalConversionConceedStats(homeStatsData, awayStatsData, conversionContainerId);
+            goalGameDiff(homeStatsData, awayStatsData, goalGameDiffContainerId);
         }  
     } catch (error) {
         console.error("Error fetching team stats:", error);
     }
 };
+
 const goalConversionConceedStats = (homeStats, awayStats, containerId) => {
     const container = document.getElementById(containerId);
 
@@ -1927,6 +1929,37 @@ const goalConversionConceedStats = (homeStats, awayStats, containerId) => {
 };
 
  
+const goalGameDiff = (homeStats, awayStats, containerId) => {
+    const container = document.getElementById(containerId);
+
+    // Calculate goals conversion rate
+    const goalsScoreHomeDiff = homeStats.goalsScored - homeStats.matches;
+
+    const goalsScoreAwayDiff = awayStats.goalsScored - awayStats.matches;
+
+    // Calculate goals conversion rate
+    const goalsConceedHomeDiff = homeStats.matches - homeStats.goalsConceded;
+
+    const goalsConceedAwayDiff = awayStats.matches - awayStats.goalsConceded;
+ 
+    // Build stats HTML, leaving values blank if any are invalid
+    const statsHTML = `
+        <span>${goalsScoreHomeDiff || 0}
+            <small>/${goalsConceedHomeDiff || 0}</small>
+        </span>
+        <span style="font-size:12px;font-weight:400;color:#9f9f9f;">
+            Score Diff/ Conceed Diff
+        </span>
+        <span>${goalsScoreAwayDiff || 0}
+            <small>/${goalsConceedAwayDiff || 0}</small>
+        </span>
+    `;
+    // Insert the stats into the container
+    container.innerHTML = statsHTML;
+
+}
+
+
 const renderStats = (homeStats, awayStats, containerId) => {
     const container = document.getElementById(containerId);
 
@@ -2451,6 +2484,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 </div>
                 
                 <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
+                <div id="goal-game-diff-${event.id}" class="stats-conversion"></div> 
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
@@ -2460,17 +2494,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayManager-${event.id}" class="manager-info"></div> 
                     </div>
                 </div>
-                
-                <div class="teams-form ppg">
-                    <div class="homes-team-form"> 
-                        <div id="homeCurrentPPG-${event.id}" class="pregame-form"></div> 
-                    </div>
-                    <div style="font-size:12px;font-weight:400;color:#9f9f9f;"> 
-                    </div>
-                    <div class="aways-team-form"> 
-                        <div id="awayCurrentPPG-${event.id}" class="pregame-form"></div> 
-                    </div>
-                </div>
+                 
             <div class="overall-stats-wrapper">
                 <div id="stats-container-${event.id}"></div>
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}" style="width:40%;"></div> 
@@ -2497,7 +2521,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
             `awayPregameForm-${event.id}`,
             `homeManager-${event.id}`,
             `homePPG-${event.id}`,
-            `homeCurrentPPG-${event.id}`
+            //`homeCurrentPPG-${event.id}`
         );
 
         fetchPregameForm(
@@ -2507,7 +2531,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
             `awayPregameForm-${event.id}`,
             `awayManager-${event.id}`,
             `awayPPG-${event.id}`,
-            `awayCurrentPPG-${event.id}`
+            //`awayCurrentPPG-${event.id}`
         );
 
 
@@ -2515,7 +2539,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
        // fetchTeamOverallStats(homeTeamId, event.tournament.uniqueTournament.id, seasonId, `home-team-stats-container-${event.id}`);
         //fetchTeamOverallStats(awayTeamId, event.tournament.uniqueTournament.id, seasonId, `away-team-stats-container-${event.id}`);
         // Fetch stats for home and away teams
-        fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, `stats-container-${event.id}`, `stats-conversion-${event.id}`, 'center');
+        fetchTeamOverallStats(homeTeamId, awayTeamId, uniqueTournamentId, seasonId, `stats-container-${event.id}`, `stats-conversion-${event.id}`, `goal-game-diff-${event.id}`, 'center');
     
         // Schedule the match time refresh
         scheduleMatchStartRefresh(event);
@@ -2911,7 +2935,7 @@ const calculateTeamPerformance = async (teamId, type, tournamentId, seasonId, cu
             type === 'home' ? event.homeTeam.id === teamId : event.awayTeam.id === teamId
         ) 
 
-    const lastEvents = filteredEvents.slice(0, 6); // Return only the last 15 games 
+    const lastEvents = filteredEvents.slice(0, 5); // Return only the last 15 games 
     const form = lastEvents 
         .map((event) => {
             gamesPlayed++;

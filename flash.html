@@ -1220,27 +1220,7 @@ const renderStats = (homeStats, awayStats, containerId, event) => {
                             </tr>
                         </tbody>
                     </table>
-                </td> 
-                <td class="sc">
-                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
-                        <tbody>
-                            <tr>
-                                <td>${homeStats.shots || '0'}</td>
-                                <td>${awayStats.shots || '0'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-                <td class="sc">
-                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
-                        <tbody>
-                            <tr>
-                                <td>${homeStats.shotsAgainst || '0'}</td>
-                                <td>${awayStats.shotsAgainst || '0'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
+                </td>  
                 <td class="sc">
                     <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
                         <tbody>
@@ -1261,46 +1241,6 @@ const renderStats = (homeStats, awayStats, containerId, event) => {
                         </tbody>
                     </table>
                 </td>
-                <td class="sc">
-                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
-                        <tbody>
-                            <tr>
-                                <td>${homeStats.assists || '0'}</td>
-                                <td>${awayStats.assists || '0'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>   
-                <td class="sc">
-                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
-                        <tbody>
-                            <tr>
-                                <td>${Math.round(homeStats.averageBallPossession) || '0'}</td>
-                                <td>${Math.round(awayStats.averageBallPossession) || '0'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>  
-                <td class="sc">
-                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
-                        <tbody>
-                            <tr>
-                                <td>${Math.round(homeStats.accuratePassesPercentage) || '0'}</td>
-                                <td>${Math.round(awayStats.accuratePassesPercentage) || '0'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>  
-                <td class="sc">
-                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
-                        <tbody>
-                            <tr>
-                                <td>${Math.round(homeStats.successfulDribbles) || '0'}</td>
-                                <td>${Math.round(awayStats.successfulDribbles) || '0'}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td> 
                 <td class="sc">
                     ${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''}
                 </td>     
@@ -1402,15 +1342,9 @@ table.innerHTML = `
             <th width="120">Away Team</th>
             <th width="50">Played</th>
             <th width="70">Con S</th>  
-            <th width="70">Con C</th>
-            <th width="70">Shots For</th>  
-            <th width="70">Shots Agt</th>  
+            <th width="70">Con C</th> 
             <th width="70">G.Scored</th> 
-            <th width="85">G.Conceded</th>   
-            <th width="50">Assists</th>   
-            <th width="85">Possession</th>
-            <th width="65">Passes</th>
-            <th width="65">Dribbles</th>
+            <th width="85">G.Conceded</th> 
             <th width="65">Result</th>
         </tr>
     </thead>
