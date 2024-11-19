@@ -1176,6 +1176,26 @@ const renderStats = (homeStats, awayStats, containerId, event) => {
                             </tr>
                         </tbody>
                     </table>
+                </td> 
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${homeStats.goalsScored || '0'}</td>
+                                <td>${awayStats.goalsScored || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td> 
+                <td class="sc">
+                    <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>${homeStats.goalsConceded || '0'}</td>
+                                <td>${awayStats.goalsConceded || '0'}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </td>
                 <td class="sc">
                     <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
@@ -1220,13 +1240,25 @@ const renderStats = (homeStats, awayStats, containerId, event) => {
                             </tr>
                         </tbody>
                     </table>
-                </td>  
+                </td>
                 <td class="sc">
                     <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
                         <tbody>
                             <tr>
-                                <td>${homeStats.goalsScored || '0'}</td>
-                                <td>${awayStats.goalsScored || '0'}</td>
+                                <td>
+                                    ${
+                                        homeStats.matches > 0 
+                                            ? (homeStats.goalsScored - homeStats.matches) 
+                                            : '0'
+                                    }
+                                </td>
+                                <td>
+                                    ${
+                                        homeStats.matches > 0 
+                                            ? (homeStats.matches - homeStats.goalsConceded) 
+                                            : '0'
+                                    }
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -1235,8 +1267,20 @@ const renderStats = (homeStats, awayStats, containerId, event) => {
                     <table class="sborder" cellpadding="0" cellspacing="0" width="100%">
                         <tbody>
                             <tr>
-                                <td>${homeStats.goalsConceded || '0'}</td>
-                                <td>${awayStats.goalsConceded || '0'}</td>
+                                <td>
+                                    ${
+                                        awayStats.matches > 0 
+                                            ? (awayStats.goalsScored - awayStats.matches)
+                                            : '0'
+                                    }
+                                </td>
+                                <td>
+                                    ${
+                                        awayStats.matches > 0 
+                                            ? (awayStats.matches - awayStats.goalsConceded)
+                                            : '0'
+                                    }
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -1341,10 +1385,12 @@ table.innerHTML = `
             <th width="120">Home Team</th>
             <th width="120">Away Team</th>
             <th width="50">Played</th>
-            <th width="70">Con S</th>  
-            <th width="70">Con C</th> 
             <th width="70">G.Scored</th> 
             <th width="85">G.Conceded</th> 
+            <th width="70">Con S</th>  
+            <th width="70">Con C</th>  
+            <th width="70">H SD</th>  
+            <th width="70">A SD</th> 
             <th width="65">Result</th>
         </tr>
     </thead>
