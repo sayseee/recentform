@@ -2413,26 +2413,6 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
                 </div>
-                <h4 style="text-align:center;margin-top:10px;">Last 5 Games</h4>
-                <div class="teams-form">
-                    <div class="homes-team-form">  
-                        <div id="homeForm-${event.id}" class="pregameForm">${homeTeamPoints.form}</div>
-                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
-                            GF: <span class="value">${homeTeamPoints.goalsFor}</span> 
-                            GA: <span class="value">${homeTeamPoints.goalsAgainst}</span> 
-                            GD: <span class="value">${homeTeamPoints.goalDifference}</span> 
-                        </div> 
-                    </div>
-                    <div class="aways-team-form">  
-                        <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div> 
-                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
-                            GF: <span class="value">${awayTeamPoints.goalsFor}</span> 
-                            GA: <span class="value">${awayTeamPoints.goalsAgainst}</span> 
-                            GD: <span class="value">${awayTeamPoints.goalDifference}</span> 
-                        </div>
-                    </div>
-                </div>
-                <div id="form-table-container-${event.id}"></div>
                 <h4 style="text-align:center;margin-top:10px;">Goal Statistics</h4>
                 <div class="stats-container">
                 <div class="stat-card ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
@@ -2470,6 +2450,26 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div> <div class="stat-title">Over 2.5</div>                    
                 </div>
             </div>
+                <h4 style="text-align:center;margin-top:10px;">Last 5 Games</h4>
+                <div class="teams-form">
+                    <div class="homes-team-form">  
+                        <div id="homeForm-${event.id}" class="pregameForm">${homeTeamPoints.form}</div>
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
+                            GF: <span class="value">${homeTeamPoints.goalsFor}</span> 
+                            GA: <span class="value">${homeTeamPoints.goalsAgainst}</span> 
+                            GD: <span class="value">${homeTeamPoints.goalDifference}</span> 
+                        </div> 
+                    </div>
+                    <div class="aways-team-form">  
+                        <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div> 
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
+                            GF: <span class="value">${awayTeamPoints.goalsFor}</span> 
+                            GA: <span class="value">${awayTeamPoints.goalsAgainst}</span> 
+                            GD: <span class="value">${awayTeamPoints.goalDifference}</span> 
+                        </div>
+                    </div>
+                </div>
+                 
                 <h4 style="text-align:center; margin-top:10px;">Manager/Goals</h4>
                 <div class="teams-form ppg">
                     <div class="homes-team-form"> 
@@ -2482,9 +2482,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPPG-${event.id}" class="pregame-form"></div> 
                     </div>
                 </div>
-                
-                <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
-                <div id="goal-game-diff-${event.id}" class="stats-conversion"></div> 
+                 
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
@@ -2494,7 +2492,12 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayManager-${event.id}" class="manager-info"></div> 
                     </div>
                 </div>
-                 
+                
+                <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
+                <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
+
+                <div id="form-table-container-${event.id}"></div>
+                
             <div class="overall-stats-wrapper">
                 <div id="stats-container-${event.id}"></div>
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}" style="width:40%;"></div> 
