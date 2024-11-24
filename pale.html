@@ -2164,27 +2164,111 @@ const scheduleMatchStartRefresh = (event) => {
     }
 };
 
-const getEventStats = async (homeTeamId, awayTeamId, tournamentId, seasonId, currentMatchId) => {
-    const homeStatsHome = await calculateTeamPerformance(homeTeamId, 'home', tournamentId, seasonId, currentMatchId);
-    const homeStatsAway = await calculateTeamPerformance(homeTeamId, 'away', tournamentId, seasonId, currentMatchId);
-    const awayStatsHome = await calculateTeamPerformance(awayTeamId, 'home', tournamentId, seasonId, currentMatchId);
-    const awayStatsAway = await calculateTeamPerformance(awayTeamId, 'away', tournamentId, seasonId, currentMatchId); 
+// Utility function to fetch events data and filter for finished events excluding the current match
+const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
+        const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
+        const eventsData = await fetchJson(eventsUrl);
 
-    renderStatsTable(homeStatsHome, homeStatsAway, awayStatsHome, awayStatsAway, currentMatchId);
+        // Check if eventsData exists and contains events
+        if (!eventsData || !eventsData.events) return [];
+
+        // Filter only finished events and exclude the current match
+        const finishedEvents = eventsData.events.reverse().filter(event => 
+            event.status.type === 'finished' && event.id !== currentMatchId
+        );
+
+        return finishedEvents;
+    };
+
+ 
+
+const calculateTeamPerformance = async (teamId, type, tournamentId, seasonId, currentMatchId) => {
+    const events = await fetchEventsData(tournamentId, seasonId, currentMatchId);
+
+    if (events.length === 0) return null;
+
+    let gamesPlayed = 0;
+    let wins = 0;
+    let draws = 0;
+    let losses = 0;
+    let goalsScored = 0;
+    let goalsConceded = 0;
+
+    let points = 0;
+    
+    const filteredEvents = events.filter((event) => {
+    if (type === 'overall') {
+        return event.homeTeam.id === teamId || event.awayTeam.id === teamId;
+        }
+        return type === 'home' ? event.homeTeam.id === teamId : event.awayTeam.id === teamId;
+    });
+
+    const lastEvents = filteredEvents.slice(0, 5); // Return only the last 15 games 
+    const form = lastEvents 
+        .map((event) => {
+            gamesPlayed++;
+
+            const isHome = event.homeTeam.id === teamId;
+            const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
+            const opponentScore = isHome ? event.awayScore.current : event.homeScore.current;
+
+            goalsScored += teamScore;
+            goalsConceded += opponentScore;
+
+            if (event.winnerCode === 3) {
+                points += 1; // Draw
+                draws++;
+            } else if (
+                (event.winnerCode === 1 && isHome) ||
+                (event.winnerCode === 2 && !isHome)
+            ) {
+                wins++;
+                points += 3; // Win
+            } else {
+                losses++;
+            }
+
+        })
+        .join('');
+
+    const goalDifference = goalsScored - goalsConceded;
+
+    return {
+        points,
+        gamesPlayed,
+        wins,
+        draws,
+        losses,
+        goalsScored,
+        goalsConceded,
+        goalDifference
+    };
 };
 
-const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStatsAway, eventId) => {
+
+const getEventStats = async (homeTeamId, awayTeamId, tournamentId, seasonId, currentMatchId) => {
+    const homeStatsOverall = await calculateTeamPerformance(homeTeamId, 'overall', tournamentId, seasonId, currentMatchId);
+    const homeStatsHome = await calculateTeamPerformance(homeTeamId, 'home', tournamentId, seasonId, currentMatchId);
+    const awayStatsOverall = await calculateTeamPerformance(awayTeamId, 'overall', tournamentId, seasonId, currentMatchId);
+    const awayStatsAway = await calculateTeamPerformance(awayTeamId, 'away', tournamentId, seasonId, currentMatchId);
+
+    renderStatsTable(homeStatsOverall, homeStatsHome, awayStatsOverall, awayStatsAway, currentMatchId);
+};
+
+
+const renderStatsTable = (homeStatsOverall, homeStatsHome, awayStatsOverall, awayStatsAway, eventId) => {
     const targetDiv = document.getElementById(`form-table-container-${eventId}`);
     if (!targetDiv) {
         console.error(`Container with ID form-table-container-${eventId} not found in the DOM.`);
         return;
     }
-    
-    const tableHTML = ` 
-    <h4 style="text-align:center;margin-top:10px;">League Table</h4>
-        <div class="stats-container" id="stats-container"> 
-            <!-- Home Team (Right Div) -->
+
+    const tableHTML = `
+        <h4 style="text-align:center;margin-top:10px;">Form Comparison</h4>
+        <div class="stats-container">
+            <!-- Home Team Stats -->
             <div class="home-team-stats">
+                <h5>Home Team</h5>
                 <table>
                     <thead>
                         <tr>
@@ -2201,32 +2285,33 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
                     </thead>
                     <tbody>
                         <tr>
-                            <td>H</td>
+                            <td>Overall</td>
+                            <td>${homeStatsOverall.gamesPlayed}</td>
+                            <td>${homeStatsOverall.wins}</td>
+                            <td>${homeStatsOverall.draws}</td>
+                            <td>${homeStatsOverall.losses}</td>
+                            <td>${homeStatsOverall.goalsScored}</td>
+                            <td>${homeStatsOverall.goalsConceded}</td>
+                            <td>${homeStatsOverall.goalDifference}</td>
+                            <td>${homeStatsOverall.points}</td>
+                        </tr>
+                        <tr>
+                            <td>Home</td>
                             <td>${homeStatsHome.gamesPlayed}</td>
                             <td>${homeStatsHome.wins}</td>
                             <td>${homeStatsHome.draws}</td>
-                            <td>${homeStatsHome.losses}</td> 
-                            <td>${homeStatsHome.goalsScored}</td> 
-                            <td>${homeStatsHome.goalsConceded}</td> 
+                            <td>${homeStatsHome.losses}</td>
+                            <td>${homeStatsHome.goalsScored}</td>
+                            <td>${homeStatsHome.goalsConceded}</td>
                             <td>${homeStatsHome.goalDifference}</td>
                             <td>${homeStatsHome.points}</td>
-                        </tr>
-                        <tr>
-                            <td>A</td> 
-                            <td>${homeStatsAway.gamesPlayed}</td> 
-                            <td>${homeStatsAway.wins}</td> 
-                            <td>${homeStatsAway.draws}</td> 
-                            <td>${homeStatsAway.losses}</td>
-                            <td>${homeStatsAway.goalsScored}</td>
-                            <td>${homeStatsAway.goalsConceded}</td>
-                            <td>${homeStatsAway.goalDifference}</td>
-                            <td>${homeStatsAway.points}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <!-- Away Team (Left Div) -->
+            <!-- Away Team Stats -->
             <div class="away-team-stats">
+                <h5>Away Team</h5>
                 <table>
                     <thead>
                         <tr>
@@ -2243,21 +2328,21 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
                     </thead>
                     <tbody>
                         <tr>
-                            <td>H</td>
-                            <td>${awayStatsHome.gamesPlayed}</td>
-                            <td>${awayStatsHome.wins}</td>
-                            <td>${awayStatsHome.draws}</td>
-                            <td>${awayStatsHome.losses}</td> 
-                            <td>${awayStatsHome.goalsScored}</td> 
-                            <td>${awayStatsHome.goalsConceded}</td> 
-                            <td>${awayStatsHome.goalDifference}</td>
-                            <td>${awayStatsHome.points}</td>
+                            <td>Overall</td>
+                            <td>${awayStatsOverall.gamesPlayed}</td>
+                            <td>${awayStatsOverall.wins}</td>
+                            <td>${awayStatsOverall.draws}</td>
+                            <td>${awayStatsOverall.losses}</td>
+                            <td>${awayStatsOverall.goalsScored}</td>
+                            <td>${awayStatsOverall.goalsConceded}</td>
+                            <td>${awayStatsOverall.goalDifference}</td>
+                            <td>${awayStatsOverall.points}</td>
                         </tr>
                         <tr>
-                            <td>A</td>
-                            <td>${awayStatsAway.gamesPlayed}</td> 
-                            <td>${awayStatsAway.wins}</td> 
-                            <td>${awayStatsAway.draws}</td> 
+                            <td>Away</td>
+                            <td>${awayStatsAway.gamesPlayed}</td>
+                            <td>${awayStatsAway.wins}</td>
+                            <td>${awayStatsAway.draws}</td>
                             <td>${awayStatsAway.losses}</td>
                             <td>${awayStatsAway.goalsScored}</td>
                             <td>${awayStatsAway.goalsConceded}</td>
@@ -2269,9 +2354,10 @@ const renderStatsTable = (homeStatsHome, homeStatsAway, awayStatsHome, awayStats
             </div>
         </div>
     `;
-        
+
     targetDiv.innerHTML = tableHTML;
 };
+
 
 // Utility function to generate increase/decrease icon
 function getOddsChangeIcon(initialValue, currentValue) {
@@ -2861,23 +2947,6 @@ const fetchTournamentInfo = async (uniqueTournamentId, seasonId) => {
     return data.info || {};
 };
 
-// Utility function to fetch events data and filter for finished events excluding the current match
-const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
-        const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
-        const eventsData = await fetchJson(eventsUrl);
-
-        // Check if eventsData exists and contains events
-        if (!eventsData || !eventsData.events) return [];
-
-        // Filter only finished events and exclude the current match
-        const finishedEvents = eventsData.events.reverse().filter(event => 
-            event.status.type === 'finished' && event.id !== currentMatchId
-        );
-
-        return finishedEvents;
-    };
-
- 
 const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchId) => {
     const finishedEvents = await fetchEventsData(tournamentId, seasonId, currentMatchId);
 
@@ -2936,67 +3005,6 @@ const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchI
     return { teamStats, leagueStats };
 };
 
-
-const calculateTeamPerformance = async (teamId, type, tournamentId, seasonId, currentMatchId) => {
-    const events = await fetchEventsData(tournamentId, seasonId, currentMatchId);
-
-    if (events.length === 0) return null;
-
-    let gamesPlayed = 0;
-    let wins = 0;
-    let draws = 0;
-    let losses = 0;
-    let goalsScored = 0;
-    let goalsConceded = 0;
-
-    let points = 0;
-    // Filter events based on type and teamId
-    const filteredEvents = events
-        .filter((event) => 
-            type === 'home' ? event.homeTeam.id === teamId : event.awayTeam.id === teamId
-        ) 
-
-    const lastEvents = filteredEvents.slice(0, 5); // Return only the last 15 games 
-    const form = lastEvents 
-        .map((event) => {
-            gamesPlayed++;
-
-            const isHome = event.homeTeam.id === teamId;
-            const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
-            const opponentScore = isHome ? event.awayScore.current : event.homeScore.current;
-
-            goalsScored += teamScore;
-            goalsConceded += opponentScore;
-
-            if (event.winnerCode === 3) {
-                points += 1; // Draw
-                draws++;
-            } else if (
-                (event.winnerCode === 1 && isHome) ||
-                (event.winnerCode === 2 && !isHome)
-            ) {
-                wins++;
-                points += 3; // Win
-            } else {
-                losses++;
-            }
-
-        })
-        .join('');
-
-    const goalDifference = goalsScored - goalsConceded;
-
-    return {
-        points,
-        gamesPlayed,
-        wins,
-        draws,
-        losses,
-        goalsScored,
-        goalsConceded,
-        goalDifference
-    };
-};
 
 
 const fetchWonEvents = async (teamId, currentMatchId, Wins) => {
