@@ -1511,6 +1511,7 @@ const displayLeagueStats = (leagueStats, tournamentInfo, container) => {
     `;
 };
 
+
 // Render form percentage as a separate component
 const renderFormPercentage = (containerId, formPercentage) => {
     const container = document.getElementById(containerId);
@@ -1543,48 +1544,39 @@ const renderPregameForm = ({ name, avgRating, value, position, containerId }) =>
  
 };
 
-// Fetch pregame form and manager data
-const fetchPregameForm = async (eventId, teamId, homeContainerId, awayContainerId, managerContainerId, ppgContainerId, currentPpgContainerId) => {
+const fetchWinningOdds = async (eventId) => {
     try {
-        const teamResponse = await fetch(`${baseURL}/team/${teamId}`);
-        if (!teamResponse.ok) throw new Error(`Failed to fetch team data: ${teamResponse.statusText}`);
+        const winningOddsResponse = await fetch(`${baseURL}/event/${eventId}/provider/1/winning-odds`);
+        if (!winningOddsResponse.ok) {
+            throw new Error(`Failed to fetch winning odds: ${winningOddsResponse.statusText}`);
+        }
         
-        const teamData = await teamResponse.json();
-        const { team } = teamData;
-        const { manager } = team;
-
-        const formResponse = await fetch(`${baseURL}/event/${eventId}/pregame-form`);
-        if (!formResponse.ok) throw new Error(`Failed to fetch pregame form data: ${formResponse.statusText}`);
-        
-        const formData = await formResponse.json();
-        const { homeTeam, awayTeam } = formData;
-
-        if (homeTeam) {
-            const { avgRating, form = [], value, position } = homeTeam;
-            const formPercentage = calculateFormPercentage(form);
-
-            renderFormPercentage(`home-team-form-${eventId}`, formPercentage);
-            renderPregameForm({ name: "Home Team", avgRating, value, position, containerId: homeContainerId });
-        }
-
-        if (awayTeam) {
-            const { avgRating, form = [], value, position } = awayTeam;
-            const formPercentage = calculateFormPercentage(form);
-
-            renderFormPercentage(`away-team-form-${eventId}`, formPercentage);
-            renderPregameForm({ name: "Away Team", avgRating, value, position, containerId: awayContainerId });
-        }
-
-        if (manager) {
-            fetchManagerData(manager.id, managerContainerId, ppgContainerId, currentPpgContainerId);
-        }
-
+        const oddsData = await winningOddsResponse.json();
+        return oddsData;
     } catch (error) {
-        console.error("Error fetching pregame form or manager data:", error);
+        console.error("Error fetching winning odds data:", error);
     }
 };
 
+const renderWinningOdds = async (eventId) => {
+    try {
+        const oddsData = await fetchWinningOdds(eventId);
+        if (oddsData) {
+            const { home, away } = oddsData;
 
+            const getStyledSpan = (expected, actual) => `
+                <span style="background-color: ${actual > expected ? '#e59c0350' : '#a4a9b350'};">${expected}</span>
+                <span style="background-color: ${actual > expected ? '#e59c03' : '#a4a9b3'};">${actual}</span>
+            `;
+
+            document.getElementById(`home-odds-${eventId}`).innerHTML = getStyledSpan(home.expected, home.actual);
+            document.getElementById(`away-odds-${eventId}`).innerHTML = getStyledSpan(away.expected, away.actual);
+        }
+    } catch (error) {
+        console.error(`Failed to fetch or render odds for event ${eventId}:`, error);
+    }
+};
+ 
 // Calculate form percentage based on the form array
 const calculateFormPercentage = (form) => {
     const expectedPoints = 3 * form.length; 
@@ -1620,61 +1612,53 @@ const renderFormDisplay = (form, formDisplayId) => {
     });
 };
 
-const fetchManagerData = async (managerId, managerContainerId, ppgContainerId, currentPpgContainerId) => {
-    try {
-        const response = await fetch(`${baseURL}/manager/${managerId}`);
-        if (!response.ok) throw new Error(`Failed to fetch manager data: ${response.statusText}`);
+// Separate function to update the PPG in a targeted div
+const renderManagerInfo = (manager, managerId) => {
+    const managerContainerId = document.getElementById(managerId);
+    if (manager && managerContainerId) {
+        const { name, shortName, preferredFormation, performance = {} } = manager; 
 
-        const managerData = await response.json();
-        renderManagerInfo(managerData.manager, managerContainerId);
-
-        // Update the overall PPG using the existing function
-        updatePPG(managerData.manager, ppgContainerId);
-
-        // Fetch events for current team PPG calculation
-        const eventsResponse = await fetch(`${baseURL}/manager/${managerId}/events/last/0`);
-        if (!eventsResponse.ok) throw new Error(`Failed to fetch events: ${eventsResponse.statusText}`);
-
-        const eventsData = await eventsResponse.json();
-
-        // Update PPG for the current managed team
-        //updateCurrentTeamPPG(managerData, eventsData.events, currentPpgContainerId);
-    } catch (error) {
-        console.error("Error fetching manager data:", error);
+        // Update the PPG value in the targeted div
+        managerContainerId.innerHTML = `
+            <div><strong>Manager: </strong>${shortName || name}<span><br /><strong> Formation: </strong>${preferredFormation || ""}</div>`;
     }
 };
 
 
-const fetchWinningOdds = async (eventId) => {
-    try {
-        const winningOddsResponse = await fetch(`${baseURL}/event/${eventId}/provider/1/winning-odds`);
-        if (!winningOddsResponse.ok) {
-            throw new Error(`Failed to fetch winning odds: ${winningOddsResponse.statusText}`);
-        }
-        
-        const oddsData = await winningOddsResponse.json();
-        return oddsData;
-    } catch (error) {
-        console.error("Error fetching winning odds data:", error);
+// Render manager details with performance stats
+const renderManagerData = (manager, containerId) => {
+    const container = document.getElementById(containerId);
+    if (manager && container) {
+        const { name, shortName, preferredFormation, performance = {} } = manager;
+        const { total = 0, wins = 0, draws = 0, losses = 0, totalPoints = 0 } = performance;
+
+        const winPercentage = total ? ((wins / total) * 100).toFixed(0) : 0;
+        const drawPercentage = total ? ((draws / total) * 100).toFixed(0) : 0;
+        const lossPercentage = total ? ((losses / total) * 100).toFixed(0) : 0; 
+        const pointsPerGame = total ? (totalPoints / total).toFixed(2) : 0;
+
+        container.innerHTML = ` 
+                <td>${total}</td>
+                <td>${pointsPerGame}</td>
+                <td>${winPercentage}</td>
+                <td>${drawPercentage}</td>
+                <td>${lossPercentage}</td> 
+        `;
+    } else {
+        container.innerHTML = "<p>Manager data not available</p>";
     }
 };
+ 
+// Separate function to update the PPG in a targeted div
+const updatePPG = (manager, ppgContainerId) => {
+    const ppgContainer = document.getElementById(ppgContainerId);
+    if (manager && ppgContainer) {
+        const { performance = {} } = manager;
+        const { total = 0, totalPoints = 0 } = performance;
+        const pointsPerGame = total ? (totalPoints / total).toFixed(2) : 0;
 
-const renderWinningOdds = async (eventId) => {
-    try {
-        const oddsData = await fetchWinningOdds(eventId);
-        if (oddsData) {
-            const { home, away } = oddsData;
-
-            const getStyledSpan = (expected, actual) => `
-                <span style="background-color: ${actual > expected ? '#e59c0350' : '#a4a9b350'};">${expected}</span>
-                <span style="background-color: ${actual > expected ? '#e59c03' : '#a4a9b3'};">${actual}</span>
-            `;
-
-            document.getElementById(`home-odds-${eventId}`).innerHTML = getStyledSpan(home.expected, home.actual);
-            document.getElementById(`away-odds-${eventId}`).innerHTML = getStyledSpan(away.expected, away.actual);
-        }
-    } catch (error) {
-        console.error(`Failed to fetch or render odds for event ${eventId}:`, error);
+        // Update the PPG value in the targeted div
+        ppgContainer.innerHTML = `<span>${pointsPerGame}</span>`;
     }
 };
 
@@ -1733,45 +1717,77 @@ const updateCurrentTeamPPG = (managerData, events, ppgContainerId) => {
     `;
 
 };
- 
 
-// Render manager details with performance stats
-const renderManagerInfo = (manager, containerId) => {
-    const container = document.getElementById(containerId);
-    if (manager && container) {
-        const { name, shortName, preferredFormation, performance = {} } = manager;
-        const { total = 0, wins = 0, draws = 0, losses = 0 } = performance;
 
-        const winPercentage = total ? ((wins / total) * 100).toFixed(0) : 0;
-        const drawPercentage = total ? ((draws / total) * 100).toFixed(0) : 0;
-        const lossPercentage = total ? ((losses / total) * 100).toFixed(0) : 0; 
 
-        container.innerHTML = ` 
-            <div><strong>M: </strong>${shortName || name}<span><strong> F: </strong>${preferredFormation || ""}</div>
-            <div>  
-                <span><strong>TM: </strong> ${total}</span>
-                <span><strong>W: </strong> ${winPercentage}</span>
-                <span><strong>D: </strong> ${drawPercentage}</span>
-                <span><strong>L: </strong> ${lossPercentage}</span>
-            </div>
-        `;
-    } else {
-        container.innerHTML = "<p>Manager data not available</p>";
+// Fetch pregame form and manager data
+const fetchPregameForm = async (eventId, teamId, homeContainerId, awayContainerId, managerContainerId, ppgContainerId, managerInfoId) => {
+    try {
+        const teamResponse = await fetch(`${baseURL}/team/${teamId}`);
+        if (!teamResponse.ok) throw new Error(`Failed to fetch team data: ${teamResponse.statusText}`);
+        
+        const teamData = await teamResponse.json();
+        const { team } = teamData;
+        const { manager } = team;
+
+        const formResponse = await fetch(`${baseURL}/event/${eventId}/pregame-form`);
+        if (!formResponse.ok) throw new Error(`Failed to fetch pregame form data: ${formResponse.statusText}`);
+        
+        const formData = await formResponse.json();
+        const { homeTeam, awayTeam } = formData;
+
+        if (homeTeam) {
+            const { avgRating, form = [], value, position } = homeTeam;
+            const formPercentage = calculateFormPercentage(form);
+
+            renderFormPercentage(`home-team-form-${eventId}`, formPercentage);
+            renderPregameForm({ name: "Home Team", avgRating, value, position, containerId: homeContainerId });
+        }
+
+        if (awayTeam) {
+            const { avgRating, form = [], value, position } = awayTeam;
+            const formPercentage = calculateFormPercentage(form);
+
+            renderFormPercentage(`away-team-form-${eventId}`, formPercentage);
+            renderPregameForm({ name: "Away Team", avgRating, value, position, containerId: awayContainerId });
+        }
+
+        if (manager) {
+            fetchManagerData(manager.id, managerContainerId, ppgContainerId, managerInfoId);
+        }
+
+    } catch (error) {
+        console.error("Error fetching pregame form or manager data:", error);
     }
 };
- 
-// Separate function to update the PPG in a targeted div
-const updatePPG = (manager, ppgContainerId) => {
-    const ppgContainer = document.getElementById(ppgContainerId);
-    if (manager && ppgContainer) {
-        const { performance = {} } = manager;
-        const { total = 0, totalPoints = 0 } = performance;
-        const pointsPerGame = total ? (totalPoints / total).toFixed(2) : 0;
 
-        // Update the PPG value in the targeted div
-        ppgContainer.innerHTML = `<span>${pointsPerGame}</span>`;
+
+
+const fetchManagerData = async (managerId, managerContainerId, ppgContainerId, managerInfoId) => {
+    try {
+        const response = await fetch(`${baseURL}/manager/${managerId}`);
+        if (!response.ok) throw new Error(`Failed to fetch manager data: ${response.statusText}`);
+
+        const managerData = await response.json();
+        renderManagerInfo(managerData.manager, managerInfoId);
+        renderManagerData(managerData.manager, managerContainerId);
+
+        // Update the overall PPG using the existing function
+        updatePPG(managerData.manager, ppgContainerId);
+
+        // Fetch events for current team PPG calculation
+        const eventsResponse = await fetch(`${baseURL}/manager/${managerId}/events/last/0`);
+        if (!eventsResponse.ok) throw new Error(`Failed to fetch events: ${eventsResponse.statusText}`);
+
+        const eventsData = await eventsResponse.json();
+
+        // Update PPG for the current managed team
+        //updateCurrentTeamPPG(managerData, eventsData.events, currentPpgContainerId);
+    } catch (error) {
+        console.error("Error fetching manager data:", error);
     }
 };
+
 
 const fetchHeadToHead = async (eventId, h2hContainerId) => {
     try {
@@ -2468,31 +2484,33 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                             GD: <span class="value">${awayTeamPoints.goalDifference}</span> 
                         </div>
                     </div>
-                </div>
-                 
-                <h4 style="text-align:center; margin-top:10px;">Manager/Goals</h4>
-                <div class="teams-form ppg">
-                    <div class="homes-team-form"> 
-                        <div id="homePPG-${event.id}" class="pregame-form"></div> 
-                    </div>
-                    <div style="font-size:12px;font-weight:400;color:#9f9f9f;">
-                        Managers' Points/Game
-                    </div>
-                    <div class="aways-team-form"> 
-                        <div id="awayPPG-${event.id}" class="pregame-form"></div> 
-                    </div>
-                </div>
-                 
+                </div> 
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
-                        <div id="homeManager-${event.id}" class="manager-info"></div>
+                        <div id="homeManagerInfo-${event.id}" class="manager-info"></div>
                     </div>
                     <div class="aways-team-form">  
-                        <div id="awayManager-${event.id}" class="manager-info"></div> 
+                        <div id="awayManagerInfo-${event.id}" class="manager-info"></div> 
                     </div>
                 </div>
+                <table style="text-align:center;">
+                    <thead> 
+                        <tr>                       
+                            <th><strong>MP</strong></th>
+                            <th><strong>P/G</strong></th>
+                            <th><strong>W</strong></th>
+                            <th><strong>D</strong></th>
+                            <th><strong>L</strong></th>
+                        </tr>
+                    </thead>
+                    <tbody class="homes-team-form">  
+                        <tr id="homeManager-${event.id}"></tr>   
+                        <tr id="awayManager-${event.id}"></tr> 
+                    </tbody>
+                </table>
                 
+                <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
                 <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
                 <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
 
@@ -2524,7 +2542,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
             `awayPregameForm-${event.id}`,
             `homeManager-${event.id}`,
             `homePPG-${event.id}`,
-            //`homeCurrentPPG-${event.id}`
+            `homeManagerInfo-${event.id}`
         );
 
         fetchPregameForm(
@@ -2534,7 +2552,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
             `awayPregameForm-${event.id}`,
             `awayManager-${event.id}`,
             `awayPPG-${event.id}`,
-            //`awayCurrentPPG-${event.id}`
+            `awayManagerInfo-${event.id}`
         );
 
 
