@@ -1092,7 +1092,7 @@ hr {
     background-repeat: no-repeat;
     transform: rotate(-90deg);
 }
-#stats-container div {
+#stats-container div, .stats-container div {
     flex: 1;
     width: 50%;
     margin: 0 0 0 5px;
@@ -2285,7 +2285,7 @@ const renderStatsTable = (homeStatsOverall, homeStatsHome, awayStatsOverall, awa
                     </thead>
                     <tbody>
                         <tr>
-                            <td>O/td>
+                            <td>O</td>
                             <td>${homeStatsOverall.gamesPlayed}</td>
                             <td>${homeStatsOverall.wins}</td>
                             <td>${homeStatsOverall.draws}</td>
@@ -2312,7 +2312,7 @@ const renderStatsTable = (homeStatsOverall, homeStatsHome, awayStatsOverall, awa
             <!-- Away Team Stats -->
             <div class="away-team-stats">
                 <h4>Away Team</h4>
-                <table>
+                <table >
                     <thead>
                         <tr>
                             <th></th>
