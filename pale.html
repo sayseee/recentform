@@ -2533,6 +2533,11 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
                 </div>
+                
+                <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
+                <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
+                <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
+
                 <div class="teams-form" style="gap:10px;">
                     <div class="homes-team-stats"> 
                     <div class="stat-card ${homeStats.teamStats.goalsScored}">
@@ -2587,11 +2592,29 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div> 
                     </div>
                 </div>
-            <div class="match-odds">
-                <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
-                <span class="odds">${drawIcon} ${drawOdds}</span>
-                <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
-            </div> 
+                    ${event.status.type === 'inprogress' 
+                        ? `
+                <h4 style="text-align:center; margin-top:10px;">Prematch Odds</h4>
+                    <div class="match-odds">
+                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${fractionalToDecimal(homeInitialFractional)}</span></span>
+                        <span class="odds">${drawIcon} ${fractionalToDecimal(drawInitialFractional)}</span>
+                        <span class="odds"><span>${awayIcon} ${fractionalToDecimal(awayInitialFractional)}</span></span><div id="away-odds-${event.id}"></div>
+                    </div> 
+                <h4 style="text-align:center; margin-top:10px;">Live Odds</h4>
+                    <div class="match-odds">
+                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
+                        <span class="odds">${drawIcon} ${drawOdds}</span>
+                        <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
+                    </div>  
+                        ` 
+                        : `
+                    <div class="match-odds">
+                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
+                        <span class="odds">${drawIcon} ${drawOdds}</span>
+                        <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
+                    </div>   
+                `} 
+
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
@@ -2616,10 +2639,6 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <tr id="awayManager-${event.id}"></tr> 
                     </tbody>
                 </table>
-                
-                <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
-                <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
-                <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
 
                 <div id="form-table-container-${event.id}"></div>
                 
