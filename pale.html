@@ -835,7 +835,7 @@ main {
     display: flex;
     flex-direction: column;
 }
-.teams-form .homes-team-form .pregameForm, .teams-form .aways-team-form .pregameForm {
+.teams-form .homes-team-form .pregameForm, .teams-form .aways-team-form .pregameForm, .pregameForm {
     flex: 1;
     display: flex;
     flex-direction: row;
@@ -1138,6 +1138,15 @@ hr {
 .stats-container .home-team-stats table tbody tr:last-child, .stats-container .away-team-stats table tbody tr:last-child {
     background-color:#93c0e630;
     font-weight: 500;
+}
+.homes-team-stats {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    gap: 5px;
+    padding: 10px 0;
 }
      </style>
     </head>
@@ -2469,7 +2478,13 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 <div class="team-info">
                     <div class="team">
                         <img src="${baseURL}/team/${event.homeTeam.id}/image" width="20" height="20" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
-                        <span class="team-name">${homeTeamName}</span>
+                        <span class="team-name">${homeTeamName}</span>                        
+                        <div id="homeForm-${event.id}" class="pregameForm">${homeTeamPoints.form}</div>  
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
+                            GF: <span class="value">${homeTeamPoints.goalsFor}</span> 
+                            GA: <span class="value">${homeTeamPoints.goalsAgainst}</span> 
+                            GD: <span class="value">${homeTeamPoints.goalDifference}</span> 
+                        </div> 
                    </div>
                    <div id="home-team-form-${event.id}" class="home-bar"></div> 
                 </div>
@@ -2499,78 +2514,86 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     <div class="team">
                         <img src="${baseURL}/team/${event.awayTeam.id}/image" width="20" height="20" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${awayTeamName}</span>
-                     </div>
-                </div>
-            </div>
-            <div class="match-odds">
-                <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
-                <span class="odds">${drawIcon} ${drawOdds}</span>
-                <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
-            </div>
-                <div class="teams-form">
-                    <div class="homes-team-form"> 
-                        <div id="homePregameForm-${event.id}" class="pregame-form"></div>  
-                    </div>
-                    <div class="aways-team-form"> 
-                        <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
-                    </div>
-                </div>
-                <h4 style="text-align:center;margin-top:10px;">Goal Statistics</h4>
-                <div class="stats-container">
-                <div class="stat-card ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
-                    <div class="stat-value">
-                        <span class="team-value">${combinedStats.goalsScored}</span>
-                        <span class="trend-arrow ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? 'up' : 'down')}">
-                            ${Math.abs(combinedStats.goalsScored - leagueStats.goalsScored) < tolerance ? '' : (combinedStats.goalsScored > leagueStats.goalsScored ? '▲' : '▼')}
-                        </span>
-                    </div>
-                    <div class="stat-title">Goals</div>                    
-                </div>
-                <div class="stat-card ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? 'up' : 'down')}">
-                    <div class="stat-value">
-                        <span class="team-value">${combinedStats.BTTS}%</span>
-                        <span class="trend-arrow ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? 'up' : 'down')}">
-                            ${Math.abs(combinedStats.BTTS - leagueStats.BTTS) < tolerance ? '' : (combinedStats.BTTS > leagueStats.BTTS ? '▲' : '▼')}
-                        </span>
-                    </div><div class="stat-title">BTTS</div>                    
-                </div>
-                <div class="stat-card ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? 'up' : 'down')}">
-                    <div class="stat-value">
-                        <span class="team-value">${combinedStats.over1_5}%</span>
-                        <span class="trend-arrow ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? 'up' : 'down')}">
-                            ${Math.abs(combinedStats.over1_5 - leagueStats.over1_5) < tolerance ? '' : (combinedStats.over1_5 > leagueStats.over1_5 ? '▲' : '▼')}
-                        </span>
-                    </div>
-                    <div class="stat-title">Over 1.5</div>
-                </div>
-                <div class="stat-card ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? 'up' : 'down')}">
-                   <div class="stat-value">
-                        <span class="team-value">${combinedStats.over2_5}%</span>
-                        <span class="trend-arrow ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? 'up' : 'down')}">
-                            ${Math.abs(combinedStats.over2_5 - leagueStats.over2_5) < tolerance ? '' : (combinedStats.over2_5 > leagueStats.over2_5 ? '▲' : '▼')}
-                        </span>
-                    </div> <div class="stat-title">Over 2.5</div>                    
-                </div>
-            </div>
-                <h4 style="text-align:center;margin-top:10px;">Last 5 Games</h4>
-                <div class="teams-form">
-                    <div class="homes-team-form">  
-                        <div id="homeForm-${event.id}" class="pregameForm">${homeTeamPoints.form}</div>
-                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
-                            GF: <span class="value">${homeTeamPoints.goalsFor}</span> 
-                            GA: <span class="value">${homeTeamPoints.goalsAgainst}</span> 
-                            GD: <span class="value">${homeTeamPoints.goalDifference}</span> 
-                        </div> 
-                    </div>
-                    <div class="aways-team-form">  
-                        <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div> 
+                        <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div>   
                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
                             GF: <span class="value">${awayTeamPoints.goalsFor}</span> 
                             GA: <span class="value">${awayTeamPoints.goalsAgainst}</span> 
                             GD: <span class="value">${awayTeamPoints.goalDifference}</span> 
                         </div>
+                     </div>
+                </div>
+            </div>
+                <div class="teams-form">
+                    <div class="homes-team-form"> 
+                        <div id="homePregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
-                </div> 
+                    <div style="flex:0.5;">
+                    </div>
+                    <div class="aways-team-form"> 
+                        <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
+                    </div>
+                </div>
+                <div class="teams-form">
+                    <div class="homes-team-stats"> 
+                    <div class="stat-card ${homeStats.teamStats.goalsScored}">
+                        <div class="stat-value">
+                            <span class="team-value">${homeStats.teamStats.goalsScored}</span> 
+                        </div>
+                        <div class="stat-title">Goals</div>                    
+                    </div> 
+                    <div class="stat-card ${homeStats.teamStats.BTTS}">
+                        <div class="stat-value">
+                            <span class="team-value">${homeStats.teamStats.BTTS}%</span> 
+                        </div>
+                        <div class="stat-title">BTTS</div>                    
+                    </div> 
+                    <div class="stat-card ${homeStats.teamStats.over1_5}">
+                        <div class="stat-value">
+                            <span class="team-value">${homeStats.teamStats.over1_5}%</span> 
+                        </div>
+                        <div class="stat-title">Over 1.5</div>                    
+                    </div> 
+                    <div class="stat-card ${homeStats.teamStats.over2_5}">
+                        <div class="stat-value">
+                            <span class="team-value">${homeStats.teamStats.over2_5}%</span> 
+                        </div>
+                        <div class="stat-title">Over 2.5</div>                    
+                    </div> 
+                    </div>
+                    <div style="flex:0.5;">
+                    </div>
+                    <div class="homes-team-stats"> 
+                    <div class="stat-card ${awayStats.teamStats.goalsScored}">
+                        <div class="stat-value">
+                            <span class="team-value">${awayStats.teamStats.goalsScored}</span> 
+                        </div>
+                        <div class="stat-title">Goals</div>                    
+                    </div> 
+                    <div class="stat-card ${awayStats.teamStats.BTTS}">
+                        <div class="stat-value">
+                            <span class="team-value">${awayStats.teamStats.BTTS}%</span> 
+                        </div>
+                        <div class="stat-title">BTTS</div>                    
+                    </div> 
+                    <div class="stat-card ${awayStats.teamStats.over1_5}">
+                        <div class="stat-value">
+                            <span class="team-value">${awayStats.teamStats.over1_5}%</span> 
+                        </div>
+                        <div class="stat-title">Over 1.5</div>                    
+                    </div> 
+                    <div class="stat-card ${awayStats.teamStats.over2_5}">
+                        <div class="stat-value">
+                            <span class="team-value">${awayStats.teamStats.over2_5}%</span> 
+                        </div>
+                        <div class="stat-title">Over 2.5</div>                    
+                    </div> 
+                    </div>
+                </div>
+            <div class="match-odds">
+                <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
+                <span class="odds">${drawIcon} ${drawOdds}</span>
+                <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
+            </div> 
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
@@ -2856,6 +2879,7 @@ const fetchOddsForEvent = async (eventId) => {
         };
     }
 };
+
 const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, elementId) => {
     const url = `${baseURL}/event/${customId}/h2h/events`;
     try {
@@ -2871,7 +2895,8 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
             const filteredEvents = data.events
                 .filter(event => event.status && event.status.type === 'finished' && event.id !== currentMatchId)
                 .filter(event => new Date(event.startTimestamp * 1000) >= threeYearsAgoDate)
-                .sort((a, b) => b.startTimestamp - a.startTimestamp);
+                .sort((a, b) => b.startTimestamp - a.startTimestamp)
+                .slice(0, 5); // Limit to 5 events
 
             if (filteredEvents.length > 0) {
                 // Fetch odds for all filtered events
