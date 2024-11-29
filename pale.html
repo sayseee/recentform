@@ -2527,7 +2527,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     <div class="homes-team-form"> 
                         <div id="homePregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
-                    <div style="flex:0.5;">
+                    <div style="flex:0.5;text-align:center;">
+                    <div class="stat-title" style="justify-content:center;align-items:center;gap:5px;">TG <span class="value">${combinedStats.goalsScored}</span>
+                    </div>
                     </div>
                     <div class="aways-team-form"> 
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
