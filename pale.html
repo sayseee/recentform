@@ -2535,7 +2535,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
                 </div>
-                
+                <h4 style="text-align:center;">H2H last 3 years</h4>
+            <div class="h2h-event" id="${uniqueEventId}"></div>
+      
                 <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
                 <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
                 <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
@@ -2648,9 +2650,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 <div id="stats-container-${event.id}"></div>
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}" style="width:40%;"></div> 
             </div>
-                <h4 style="text-align:center;">H2H last 3 years</h4>
-            <div class="h2h-event" id="${uniqueEventId}"></div>
-        `;
+                  `;
             
         // Fetch and display most recent H2H event for the current event
         fetchAndDisplayMostRecentH2HEvent(event.customId, event.id, uniqueEventId);  
