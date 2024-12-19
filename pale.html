@@ -2972,7 +2972,6 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
     }
 };
 
-
 const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
