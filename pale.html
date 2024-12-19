@@ -1123,6 +1123,7 @@ hr {
     width: 96%;
     margin: 0 auto;
 }
+
 .stats-card {  
     display: flex;
     align-items: center;
@@ -1141,6 +1142,7 @@ hr {
     box-shadow: 0 1px 2px 1px rgba(64, 60, 67, .16);
     padding: 3px;
     min-width: 12%; 
+    flex: 1;
 } 
 
 .stats-container div table {
@@ -3002,13 +3004,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                 <div class="stat-value">
                                     <span class="team-value">${h2hStats.overs2_5Percentage}%</span>
                                 </div>                   
-                            </div>
-                            <div class="stats-card">
-                                <div class="stat-title">3.5</div> 
-                                <div class="stat-value">
-                                    <span class="team-value">${h2hStats.overs3_5Percentage}%</span>
-                                </div>                   
-                            </div>
+                            </div> 
                         </div>
                     </div>
                 `;
