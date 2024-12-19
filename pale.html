@@ -2918,48 +2918,20 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                 .slice(0, 5); // Limit to 5 events
 
             if (filteredEvents.length > 0) {
-                // Fetch odds and additional stats for all filtered events
-                const eventsWithStats = await Promise.all(filteredEvents.map(async (event) => {
+                // Fetch odds for all filtered events
+                const eventsWithOdds = await Promise.all(filteredEvents.map(async (event) => {
                     const odds = await fetchOddsForEvent(event.id);
-                    const { homeScore, awayScore } = event;
-                    const totalGoals = homeScore.current + awayScore.current;
-                    const btts = homeScore.current > 0 && awayScore.current > 0 ? "Yes" : "No";
-
                     return {
                         ...event,
-                        ...odds,
-                        btts: btts,
-                        overUnder: {
-                            '1.5': totalGoals > 1.5 ? 'Over' : 'Under',
-                            '2.5': totalGoals > 2.5 ? 'Over' : 'Under',
-                            '3.5': totalGoals > 3.5 ? 'Over' : 'Under'
-                        }
+                        ...odds
                     };
                 }));
-
-                // Calculate Win percentages
-                const winStats = calculateWinStats(eventsWithStats);
-
-                // Create HTML for stats summary before the table
-                const statsHtml = `
-                    <div style="margin-bottom: 10px;">
-                        <strong>Win Percentages:</strong> 
-                        Home: ${winStats.homeWinPercentage.toFixed(2)}%, 
-                        Draw: ${winStats.drawPercentage.toFixed(2)}%, 
-                        Away: ${winStats.awayWinPercentage.toFixed(2)}%<br>
-                        <strong>BTTS:</strong> Yes: ${winStats.bttsYes}, No: ${winStats.bttsNo}<br>
-                        <strong>Over/Under:</strong>
-                        1.5: Over: ${winStats.overUnder['1.5'].over}, Under: ${winStats.overUnder['1.5'].under},
-                        2.5: Over: ${winStats.overUnder['2.5'].over}, Under: ${winStats.overUnder['2.5'].under},
-                        3.5: Over: ${winStats.overUnder['3.5'].over}, Under: ${winStats.overUnder['3.5'].under}
-                    </div>
-                `;
 
                 // Create HTML for the table with all filtered events with odds
                 const eventsHtml = `
                     <table border="0" style="width: 100%; border-collapse: collapse;"> 
                         <tbody>
-                            ${eventsWithStats.map(event => {
+                            ${eventsWithOdds.map(event => {
                                 const homeTeam = event.homeTeam.nameCode;
                                 const awayTeam = event.awayTeam.nameCode;
                                 const homeScore = event.homeScore.current;
@@ -2972,10 +2944,6 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                         <td class="tableDate">${eventDate}</td>
                                         <td style="min-width:130px;">${homeTeam} - ${awayTeam}</td>
                                         <td>${homeScore} - ${awayScore}</td>
-                                        <td>BTTS: ${event.btts}</td>
-                                        <td>Over/Under 1.5: ${event.overUnder['1.5']}</td>
-                                        <td>Over/Under 2.5: ${event.overUnder['2.5']}</td>
-                                        <td>Over/Under 3.5: ${event.overUnder['3.5']}</td>
                                         <td>
                                             <div class="tableOdds" style="min-width:120px;">
                                                 <span class="home-odds">${fractionalToDecimal(event.homeOdds)}</span>
@@ -2989,51 +2957,17 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                         </tbody>
                     </table>
                 `;
-
-                // Display the HTML for all events
-                document.getElementById(elementId).innerHTML = eventsHtml;
+            // Combine stats and table HTML
+                document.getElementById(elementId).innerHTML = statsHtml + eventsHtml;
             } else {
-                document.getElementById(elementId).innerHTML = '<p style="text-align:center;">No finished H2H events from the last 3 years found.</p>';
+                document.getElementById(elementId).innerHTML = "No recent head-to-head matches found.";
             }
-        } else {
-            document.getElementById(elementId).innerHTML = '<p>No events data available.</p>';
         }
     } catch (error) {
-        console.error('Error fetching H2H events:', error.message);
-        document.getElementById(elementId).innerHTML = '<p>Error fetching H2H events.</p>';
+        console.error('Error fetching H2H events:', error);
+        document.getElementById(elementId).innerHTML = "Error loading data.";
     }
 };
-
-// Helper function to calculate win percentages and other stats
-function calculateWinStats(events) {
-    let homeWins = 0, draws = 0, awayWins = 0, bttsYes = 0, bttsNo = 0;
-    let overUnder = {'1.5': {over: 0, under: 0}, '2.5': {over: 0, under: 0}, '3.5': {over: 0, under: 0}};
-
-    for (let event of events) {
-        if (event.homeScore.current > event.awayScore.current) homeWins++;
-        else if (event.homeScore.current < event.awayScore.current) awayWins++;
-        else draws++;
-
-        if (event.btts === "Yes") bttsYes++;
-        else bttsNo++;
-
-        for (let threshold in event.overUnder) {
-            if (event.overUnder[threshold] === 'Over') overUnder[threshold].over++;
-            else overUnder[threshold].under++;
-        }
-    }
-
-    const totalMatches = events.length;
-    return {
-        homeWinPercentage: (homeWins / totalMatches) * 100,
-        drawPercentage: (draws / totalMatches) * 100,
-        awayWinPercentage: (awayWins / totalMatches) * 100,
-        bttsYes: bttsYes,
-        bttsNo: bttsNo,
-        overUnder: overUnder
-    };
-}
-            
 const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
