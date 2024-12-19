@@ -2990,6 +2990,7 @@ const fetchTournamentInfo = async (uniqueTournamentId, seasonId) => {
     return data.info || {};
 };
 
+
 const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchId) => {
     const finishedEvents = await fetchEventsData(tournamentId, seasonId, currentMatchId);
 
