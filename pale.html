@@ -3032,7 +3032,8 @@ function calculateWinStats(events) {
         bttsNo: bttsNo,
         overUnder: overUnder
     };
-};
+}
+            
 const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
