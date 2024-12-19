@@ -2928,11 +2928,11 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
 
                 // Create HTML for the table with all filtered events with odds
                 const eventsHtml = `
-                    <table border="1" style="width: 100%; border-collapse: collapse;"> 
+                    <table border="0" style="width: 100%; border-collapse: collapse;"> 
                         <tbody>
                             ${eventsWithOdds.map(event => {
-                                const homeTeam = event.homeTeam.shortName;
-                                const awayTeam = event.awayTeam.shortName;
+                                const homeTeam = event.homeTeam.nameCode;
+                                const awayTeam = event.awayTeam.nameCode;
                                 const homeScore = event.homeScore.current;
                                 const awayScore = event.awayScore.current;
                                 const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { month: '2-digit', year: '2-digit' })
