@@ -2535,7 +2535,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
                 </div>
-                
+                <h4 style="text-align:center;">H2H last 3 years</h4>
+            <div class="h2h-event" id="${uniqueEventId}"></div>
+      
                 <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
                 <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
                 <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
@@ -2648,9 +2650,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 <div id="stats-container-${event.id}"></div>
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}" style="width:40%;"></div> 
             </div>
-                <h4 style="text-align:center;">H2H last 3 years</h4>
-            <div class="h2h-event" id="${uniqueEventId}"></div>
-        `;
+                  `;
             
         // Fetch and display most recent H2H event for the current event
         fetchAndDisplayMostRecentH2HEvent(event.customId, event.id, uniqueEventId);  
@@ -2914,8 +2914,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
             const filteredEvents = data.events
                 .filter(event => event.status && event.status.type === 'finished' && event.id !== currentMatchId)
                 .filter(event => new Date(event.startTimestamp * 1000) >= threeYearsAgoDate)
-                .sort((a, b) => b.startTimestamp - a.startTimestamp)
-                .slice(0, 5); // Limit to 5 events
+                .sort((a, b) => b.startTimestamp - a.startTimestamp);
 
             if (filteredEvents.length > 0) {
                 // Fetch odds for all filtered events
@@ -2929,11 +2928,11 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
 
                 // Create HTML for the table with all filtered events with odds
                 const eventsHtml = `
-                    <table border="0" style="width: 100%; border-collapse: collapse;"> 
+                    <table border="1" style="width: 100%; border-collapse: collapse;"> 
                         <tbody>
                             ${eventsWithOdds.map(event => {
-                                const homeTeam = event.homeTeam.nameCode;
-                                const awayTeam = event.awayTeam.nameCode;
+                                const homeTeam = event.homeTeam.shortName;
+                                const awayTeam = event.awayTeam.shortName;
                                 const homeScore = event.homeScore.current;
                                 const awayScore = event.awayScore.current;
                                 const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { month: '2-digit', year: '2-digit' })
@@ -2942,10 +2941,10 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                 return `
                                     <tr>
                                         <td class="tableDate">${eventDate}</td>
-                                        <td style="min-width:130px;">${homeTeam} - ${awayTeam}</td>
+                                        <td style="min-width:130px;">${homeTeam}<br />${awayTeam}</td>
                                         <td>${homeScore} - ${awayScore}</td>
                                         <td>
-                                            <div class="tableOdds" style="min-width:120px;">
+                                            <div class="tableOdds" style="min-width:30px;">
                                                 <span class="home-odds">${fractionalToDecimal(event.homeOdds)}</span>
                                                 <span class="draw-odds">${fractionalToDecimal(event.drawOdds)}</span>
                                                 <span class="away-odds">${fractionalToDecimal(event.awayOdds)}</span>
@@ -2961,14 +2960,14 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                 // Display the HTML for all events
                 document.getElementById(elementId).innerHTML = eventsHtml;
             } else {
-                document.getElementById(elementId).innerHTML = '<p style="text-align:center;">No finished H2H events from the last 3 years found.</p>';
+                document.getElementById(elementId).innerHTML = '<span>No finished H2H events from the last 3 years found.</span>';
             }
         } else {
-            document.getElementById(elementId).innerHTML = '<p>No events data available.</p>';
+            document.getElementById(elementId).innerHTML = '<span>No events data available.</span>';
         }
     } catch (error) {
         console.error('Error fetching H2H events:', error.message);
-        document.getElementById(elementId).innerHTML = '<p>Error fetching H2H events.</p>';
+        document.getElementById(elementId).innerHTML = '<span>Error fetching H2H events.</span>';
     }
 };
 
