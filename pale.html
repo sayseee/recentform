@@ -1117,7 +1117,12 @@ hr {
     padding: 3px;
     min-width: 20%;
 } 
-
+.stats-holder {
+    display: flex; 
+    gap: 5px;
+    width: 96%;
+    margin: 0 auto;
+}
 .stats-card {  
     display: flex;
     align-items: center;
@@ -1134,7 +1139,8 @@ hr {
     border-radius: 2px;
     -webkit-box-shadow: 0 1px 2px 1px rgba(64, 60, 67, .16);
     box-shadow: 0 1px 2px 1px rgba(64, 60, 67, .16);
-    padding: 3px; 
+    padding: 3px;
+    min-width: 12%; 
 } 
 
 .stats-container div table {
@@ -2954,7 +2960,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                 // Create HTML for H2H stats summary
                 const statsHtml = `
                     <div style="margin-bottom: 10px;"> 
-                        <div class="stats-container">
+                        <div class="stats-holder">
                             <div class="stats-card">
                                 <div class="stat-title">1</div> 
                                 <div class="stat-value">
@@ -3022,10 +3028,10 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                                 return `
                                     <tr>
                                         <td class="tableDate">${eventDate}</td>
-                                        <td style="min-width:130px;">${homeTeam}<br />${awayTeam}</td>
+                                        <td style="min-width:70px;">${homeTeam}<br />${awayTeam}</td>
                                         <td>${homeScore} - ${awayScore}</td>
-                                        <td>BTTS: ${event.btts}</td>
-                                        <td>Goals: ${event.totalGoals}</td>
+                                        <td>${event.btts}</td>
+                                        <td><strong>${event.totalGoals}</strong> Goals</td>
                                         <td>
                                             <div class="tableOdds" style="min-width:30px;">
                                                 <span class="home-odds">${fractionalToDecimal(event.homeOdds)}</span>
