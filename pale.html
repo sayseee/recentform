@@ -1118,6 +1118,25 @@ hr {
     min-width: 20%;
 } 
 
+.stats-card {  
+    display: flex;
+    align-items: center;
+    position: relative;
+    display: -ms-flexbox;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background: #FFF;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 1px 2px 1px rgba(64, 60, 67, .16);
+    box-shadow: 0 1px 2px 1px rgba(64, 60, 67, .16);
+    padding: 3px; 
+} 
+
 .stats-container div table {
     width: 100%;
     border-collapse: collapse;
@@ -2898,7 +2917,6 @@ const fetchOddsForEvent = async (eventId) => {
         };
     }
 };
-
 const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, elementId) => {
     const url = `${baseURL}/event/${customId}/h2h/events`;
     try {
@@ -2907,42 +2925,107 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
 
         if (data && data.events) {
             const currentDate = new Date();
-            const threeYearsAgoDate = new Date();
-            threeYearsAgoDate.setFullYear(currentDate.getFullYear() - 2);
+            const twoYearsAgoDate = new Date();
+            twoYearsAgoDate.setFullYear(currentDate.getFullYear() - 2);
 
             // Filter events to include only those from the last 2 years and exclude the current match
             const filteredEvents = data.events
-                .filter(event => event.status && event.status.type === 'finished' && event.id !== currentMatchId)
-                .filter(event => new Date(event.startTimestamp * 1000) >= threeYearsAgoDate)
+                .filter(event => event.status?.type === 'finished' && event.id !== currentMatchId)
+                .filter(event => new Date(event.startTimestamp * 1000) >= twoYearsAgoDate)
                 .sort((a, b) => b.startTimestamp - a.startTimestamp);
 
             if (filteredEvents.length > 0) {
                 // Fetch odds for all filtered events
-                const eventsWithOdds = await Promise.all(filteredEvents.map(async (event) => {
-                    const odds = await fetchOddsForEvent(event.id);
-                    return {
-                        ...event,
-                        ...odds
-                    };
+                const eventsWithStats = await Promise.all(filteredEvents.map(async (event) => {
+                    try {
+                        const odds = await fetchOddsForEvent(event.id);
+                        const totalGoals = event.homeScore.current + event.awayScore.current;
+                        const btts = event.homeScore.current > 0 && event.awayScore.current > 0 ? "Yes" : "No";
+                        return { ...event, ...odds, totalGoals, btts };
+                    } catch (error) {
+                        console.error(`Error fetching odds for event ${event.id}:`, error.message);
+                        return { ...event, totalGoals: 0, btts: "No" }; // Fallback in case odds fetch fails
+                    }
                 }));
+
+                // Calculate H2H stats
+                const h2hStats = calculateH2HStats(eventsWithStats);
+
+                // Create HTML for H2H stats summary
+                const statsHtml = `
+                    <div style="margin-bottom: 10px;"> 
+                        <div class="stats-container">
+                            <div class="stats-card">
+                                <div class="stat-title">1</div> 
+                                <div class="stat-value">
+                                    <span class="team-value">${h2hStats.homeWinPercentage}%</span>
+                                </div>                   
+                            </div>
+                            <div class="stats-card">
+                                <div class="stat-title">X</div> 
+                                <div class="stat-value">
+                                    <span class="team-value">${h2hStats.drawPercentage}%</span>
+                                </div>                   
+                            </div>
+                            <div class="stats-card">
+                                <div class="stat-title">2</div> 
+                                <div class="stat-value">
+                                    <span class="team-value">${h2hStats.awayWinPercentage}%</span>
+                                </div>                   
+                            </div>
+                            <div class="stats-card">
+                                <div class="stat-title">Av.G</div> 
+                                <div class="stat-value">
+                                    <span class="team-value">${h2hStats.averageGoals.toFixed(2)}</span>
+                                </div>                   
+                            </div>
+                            <div class="stats-card">
+                                <div class="stat-title">BTTS</div> 
+                                <div class="stat-value">
+                                    <span class="team-value">${h2hStats.bttsYesPercentage}%</span>
+                                </div>                   
+                            </div>
+                            <div class="stats-card">
+                                <div class="stat-title">1.5</div> 
+                                <div class="stat-value">
+                                    <span class="team-value">${h2hStats.overs1_5Percentage}%</span>
+                                </div>                   
+                            </div>
+                            <div class="stats-card">
+                                <div class="stat-title">2.5</div> 
+                                <div class="stat-value">
+                                    <span class="team-value">${h2hStats.overs2_5Percentage}%</span>
+                                </div>                   
+                            </div>
+                            <div class="stats-card">
+                                <div class="stat-title">3.5</div> 
+                                <div class="stat-value">
+                                    <span class="team-value">${h2hStats.overs3_5Percentage}%</span>
+                                </div>                   
+                            </div>
+                        </div>
+                    </div>
+                `;
 
                 // Create HTML for the table with all filtered events with odds
                 const eventsHtml = `
                     <table border="0" style="width: 100%; border-collapse: collapse;"> 
                         <tbody>
-                            ${eventsWithOdds.map(event => {
+                            ${eventsWithStats.map(event => {
                                 const homeTeam = event.homeTeam.nameCode;
                                 const awayTeam = event.awayTeam.nameCode;
                                 const homeScore = event.homeScore.current;
                                 const awayScore = event.awayScore.current;
-                                const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { month: '2-digit', year: '2-digit' })
-                                    .replace('/', '.').replace('/', '.');
+                                const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { 
+                                    month: '2-digit', year: '2-digit' }).replace('/', '.').replace('/', '.');
 
                                 return `
                                     <tr>
                                         <td class="tableDate">${eventDate}</td>
                                         <td style="min-width:130px;">${homeTeam}<br />${awayTeam}</td>
                                         <td>${homeScore} - ${awayScore}</td>
+                                        <td>BTTS: ${event.btts}</td>
+                                        <td>Goals: ${event.totalGoals}</td>
                                         <td>
                                             <div class="tableOdds" style="min-width:30px;">
                                                 <span class="home-odds">${fractionalToDecimal(event.homeOdds)}</span>
@@ -2957,19 +3040,59 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                     </table>
                 `;
 
-                // Display the HTML for all events
-                document.getElementById(elementId).innerHTML = eventsHtml;
+                // Combine stats and events HTML
+                document.getElementById(elementId).innerHTML = statsHtml + eventsHtml;
             } else {
-                document.getElementById(elementId).innerHTML = '<span>No finished H2H events from the last 3 years found.</span>';
+                document.getElementById(elementId).innerHTML = '<span style="text-align:center;">No finished H2H events from the last 2 years found.</span>';
             }
         } else {
-            document.getElementById(elementId).innerHTML = '<span>No events data available.</span>';
+            document.getElementById(elementId).innerHTML = '<span style="text-align:center;">No events data available.</span>';
         }
     } catch (error) {
         console.error('Error fetching H2H events:', error.message);
-        document.getElementById(elementId).innerHTML = '<span>Error fetching H2H events.</span>';
+        document.getElementById(elementId).innerHTML = '<span style="text-align:center;">Error fetching H2H events.</span>';
     }
 };
+
+// Helper function to calculate H2H stats
+function calculateH2HStats(events) {
+    const totalMatches = events.length;
+    let homeWins = 0, draws = 0, awayWins = 0, totalGoals = 0;
+    let bttsYes = 0, bttsNo = 0, overs1_5 = 0, overs2_5 = 0, overs3_5 = 0;
+
+    events.forEach(event => {
+        const homeScore = event.homeScore.current;
+        const awayScore = event.awayScore.current;
+        const goals = homeScore + awayScore;
+
+        // Count wins, draws, and losses
+        if (homeScore > awayScore) homeWins++;
+        else if (homeScore < awayScore) awayWins++;
+        else draws++;
+
+        // Count goals and BTTS
+        totalGoals += goals;
+        if (event.btts === "Yes") bttsYes++;
+        else bttsNo++;
+
+        // Count Overs
+        if (goals > 1.5) overs1_5++;
+        if (goals > 2.5) overs2_5++;
+        if (goals > 3.5) overs3_5++;
+    });
+
+    return {
+        homeWinPercentage: Math.round((homeWins / totalMatches) * 100),
+        drawPercentage: Math.round((draws / totalMatches) * 100),
+        awayWinPercentage: Math.round((awayWins / totalMatches) * 100),
+        averageGoals: Math.round(totalGoals / totalMatches),
+        bttsYesPercentage: Math.round((bttsYes / totalMatches) * 100),
+        bttsNoPercentage: Math.round((bttsNo / totalMatches) * 100),
+        overs1_5Percentage: Math.round((overs1_5 / totalMatches) * 100),
+        overs2_5Percentage: Math.round((overs2_5 / totalMatches) * 100),
+        overs3_5Percentage: Math.round((overs3_5 / totalMatches) * 100)
+    };
+}
 
 const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
