@@ -2429,13 +2429,28 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         // Fetch last 15 games for each team
         const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id, event.id, event.tournament.uniqueTournament.id);
         const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id, event.tournament.uniqueTournament.id);
- 
+  
         // Extract last 5 home/away games form
         const homeTeamHomeForm = getHomeAwayForm(homeTeamLastEvents, 'home', event.homeTeam.id);
         const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayTeam.id);
 
         const homeTeamPoints = getLastFiveGamesForm(homeTeamLastEvents, event.homeTeam.id, event.id);
         const awayTeamPoints = getLastFiveGamesForm(awayTeamLastEvents, event.awayTeam.id, event.id);
+
+        // Fetch last games for each team
+        const homeTeamEvents = await fetchLastTenEvents(event.homeTeam.id, event.id, event.tournament.uniqueTournament.id);
+        const awayTeamEvents = await fetchLastTenEvents(event.awayTeam.id, event.id, event.tournament.uniqueTournament.id);
+
+        // Calculate form using full events data
+        const homeOverallForm = getLastTenGamesForm(homeTeamEvents, event.homeTeam.id, event.id, 'overall', 10);
+        const awayOverallForm = getLastTenGamesForm(awayTeamEvents, event.awayTeam.id, event.id, 'overall', 10);
+        const homeForm = getLastTenGamesForm(homeTeamEvents, event.homeTeam.id, event.id, 'home', 10);
+        const awayForm = getLastTenGamesForm(awayTeamEvents, event.awayTeam.id, event.id, 'away', 10);
+
+        console.log('Home Overall:', homeOverallForm);
+        console.log('Away Overall:', awayOverallForm);
+        console.log('Home Team Home:', homeForm);
+        console.log('Away Team Away:', awayForm);
 
         const homeTeamForm = ((homeTeamPoints / 15) * 100).toFixed(0);
         const awayTeamForm = ((awayTeamPoints / 15) * 100).toFixed(0);
@@ -2505,14 +2520,19 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     <div class="team">
                         <img src="${baseURL}/team/${event.homeTeam.id}/image" width="20" height="20" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${homeTeamName}</span>                        
-                        <div id="homeForm-${event.id}" class="pregameForm">${homeTeamPoints.form}</div>  
+                        <div id="homeForm-${event.id}" class="pregameForm">${homeTeamPoints.form}</div>   
                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
-                            GF: <span class="value">${homeTeamPoints.goalsFor}</span> 
-                            GA: <span class="value">${homeTeamPoints.goalsAgainst}</span> 
-                            GD: <span class="value">${homeTeamPoints.goalDifference}</span> 
+                            W: <span class="value">${homeOverallForm.wins}</span> 
+                            D: <span class="value">${homeOverallForm.draws}</span> 
+                            L: <span class="value">${homeOverallForm.losses}</span> 
+                        </div> 
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
+                            W: <span class="value">${homeForm.wins}</span> 
+                            D: <span class="value">${homeForm.draws}</span> 
+                            L: <span class="value">${homeForm.losses}</span> 
                         </div> 
                    </div>
-                   <div id="home-team-form-${event.id}" class="home-bar"></div> 
+                   <!--<div id="home-team-form-${event.id}" class="home-bar"></div> -->
                 </div>
                 <div class="match-details">
                     ${event.status.type === 'inprogress' 
@@ -2536,19 +2556,48 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                             </div> 
                 </div>
                 <div class="team-info">
-                   <div id="away-team-form-${event.id}" class="away-bar"></div>
+                  <!-- <div id="away-team-form-${event.id}" class="away-bar"></div> -->
                     <div class="team">
                         <img src="${baseURL}/team/${event.awayTeam.id}/image" width="20" height="20" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${awayTeamName}</span>
-                        <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div>   
+                        <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div>    
                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
-                            GF: <span class="value">${awayTeamPoints.goalsFor}</span> 
-                            GA: <span class="value">${awayTeamPoints.goalsAgainst}</span> 
-                            GD: <span class="value">${awayTeamPoints.goalDifference}</span> 
-                        </div>
+                            W: <span class="value">${awayOverallForm.wins}</span> 
+                            D: <span class="value">${awayOverallForm.draws}</span> 
+                            L: <span class="value">${awayOverallForm.losses}</span> 
+                        </div> 
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
+                            W: <span class="value">${awayForm.wins}</span> 
+                            D: <span class="value">${awayForm.draws}</span> 
+                            L: <span class="value">${awayForm.losses}</span> 
+                        </div> 
                      </div>
                 </div>
             </div>
+            
+            ${event.status.type === 'inprogress' 
+                        ? `
+                <h4 style="text-align:center; margin-top:10px;">Prematch Odds</h4>
+                    <div class="match-odds">
+                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${fractionalToDecimal(homeInitialFractional)}</span></span>
+                        <span class="odds">${drawIcon} ${fractionalToDecimal(drawInitialFractional)}</span>
+                        <span class="odds"><span>${awayIcon} ${fractionalToDecimal(awayInitialFractional)}</span></span><div id="away-odds-${event.id}"></div>
+                    </div> 
+                <h4 style="text-align:center; margin-top:10px;">Live Odds</h4>
+                    <div class="match-odds">
+                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
+                        <span class="odds">${drawIcon} ${drawOdds}</span>
+                        <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
+                    </div>  
+                        ` 
+                        : `
+                    <div class="match-odds">
+                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
+                        <span class="odds">${drawIcon} ${drawOdds}</span>
+                        <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
+                    </div>   
+                `} 
+                <div id="form-table-container-${event.id}"></div>
                 <div class="teams-form">
                     <div class="homes-team-form"> 
                         <div id="homePregameForm-${event.id}" class="pregame-form"></div>  
@@ -2560,10 +2609,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     <div class="aways-team-form"> 
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
-                </div>
-                <h4 style="text-align:center;">H2H last 3 years</h4>
-            <div class="h2h-event" id="${uniqueEventId}"></div>
-      
+                </div>               
                 <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
                 <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
                 <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
@@ -2622,29 +2668,12 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div> 
                     </div>
                 </div>
-                    ${event.status.type === 'inprogress' 
-                        ? `
-                <h4 style="text-align:center; margin-top:10px;">Prematch Odds</h4>
-                    <div class="match-odds">
-                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${fractionalToDecimal(homeInitialFractional)}</span></span>
-                        <span class="odds">${drawIcon} ${fractionalToDecimal(drawInitialFractional)}</span>
-                        <span class="odds"><span>${awayIcon} ${fractionalToDecimal(awayInitialFractional)}</span></span><div id="away-odds-${event.id}"></div>
-                    </div> 
-                <h4 style="text-align:center; margin-top:10px;">Live Odds</h4>
-                    <div class="match-odds">
-                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
-                        <span class="odds">${drawIcon} ${drawOdds}</span>
-                        <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
-                    </div>  
-                        ` 
-                        : `
-                    <div class="match-odds">
-                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
-                        <span class="odds">${drawIcon} ${drawOdds}</span>
-                        <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
-                    </div>   
-                `} 
+                  
 
+                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
+                <h4 style="text-align:center;">H2H Last 3 Years</h4> 
+            <div class="h2h-event" id="${uniqueEventId}"></div>
+      
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
@@ -2669,12 +2698,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <tr id="awayManager-${event.id}"></tr> 
                     </tbody>
                 </table>
-
-                <div id="form-table-container-${event.id}"></div>
                 
             <div class="overall-stats-wrapper">
                 <div id="stats-container-${event.id}"></div>
-                <div class="team-manager-h2h" id="${uniqueH2hContainer}" style="width:40%;"></div> 
             </div>
                   `;
             
@@ -2957,57 +2983,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
 
                 // Calculate H2H stats
                 const h2hStats = calculateH2HStats(eventsWithStats);
-
-                // Create HTML for H2H stats summary
-                const statsHtml = `
-                    <div style="margin-bottom: 10px;"> 
-                        <div class="stats-holder">
-                            <div class="stats-card">
-                                <div class="stat-title">1</div> 
-                                <div class="stat-value">
-                                    <span class="team-value">${h2hStats.homeWinPercentage}%</span>
-                                </div>                   
-                            </div>
-                            <div class="stats-card">
-                                <div class="stat-title">X</div> 
-                                <div class="stat-value">
-                                    <span class="team-value">${h2hStats.drawPercentage}%</span>
-                                </div>                   
-                            </div>
-                            <div class="stats-card">
-                                <div class="stat-title">2</div> 
-                                <div class="stat-value">
-                                    <span class="team-value">${h2hStats.awayWinPercentage}%</span>
-                                </div>                   
-                            </div>
-                            <div class="stats-card">
-                                <div class="stat-title">Av.G</div> 
-                                <div class="stat-value">
-                                    <span class="team-value">${h2hStats.averageGoals.toFixed(2)}</span>
-                                </div>                   
-                            </div>
-                            <div class="stats-card">
-                                <div class="stat-title">BTTS</div> 
-                                <div class="stat-value">
-                                    <span class="team-value">${h2hStats.bttsYesPercentage}%</span>
-                                </div>                   
-                            </div>
-                            <div class="stats-card">
-                                <div class="stat-title">1.5</div> 
-                                <div class="stat-value">
-                                    <span class="team-value">${h2hStats.overs1_5Percentage}%</span>
-                                </div>                   
-                            </div>
-                            <div class="stats-card">
-                                <div class="stat-title">2.5</div> 
-                                <div class="stat-value">
-                                    <span class="team-value">${h2hStats.overs2_5Percentage}%</span>
-                                </div>                   
-                            </div> 
-                        </div>
-                    </div>
-                `;
-
+ 
                 // Create HTML for the table with all filtered events with odds
                 const eventsHtml = `
                     <table border="0" style="width: 100%; border-collapse: collapse;"> 
@@ -3042,7 +3018,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                 `;
 
                 // Combine stats and events HTML
-                document.getElementById(elementId).innerHTML = statsHtml + eventsHtml;
+                document.getElementById(elementId).innerHTML = eventsHtml;
             } else {
                 document.getElementById(elementId).innerHTML = '<span style="text-align:center;">No finished H2H events from the last 2 years found.</span>';
             }
@@ -3105,6 +3081,21 @@ const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
 
     return filteredEvents;
 };
+
+const fetchLastTenEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
+    const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
+    const data = await response.json();
+    const events = data.events.reverse(); // Reverse to get the most recent events first
+    // Filter finished matches and exclude the current event
+    const filteredEvents = events.filter(event => 
+        event.id !== currentMatchId &&
+        event.tournament?.uniqueTournament?.id === uniqueTournamentId &&
+        event.status.type === 'finished'
+    );
+
+    return filteredEvents; // Do not slice here
+};
+
 
 const fetchTournamentInfo = async (uniqueTournamentId, seasonId) => {
     const url = `${baseURL}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/info`;
@@ -3390,7 +3381,65 @@ const getLastFiveGamesForm = (events, teamId, currentMatchId) => {
     };
 };
 
-     
+const getLastTenGamesForm = (events, teamId, currentMatchId, location = 'overall', numberOfGames = 10) => {
+    // Filter finished matches excluding the current match
+    const finishedEvents = events.filter((event) => event.status.type === 'finished' && event.id !== currentMatchId);
+
+    // Apply location-specific filter
+    const filteredEvents = finishedEvents.filter((event) => {
+        if (location === 'home') {
+            return event.homeTeam.id === teamId; // Only home games
+        } else if (location === 'away') {
+            return event.awayTeam.id === teamId; // Only away games
+        }
+        return event.homeTeam.id === teamId || event.awayTeam.id === teamId; // Overall
+    });
+
+    // Sort events by date (latest first)
+    const sortedEvents = filteredEvents.sort((a, b) => new Date(b.startTimestamp) - new Date(a.startTimestamp));
+
+    // Ensure the slice retrieves exactly the last `numberOfGames` matches, or as many as available
+    const lastFilteredEvents = sortedEvents.slice(0, numberOfGames);
+
+    let wins = 0, draws = 0, losses = 0;
+
+    const results = lastFilteredEvents.map((event) => {
+        const homeTeamName = event.homeTeam.name;
+        const awayTeamName = event.awayTeam.name;
+
+        let result;
+        if (event.winnerCode === 3) {
+            result = 'Draw';
+            draws++;
+        } else if (
+            (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
+            (event.winnerCode === 2 && event.awayTeam.id === teamId)
+        ) {
+            result = 'Win';
+            wins++;
+        } else {
+            result = 'Loss';
+            losses++;
+        } 
+
+        return {
+            homeTeamName,
+            awayTeamName,
+            result,
+            date: new Date(event.startTimestamp * 1000).toLocaleDateString(), // Convert timestamp to readable date
+        };
+    });
+
+    return {
+        wins,
+        draws,
+        losses,
+        totalGames: lastFilteredEvents.length, // This will be up to 10 if available
+        results,
+    };
+};
+
+
 
         const fetchEventDetails = async (eventId) => { 
             await displayEventDetails(eventId);
