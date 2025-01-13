@@ -2447,10 +2447,10 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const homeForm = getLastTenGamesForm(homeTeamEvents, event.homeTeam.id, event.id, 'home', 10);
         const awayForm = getLastTenGamesForm(awayTeamEvents, event.awayTeam.id, event.id, 'away', 10);
 
-        console.log('Home Overall:', homeOverallForm);
-        console.log('Away Overall:', awayOverallForm);
-        console.log('Home Team Home:', homeForm);
-        console.log('Away Team Away:', awayForm);
+       // console.log('Home Overall:', homeOverallForm);
+       //  console.log('Away Overall:', awayOverallForm);
+        // console.log('Home Team Home:', homeForm);
+        // console.log('Away Team Away:', awayForm);
 
         const homeTeamForm = ((homeTeamPoints / 15) * 100).toFixed(0);
         const awayTeamForm = ((awayTeamPoints / 15) * 100).toFixed(0);
