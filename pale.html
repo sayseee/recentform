@@ -2557,6 +2557,19 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const tolerance = 0.01; 
 
         eventLink.innerHTML = `
+        
+                <div class="teams-form">
+                    <div class="homes-team-form"> 
+                        <div id="homePregameForm-${event.id}" class="pregame-form"></div>  
+                    </div>
+                    <div style="flex:0.5;text-align:center;margin-top:10px;">
+                    <div class="stat-title" style="justify-content:center;align-items:center;gap:5px;">TG <span class="value">${combinedStats.goalsScored}</span>
+                    </div>
+                    </div>
+                    <div class="aways-team-form"> 
+                        <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
+                    </div>
+                </div> 
             <div class="match-info-container">
                 <div class="team-info">
                     <div class="team">
@@ -2597,7 +2610,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                                 <span id="live-timer-${event.id}"></span>
                             </div> 
                 </div>
+                
                 <div class="team-info">
+                    
                   <!-- <div id="away-team-form-${event.id}" class="away-bar"></div> -->
                     <div class="team">
                         <img src="${baseURL}/team/${event.awayTeam.id}/image" width="20" height="20" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
@@ -2621,19 +2636,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <span class="odds">${drawIcon} ${drawOdds}</span>
                         <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
                     </div>  
-                <div id="form-table-container-${event.id}"></div>
-                <div class="teams-form">
-                    <div class="homes-team-form"> 
-                        <div id="homePregameForm-${event.id}" class="pregame-form"></div>  
-                    </div>
-                    <div style="flex:0.5;text-align:center;">
-                    <div class="stat-title" style="justify-content:center;align-items:center;gap:5px;">TG <span class="value">${combinedStats.goalsScored}</span>
-                    </div>
-                    </div>
-                    <div class="aways-team-form"> 
-                        <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
-                    </div>
-                </div>               
+                <div id="form-table-container-${event.id}"></div>              
                 <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
                 <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
                 <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
