@@ -1183,7 +1183,7 @@ hr {
 .goal-distribution-table td {
     border: 1px solid #ddd;
     text-align: center;
-    padding: 2px 4px;
+    padding: 8px;
 }
 
 .goal-distribution-table th {
@@ -2361,6 +2361,7 @@ const fetchTeamName = async (teamId) => {
         return `Team ${teamId}`;
     }
 };
+
 const renderGoalDistributionAsTable = async (homeTeamId, awayTeamId, uniqueTournamentId, seasonId, eventId) => {
     const [homeGoalDistributions, awayGoalDistributions] = await Promise.all([
         fetchGoalDistribution(homeTeamId, uniqueTournamentId, seasonId),
@@ -2384,13 +2385,6 @@ const renderGoalDistributionAsTable = async (homeTeamId, awayTeamId, uniqueTourn
     }
 
     container.innerHTML = ""; // Clear previous content
-
-    // Create and add the heading
-    const heading = document.createElement("h4");
-    heading.style.textAlign = "center";
-    heading.style.marginTop = "10px";
-    heading.textContent = "Goal Distribution";
-    container.appendChild(heading);
 
     // Create table
     const table = document.createElement("table");
@@ -2433,7 +2427,6 @@ const renderGoalDistributionAsTable = async (homeTeamId, awayTeamId, uniqueTourn
     // Append table to the container
     container.appendChild(table);
 };
-
 
 
 // Utility function to generate increase/decrease icon
@@ -2615,12 +2608,30 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         </div> 
                      </div>
                 </div>
-            </div> 
+            </div>
+            
+            ${event.status.type === 'inprogress' 
+                        ? `
+                <h4 style="text-align:center; margin-top:10px;">Prematch Odds</h4>
+                    <div class="match-odds">
+                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${fractionalToDecimal(homeInitialFractional)}</span></span>
+                        <span class="odds">${drawIcon} ${fractionalToDecimal(drawInitialFractional)}</span>
+                        <span class="odds"><span>${awayIcon} ${fractionalToDecimal(awayInitialFractional)}</span></span><div id="away-odds-${event.id}"></div>
+                    </div> 
+                <h4 style="text-align:center; margin-top:10px;">Live Odds</h4>
                     <div class="match-odds">
                         <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
                         <span class="odds">${drawIcon} ${drawOdds}</span>
                         <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
                     </div>  
+                        ` 
+                        : `
+                    <div class="match-odds">
+                        <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
+                        <span class="odds">${drawIcon} ${drawOdds}</span>
+                        <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
+                    </div>   
+                `} 
                 <div id="form-table-container-${event.id}"></div>
                 <div class="teams-form">
                     <div class="homes-team-form"> 
@@ -2637,10 +2648,62 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                 <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
                 <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
                 <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
+
+                <div class="teams-form" style="gap:10px;">
+                    <div class="homes-team-stats"> 
+                    <div class="stat-card ${homeStats.teamStats.goalsScored}">
+                        <div class="stat-value">
+                            <span class="team-value">${homeStats.teamStats.goalsScored}</span> 
+                        </div>
+                        <div class="stat-title">GS</div>                    
+                    </div> 
+                    <div class="stat-card ${homeStats.teamStats.BTTS}">
+                        <div class="stat-value">
+                            <span class="team-value">${homeStats.teamStats.BTTS}</span> 
+                        </div>
+                        <div class="stat-title">Yes</div>                    
+                    </div> 
+                    <div class="stat-card ${homeStats.teamStats.over1_5}">
+                        <div class="stat-value">
+                            <span class="team-value">${homeStats.teamStats.over1_5}</span> 
+                        </div>
+                        <div class="stat-title">+1.5</div>                    
+                    </div> 
+                    <div class="stat-card ${homeStats.teamStats.over2_5}">
+                        <div class="stat-value">
+                            <span class="team-value">${homeStats.teamStats.over2_5}</span> 
+                        </div>
+                        <div class="stat-title">+2.5</div>                    
+                    </div> 
+                    </div>
+                    <div class="homes-team-stats"> 
+                    <div class="stat-card ${awayStats.teamStats.goalsScored}">
+                        <div class="stat-value">
+                            <span class="team-value">${awayStats.teamStats.goalsScored}</span> 
+                        </div>
+                        <div class="stat-title">GS</div>                    
+                    </div> 
+                    <div class="stat-card ${awayStats.teamStats.BTTS}">
+                        <div class="stat-value">
+                            <span class="team-value">${awayStats.teamStats.BTTS}</span> 
+                        </div>
+                        <div class="stat-title">Yes</div>                    
+                    </div> 
+                    <div class="stat-card ${awayStats.teamStats.over1_5}">
+                        <div class="stat-value">
+                            <span class="team-value">${awayStats.teamStats.over1_5}</span> 
+                        </div>
+                        <div class="stat-title">+1.5</div>                    
+                    </div> 
+                    <div class="stat-card ${awayStats.teamStats.over2_5}">
+                        <div class="stat-value">
+                            <span class="team-value">${awayStats.teamStats.over2_5}</span> 
+                        </div>
+                        <div class="stat-title">+2.5</div>                    
+                    </div> 
+                    </div>
+                </div>
                   
-            <div class="overall-stats-wrapper">
-                <div id="stats-container-${event.id}"></div>
-            </div>
 <div id="goal-distribution-container-${event.id}" class="goal-distribution"></div>
 
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
@@ -2672,6 +2735,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </tbody>
                 </table>
                 
+            <div class="overall-stats-wrapper">
+                <div id="stats-container-${event.id}"></div>
+            </div>
                   `;
             
         // Fetch and display most recent H2H event for the current event
@@ -3053,16 +3119,6 @@ const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     return filteredEvents;
 };
 
-// const fetchLastTenEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
-//     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
-//     const data = await response.json();
-//     const events = data.events.reverse(); // Reverse to get the most recent events first
-//     // Remove the current event from the list
-//     const lastEvents = events.filter(event => event.id !== currentMatchId && event.tournament?.uniqueTournament?.id === uniqueTournamentId && event.status.type === 'finished');
-//     const filteredEvents = lastEvents.slice(0, 10); // Return only the last 15 games 
-
-//     return filteredEvents;
-// };
 const fetchLastTenEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
@@ -3076,6 +3132,7 @@ const fetchLastTenEvents = async (teamId, currentMatchId, uniqueTournamentId) =>
 
     return filteredEvents; // Do not slice here
 };
+
 
 const fetchTournamentInfo = async (uniqueTournamentId, seasonId) => {
     const url = `${baseURL}/unique-tournament/${uniqueTournamentId}/season/${seasonId}/info`;
