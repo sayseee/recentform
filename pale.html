@@ -1066,8 +1066,7 @@ main {
 }
 .overall-stats-wrapper>div:first-child { 
     flex: 2;
-    padding-bottom: 10px;
-    background: #eef4f9;
+    padding-bottom: 10px; 
     margin-top: 10px;
 }
 hr { 
@@ -2056,6 +2055,24 @@ const renderStats = (homeStats, awayStats, containerId) => {
 // Helper to safely calculate percentages
 const safeCalcPercentage = (value) => (isNaN(value) || value === '' ? '' : `${Math.round(value)}%`);
 
+
+// Calculate clean sheets percentages
+const homeCleanSheetsPercentage = homeStats.matches
+    ? safeCalcPercentage((homeStats.cleanSheets / homeStats.matches) * 100)
+    : '';
+const awayCleanSheetsPercentage = awayStats.matches
+    ? safeCalcPercentage((awayStats.cleanSheets / awayStats.matches) * 100)
+    : '';
+
+// Add clean sheets percentages before the h4
+const cleanSheetsHTML = `
+    <div style="text-align:center; margin-bottom:10px;display:flex;justify-content:space-around">
+        <span style="color: rgba(8, 98, 114, 0.65);font-size: 18px;"><strong>${homeCleanSheetsPercentage}</strong></span>
+        <span style="font-size:12px;font-weight:400;color:#9f9f9f;">Clean Sheets</span>
+        <span style="color: rgba(11, 179, 42, 0.65);font-size: 18px;"><strong>${awayCleanSheetsPercentage}</strong></span>
+    </div>
+`;
+
 // Helper to safely calculate and return blank if invalid
 const safeCalc = (value) => (isNaN(value) || value === '' ? '' : value);
 
@@ -2097,8 +2114,8 @@ const addStat = (statsList, homeValue, awayValue, label, statType = '') => {
                 ${awaySpan}
             </div>
         `);
-    }
-};
+        }
+    };
     // Calculating Stats
     const attackStats = [];
     const defenseStats = [];
@@ -2160,19 +2177,20 @@ const addStat = (statsList, homeValue, awayValue, label, statType = '') => {
     addStat(defenseStats, averageGoalsHomeConceded, averageGoalsAwayConceded, 'Av Goals Conceded', 'Shots Against'); 
     addStat(defenseStats, homeCleanSheets, awayCleanSheets, 'Clean Sheets');
 
-    // Clear the container and render new stats
-    container.innerHTML = '';
+     // Clear the container and render new stats
+     container.innerHTML = cleanSheetsHTML; // Add clean sheets percentage
     const statsHTML = `
-        <h4 style="text-align:center;">Overall Team Statistics</h4>
-        <div class="team-stat overall-stats">
-            ${attackStats.join('')}
-            <hr />
-            ${defenseStats.join('')}
+        <div style="background: #eef4f9;">
+            <h4 style="text-align:center;">Overall Team Statistics</h4>
+            <div class="team-stat overall-stats">
+                ${attackStats.join('')}
+                <hr />
+                ${defenseStats.join('')}
+            </div>
         </div>
     `;
-    container.innerHTML = statsHTML;
+    container.innerHTML += statsHTML; // Append the stats below
 };
-
 const renderTeamStats = (statistics, containerId) => {
     const container = document.getElementById(containerId);
 
