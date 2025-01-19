@@ -897,9 +897,9 @@ main {
 } 
 .stats-conversion span {
     flex: 1;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
-    margin: 0 0 5px;
+    margin: 0 ;
     text-align: center;
 }
 .stats-conversionspan:first-child {
@@ -2654,7 +2654,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <span class="odds">${drawIcon} ${drawOdds}</span>
                         <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
                     </div>  
-                <div id="form-table-container-${event.id}"></div>              
+                <div id="form-table-container-${event.id}"></div> 
+                
+                <div class="h2h-event" id="${uniqueEventId}"></div>             
                 <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
                 <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
                 <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
@@ -2665,8 +2667,6 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
 <div id="goal-distribution-container-${event.id}" class="goal-distribution"></div>
 
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
-                <h4 style="text-align:center;">H2H Last 3 Years</h4> 
-            <div class="h2h-event" id="${uniqueEventId}"></div>
       
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
@@ -2942,6 +2942,7 @@ const fetchOddsForEvent = async (eventId) => {
         };
     }
 };
+
 const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, elementId) => {
     const url = `${baseURL}/event/${customId}/h2h/events`;
     try {
@@ -2951,7 +2952,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
         if (data && data.events) {
             const currentDate = new Date();
             const twoYearsAgoDate = new Date();
-            twoYearsAgoDate.setFullYear(currentDate.getFullYear() - 2);
+            twoYearsAgoDate.setFullYear(currentDate.getFullYear() - 3);
 
             // Filter events to include only those from the last 2 years and exclude the current match
             const filteredEvents = data.events
@@ -2959,60 +2960,85 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
                 .filter(event => new Date(event.startTimestamp * 1000) >= twoYearsAgoDate)
                 .sort((a, b) => b.startTimestamp - a.startTimestamp);
 
-            if (filteredEvents.length > 0) {
-                // Fetch odds for all filtered events
+            if (filteredEvents.length >= 4) {
                 const eventsWithStats = await Promise.all(filteredEvents.map(async (event) => {
                     try {
                         const odds = await fetchOddsForEvent(event.id);
                         const totalGoals = event.homeScore.current + event.awayScore.current;
                         const btts = event.homeScore.current > 0 && event.awayScore.current > 0 ? "Yes" : "No";
-                        return { ...event, ...odds, totalGoals, btts };
+
+                        let favorite = null;
+                    let favoriteWin = false;
+
+                    // Determine if the home or away team is the favorite
+                    if (odds.homeOdds < odds.awayOdds) {
+                        favorite = "Home Team";
+                        favoriteWin = event.homeScore.current > event.awayScore.current;
+                    } else if (odds.awayOdds < odds.homeOdds) {
+                        favorite = "Away Team";
+                        favoriteWin = event.awayScore.current > event.homeScore.current;
+                    } else {
+                        favorite = "None"; // In case odds are equal
+                    }
+
+                    // Store the favorite as "Home Team" or "Away Team" for better readability
+                    return { ...event, ...odds, totalGoals, btts, favorite, favoriteWin };
                     } catch (error) {
                         console.error(`Error fetching odds for event ${event.id}:`, error.message);
-                        return { ...event, totalGoals: 0, btts: "No" }; // Fallback in case odds fetch fails
+                        return { ...event, totalGoals: 0, btts: "No", favorite: null, favoriteWin: false };
                     }
                 }));
 
-                // Calculate H2H stats
-                const h2hStats = calculateH2HStats(eventsWithStats);
- 
-                // Create HTML for the table with all filtered events with odds
-                const eventsHtml = `
-                    <table border="0" style="width: 100%; border-collapse: collapse;"> 
-                        <tbody>
-                            ${eventsWithStats.map(event => {
-                                const homeTeam = event.homeTeam.nameCode;
-                                const awayTeam = event.awayTeam.nameCode;
-                                const homeScore = event.homeScore.current;
-                                const awayScore = event.awayScore.current;
-                                const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { 
-                                    month: '2-digit', year: '2-digit' }).replace('/', '.').replace('/', '.');
+                const totalFavoriteMatches = eventsWithStats.filter(event => event.favorite).length;
+                const totalFavoriteWins = eventsWithStats.filter(event => event.favoriteWin).length;
+                const favoriteWinPercentage = totalFavoriteMatches > 0
+                    ? ((totalFavoriteWins / totalFavoriteMatches) * 100).toFixed(2)
+                    : 0;
 
-                                return `
-                                    <tr>
-                                        <td class="tableDate">${eventDate}</td>
-                                        <td style="min-width:70px;">${homeTeam}<br />${awayTeam}</td>
-                                        <td>${homeScore} - ${awayScore}</td>
-                                        <td>${event.btts}</td>
-                                        <td><strong>${event.totalGoals}</strong> Goals</td>
-                                        <td>
-                                            <div class="tableOdds" style="min-width:30px;">
-                                                <span class="home-odds">${fractionalToDecimal(event.homeOdds)}</span>
-                                                <span class="draw-odds">${fractionalToDecimal(event.drawOdds)}</span>
-                                                <span class="away-odds">${fractionalToDecimal(event.awayOdds)}</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
+                // Determine the market with the highest percentage
+                const h2hStats = calculateH2HStats(eventsWithStats);
+                const marketAnalysis = [
+                    { name: "Home Win", percentage: h2hStats.homeWinPercentage },
+                    { name: "Draw", percentage: h2hStats.drawPercentage },
+                    { name: "Away Win", percentage: h2hStats.awayWinPercentage },
+                    { name: "BTTS Yes", percentage: h2hStats.bttsYesPercentage },
+                    { name: "BTTS No", percentage: 100 - h2hStats.bttsYesPercentage },
+                    { name: "Over 1.5 Goals", percentage: h2hStats.overs1_5Percentage },
+                    { name: "Over 2.5 Goals", percentage: h2hStats.overs2_5Percentage },
+                    { name: "Over 3.5 Goals", percentage: h2hStats.overs3_5Percentage },
+                ];
+                const bestMarket = marketAnalysis.reduce((max, market) =>
+                    market.percentage > max.percentage ? market : max, { name: "", percentage: 0 });
+
+                // Create HTML for favorite team and H2H stats
+                const h2hHeadingHtml = `
+                    <h4 style="text-align:center;">H2H Last 3 Years</h4> 
+                    <span style="text-align:center;"><strong>Best Market:</strong> ${bestMarket.name} (${bestMarket.percentage}%)</span>
                 `;
 
-                // Combine stats and events HTML
-                document.getElementById(elementId).innerHTML = eventsHtml;
+                const statsHtml = `
+                    <div class="h2h-stats" style="text-align:center;">
+                        <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
+                            Home:<span class="value">${h2hStats.homeWinPercentage}%</span>
+                            Draws:<span class="value">${h2hStats.drawPercentage}%</span>
+                            Away:<span class="value">${h2hStats.awayWinPercentage}%</span>
+                        </div>
+                        <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
+                            BTTS Yes:<span class="value">${h2hStats.bttsYesPercentage}%</span>
+                            BTTS No:<span class="value">${h2hStats.bttsNoPercentage}%</span>
+                        </div>
+                        <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
+                            +1.5:<span class="value">${h2hStats.overs1_5Percentage}%</span>
+                            +2.5:<span class="value">${h2hStats.overs2_5Percentage}%</span>
+                            +3.5:<span class="value">${h2hStats.overs3_5Percentage}%</span>
+                        </div>
+                    </div>
+                `;
+ 
+
+                document.getElementById(elementId).innerHTML = h2hHeadingHtml + statsHtml;
             } else {
-                document.getElementById(elementId).innerHTML = '<span style="text-align:center;">No finished H2H events from the last 2 years found.</span>';
+                document.getElementById(elementId).innerHTML = '<span style="text-align:center;">No finished H2H events from the last 3 years found.</span>';
             }
         } else {
             document.getElementById(elementId).innerHTML = '<span style="text-align:center;">No events data available.</span>';
