@@ -1883,15 +1883,21 @@ const fetchHeadToHead = async (eventId, h2hContainerId) => {
     }
 };
 
-const renderTeamDuelStats = (teamDuel) => { 
+const renderTeamDuelStats = (teamDuel) => {
     const { homeWins, awayWins, draws } = teamDuel;
+    const totalGames = homeWins + awayWins + draws;
+
+    const homeWinPercentage = ((homeWins / totalGames) * 100).toFixed(0);
+    const drawPercentage = ((draws / totalGames) * 100).toFixed(0);
+    const awayWinPercentage = ((awayWins / totalGames) * 100).toFixed(0);
+
     return `
     <div>
-        <h4 style="text-align:center;margin-top: 10px;">Head 2 Head</h4>
+        <h4 style="text-align:center;margin-top: 10px;">Head 2 Head (${totalGames})</h4>
         <div>
-            <p><strong>${homeWins}</strong></p>
-            <p><strong>${draws}</strong></p>
-            <p><strong>${awayWins}</strong></p>
+            <p><strong>${homeWinPercentage}%</strong></p>
+            <p><strong>${drawPercentage}%</strong></p>
+            <p><strong>${awayWinPercentage}%</strong></p>
         </div>
     </div>
     `;
@@ -1899,17 +1905,24 @@ const renderTeamDuelStats = (teamDuel) => {
 
 const renderManagerDuelStats = (managerDuel) => { 
     const { homeWins, awayWins, draws } = managerDuel;
+    const totalGames = homeWins + awayWins + draws;
+
+    const homeWinPercentage = ((homeWins / totalGames) * 100).toFixed(0);
+    const drawPercentage = ((draws / totalGames) * 100).toFixed(0);
+    const awayWinPercentage = ((awayWins / totalGames) * 100).toFixed(0);
+
     return `
     <div>
-        <span>Manager Duel</span>
+        <span>Manager Duel (${totalGames})</span>
         <div>
-            <p><strong>${homeWins}</strong></p>
-            <p><strong>${draws}</strong></p>
-            <p><strong>${awayWins}</strong></p>
+            <p><strong>${homeWinPercentage}%</strong></p>
+            <p><strong>${drawPercentage}%</strong></p>
+            <p><strong>${awayWinPercentage}%</strong></p>
         </div>
     </div>
     `; 
 };
+
 
 /* 
 const fetchTeamOverallStats = async (teamId, uniqueTournamentId, seasonId, containerId) => {
@@ -1949,7 +1962,7 @@ const fetchTeamOverallStats = async (homeTeamId, awayTeamId, uniqueTournamentId,
         if (columnType === 'center') {
             renderStats(homeStatsData, awayStatsData, containerId);
             goalConversionConceedStats(homeStatsData, awayStatsData, conversionContainerId);
-            goalGameDiff(homeStatsData, awayStatsData, goalGameDiffContainerId);
+            //goalGameDiff(homeStatsData, awayStatsData, goalGameDiffContainerId);
         }  
     } catch (error) {
         console.error("Error fetching team stats:", error);
@@ -2125,17 +2138,29 @@ const addStat = (statsList, homeValue, awayValue, label, statType = '') => {
     const successfulDribblesAwayPercentage = awayStats.dribbleAttempts
         ? safeCalcPercentage(Math.round((awayStats.successfulDribbles / awayStats.dribbleAttempts) * 100))
         : '';
+    const goalsHomeScored = homeStats.matches
+        ? homeStats.goalsScored
+        : '';
     const averageGoalsHomeScored = homeStats.matches
         ? safeCalc((homeStats.goalsScored / homeStats.matches).toFixed(2))
         : '';
+    const goalsAwayScored = awayStats.matches
+        ? awayStats.goalsScored
+        : '';
     const averageGoalsAwayScored = awayStats.matches
         ? safeCalc((awayStats.goalsScored / awayStats.matches).toFixed(2))
+        : '';
+    const goalsHomeConceded = homeStats.matches
+        ? homeStats.goalsConceded
         : '';
     const averageGoalsHomeConceded = homeStats.matches
         ? safeCalc((homeStats.goalsConceded / homeStats.matches).toFixed(2))
         : '';
     const averageGoalsAwayConceded = awayStats.matches
         ? safeCalc((awayStats.goalsConceded / awayStats.matches).toFixed(2))
+        : '';
+    const goalsAwayConceded = awayStats.matches
+        ? awayStats.goalsConceded
         : '';
     const homeAssists = safeCalc(homeStats.assists);
     const awayAssists = safeCalc(awayStats.assists);
@@ -2166,14 +2191,11 @@ const addStat = (statsList, homeValue, awayValue, label, statType = '') => {
 
     // Add attack stats
     addStat(attackStats, homeStats.matches, awayStats.matches, 'Games Played');
-    addStat(attackStats, averageGoalsHomeScored, averageGoalsAwayScored, 'Av Goals Scored');
-    addStat(attackStats, homeAssists, awayAssists, 'Assists');
-    addStat(attackStats, averageHomeBallPossession, averageAwayBallPossession, 'Possession%');
-    addStat(attackStats, roundedAccurateHomePassesPercentage, roundedAccurateAwayPassesPercentage, 'Passes%');
-    addStat(attackStats, successfulDribblesHomePercentage, successfulDribblesAwayPercentage, 'Dribbles%');
-    addStat(attackStats, cornersHomePerGame, cornersAwayPerGame, 'Corners Per Game');
+    addStat(attackStats, goalsHomeScored, goalsAwayScored, 'Goals Scored');
+    addStat(attackStats, averageGoalsHomeScored, averageGoalsAwayScored, 'Av Goals Scored');  
 
     // Add defense stats
+    addStat(defenseStats, goalsHomeConceded, goalsAwayConceded, 'Goals Conceded', 'Shots Against'); 
     addStat(defenseStats, averageGoalsHomeConceded, averageGoalsAwayConceded, 'Av Goals Conceded', 'Shots Against'); 
     addStat(defenseStats, homeCleanSheets, awayCleanSheets, 'Clean Sheets');
 
@@ -2557,13 +2579,13 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const awayInitialFractional = awayOddsData?.initialFractionalValue;
         const awayCurrentFractional = awayOddsData?.fractionalValue;
         // Generate odds values with icons
-        const homeOdds = homeInitialFractional ? fractionalToDecimal(homeCurrentFractional) : '-';
+        const homeOdds = homeInitialFractional ? fractionalToDecimal(homeInitialFractional) : '-';
         const homeIcon = getOddsChangeIcon(homeInitialFractional, homeCurrentFractional);
 
-        const drawOdds = drawInitialFractional ? fractionalToDecimal(drawCurrentFractional) : '-';
+        const drawOdds = drawInitialFractional ? fractionalToDecimal(drawInitialFractional) : '-';
         const drawIcon = getOddsChangeIcon(drawInitialFractional, drawCurrentFractional);
 
-        const awayOdds = awayInitialFractional ? fractionalToDecimal(awayCurrentFractional) : '-';
+        const awayOdds = awayInitialFractional ? fractionalToDecimal(awayInitialFractional) : '-';
         const awayIcon = getOddsChangeIcon(awayInitialFractional, awayCurrentFractional);
 
 
@@ -2656,6 +2678,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </div>  
                 <div id="form-table-container-${event.id}"></div> 
                 
+                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
                 <div class="h2h-event" id="${uniqueEventId}"></div>             
                 <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
                 <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
@@ -2664,9 +2687,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
             <div class="overall-stats-wrapper">
                 <div id="stats-container-${event.id}"></div>
             </div>
-<div id="goal-distribution-container-${event.id}" class="goal-distribution"></div>
+            <div id="goal-distribution-container-${event.id}" class="goal-distribution"></div>
 
-                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
       
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
