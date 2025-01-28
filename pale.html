@@ -2679,18 +2679,6 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
                     </div>  
                 <div id="form-table-container-${event.id}"></div> 
-                
-                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
-                <div class="h2h-event" id="${uniqueEventId}"></div>             
-                <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
-                <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
-                <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
-                  
-            <div class="overall-stats-wrapper">
-                <div id="stats-container-${event.id}"></div>
-            </div>
-            <div id="goal-distribution-container-${event.id}" class="goal-distribution"></div>
-
       
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
@@ -2716,6 +2704,18 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <tr id="awayManager-${event.id}"></tr> 
                     </tbody>
                 </table>
+                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
+                <div class="h2h-event" id="${uniqueEventId}"></div>  
+                 <div id="goal-distribution-container-${event.id}" class="goal-distribution"></div>
+           
+                <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
+                <div id="stats-conversion-${event.id}" class="stats-conversion"></div> 
+                <div id="goal-game-diff-${event.id}" class="stats-conversion"></div>
+                  
+            <div class="overall-stats-wrapper">
+                <div id="stats-container-${event.id}"></div>
+            </div>
+           
                 
                   `;
             
@@ -3119,7 +3119,7 @@ const fetchLastEvents = async (teamId, currentMatchId) => {
     const events = data.events.reverse(); // Reverse to get the most recent events first
     // Remove the current event from the list
     const lastEvents = events.filter(event => event.id !== currentMatchId && event.status.type === 'finished');
-    const filteredEvents = lastEvents.slice(0, 5); // Return only the last 15 games  && event.tournament?.uniqueTournament?.id === uniqueTournamentId 
+    const filteredEvents = lastEvents.slice(0, 6); // Return only the last 15 games  && event.tournament?.uniqueTournament?.id === uniqueTournamentId 
 
     return filteredEvents;
 };
@@ -3375,7 +3375,7 @@ const getLastFiveGamesForm = (events, teamId, currentMatchId) => {
     // Sort events by date (latest first) and get the last 5 matches
     const lastFiveFinishedEvents = finishedEvents
         .sort((a, b) => new Date(b.startTimestamp) - new Date(a.startTimestamp))
-        .slice(0, 5);
+        .slice(0, 6);
     
     let points = 0;
     let goalsFor = 0;
