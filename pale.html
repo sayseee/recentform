@@ -2509,8 +2509,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const uniqueTournamentId = event.tournament.uniqueTournament.id;
         const seasonId = event.season.id;
         // Fetch last 15 games for each team
-        const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id, event.id, event.tournament.uniqueTournament.id);
-        const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id, event.tournament.uniqueTournament.id);
+        const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id, event.id);
+        const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id);
   
         // Extract last 5 home/away games form
         const homeTeamHomeForm = getHomeAwayForm(homeTeamLastEvents, 'home', event.homeTeam.id);
@@ -2617,14 +2617,15 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <span class="team-name">${homeTeamName}</span>                        
                         <div id="homeForm-${event.id}" class="pregameForm">${homeTeamPoints.form}</div>   
                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
+                            GF: <span class="value">${homeTeamPoints.goalsFor}</span> 
+                            GA: <span class="value">${homeTeamPoints.goalsAgainst}</span> 
+                            CS: <span class="value">${homeTeamPoints.cleanSheets}</span>
+                            FTS: <span class="value">${homeTeamPoints.failedToScore}</span>
+                        </div>    
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
                             W: <span class="value">${homeOverallForm.wins}</span> 
                             D: <span class="value">${homeOverallForm.draws}</span> 
                             L: <span class="value">${homeOverallForm.losses}</span> 
-                        </div> 
-                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
-                            W: <span class="value">${homeForm.wins}</span> 
-                            D: <span class="value">${homeForm.draws}</span> 
-                            L: <span class="value">${homeForm.losses}</span> 
                         </div> 
                    </div>
                    <!--<div id="home-team-form-${event.id}" class="home-bar"></div> -->
@@ -2657,16 +2658,17 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     <div class="team">
                         <img src="${baseURL}/team/${event.awayTeam.id}/image" width="20" height="20" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
                         <span class="team-name">${awayTeamName}</span>
-                        <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div>    
+                        <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div>     
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
+                            GF: <span class="value">${awayTeamPoints.goalsFor}</span> 
+                            GA: <span class="value">${awayTeamPoints.goalsAgainst}</span> 
+                            CS: <span class="value">${awayTeamPoints.cleanSheets}</span>
+                            FTS: <span class="value">${awayTeamPoints.failedToScore}</span>
+                        </div>      
                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
                             W: <span class="value">${awayOverallForm.wins}</span> 
                             D: <span class="value">${awayOverallForm.draws}</span> 
                             L: <span class="value">${awayOverallForm.losses}</span> 
-                        </div> 
-                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
-                            W: <span class="value">${awayForm.wins}</span> 
-                            D: <span class="value">${awayForm.draws}</span> 
-                            L: <span class="value">${awayForm.losses}</span> 
                         </div> 
                      </div>
                 </div>
@@ -3111,27 +3113,17 @@ function calculateH2HStats(events) {
     };
 }
 
-const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
+const fetchLastEvents = async (teamId, currentMatchId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
     const events = data.events.reverse(); // Reverse to get the most recent events first
     // Remove the current event from the list
-    const lastEvents = events.filter(event => event.id !== currentMatchId && event.tournament?.uniqueTournament?.id === uniqueTournamentId && event.status.type === 'finished');
-    const filteredEvents = lastEvents.slice(0, 5); // Return only the last 15 games 
+    const lastEvents = events.filter(event => event.id !== currentMatchId && event.status.type === 'finished');
+    const filteredEvents = lastEvents.slice(0, 5); // Return only the last 15 games  && event.tournament?.uniqueTournament?.id === uniqueTournamentId 
 
     return filteredEvents;
 };
-
-// const fetchLastTenEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
-//     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
-//     const data = await response.json();
-//     const events = data.events.reverse(); // Reverse to get the most recent events first
-//     // Remove the current event from the list
-//     const lastEvents = events.filter(event => event.id !== currentMatchId && event.tournament?.uniqueTournament?.id === uniqueTournamentId && event.status.type === 'finished');
-//     const filteredEvents = lastEvents.slice(0, 10); // Return only the last 15 games 
-
-//     return filteredEvents;
-// };
+ 
 const fetchLastTenEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
@@ -3375,6 +3367,7 @@ const getHomeAwayForm = (events, type, teamId) => {
         totalGoalsAgainst
     };
 };
+
 const getLastFiveGamesForm = (events, teamId, currentMatchId) => {
     // Filter finished matches excluding the current match
     const finishedEvents = events.filter((event) => event.status.type === 'finished' && event.id !== currentMatchId);
@@ -3387,6 +3380,8 @@ const getLastFiveGamesForm = (events, teamId, currentMatchId) => {
     let points = 0;
     let goalsFor = 0;
     let goalsAgainst = 0;
+    let cleanSheets = 0;
+    let failedToScore = 0;
 
     const form = lastFiveFinishedEvents
         .reverse() // Show form in chronological order
@@ -3394,12 +3389,17 @@ const getLastFiveGamesForm = (events, teamId, currentMatchId) => {
             const homeScore = event.homeScore.current ?? 0; // Default to 0 if undefined
             const awayScore = event.awayScore.current ?? 0; // Default to 0 if undefined
 
+            // Track goals scored and conceded
             if (event.homeTeam.id === teamId) {
                 goalsFor += homeScore;
                 goalsAgainst += awayScore;
+                if (awayScore === 0) cleanSheets++; // Clean sheet for home team
+                if (homeScore === 0) failedToScore++; // Failed to score for home team
             } else if (event.awayTeam.id === teamId) {
                 goalsFor += awayScore;
                 goalsAgainst += homeScore;
+                if (homeScore === 0) cleanSheets++; // Clean sheet for away team
+                if (awayScore === 0) failedToScore++; // Failed to score for away team
             }
 
             let result = '';
@@ -3426,9 +3426,12 @@ const getLastFiveGamesForm = (events, teamId, currentMatchId) => {
         points,
         goalsFor,
         goalsAgainst,
-        goalDifference
+        goalDifference,
+        cleanSheets,
+        failedToScore
     };
 };
+
 
 const getLastTenGamesForm = (events, teamId, currentMatchId, location = 'overall', numberOfGames = 10) => {
     // Filter finished matches excluding the current match
