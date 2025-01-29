@@ -477,6 +477,20 @@ main {
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content:center;
+    align-items:center;
+    position: relative;
+}
+
+
+.match-details .match-time, .match-details .detailScore__wrapper {
+    position: absolute;
+    top: 20px;
+}
+
+.match-details .match-status {
+    position: absolute;
+    top: 45px;
 }
 
 .match-date,
@@ -2609,7 +2623,28 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     <div class="aways-team-form"> 
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
-                </div> 
+                </div>  
+                <div class="match-details">
+                    ${event.status.type === 'inprogress' 
+                        ? `<div class="detailScore__wrapper">
+                            <span class="score" id="homeScores-${event.id}">${homeScore}</span>
+                            -
+                            <span class="score" id="awayScores-${event.id}">${awayScore}</span>
+                          </div>` 
+                        : event.status.type === 'finished' 
+                            ? `<div class="detailScore__wrapper">
+                                <span class="score" id="homeScores-${event.id}">${homeScore}</span> 
+                                -
+                                <span class="score" id="awayScores-${event.id}">${awayScore}</span>
+                              </div>` 
+                            : `
+                                 <div class="match-time">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
+                            `} 
+
+                            <div class="match-status ${event.status.type === 'inprogress' ? 'live' : 'default'}">
+                                <span id="live-timer-${event.id}"></span>
+                            </div> 
+                </div>
             <div class="match-info-container">
                 <div class="team-info">
                     <div class="team">
@@ -2669,27 +2704,6 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         </div> 
                    </div>
                    <!--<div id="home-team-form-${event.id}" class="home-bar"></div> -->
-                </div>
-                <div class="match-details">
-                    ${event.status.type === 'inprogress' 
-                        ? `<div class="detailScore__wrapper">
-                            <span class="score" id="homeScores-${event.id}">${homeScore}</span>
-                            -
-                            <span class="score" id="awayScores-${event.id}">${awayScore}</span>
-                          </div>` 
-                        : event.status.type === 'finished' 
-                            ? `<div class="detailScore__wrapper">
-                                <span class="score" id="homeScores-${event.id}">${homeScore}</span> 
-                                -
-                                <span class="score" id="awayScores-${event.id}">${awayScore}</span>
-                              </div>` 
-                            : `
-                                 <div class="match-time">${new Date(event.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
-                            `} 
-
-                            <div class="match-status ${event.status.type === 'inprogress' ? 'live' : 'default'}">
-                                <span id="live-timer-${event.id}"></span>
-                            </div> 
                 </div>
                 
                 <div class="team-info">
