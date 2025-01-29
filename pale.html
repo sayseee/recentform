@@ -2617,11 +2617,51 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <span class="team-name">${homeTeamName}</span>                        
                         <div id="homeForm-${event.id}" class="pregameForm">${homeTeamPoints.form}</div>   
                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
-                            GF: <span class="value">${homeTeamPoints.goalsFor}</span> 
-                            GA: <span class="value">${homeTeamPoints.goalsAgainst}</span> 
-                            CS: <span class="value">${homeTeamPoints.cleanSheets}</span>
-                            FTS: <span class="value">${homeTeamPoints.failedToScore}</span>
-                        </div>    
+                        <table border="0" cellpadding="2">
+                            <thead>
+                                <tr>
+                                    <th>GF</th>
+                                    <th>GA</th>
+                                    <th>CS</th>
+                                    <th>FTS</th>
+                                    <th>+1.5</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="value">${homeTeamPoints.goalsFor}</span></td>
+                                    <td><span class="value">${homeTeamPoints.goalsAgainst}</span></td>
+                                    <td><span class="value">${Math.round((homeTeamPoints.cleanSheets / homeTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                    <td><span class="value">${Math.round((homeTeamPoints.failedToScore / homeTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                    <td><span class="value">${Math.round((homeTeamPoints.over1_5 / homeTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                         </div> 
+                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;"> 
+                        <table border="0" cellpadding="2">
+                            <thead>
+                                <tr>
+                                    <th>+2.5</th>
+                                    <th>BYS</th>
+                                    <th>BO</th>
+                                    <th>WCS</th>
+                                    <th>LFS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="value">${Math.round((homeTeamPoints.over2_5 / homeTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                    <td><span class="value">${Math.round((homeTeamPoints.bttsYes / homeTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                    <td><span class="value">${Math.round((homeTeamPoints.bttsOver2_5 / homeTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                    <td><span class="value">${Math.round((homeTeamPoints.winCleanSheet / homeTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                    <td><span class="value">${Math.round((homeTeamPoints.lossFailedToScore / homeTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                       
+                         </div>    
                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
                             W: <span class="value">${homeOverallForm.wins}</span> 
                             D: <span class="value">${homeOverallForm.draws}</span> 
@@ -2660,10 +2700,48 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <span class="team-name">${awayTeamName}</span>
                         <div id="awayForm-${event.id}" class="pregameForm">${awayTeamPoints.form}</div>     
                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
-                            GF: <span class="value">${awayTeamPoints.goalsFor}</span> 
-                            GA: <span class="value">${awayTeamPoints.goalsAgainst}</span> 
-                            CS: <span class="value">${awayTeamPoints.cleanSheets}</span>
-                            FTS: <span class="value">${awayTeamPoints.failedToScore}</span>
+                            <table border="0" cellpadding="2">
+                                <thead>
+                                    <tr>
+                                        <th>GF</th>
+                                        <th>GA</th>
+                                        <th>CS</th>
+                                        <th>FTS</th>
+                                        <th>+1.5</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="value">${awayTeamPoints.goalsFor}</span></td>
+                                        <td><span class="value">${awayTeamPoints.goalsAgainst}</span></td>
+                                        <td><span class="value">${Math.round((awayTeamPoints.cleanSheets / awayTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                        <td><span class="value">${Math.round((awayTeamPoints.failedToScore / awayTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                        <td><span class="value">${Math.round((awayTeamPoints.over1_5 / awayTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                    </tr>
+                                </tbody>
+                            </table> 
+                        </div> 
+                        <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;"> 
+                            <table border="0" cellpadding="2">
+                                <thead>
+                                    <tr>
+                                        <th>+2.5</th>
+                                        <th>BYS</th>
+                                        <th>BO</th>
+                                        <th>WCS</th>
+                                        <th>LFS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                     <tr>
+                                        <td><span class="value">${Math.round((awayTeamPoints.over2_5 / awayTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                        <td><span class="value">${Math.round((awayTeamPoints.bttsYes / awayTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                        <td><span class="value">${Math.round((awayTeamPoints.bttsOver2_5 / awayTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                        <td><span class="value">${Math.round((awayTeamPoints.winCleanSheet / awayTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                        <td><span class="value">${Math.round((awayTeamPoints.lossFailedToScore / awayTeamPoints.actualMatchesCount) * 100)} </span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>      
                         <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;">
                             W: <span class="value">${awayOverallForm.wins}</span> 
@@ -3368,48 +3446,80 @@ const getHomeAwayForm = (events, type, teamId) => {
     };
 };
 
-const getLastFiveGamesForm = (events, teamId, currentMatchId) => {
+const getLastFiveGamesForm = (events, teamId, currentMatchId, maxMatches = 6) => {
     // Filter finished matches excluding the current match
     const finishedEvents = events.filter((event) => event.status.type === 'finished' && event.id !== currentMatchId);
     
-    // Sort events by date (latest first) and get the last 5 matches
-    const lastFiveFinishedEvents = finishedEvents
+    // Sort events by date (latest first) and get the last available matches (up to maxMatches)
+    const lastFinishedEvents = finishedEvents
         .sort((a, b) => new Date(b.startTimestamp) - new Date(a.startTimestamp))
-        .slice(0, 6);
+        .slice(0, maxMatches);
     
+    let actualMatchesCount = lastFinishedEvents.length;
     let points = 0;
     let goalsFor = 0;
     let goalsAgainst = 0;
     let cleanSheets = 0;
     let failedToScore = 0;
+    let over1_5 = 0;
+    let over2_5 = 0;
+    let over3_5 = 0;
+    let bttsYes = 0;
+    let bttsOver2_5 = 0;
+    let winCleanSheet = 0;
+    let lossFailedToScore = 0;
 
-    const form = lastFiveFinishedEvents
+    const form = lastFinishedEvents
         .reverse() // Show form in chronological order
         .map((event) => { 
             const homeScore = event.homeScore.current ?? 0; // Default to 0 if undefined
             const awayScore = event.awayScore.current ?? 0; // Default to 0 if undefined
+            const totalGoals = homeScore + awayScore;
+            const isHomeTeam = event.homeTeam.id === teamId;
+            const isAwayTeam = event.awayTeam.id === teamId;
+            const teamWon = (event.winnerCode === 1 && isHomeTeam) || (event.winnerCode === 2 && isAwayTeam);
+            const teamLost = (event.winnerCode === 1 && isAwayTeam) || (event.winnerCode === 2 && isHomeTeam);
 
             // Track goals scored and conceded
-            if (event.homeTeam.id === teamId) {
+            if (isHomeTeam) {
                 goalsFor += homeScore;
                 goalsAgainst += awayScore;
                 if (awayScore === 0) cleanSheets++; // Clean sheet for home team
                 if (homeScore === 0) failedToScore++; // Failed to score for home team
-            } else if (event.awayTeam.id === teamId) {
+            } else if (isAwayTeam) {
                 goalsFor += awayScore;
                 goalsAgainst += homeScore;
                 if (homeScore === 0) cleanSheets++; // Clean sheet for away team
                 if (awayScore === 0) failedToScore++; // Failed to score for away team
             }
 
+            // Over X Goals
+            if (totalGoals > 1.5) over1_5++;
+            if (totalGoals > 2.5) over2_5++;
+            if (totalGoals > 3.5) over3_5++;
+
+            // BTTS (Both Teams to Score)
+            if (homeScore > 0 && awayScore > 0) {
+                bttsYes++;
+                if (totalGoals > 2.5) bttsOver2_5++; // BTTS & Over 2.5
+            }
+
+            // Win + Clean Sheet
+            if (teamWon && (isHomeTeam ? awayScore === 0 : homeScore === 0)) {
+                winCleanSheet++;
+            }
+
+            // Loss + Failed to Score
+            if (teamLost && (isHomeTeam ? homeScore === 0 : awayScore === 0)) {
+                lossFailedToScore++;
+            }
+
+            // Match result (W/D/L)
             let result = '';
             if (event.winnerCode === 3) {
                 points += 1; // Draw
                 result = '<span class="D">D</span>';
-            } else if (
-                (event.winnerCode === 1 && event.homeTeam.id === teamId) ||
-                (event.winnerCode === 2 && event.awayTeam.id === teamId)
-            ) { 
+            } else if (teamWon) { 
                 points += 3; // Win
                 result = '<span class="W">W</span>';
             } else { 
@@ -3428,7 +3538,15 @@ const getLastFiveGamesForm = (events, teamId, currentMatchId) => {
         goalsAgainst,
         goalDifference,
         cleanSheets,
-        failedToScore
+        failedToScore,
+        over1_5,
+        over2_5,
+        over3_5,
+        bttsYes,
+        bttsOver2_5,
+        winCleanSheet,
+        lossFailedToScore,
+        actualMatchesCount // Return the actual number of matches processed
     };
 };
 
