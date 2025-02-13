@@ -2390,12 +2390,17 @@ const fetchGoalDistribution = async (teamId, uniqueTournamentId, seasonId) => {
     try {
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Failed to fetch goal distributions for team ${teamId}`);
+            if (response.status === 404) {
+                //console.warn(`Goal distributions not found for team ${teamId} in the tournament.`);
+            } else {
+                //console.error(`Failed to fetch goal distributions for team ${teamId}. Status: ${response.status}`);
+            }
+            return null; // Return null or default/fallback data if needed
         }
         const data = await response.json();
         return data.goalDistributions;
     } catch (error) {
-        console.error("Error fetching goal distributions:", error);
+        //console.error("Error fetching goal distributions:", error);
         return null;
     }
 };
@@ -2427,7 +2432,7 @@ const renderGoalDistributionAsTable = async (homeTeamId, awayTeamId, uniqueTourn
     ]);
 
     if (!homeGoalDistributions || !awayGoalDistributions) {
-        console.error(`Failed to fetch goal distributions for event ID: ${eventId}`);
+        //console.error(`Failed to fetch goal distributions for event ID: ${eventId}`);
         return;
     }
 
@@ -2523,15 +2528,15 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const uniqueTournamentId = event.tournament.uniqueTournament.id;
         const seasonId = event.season.id;
         // Fetch last 15 games for each team
-        const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id, event.id);
-        const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id);
+        const homeTeamLastEvents = await fetchLastEvents(event.homeTeam.id, event.id, event.tournament.uniqueTournament.id);
+        const awayTeamLastEvents = await fetchLastEvents(event.awayTeam.id, event.id, event.tournament.uniqueTournament.id);
   
         // Extract last 5 home/away games form
         const homeTeamHomeForm = getHomeAwayForm(homeTeamLastEvents, 'home', event.homeTeam.id);
         const awayTeamAwayForm = getHomeAwayForm(awayTeamLastEvents, 'away', event.awayTeam.id);
 
-        const homeTeamPoints = getLastFiveGamesForm(homeTeamLastEvents, event.homeTeam.id, event.id);
-        const awayTeamPoints = getLastFiveGamesForm(awayTeamLastEvents, event.awayTeam.id, event.id);
+        const homeTeamPoints = getLastGamesForm(homeTeamLastEvents, event.homeTeam.id, event.id);
+        const awayTeamPoints = getLastGamesForm(awayTeamLastEvents, event.awayTeam.id, event.id);
 
         // Fetch last games for each team
         const homeTeamEvents = await fetchLastTenEvents(event.homeTeam.id, event.id, event.tournament.uniqueTournament.id);
@@ -2539,33 +2544,11 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
 
         // Calculate form using full events data
         const homeOverallForm = getLastTenGamesForm(homeTeamEvents, event.homeTeam.id, event.id, 'overall', 10);
-        const awayOverallForm = getLastTenGamesForm(awayTeamEvents, event.awayTeam.id, event.id, 'overall', 10);
-        const homeForm = getLastTenGamesForm(homeTeamEvents, event.homeTeam.id, event.id, 'home', 10);
-        const awayForm = getLastTenGamesForm(awayTeamEvents, event.awayTeam.id, event.id, 'away', 10);
-
-       // console.log('Home Overall:', homeOverallForm);
-       // console.log('Away Overall:', awayOverallForm);
-        // console.log('Home Team Home:', homeForm);
-        // console.log('Away Team Away:', awayForm);
-
-        const homeTeamForm = ((homeTeamPoints / 15) * 100).toFixed(0);
-        const awayTeamForm = ((awayTeamPoints / 15) * 100).toFixed(0);
-        // Fetch last 5 games with odds for each team
-        const homeTeamLastFiveGames = await getLastFiveGames(homeTeamLastEvents, 'home', event.homeTeam.id);
-        const awayTeamLastFiveGames = await getLastFiveGames(awayTeamLastEvents, 'away', event.awayTeam.id);
+        const awayOverallForm = getLastTenGamesForm(awayTeamEvents, event.awayTeam.id, event.id, 'overall', 10); 
  
         // Calculate home and away win statistics
         const homeTeamStats = calculateWinStats(homeTeamLastEvents, event.homeTeam.id);
         const awayTeamStats = calculateWinStats(awayTeamLastEvents, event.awayTeam.id);
-        
-        // Fetch last 15 games for each team
-        const homeTeamWonEvents = await fetchWonEvents(event.homeTeam.id, event.id, homeTeamStats.Wins);
-        const awayTeamWonEvents = await fetchWonEvents(event.awayTeam.id, event.id, awayTeamStats.Wins);
-
-        // Calculate home and away win statistics
-        const homeTeamWonStats = calculateWinStats(homeTeamWonEvents, event.homeTeam.id);
-        const awayTeamWonStats = calculateWinStats(awayTeamWonEvents, event.awayTeam.id);
-
         
         const homeStats = await calculateStatistics(homeTeamId, tournamentId, seasonId, event.id);
         const awayStats = await calculateStatistics(awayTeamId, tournamentId, seasonId, event.id);
@@ -2623,7 +2606,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     <div class="aways-team-form"> 
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
-                </div>  
+                </div> 
+                 
+                <div class="h2h-event" id="${uniqueEventId}"></div>   
                 <div class="match-details">
                     ${event.status.type === 'inprogress' 
                         ? `<div class="detailScore__wrapper">
@@ -2796,8 +2781,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <tr id="awayManager-${event.id}"></tr> 
                     </tbody>
                 </table>
-                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div> 
-                <div class="h2h-event" id="${uniqueEventId}"></div>  
+                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>
                  <div id="goal-distribution-container-${event.id}" class="goal-distribution"></div>
            
                 <h4 style="text-align:center; margin-top:10px;">Conversion Rate</h4>
@@ -2812,7 +2796,9 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                   `;
             
         // Fetch and display most recent H2H event for the current event
-        fetchAndDisplayMostRecentH2HEvent(event.customId, event.id, uniqueEventId);  
+        fetchAndDisplayMostRecentH2HEvent(event.homeTeam.id, event.customId, event.id, uniqueEventId); 
+        
+        console.log(event.homeTeam.id); 
         fetchHeadToHead(event.id, uniqueH2hContainer);  // Pass the correct ID to fetchHeadToHead 
         eventListItem.appendChild(eventLink); 
 
@@ -3058,32 +3044,25 @@ const fetchOddsForEvent = async (eventId) => {
         };
     }
 };
-
-const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, elementId) => {
+const fetchAndDisplayMostRecentH2HEvent = async (teamId, customId, currentMatchId, elementId) => {
     const url = `${baseURL}/event/${customId}/h2h/events`;
     try {
         const response = await fetch(url);
         const data = await response.json();
 
-        if (data && data.events) {
-            const currentDate = new Date();
-            const twoYearsAgoDate = new Date();
-            twoYearsAgoDate.setFullYear(currentDate.getFullYear() - 3);
-
-            // Filter events to include only those from the last 2 years and exclude the current match
+        if (data && data.events) { 
+            // Filter events to include only those from the last 2 years, exclude the current match, and ensure the team is playing at home
             const filteredEvents = data.events
-                .filter(event => event.status?.type === 'finished' && event.id !== currentMatchId)
-                .filter(event => new Date(event.startTimestamp * 1000) >= twoYearsAgoDate)
-                .sort((a, b) => b.startTimestamp - a.startTimestamp);
+                .filter(event => event.status?.type === 'finished' && event.homeTeam.id === teamId && event.id !== currentMatchId); 
 
-            if (filteredEvents.length >= 4) {
-                const eventsWithStats = await Promise.all(filteredEvents.map(async (event) => {
-                    try {
-                        const odds = await fetchOddsForEvent(event.id);
-                        const totalGoals = event.homeScore.current + event.awayScore.current;
-                        const btts = event.homeScore.current > 0 && event.awayScore.current > 0 ? "Yes" : "No";
+            const eventsWithStats = await Promise.all(filteredEvents.map(async (event) => {
+                try {
+                    const odds = await fetchOddsForEvent(event.id);
+                    const totalGoals = event.homeScore.current + event.awayScore.current;
+                    const btts = event.homeScore.current > 0 && event.awayScore.current > 0 ? "Yes" : "No";
 
-                        let favorite = null;
+                    console.log(event.homeTeam.id);
+                    let favorite = null;
                     let favoriteWin = false;
 
                     // Determine if the home or away team is the favorite
@@ -3099,63 +3078,68 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
 
                     // Store the favorite as "Home Team" or "Away Team" for better readability
                     return { ...event, ...odds, totalGoals, btts, favorite, favoriteWin };
-                    } catch (error) {
-                        console.error(`Error fetching odds for event ${event.id}:`, error.message);
-                        return { ...event, totalGoals: 0, btts: "No", favorite: null, favoriteWin: false };
-                    }
-                }));
+                } catch (error) {
+                    console.error(`Error fetching odds for event ${event.id}:`, error.message);
+                    return { ...event, totalGoals: 0, btts: "No", favorite: null, favoriteWin: false };
+                }
+            }));
 
-                const totalFavoriteMatches = eventsWithStats.filter(event => event.favorite).length;
-                const totalFavoriteWins = eventsWithStats.filter(event => event.favoriteWin).length;
-                const favoriteWinPercentage = totalFavoriteMatches > 0
-                    ? ((totalFavoriteWins / totalFavoriteMatches) * 100).toFixed(2)
-                    : 0;
+            const totalFavoriteMatches = eventsWithStats.filter(event => event.favorite).length;
+            const totalFavoriteWins = eventsWithStats.filter(event => event.favoriteWin).length;
+            const favoriteWinPercentage = totalFavoriteMatches > 0
+                ? ((totalFavoriteWins / totalFavoriteMatches) * 100).toFixed(2)
+                : 0;
 
-                // Determine the market with the highest percentage
-                const h2hStats = calculateH2HStats(eventsWithStats);
-                const marketAnalysis = [
-                    { name: "Home Win", percentage: h2hStats.homeWinPercentage },
-                    { name: "Draw", percentage: h2hStats.drawPercentage },
-                    { name: "Away Win", percentage: h2hStats.awayWinPercentage },
-                    { name: "BTTS Yes", percentage: h2hStats.bttsYesPercentage },
-                    { name: "BTTS No", percentage: 100 - h2hStats.bttsYesPercentage },
-                    { name: "Over 1.5 Goals", percentage: h2hStats.overs1_5Percentage },
-                    { name: "Over 2.5 Goals", percentage: h2hStats.overs2_5Percentage },
-                    { name: "Over 3.5 Goals", percentage: h2hStats.overs3_5Percentage },
-                ];
-                const bestMarket = marketAnalysis.reduce((max, market) =>
-                    market.percentage > max.percentage ? market : max, { name: "", percentage: 0 });
-
-                // Create HTML for favorite team and H2H stats
-                const h2hHeadingHtml = `
-                    <h4 style="text-align:center;">H2H Last 3 Years</h4> 
-                    <span style="text-align:center;"><strong>Best Market:</strong> ${bestMarket.name} (${bestMarket.percentage}%)</span>
-                `;
-
-                const statsHtml = `
-                    <div class="h2h-stats" style="text-align:center;">
-                        <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
-                            Home:<span class="value">${h2hStats.homeWinPercentage}%</span>
-                            Draws:<span class="value">${h2hStats.drawPercentage}%</span>
-                            Away:<span class="value">${h2hStats.awayWinPercentage}%</span>
-                        </div>
-                        <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
-                            BTTS Yes:<span class="value">${h2hStats.bttsYesPercentage}%</span>
-                            BTTS No:<span class="value">${h2hStats.bttsNoPercentage}%</span>
-                        </div>
-                        <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
-                            +1.5:<span class="value">${h2hStats.overs1_5Percentage}%</span>
-                            +2.5:<span class="value">${h2hStats.overs2_5Percentage}%</span>
-                            +3.5:<span class="value">${h2hStats.overs3_5Percentage}%</span>
-                        </div>
-                    </div>
-                `;
- 
-
-                document.getElementById(elementId).innerHTML = h2hHeadingHtml + statsHtml;
-            } else {
-                document.getElementById(elementId).innerHTML = '<span style="text-align:center;">No finished H2H events from the last 3 years found.</span>';
+            // If totalFavoriteMatches is less than 4, don't show stats
+            if (totalFavoriteMatches >= 5) {
+                document.getElementById(elementId).innerHTML = ''; // Show nothing
+                return; // Exit the function
             }
+
+            // Determine the market with the highest percentage
+            const h2hStats = calculateH2HStats(eventsWithStats, teamId);
+            const marketAnalysis = [
+                { name: "Home Win", percentage: h2hStats.homeWinPercentage },
+                { name: "Draw", percentage: h2hStats.drawPercentage },
+                { name: "Away Win", percentage: h2hStats.awayWinPercentage },
+                { name: "BTTS Yes", percentage: h2hStats.bttsYesPercentage },
+                { name: "BTTS No", percentage: 100 - h2hStats.bttsYesPercentage },
+                { name: "Over 1.5 Goals", percentage: h2hStats.overs1_5Percentage },
+                { name: "Over 1.5 Goals", percentage: 100 - h2hStats.overs1_5Percentage },
+                { name: "Over 2.5 Goals", percentage: h2hStats.overs2_5Percentage },
+                { name: "Under 2.5 Goals", percentage: 100 - h2hStats.overs2_5Percentage },
+                { name: "Over 3.5 Goals", percentage: h2hStats.overs3_5Percentage },
+                { name: "Under 3.5 Goals", percentage: 100 - h2hStats.overs3_5Percentage },
+            ];
+            const bestMarket = marketAnalysis.reduce((max, market) =>
+                market.percentage > max.percentage ? market : max, { name: "", percentage: 0 });
+
+            // Create HTML for favorite team and H2H stats
+            const h2hHeadingHtml = `
+                <h4 style="text-align:center;">Stats for ${totalFavoriteMatches} H2H matches</h4> 
+                <span style="text-align:center;"><strong>Best Market:</strong> ${bestMarket.name} (${bestMarket.percentage}%)</span>
+            `;
+
+            const statsHtml = `
+                <div class="h2h-stats" style="text-align:center;">
+                    <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
+                        Home:<span class="value">${h2hStats.homeWinPercentage}%</span>
+                        Draws:<span class="value">${h2hStats.drawPercentage}%</span>
+                        Away:<span class="value">${h2hStats.awayWinPercentage}%</span>
+                    </div>
+                    <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
+                        BTTS Yes:<span class="value">${h2hStats.bttsYesPercentage}%</span>
+                        BTTS No:<span class="value">${h2hStats.bttsNoPercentage}%</span>
+                    </div>
+                    <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
+                        +1.5:<span class="value">${h2hStats.overs1_5Percentage}%</span>
+                        +2.5:<span class="value">${h2hStats.overs2_5Percentage}%</span>
+                        +3.5:<span class="value">${h2hStats.overs3_5Percentage}%</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById(elementId).innerHTML = h2hHeadingHtml + statsHtml;
         } else {
             document.getElementById(elementId).innerHTML = '<span style="text-align:center;">No events data available.</span>';
         }
@@ -3166,20 +3150,22 @@ const fetchAndDisplayMostRecentH2HEvent = async (customId, currentMatchId, eleme
 };
 
 // Helper function to calculate H2H stats
-function calculateH2HStats(events) {
+function calculateH2HStats(events, teamId) {
     const totalMatches = events.length;
     let homeWins = 0, draws = 0, awayWins = 0, totalGoals = 0;
     let bttsYes = 0, bttsNo = 0, overs1_5 = 0, overs2_5 = 0, overs3_5 = 0;
 
     events.forEach(event => {
+        const homeTeam = event.homeTeam.id;
+        const awayTeam = event.awayTeam.id;
         const homeScore = event.homeScore.current;
         const awayScore = event.awayScore.current;
         const goals = homeScore + awayScore;
 
         // Count wins, draws, and losses
-        if (homeScore > awayScore) homeWins++;
-        else if (homeScore < awayScore) awayWins++;
-        else draws++;
+        if (homeScore > awayScore && homeTeam === teamId ) homeWins++;
+        else if (homeScore === awayScore) draws++;
+        else awayWins++;
 
         // Count goals and BTTS
         totalGoals += goals;
@@ -3205,13 +3191,13 @@ function calculateH2HStats(events) {
     };
 }
 
-const fetchLastEvents = async (teamId, currentMatchId) => {
+const fetchLastEvents = async (teamId, currentMatchId, uniqueTournamentId) => {
     const response = await fetch(`${baseURL}/team/${teamId}/events/last/0`);
     const data = await response.json();
     const events = data.events.reverse(); // Reverse to get the most recent events first
     // Remove the current event from the list
-    const lastEvents = events.filter(event => event.id !== currentMatchId && event.status.type === 'finished');
-    const filteredEvents = lastEvents.slice(0, 6); // Return only the last 15 games  && event.tournament?.uniqueTournament?.id === uniqueTournamentId 
+    const lastEvents = events.filter(event => event.id !== currentMatchId && event.tournament?.uniqueTournament?.id === uniqueTournamentId && event.status.type === 'finished');
+    const filteredEvents = lastEvents.slice(0, 5); // Return only the last 15 games 
 
     return filteredEvents;
 };
@@ -3460,7 +3446,7 @@ const getHomeAwayForm = (events, type, teamId) => {
     };
 };
 
-const getLastFiveGamesForm = (events, teamId, currentMatchId, maxMatches = 6) => {
+const getLastGamesForm = (events, teamId, currentMatchId, maxMatches = 6) => {
     // Filter finished matches excluding the current match
     const finishedEvents = events.filter((event) => event.status.type === 'finished' && event.id !== currentMatchId);
     
