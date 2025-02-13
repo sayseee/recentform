@@ -38,181 +38,298 @@
   font-style: normal;
   font-size: 12px;
   margin: 0;
-  overflow: hidden; /* Prevent body from scrolling */
+ /*  overflow: hidden; Prevent body from scrolling */
 }
-#events-container {
-    padding: 0 10px;
-    overflow-y: auto;
-    height: 89vh;
+
+#soccerView {
+  font-family: "Lato", sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
 }
-        .tournament { margin-bottom: 20px; }
-        .event a { text-decoration: none; color: #007BFF; }
-        .event a:hover { text-decoration: underline; }
-     ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;}
-     ul li {
-    display: flex;
-    width: 95%;
-    height: 30px;
-    align-items: center;
-    padding: 0 10px;
-}  ul li:nth-child(even) {
-    background-color: var(--blue-5);
-}
-     ul li a { 
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-weight: normal;
-    color: #333;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: flex;
-    width: 100%;}
  
 
- .team-names {
-    float: left;
-    flex: 1;
+.country:first-child {
+  padding-top: 10px;
+}
+.country h2 {
+  display: flex;
+  align-items: center;
+  color: #2c3e50; 
+  padding: 0 10px; 
+  margin: 0;
+  font: 700 12px / 1.14 "Lato", sans-serif;
+  gap: 10px;
 }
 
- .odds {
-    float: right;
-    flex: 0.4;
-    justify-content: center;
-    display: flex;
+.country span {
+  display: flex;
+  align-items: center;   
 }
- .odds span{
-    text-align: center;
-    flex: 1;
+
+.tournament {
+  margin-left: 10px;
+}
+
+.tournament h3 {
+    color: rgba(34, 34, 38, 0.45);
+    margin: 10px 0;
+    font: 700 12px / 1.14 "Lato", sans-serif;
+}
+
+.event {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    margin: 0;
+    color: #222226; 
+    padding-left: 0;
+    padding-right: 10px;
+}
+
+.event .teams {
+  font:400 11px / 1.33 "Lato", sans-serif
+
+}
+
+.event .status {
+  color: #7f8c8d;
+}
+
+.event .round {
+  font-size: 0.9em;
+  color: #95a5a6;
+}
+
+.event[data-status="inprogress"] {
+  background: #e74c3c;
+  color: white;
+}
+
+.event[data-status="inprogress"] .status {
+  color: white;
+}
+.tournaments {
+  display: none; /* Initially hidden */
+  transition: all 0.3s ease-in-out;
+}
+
+h2 {
+  cursor: pointer;
+}
+hr {
+    box-sizing: content-box;
+    height: 0px;
+    overflow: visible;
+}
+
+hr {
+    margin: 10px 0;
+    padding: 0px;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-image: initial;
+    border-bottom: 1px solid rgba(0, 12, 36, 0.07);
+} 
+
+hr {
+    box-sizing: content-box;
+    height: 0px;
+    overflow: visible;
 }
     </style>
 </head>
 <body>
-    <div id="events-container"></div>
-    <script>
-        const baseURL = 'https://api.sofascore.com/api/v1';
-    
-        // Utility Function to convert fractional odds to decimal odds
-        const fractionalToDecimal = (fractional) => {
-            const [numerator, denominator] = fractional.split('/').map(Number);
-            return (numerator / denominator + 1).toFixed(2);
-        };
-    
-        const fetchJson = async (url) => {
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Error ${response.status}: ${errorData.message}`);
-                }
-                return response.json();
-            } catch (error) {
-                console.error('Fetch error:', error.message);
-                return null;
-            }
-        };
-    
-        const displayCategoryEvents = async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryId = urlParams.get('categoryId');
-    
-            // Define the date for today
-            const today = new Date().toISOString().split('T')[0];
-    
-            // Fetch scheduled events and odds for the given date
-            const [scheduledResponse, inverseResponse, oddsResponse] = await Promise.all([
-                fetchJson(`${baseURL}/sport/football/scheduled-events/${today}`),
-                fetchJson(`${baseURL}/sport/football/scheduled-events/${today}/inverse`),
-                fetchJson(`${baseURL}/sport/football/odds/1/${today}`)
-            ]);
-    
-            // Combine events from both responses
-            const events = [...(scheduledResponse?.events || []), ...(inverseResponse?.events || [])];
-            const odds = oddsResponse?.odds || {};
-    
-            // Filter events occurring today and those with odds
-            let filteredEvents = events.filter(event => {
-                const eventDate = new Date(event.startTimestamp * 1000).toISOString().split('T')[0];
-                return eventDate === today;
-            });
-    
-            filteredEvents = filteredEvents.filter(event => odds[event.id]);
-    
-            if (filteredEvents.length > 0) {
-                // Group events by category and tournament
-                const tournamentsInCategory = new Map();
-    
-                filteredEvents.forEach(event => {
-                    const category = event.tournament.category;
-                    if (category.id === parseInt(categoryId)) {
-                        const tournamentId = event.tournament.id;
-                        if (!tournamentsInCategory.has(tournamentId)) {
-                            tournamentsInCategory.set(tournamentId, {
-                                name: event.tournament.name,
-                                events: []
-                            });
-                        }
-                        tournamentsInCategory.get(tournamentId).events.push(event);
-                    }
-                });
-    
-                const container = document.getElementById('events-container');
-                container.innerHTML = '';
-    
-                tournamentsInCategory.forEach((tournament, tournamentId) => {
-                    const tournamentSection = document.createElement('div');
-                    tournamentSection.classList.add('tournament');
-    
-                    const tournamentHeader = document.createElement('h3');
-                    tournamentHeader.textContent = tournament.name;
-                    tournamentSection.appendChild(tournamentHeader);
-    
-                    if (tournament.events.length > 0) {
-                        const eventsList = document.createElement('ul');
-                        tournament.events.forEach(event => {
-                            const listItem = document.createElement('li');
-                            const eventLink = document.createElement('a');
-                            eventLink.href = `event.html?eventId=${event.id}`;
-    
-                            // Get the odds data for this event
-                            const oddsData = odds[event.id] || {};
-                            const homeFractional = oddsData.choices?.find(choice => choice.name === '1')?.initialFractionalValue;
-                            const drawFractional = oddsData.choices?.find(choice => choice.name === 'X')?.initialFractionalValue;
-                            const awayFractional = oddsData.choices?.find(choice => choice.name === '2')?.initialFractionalValue;
-    
-                            // Convert fractional odds to decimal
-                            const homeOdds = homeFractional ? fractionalToDecimal(homeFractional) : '-';
-                            const drawOdds = drawFractional ? fractionalToDecimal(drawFractional) : '-';
-                            const awayOdds = awayFractional ? fractionalToDecimal(awayFractional) : '-';
-    
-                            eventLink.innerHTML = `
-                            <span class="team-names">${event.homeTeam.shortName} vs ${event.awayTeam.shortName}</span>
-                            <span class="odds" style="float:right">
-                                <span>${homeOdds}</span>
-                                <span>${drawOdds}</span>
-                                <span>${awayOdds}</span>
-                            </span>
-                            `;
-                            listItem.appendChild(eventLink);
-                            eventsList.appendChild(listItem);
-                        });
-                        tournamentSection.appendChild(eventsList);
-                    }
-    
-                    container.appendChild(tournamentSection);
-                });
-            }
-        };
-    
-        displayCategoryEvents();
-    </script>
-    
+    <div id="soccerView"></div>
+
+<script>
+const baseURL = 'https://api.sofascore.com/api/v1';
+
+async function fetchScheduledEvents(date) {
+  const url = `${baseURL}/sport/football/scheduled-events/${date}`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Network response was not ok');
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return null;
+  }
+}
+
+function groupEventsByTournament(events) {
+  const groupedData = {};
+
+  events.forEach(event => {
+    const tournament = event.tournament.uniqueTournament;
+    const category = event.tournament.category;
+    const country = category.country || { name: category.name };
+
+    // Get alpha2 in lowercase or fallback to flag
+    const alpha2 = country.alpha2 ? country.alpha2.toLowerCase() : null;
+    const flag = alpha2 || category.flag;
+
+    // Initialize country group
+    if (!groupedData[flag]) {
+      groupedData[flag] = {
+        name: category.name,
+        flag: flag, // Always lowercase alpha2 or fallback to flag
+        tournaments: {}
+      };
+    }
+
+    const countryGroup = groupedData[flag];
+
+    // Initialize tournament group
+    if (!countryGroup.tournaments[tournament.id]) {
+      countryGroup.tournaments[tournament.id] = {
+        name: tournament.name,
+        slug: tournament.slug,
+        priority: event.tournament.priority,
+        events: []
+      };
+    }
+
+    const tournamentGroup = countryGroup.tournaments[tournament.id];
+
+    // Add event to tournament
+    tournamentGroup.events.push({
+      id: event.id,
+      homeTeam: event.homeTeam,
+      awayTeam: event.awayTeam,
+      status: event.status,
+      score: {
+        home: event.homeScore.current,
+        away: event.awayScore.current
+      },
+      startTime: new Date(event.startTimestamp * 1000),
+      round: event?.roundInfo?.name
+    });
+  });
+
+  return groupedData;
+}
+
+function renderGroupedEvents(groupedData) {
+  const container = document.getElementById('soccerView');
+  container.innerHTML = '';
+
+  for (const [flag, countryData] of Object.entries(groupedData)) {
+    // Create country container
+    const countryDiv = document.createElement('div');
+    countryDiv.className = 'country';
+
+    // Create country header (h2)
+    const countryHeader = document.createElement('h2');
+    countryHeader.innerHTML = `
+      <img src="https://www.sofascore.com/static/images/flags/${flag}.png" width="15" height="15" loading="lazy" />
+      <span>${countryData.name}<span/>
+    `;
+    countryHeader.addEventListener('click', () => {
+      const tournamentsDiv = countryDiv.querySelector('.tournaments');
+      tournamentsDiv.style.display = tournamentsDiv.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Create tournament wrapper (collapsible)
+    const tournamentsDiv = document.createElement('div');
+    const tournamentsHr = document.createElement('hr');
+    tournamentsDiv.className = 'tournaments';
+    tournamentsDiv.style.display = 'none'; // Hide by default
+
+    for (const [tournamentId, tournamentData] of Object.entries(countryData.tournaments)) {
+      const tournamentDiv = document.createElement('div');
+      tournamentDiv.className = 'tournament';
+      tournamentDiv.innerHTML = `
+        <h3>${tournamentData.name}</h3>
+        <div class="events"></div>
+      `;
+
+      // Render events
+      const eventsDiv = tournamentDiv.querySelector('.events');
+      if (tournamentData.events.length > 0) {
+        tournamentData.events.forEach(event => {
+          eventsDiv.innerHTML += `
+            <div class="event" data-id="${event.id}">
+              <span class="teams">${event.homeTeam.shortName} vs ${event.awayTeam.shortName}</span>
+              <span class="status">${event.status.type === 'finished' ? `${event.score.home}-${event.score.away}` : '⏰'}</span>
+            </div>
+          `;
+        });
+      } else {
+        eventsDiv.innerHTML = '<p>No matches scheduled.</p>';
+      }
+
+      tournamentsDiv.appendChild(tournamentDiv);
+    }
+
+    // Append elements
+    countryDiv.appendChild(countryHeader);
+    countryDiv.appendChild(tournamentsDiv);
+    countryDiv.appendChild(tournamentsHr);
+    container.appendChild(countryDiv);
+  }
+}
+
+
+async function updateLiveEvents(groupedData) {
+  // Fetch live events from the new endpoint
+  const liveData = await fetchLiveUpdates();
+  if (!liveData || !liveData.events || liveData.events.length === 0) return;
+
+  const liveEvents = liveData.events.reduce((acc, event) => {
+    acc[event.id] = {
+      score: {
+        home: event.homeScore.current,
+        away: event.awayScore.current
+      },
+      status: event.status
+    };
+    return acc;
+  }, {});
+
+  // Update existing groupedData with live scores and status
+  Object.values(groupedData)
+    .flatMap(country => Object.values(country.tournaments))
+    .flatMap(tournament => tournament.events)
+    .filter(event => liveEvents[event.id])
+    .forEach(event => {
+      event.score = liveEvents[event.id].score;
+      event.status = liveEvents[event.id].status;
+    });
+
+  renderGroupedEvents(groupedData);
+}
+
+async function fetchLiveUpdates() {
+  try {
+    const response = await fetch(`${baseURL}/sport/football/events/live`);
+    if (!response.ok) throw new Error("Failed to fetch live updates");
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching live events:", error);
+    return null;
+  }
+}
+
+
+async function main() {
+  const date = '2025-02-13'; // Replace with dynamic date selection
+  const apiResponse = await fetchScheduledEvents(date);
+  
+  if (!apiResponse) {
+    console.error('Failed to fetch data');
+    return;
+  }
+
+  const groupedEvents = groupEventsByTournament(apiResponse.events);
+  renderGroupedEvents(groupedEvents);
+
+  // Update live events every 30 seconds
+  //setInterval(() => updateLiveEvents(groupedEvents), 30000);
+}
+
+main();
+
+</script>
 </body>
 </html>
