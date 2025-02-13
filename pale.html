@@ -1530,9 +1530,9 @@ const createCategorySection = (tournaments, categoryName, odds) => {
             }
 
             const { leagueStats, tournamentInfo } = leagueStatsCache[tournament.id];
-            if (leagueStatsContainer.innerHTML === '') {
+            /* if (leagueStatsContainer.innerHTML === '') {
                 displayLeagueStats(leagueStats, tournamentInfo, leagueStatsContainer);
-            }
+            } */
 
             if (eventsContainer.children.length === 0) {
                 loadEvents(tournament.events, odds, eventsContainer, leagueStats);
@@ -3091,7 +3091,7 @@ const fetchAndDisplayMostRecentH2HEvent = async (teamId, customId, currentMatchI
                 : 0;
 
             // If totalFavoriteMatches is less than 4, don't show stats
-            if (totalFavoriteMatches >= 5) {
+            if (totalFavoriteMatches < 4.5) {
                 document.getElementById(elementId).innerHTML = ''; // Show nothing
                 return; // Exit the function
             }
