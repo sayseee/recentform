@@ -3123,8 +3123,7 @@ const getLastGamesForm = (events, teamId, currentMatchId, maxMatches = 6) => {
     let winCleanSheet = 0;
     let lossFailedToScore = 0;
 
-    const form = lastFinishedEvents
-        .reverse() // Show form in chronological order
+    const form = lastFinishedEvents 
         .map((event) => { 
             const homeScore = event.homeScore.current ?? 0; // Default to 0 if undefined
             const awayScore = event.awayScore.current ?? 0; // Default to 0 if undefined
