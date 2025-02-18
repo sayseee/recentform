@@ -2594,7 +2594,6 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                      </div>
                 </div>
             </div> 
-            
             <div class="stat-title" style="margin-top:10px;display:flex;gap:5px;align-items:center;">
                 <table border="0" cellpadding="2" width="80%" align="center" style="text-align:center;">
                     <thead>
@@ -2607,10 +2606,10 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="value">${Math.round(((homeTeamPoints.over1_5 / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.over1_5 / awayTeamPoints.actualMatchesCount) * 100) / 2)}</span></td>
-                            <td><span class="value">${Math.round(((homeTeamPoints.over2_5 / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.over2_5 / awayTeamPoints.actualMatchesCount) * 100) / 2)}</span></td>
-                            <td><span class="value">${Math.round(((homeTeamPoints.bttsYes / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.bttsYes / awayTeamPoints.actualMatchesCount) * 100) / 2)}</span></td>
-                            <td><span class="value">${Math.round(((homeTeamPoints.bttsOver2_5 / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.bttsOver2_5 / awayTeamPoints.actualMatchesCount) * 100) / 2)}</span></td>
+                            <td><span class="value">${Math.round(((homeTeamPoints.over1_5 / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.over1_5 / awayTeamPoints.actualMatchesCount) * 100) / 2)}/${100 - Math.round(((homeTeamPoints.over1_5 / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.over1_5 / awayTeamPoints.actualMatchesCount) * 100) / 2)}</span></td>
+                            <td><span class="value">${Math.round(((homeTeamPoints.over2_5 / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.over2_5 / awayTeamPoints.actualMatchesCount) * 100) / 2)}/${100 - Math.round(((homeTeamPoints.over2_5 / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.over2_5 / awayTeamPoints.actualMatchesCount) * 100) / 2)}</span></td>
+                            <td><span class="value">${Math.round(((homeTeamPoints.bttsYes / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.bttsYes / awayTeamPoints.actualMatchesCount) * 100) / 2)}/${100 - Math.round(((homeTeamPoints.bttsYes / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.bttsYes / awayTeamPoints.actualMatchesCount) * 100) / 2)}</span></td>
+                            <td><span class="value">${Math.round(((homeTeamPoints.bttsOver2_5 / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.bttsOver2_5 / awayTeamPoints.actualMatchesCount) * 100) / 2)}/${100 - Math.round(((homeTeamPoints.bttsOver2_5 / homeTeamPoints.actualMatchesCount) * 100 + (awayTeamPoints.bttsOver2_5 / awayTeamPoints.actualMatchesCount) * 100) / 2)}</span></td>
                         </tr>
                     </tbody>
                 </table>
