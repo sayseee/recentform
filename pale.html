@@ -3100,7 +3100,7 @@ const calculateStatistics = async (teamId, tournamentId, seasonId, currentMatchI
 };
  
 
-const getLastGamesForm = (events, teamId, currentMatchId, maxMatches = 5) => {
+const getLastGamesForm = (events, teamId, currentMatchId, maxMatches = 6) => {
     // Filter finished matches excluding the current match
     const finishedEvents = events.filter((event) => event.status.type === 'finished' && event.id !== currentMatchId);
     
