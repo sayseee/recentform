@@ -116,6 +116,36 @@
                             linear-gradient(to right bottom, #0c1614, #084436);
         }
         
+h4 {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: color 0.2slinear 0s;
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 700;
+}
+        
+    .W, .D, .L {
+        height: 16px;
+        width: 16px; 
+        color: var(--color-black1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 10px;
+            border-radius: 50%;  
+    }
+    .W {
+        background-color: var(--win-color);
+    }
+    .D {
+        background-color: var(--draw-color);
+    }
+    .L {
+        background-color: var(--loss-color);
+    } 
     header { 
         color: var(--color-greyE4);
         padding: 0;
@@ -304,6 +334,11 @@
     font-size: 14px;
     min-height: 45px;
 }
+.tournament {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
 .match {
     display: flex;
     align-items: center;
@@ -433,6 +468,484 @@
 }
 .logoH {
     color: rgb(241, 174, 86);
+}
+
+/* Base styles for match-details */
+.match-details { 
+    background-color: rgb(17, 22, 28);
+    overflow: hidden;
+    transition: all 0.3sease-in-out;
+    transform: translateY(-10px);
+    position: relative;
+    bottom: -10px;
+    left: 0;
+    display: flex; 
+    flex-direction: column;
+    justify-content: space-between; 
+    gap: 10px;
+}
+sup {
+    border-radius: 24px;
+    text-align: center;
+    overflow: visible;
+    padding: 2px 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--color-greyFF);
+    font-weight: 900;
+}
+#teams-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.promotion-to-x td:first-child {
+    content: '';
+    background-color: var(--playoffs-promotion-to-x); 
+}
+
+.promotion-to-x-playoff td:first-child {
+    content: '';
+    background-color: var(--playoffs-promotion-to-x-playoff); 
+}
+    
+.promotion-to-y td:first-child {
+    content: '';
+    background-color: var(--playoffs-promotion-to-y); 
+}
+
+.promotion-to-y-playoff td:first-child {
+    content: '';
+    background-color: var(--playoffs-promotion-to-y-playoff); 
+}  
+.promotion-to-z td:first-child {
+    content: '';
+    background-color: var(--playoffs-promotion-to-z); 
+}
+
+.promotion-to-z-playoff td:first-child {
+    content: '';
+    background-color: var(--playoffs-promotion-to-z-playoff); 
+}
+.promotion-to-z-playoff-secondary td:first-child {
+    content: '';
+    background-color: var(--playoffs-promotion-to-z-playoff-secondary); 
+}
+
+.relegation td:first-child {
+    content: '';
+    background-color: var(--playoffs-promotion-to-relegation); 
+}
+ 
+.relegation-playoff td:first-child {
+    content: ''; 
+    background-color: var(--playoffs-promotion-to-relegation-playoff); 
+}  
+
+
+.promotion span.promotion-to-x::before {
+    content: '';
+    display: flex;
+    width: 100%;
+    height: 5px;
+    margin-bottom: 4px;
+    background-color: var(--playoffs-promotion-to-x); 
+}
+
+.promotion span.promotion-to-x-playoff::before {
+    content: '';
+    display: flex;
+    width: 100%;
+    height: 5px;
+    margin-bottom: 4px;
+    background-color: var(--playoffs-promotion-to-x-playoff); 
+}
+    
+.promotion span.promotion-to-y::before {
+    content: '';
+    display: flex;
+    width: 100%;
+    height: 5px;
+    margin-bottom: 4px;
+    background-color: var(--playoffs-promotion-to-y); 
+}
+
+.promotion span.promotion-to-y-playoff::before {
+    content: '';
+    display: flex;
+    width: 100%;
+    height: 5px;
+    margin-bottom: 4px;
+    background-color: var(--playoffs-promotion-to-y-playoff); 
+}  
+.promotion span.promotion-to-z::before {
+    content: '';
+    display: flex;
+    width: 100%;
+    height: 5px;
+    margin-bottom: 4px;
+    background-color: var(--playoffs-promotion-to-z); 
+}
+
+ 
+.promotion span.promotion-to-z-playoff::before { 
+    content: '';
+    display: flex;
+    width: 100%;
+    height: 5px;
+    margin-bottom: 4px;
+    background-color: var(--playoffs-promotion-to-z-playoff);
+}  
+.promotion span.promotion-to-z-playoff-secondary::before { 
+    content: '';
+    display: flex;
+    width: 100%;
+    background-color: var(--playoffs-promotion-to-z-playoff-secondary);
+    height: 5px;
+    margin-bottom: 4px;
+} 
+.promotion span.relegation::before { 
+    content: '';
+    display: flex;
+    width: 100%;
+    background-color: var(--playoffs-promotion-to-relegation);
+    height: 5px;
+    margin-bottom: 4px;
+}
+
+ 
+.promotion span.relegation-playoff::before { 
+    content: '';
+    display: flex;
+    width: 100%;
+    background-color: var(--playoffs-promotion-to-relegation-playoff);
+    height: 5px;
+    margin-bottom: 4px;
+}
+
+.promotion-to-x td:first-child, 
+.promotion-to-x-playoff td:first-child, 
+.promotion-to-y td:first-child, 
+.promotion-to-y-playoff td:first-child, 
+.promotion-to-z td:first-child, 
+.promotion-to-z-playoff td:first-child, 
+.promotion-to-z-playoff-secondary td:first-child, 
+.relegation td:first-child, 
+.relegation-playoff td:first-child {
+    font-weight: 700;
+    color: var(--color-greyE4);
+}
+    
+    @keyframes blink {
+        0% {
+            opacity: 1;
+        }
+        30% {
+            opacity: 0.3;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+#teams-info .promotion {
+    height: auto;
+    margin-top: 10px;
+}
+#home-team-comparison {
+    justify-content: flex-end;
+}
+#home-team-comparison, #away-team-comparison {
+    display: flex;
+    flex: 2;
+}
+#home-team-comparison div, #away-team-comparison div {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    align-items: self-start;
+}
+
+#home-team-comparison .team-data, #away-team-comparison .team-data {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+#home-team-comparison sup {
+    background-color: var(--color-green28FFBB);
+}
+#away-team-comparison sup {
+    background-color: var(--primary-default);
+}
+#match-details, #expected-actual { 
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between; 
+    border-bottom: 1px solid var(--border-green1);
+    padding-bottom: 10px;
+}
+#match-details div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+#match-details #home-team {
+    justify-content: flex-end;
+}
+#match-details #home-team, #match-details #away-team {
+    font-weight: 700;
+    font-size: 17px;
+    flex: 2;
+    max-height: 75px;
+    font-size: 20px;
+    line-height: 25px;
+    color: var(--color-greyFF);
+}
+/* Animation for appearing */
+.match-details.appearing { 
+    transform: translateY(0); /* Move to final position */
+    max-height: 500px; /* Expand to a reasonable height */
+} 
+
+/* Animation for appearing */
+.match-details.appearing {
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* Move to final position */ 
+}
+
+/* Animation for disappearing */
+.match-details.closing {
+    opacity: 0; /* Fade out */
+    transform: translateY(-10px); /* Move back up */
+    max-height: 0; /* Collapse */
+    padding-top: 0; /* Remove padding during collapse */
+    padding-bottom: 0;
+}
+.score-dec {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    flex: 1;
+}
+
+.score-dec #scoreline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    flex: 1;
+    color: var(--draw-color);
+    font-weight: 700;
+    text-align: center;
+    font-size: 30px;
+}
+
+#expected-actual, #match-prediction {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around; 
+        gap: 10px;
+    }
+ 
+
+.actual-home, .actual-away {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+.exWin {
+    background-color: #e59c03a8;
+}
+
+.default {
+        background-color: rgb(75,83,106); 
+    }
+.exWin, .default {
+    color: #ffffff;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+.team-data {
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px;
+    /* background-image: linear-gradient(to bottom right, #364D3C, var(--color-grey40)); */
+    padding: 10px;
+}
+
+#home-team-stats, #away-team-stats {
+    display: flex;
+    flex-direction: column; 
+    background-color: var(--color-grey0-25p);
+    border-radius: 5px;
+}
+#home-team-stats span, #away-team-stats span {
+    flex: 1;
+    text-align: center;
+}
+#home-team-stats div, #away-team-stats div {
+    display: flex;
+    align-items: stretch;
+    height: 34px;
+    font-size: 13px;
+    line-height: 34px;
+    padding: 0 10px;
+    cursor: pointer;
+    justify-content: center;
+}
+#home-team-stats div:first-child, #home-team-stats div:nth-child(3), #away-team-stats div:first-child, #away-team-stats div:nth-child(3) {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    color: #ccc;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 32px;
+    border-bottom: 1px solid var(--g5-market-top-border, var(--color-white10p));
+    background-image: var(--pbb-background);
+}
+.events-table, .h2hTable {
+    color: rgb(140 143 145);
+}
+
+.h2hTable, .events-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.events-table tr:nth-child(odd), .h2hTable tr:nth-child(odd) {
+    background-color: rgb(17, 22, 28);
+}
+.events-table thead tr {
+    min-height: 25px;
+    width: 100%;
+}
+
+.events-table th {
+    padding: 8px 4px;
+    vertical-align: middle;
+}
+
+.events-table td:first-child, .events-table td:nth-child(2), .h2hTable td:first-child, .h2hTable td:nth-child(2) {
+    text-align: left;
+}
+
+.events-table td:first-child, .h2hTable td:first-child {
+    padding-left: 5px;
+}
+.events-table td, .h2hTable td {
+    vertical-align: middle;
+    padding: 5px;
+}
+
+.events-table td:nth-child(2) {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: color 0.2slinear 0s;
+    max-width: 110px;
+}
+.highlight {
+    color: var(--color-green2);
+    font-weight: 300;
+    opacity: 0.9;
+    letter-spacing: 1.42px;
+}
+
+.team-events .league-table h4, #h2h-team-stat h4, #h2h-stat h4 {
+    width: 100%;
+    padding: 0 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: 30px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-greyFF);
+    text-align: center;
+    margin: 0;
+    background-color: transparent;
+}
+
+.team-events .league-table {
+    background: var(--gl-podGradient);
+    border-radius: 5px;
+    border: var(--gl-podBorder);
+}
+.league-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.league-table h4, #h2h-team-stat h4, #h2h-stat h4 {
+    text-align: center;
+    margin: 0;
+    padding: 6px 0;
+    background-color: var(--color-black1);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.41px;
+    font-weight: 700;
+    font-family: "Sofascore Sans", "Arial Unicode MS", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+.league-table table tr {
+    display: flex;
+    align-items: center;
+    position: relative;
+    min-height: 25px;
+}
+tr.is-team {
+    background-color: rgb(57, 63, 70);
+    font-weight: 700;
+    color: #f0f0f0;
+}
+.league-table table th {
+    padding: 8px 4px;
+}
+.league-table table td, .league-table table th {
+    flex: 1;
+    padding: 2px 4px;
+    text-align: center;
+    font-weight: 700;
+    font-family: "Sofascore Sans", "Arial Unicode MS", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+.gamesPlayed {
+    position: relative;
+}
+.team-name {
+    text-align: center;
+    font-weight: 700;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: clip;
+}
+.team-name-column {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 150px;
+    flex: 6 !important;
+    text-align: left !important;
+    width: 100px !important;
+    text-wrap: nowrap;
+}
+.teamForm {
+    display: flex;
+    gap: 3px;
+    flex: 5 !important;
+    justify-content: flex-end;
+    font-size: 10px;
+    align-items: center;
 }
     </style>
 </head>
@@ -608,14 +1121,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Set a timeout to fetch and display match scores every minute (60000 milliseconds)
     setInterval(() => fetchAndDisplayMatchScores(currentDate.toISOString().split('T')[0]), 60000);
-
+        
     const matchEventsDiv = document.getElementById('match-events');
-    matchEventsDiv.addEventListener('click', async (event) => {
-        const matchRow = event.target.closest('.match-row');
-        if (matchRow) {
-            const matchData = matchRow.dataset;
-            //console.log('Match Clicked:', matchData);
+        let currentlyOpenMatch = null; // Track the currently open match
 
+        // Event delegation for match clicks
+        matchEventsDiv.addEventListener('click', async (event) => {
+            const matchElement = event.target.closest('.match');
+            if (!matchElement) return;
+
+            const matchData = matchElement.dataset;
+            //console.log('Match Clicked:', matchData); 
             const tournamentId = matchData.tournamentId;
             const uniqueTournamentId = matchData.uniqueTournamentId;
             const matchId = matchData.matchId;
@@ -625,13 +1141,573 @@ document.addEventListener('DOMContentLoaded', () => {
             const awayTeamId = parseInt(matchData.awayTeamId);
             const homeTeamName = matchData.homeTeamName;
             const awayTeamName = matchData.awayTeamName; 
- 
-        }
-    }); 
+
+            if (currentlyOpenMatch === matchId) {
+                // If the clicked match is already open, close it
+                closeMatchDetails();
+                return;
+            }
+
+            currentlyOpenMatch = matchId; // Set new active match
+            fetchMatchDetails(matchId, matchElement); // Pass matchElement to fetchMatchDetails  
+        });
 });
 
-          // Function to convert fractional odds to decimal odds
-          function fractionalToDecimal(fractional) {
+function handleMatchClick(matchData) {
+    const tournamentId = parseInt(matchData.tournamentId);
+
+    //console.log("Tournament ID:", tournamentId); // Logging the tournamentId
+
+    const uniqueTournamentId = parseInt(matchData.uniqueTournamentId);
+    const matchId = parseInt(matchData.matchId);
+    const customId = matchData.customId;
+    const seasonId = parseInt(matchData.seasonId); // This is the seasonId
+    const homeTeamId = parseInt(matchData.homeTeamId);
+    const awayTeamId = parseInt(matchData.awayTeamId); 
+    const homeTeamName = matchData.homeTeamName;
+    const awayTeamName = matchData.awayTeamName;
+ 
+    fetchMatchDetails(matchId);      
+}
+
+function closeMatchDetails() {
+    const openDetails = document.querySelector('.match-details');
+    if (openDetails) {
+        openDetails.classList.add('closing'); // Add closing animation
+        setTimeout(() => openDetails.remove(), 300); // Remove after animation
+    }
+    currentlyOpenMatch = null; // Reset tracker
+}
+
+async function fetchMatchDetails(matchId, matchElement) {
+    try {
+        const response = await fetch(`https://api.sofascore.com/api/v1/event/${matchId}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const matchData = await response.json();
+        const match = matchData.event;
+ 
+        const seasonId = match.season.id;
+        const customId = match.customId;
+        const tournamentId = match.tournament.id;
+        const uniqueTournamentId = match.tournament.uniqueTournament.id;
+        const homeTeam = match.homeTeam;
+        const awayTeam = match.awayTeam;
+        const homeScore = match.homeScore?.current ?? '';
+        const awayScore = match.awayScore?.current ?? '';
+        const status = match.status;
+
+        closeMatchDetails(); // Close previous details if any
+
+        const matchDetailsDiv = document.createElement('div');
+        matchDetailsDiv.classList.add('match-details');
+        matchDetailsDiv.innerHTML = `
+        
+            <div id="teams-info">
+            <div id="home-team-comparison"></div>
+            <div class="middle-spacer"></div>
+            <div id="away-team-comparison"></div>
+            </div>
+            <div id="match-details">
+                <div class="team" id="home-team">
+                    <span>${homeTeam.shortName}</span>
+                    <img src="https://api.sofascore.app/api/v1/team/${homeTeam.id}/image" width="38" height="38" alt="${homeTeam.name}" loading="lazy">
+                </div>
+                <div class="score-dec">
+                    <div class="score" id="scoreline">
+                        <span id="home-score">${homeScore}</span>
+                        -
+                        <span id="away-score">${awayScore}</span>
+                    </div>
+                    <div id="status-description">${status.description}</div>
+                </div>
+                <div class="team" id="away-team">
+                    <img src="https://api.sofascore.app/api/v1/team/${awayTeam.id}/image" width="38" height="38" alt="${awayTeam.name}" loading="lazy">
+                    <span>${awayTeam.shortName}</span>
+                </div>
+            </div>
+                
+            <div id="expected-actual"></div>
+            
+            
+            <div class="team-data">
+                <div id="home-team-stats"></div>
+                <div id="away-team-stats"></div>
+            </div>
+
+            <div class="team-events"> 
+                <div id="home-league-table" class="league-table" style="min-height: 120px;"></div> 
+                <div id="away-league-table" class="league-table" style="min-height: 120px;"></div> 
+            </div>
+            <div class="team-events">
+                <div id="home-team-events"></div>
+                <div id="away-team-events"></div>
+            </div> 
+            
+            <div id="total-league-table" class="loading-animation league-table" style="min-height: 200px;"></div>
+        `;
+
+        // Ensure matchElement is defined before calling .after
+        if (matchElement) {
+            matchElement.after(matchDetailsDiv); // Insert details after clicked match element
+        } else {
+            console.error('matchElement is undefined');
+        }
+
+        // Call fetchAndDisplayWinningOdds after the match details are inserted
+        fetchAndDisplayWinningOdds(matchId);
+        displayOddsForMatch(matchId, homeTeam.name, awayTeam.name, homeTeam.id, awayTeam.id);
+        await Promise.all([
+            fetchAndDisplayTeamPerformance(homeTeam.id, 'home', seasonId, matchId),
+            fetchAndDisplayTeamPerformance(awayTeam.id, 'away', seasonId, matchId)
+        ]);
+        fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeam.id, awayTeam.id, homeTeam.name, awayTeam.name);
+            
+        // Auto-refresh score functionality
+        if (status.type === 'inprogress') {
+            setTimeout(() => refreshScores(matchId), 60000); // Refresh every minute
+        }
+    } catch (error) {
+        console.error('Error fetching match details:', error);
+    }
+}
+
+async function fetchAndDisplayWinningOdds(matchId) {
+    try {
+        const response = await fetch(`https://api.sofascore.com/api/v1/event/${matchId}/provider/1/winning-odds`);
+        const winningOddsData = await response.json();
+
+        if (winningOddsData) {
+            const { home, away } = winningOddsData;
+            const expectedActualDiv = document.getElementById('expected-actual');
+
+            if (expectedActualDiv) {
+                // Clear previous content
+                expectedActualDiv.innerHTML = '';
+
+                // Check and display home odds data if available
+                if (home) {
+                    const expectedHomeOdds = home.expected;
+                    const actualHomeOdds = home.actual;
+                    const fractionalHomeOdds = fractionalToDecimal(home.fractionalValue);
+                    const homeWinClass = actualHomeOdds > expectedHomeOdds ? 'exWin' : 'default';
+
+                    const homeDiv = document.createElement('div');
+                    homeDiv.className = 'actual-home';
+                    homeDiv.innerHTML = `
+                        <p>Home Exp. Win: ${expectedHomeOdds}%</p>
+                        <p class="${homeWinClass}">W: ${actualHomeOdds}%</p>
+                        <p>${fractionalHomeOdds}</p>
+                    `;
+                    expectedActualDiv.appendChild(homeDiv);
+                } else {
+                    console.error('Home odds data is missing.');
+                }
+
+                // Check and display away odds data if available
+                if (away) {
+                    const expectedAwayOdds = away.expected;
+                    const actualAwayOdds = away.actual;
+                    const fractionalAwayOdds = fractionalToDecimal(away.fractionalValue);
+                    const awayWinClass = actualAwayOdds > expectedAwayOdds ? 'exWin' : 'default';
+
+                    const awayDiv = document.createElement('div');
+                    awayDiv.className = 'actual-away';
+                    awayDiv.innerHTML = `
+                        <p>Away Exp. Win: ${expectedAwayOdds}%</p>
+                        <p class="${awayWinClass}">W: ${actualAwayOdds}%</p>
+                        <p>${fractionalAwayOdds}</p>
+                    `;
+                    expectedActualDiv.appendChild(awayDiv);
+                } else {
+                    console.error('Away odds data is missing.');
+                }
+            } else {
+                console.error('expected-actual div is not found.');
+            }
+        } else {
+            console.error('Invalid winning odds data:', winningOddsData);
+        }
+    } catch (error) {
+        console.error('Error fetching winning odds:', error);
+    }
+}
+
+
+async function fetchTeamForm(uniqueTournamentId, seasonId, type) {
+    const response = await fetch(`https://api.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/team-events/${type}`);
+    const data = await response.json();
+    const teamForms = {};
+
+    const events = data.tournamentTeamEvents;
+    for (const tournamentKey in events) {
+        const teams = events[tournamentKey];
+        for (const teamId in teams) {
+            const teamEvents = teams[teamId];
+            if (!teamForms[teamId]) {
+                teamForms[teamId] = '';
+            }
+            teamForms[teamId] = teamEvents.map(event => {
+                let formResult;
+                if (type === 'home') {
+                    if (event.winnerCode === 1) formResult = 'W';
+                    else if (event.winnerCode === 2) formResult = 'L';
+                    else formResult = 'D';
+                } else if (type === 'away') {
+                    if (event.winnerCode === 1) formResult = 'L';
+                    else if (event.winnerCode === 2) formResult = 'W';
+                    else formResult = 'D';
+                }
+                return `<span class="${formResult}">${formResult}</span>`;
+            }).join(' ');
+        }
+    }
+    return teamForms;
+}
+async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeamId, awayTeamId, homeTeamName, awayTeamName) {
+    try {
+        // Fetch home standings
+        const homeStandingsResponse = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/home`);
+        let homeStandingsData;
+        if (homeStandingsResponse.ok) {
+            homeStandingsData = await homeStandingsResponse.json();
+        }
+
+        // Fetch away standings
+        const awayStandingsResponse = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/away`);
+        let awayStandingsData;
+        if (awayStandingsResponse.ok) {
+            awayStandingsData = await awayStandingsResponse.json();
+        }
+
+        // Fetch total standings
+        const totalStandingsResponse = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/total`);
+        let totalStandingsData;
+        if (totalStandingsResponse.ok) {
+            totalStandingsData = await totalStandingsResponse.json();
+        }
+
+        // Fetch form data for home and away
+        const [homeTeamForms, awayTeamForms] = await Promise.all([
+            fetchTeamForm(uniqueTournamentId, seasonId, 'home'),
+            fetchTeamForm(uniqueTournamentId, seasonId, 'away')
+            
+        ]);
+
+        // Display home, away, and total standings
+        if (homeStandingsData && awayStandingsData && totalStandingsData) {
+            displayTeamInfo(homeTeamId, 'home-team-comparison', totalStandingsData, true);
+            displayTeamInfo(awayTeamId, 'away-team-comparison', totalStandingsData, false);
+            displayLeagueTable(homeStandingsData, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, homeTeamForms);
+            displayLeagueTable(awayStandingsData, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, awayTeamForms);
+            displayLeagueTable(totalStandingsData, 'Total', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
+        } else {
+            const leagueTableDiv = document.getElementById('league-table');
+            leagueTableDiv.innerHTML = '<p>No standings available</p>';
+        }
+        
+        // Fetch team stats for home and away teams
+        const [homeTeamStats, awayTeamStats] = await Promise.all([
+            fetchTeamStats(uniqueTournamentId, seasonId, homeTeamId, 'home'),
+            fetchTeamStats(uniqueTournamentId, seasonId, awayTeamId, 'away')
+        ]);
+
+        // Display team stats
+        displayTeamStats(homeTeamStats, 'home-team-stats');
+        displayTeamStats(awayTeamStats, 'away-team-stats'); 
+         
+
+    } catch (error) {
+        console.error('Error fetching and displaying standings:', error);
+        const leagueTableDiv = document.getElementById('league-table');
+        leagueTableDiv.innerHTML = '<p>Error loading standings</p>';
+
+        displayFallbackTeamInfo(homeTeamId, 'home-team-comparison', null, true); 
+    }
+}
+
+
+
+async function fetchTeamStats(uniqueTournamentId, seasonId, teamId, type) {
+    const response = await fetch(`https://api.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/team-events/${type}`);
+    const data = await response.json();
+    const teamStats = {};
+
+    const events = data.tournamentTeamEvents;
+    //console.log(events);
+    //console.log(teamId);
+    for (const tournamentKey in events) {
+        const teams = events[tournamentKey];
+        for (const teamKey in teams) {
+            const teamEvents = teams[teamKey];
+            if (!teamStats[teamId]) {
+                teamStats[teamId] = {
+                    wins: 0,
+                    draws: 0,
+                    losses: 0,
+                    goalsScored: 0,
+                    goalsConceded: 0,
+                    over05Scored: 0,
+                    over05Conceded: 0,
+                    btts: 0,
+                    over15: 0,
+                    over25: 0,
+                    over35: 0,
+                    nilDraws: 0,
+                    winToNil: 0,
+                    lossToNil: 0
+                };
+            }
+            teamEvents.forEach(event => {  
+                if (teamKey == teamId) {
+                    if (type === 'home') {
+                        if (event.winnerCode === 1) {
+                            teamStats[teamId].wins++;
+                            if (event.awayScore.current === 0) {
+                                teamStats[teamId].winToNil++;
+                            }
+                        }
+                        else if (event.winnerCode === 2) {
+                            teamStats[teamId].losses++;
+                            if (event.homeScore.current === 0) {
+                                teamStats[teamId].lossToNil++;
+                            }
+                        }
+                        else {
+                            teamStats[teamId].draws++;
+                            if (event.homeScore.current === 0 && event.awayScore.current === 0) {
+                                teamStats[teamId].nilDraws++;
+                            }
+                        }
+
+                        teamStats[teamId].goalsScored += event.homeScore?.current ?? '';
+                        teamStats[teamId].goalsConceded += event.awayScore?.current ?? '';
+
+                        if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats[teamId].btts++;
+                        if (event.homeScore.current > 0.5) teamStats[teamId].over05Scored++;
+                        if (event.awayScore.current > 0.5) teamStats[teamId].over05Conceded++;
+                        if (event.homeScore.current + event.awayScore.current > 1.5) teamStats[teamId].over15++;
+                        if (event.homeScore.current + event.awayScore.current > 2.5) teamStats[teamId].over25++;
+                        if (event.homeScore.current + event.awayScore.current > 3.5) teamStats[teamId].over35++;
+                    } else if (type === 'away') {
+                        if (event.winnerCode === 1) {
+                            teamStats[teamId].losses++;
+                            if (event.awayScore.current === 0) {
+                                teamStats[teamId].lossToNil++;
+                            }
+                        }
+                        else if (event.winnerCode === 2) {
+                            teamStats[teamId].wins++;
+                            if (event.homeScore.current === 0) {
+                                teamStats[teamId].winToNil++;
+                            }
+                        }
+                        else {
+                            teamStats[teamId].draws++;
+                            if (event.homeScore.current === 0 && event.awayScore.current === 0) {
+                                teamStats[teamId].nilDraws++;
+                            }
+                        }
+
+                        teamStats[teamId].goalsScored += event.awayScore?.current ?? '';
+                        teamStats[teamId].goalsConceded += event.homeScore?.current ?? '';
+
+
+                        if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats[teamId].btts++;
+                        if (event.awayScore.current > 0.5) teamStats[teamId].over05Scored++;
+                        if (event.homeScore.current > 0.5) teamStats[teamId].over05Conceded++;
+                        if (event.homeScore.current + event.awayScore.current > 1.5) teamStats[teamId].over15++;
+                        if (event.homeScore.current + event.awayScore.current > 2.5) teamStats[teamId].over25++;
+                        if (event.homeScore.current + event.awayScore.current > 3.5) teamStats[teamId].over35++;
+                    }
+                }
+            });
+        }
+    }
+    return teamStats;
+}
+
+
+async function displayTeamStats(teamStats, divId) {
+    const div = document.getElementById(divId);
+    div.innerHTML = '';
+    let teamStatsHTML = '';
+
+    // Add the header for the first section of statistics
+    teamStatsHTML += `
+        <div> 
+            <span>Played</span>
+            <span>Win</span>
+            <span>Draw</span>
+            <span>Loss</span>
+            <span>Win - 0</span>
+            <span>Draw - 0</span>
+            <span>Loss - 0</span>
+        </div>  
+    `;
+
+    // Helper function to style percentages
+    function stylePercentage(value) {
+        return value >= 80 ? `style="color: var(--secondary-default); font-weight: 700;"` : '';
+    }
+
+    // Helper function to style percentages
+    function concededPercentage(value) {
+        return value >= 80 ? `style="color: var(--loss-color); font-weight: 700;"` : '';
+    }
+
+    // Loop through teamStats and add each team's stats for the first section
+    for (const teamId in teamStats) {
+        const stats = teamStats[teamId];
+        const totalMatches = stats.wins + stats.draws + stats.losses;
+        const winsPercentage = ((stats.wins / totalMatches) * 100).toFixed(0);
+        const drawsPercentage = ((stats.draws / totalMatches) * 100).toFixed(0);
+        const lossesPercentage = ((stats.losses / totalMatches) * 100).toFixed(0);
+        const winToNilPercentage = ((stats.winToNil / totalMatches) * 100).toFixed(0);
+        const nilDrawsPercentage = ((stats.nilDraws / totalMatches) * 100).toFixed(0);
+        const lossToNilPercentage = ((stats.lossToNil / totalMatches) * 100).toFixed(0);
+
+        teamStatsHTML += `
+            <div> 
+                <span>${totalMatches}</span>
+                <span>${winsPercentage}%</span>
+                <span ${stylePercentage(drawsPercentage)}>${drawsPercentage}%</span>
+                <span ${stylePercentage(lossesPercentage)}>${lossesPercentage}%</span>
+                <span ${stylePercentage(winToNilPercentage)}>${winToNilPercentage}%</span>
+                <span ${stylePercentage(nilDrawsPercentage)}>${nilDrawsPercentage}%</span>
+                <span ${stylePercentage(lossToNilPercentage)}>${lossToNilPercentage}%</span>
+            </div>  
+        `;
+    }
+
+    // Add the header for the second section of statistics
+    teamStatsHTML += ` 
+        <div>  
+            <span>GS</span>
+            <span>GC</span>   
+            <span>S+0.5</span>
+            <span>C+0.5</span>
+            <span>BTTS</span>
+            <span>+1.5</span>
+            <span>+2.5</span> 
+        </div>
+    `;
+
+    // Loop through teamStats and add each team's stats for the second section
+    for (const teamId in teamStats) {
+        const stats = teamStats[teamId];
+        const totalMatches = stats.wins + stats.draws + stats.losses;
+        const over05ScoredPercentage = ((stats.over05Scored / totalMatches) * 100).toFixed(0); 
+        const over05ConcededPercentage = ((stats.over05Conceded / totalMatches) * 100).toFixed(0);
+        const bttsPercentage = ((stats.btts / totalMatches) * 100).toFixed(0);
+        const over15Percentage = ((stats.over15 / totalMatches) * 100).toFixed(0);
+        const over25Percentage = ((stats.over25 / totalMatches) * 100).toFixed(0);
+        const avScored = ((stats.goalsScored / totalMatches)).toFixed(2);
+        const avConceded = ((stats.goalsConceded / totalMatches)).toFixed(2);
+        //const over35Percentage = ((stats.over35 / totalMatches) * 100).toFixed(0);
+
+        teamStatsHTML += ` 
+            <div>     
+                <span>${stats.goalsScored} <sub>(${avScored})</sub></span>
+                <span>${stats.goalsConceded} <sub>(${avConceded})</sub></span> 
+                <span ${stylePercentage(over05ScoredPercentage)}>${over05ScoredPercentage}%</span> 
+                <span ${concededPercentage(over05ConcededPercentage)}>${over05ConcededPercentage}%</span>
+                <span ${stylePercentage(bttsPercentage)}>${bttsPercentage}%</span>
+                <span ${stylePercentage(over15Percentage)}>${over15Percentage}%</span>
+                <span ${stylePercentage(over25Percentage)}>${over25Percentage}%</span> 
+            </div>
+        `;
+    }
+
+    // Insert the generated HTML into the div
+    div.insertAdjacentHTML('beforeend', teamStatsHTML);
+}
+
+
+function displayFallbackTeamInfo(teamId, divId, isHomeTeam) {
+          const teamComparisonDiv = document.getElementById(divId);
+          teamComparisonDiv.innerHTML = '';
+  
+          const teamInfo = document.createElement('div');
+  
+          if (isHomeTeam) {
+              teamInfo.innerHTML = ``;
+          } else {
+              teamInfo.innerHTML = ``;
+          }
+  
+          teamComparisonDiv.appendChild(teamInfo);
+      }
+
+function displayTeamInfo(teamId, divId, standingsData, isHomeTeam) {
+        const teamComparisonDiv = document.getElementById(divId);
+        teamComparisonDiv.innerHTML = '';
+
+        const teamStanding = standingsData.standings[0].rows.find(row => row.team.id == teamId);
+ 
+        const teamStandingsInfo = document.createElement('div');
+
+        const promotionClasses = [
+            'promotion-to-x',
+            'promotion-to-x-playoff',
+            'promotion-to-y',
+            'promotion-to-y-playoff',
+            'promotion-to-z',
+            'promotion-to-z-playoff',
+            'promotion-to-z-playoff-secondary'
+        ];
+
+        let classNames = [];
+        
+    let currentPromotionText = '';
+    let promotionTextIndex = -1;
+        let promotionText = '';
+        
+        if (teamStanding) {
+            const teamPosition = teamStanding.position;
+            const teamPoints = teamStanding.points; 
+            const promotion = teamStanding.promotion ? teamStanding.promotion.text : '';
+
+            if (promotion) {
+                promotionText = promotion.toLowerCase();
+                if (promotionText.includes("relegation")) {
+                    classNames.push(promotionText.replace(/\s+/g, '-'));
+                } else {
+                    if (promotionText !== currentPromotionText) {
+                        promotionTextIndex++;
+                        currentPromotionText = promotionText;
+                    }
+                    if (promotionTextIndex < promotionClasses.length) {
+                        classNames.push(promotionClasses[promotionTextIndex]);
+                    }
+                }
+            }
+
+            if (isHomeTeam) {
+                teamStandingsInfo.innerHTML = ` 
+                    <div class="promotion"><span class="${classNames.join(' ')}">${promotion}</span></div>
+                    <div class="team-data"><span>${teamPoints} Pts</span> <sup>${teamPosition}</sup></div>     
+                `;
+            } else {
+                teamStandingsInfo.innerHTML = ` 
+                    <div class="team-data"><span>${teamPoints} Pts</span> <sup>${teamPosition}</sup></div> 
+                    <div class="promotion"><span class="${classNames.join(' ')}">${promotion}</span></div>
+                `;
+            }
+        } else {
+            if (isHomeTeam) {
+                teamStandingsInfo.innerHTML = ``;
+            } else {
+                teamStandingsInfo.innerHTML = ``;
+            }
+        }
+
+        teamComparisonDiv.appendChild(teamStandingsInfo);
+    }
+    // Function to convert fractional odds to decimal odds
+    function fractionalToDecimal(fractional) {
         const [numerator, denominator] = fractional.split('/').map(Number);
         return (numerator / denominator + 1).toFixed(2);
     }
@@ -697,6 +1773,44 @@ async function fetchAndDisplayMatchScores(dateStr) {
     }
 }
 
+
+function updateMatchScores(matchElement, match) {
+        const homeScoreElement = matchElement.querySelector('.score span:first-child');
+        const awayScoreElement = matchElement.querySelector('.score span:last-child');
+    
+        // Store the current score values
+        const previousHomeScore = homeScoreElement.textContent;
+        const previousAwayScore = awayScoreElement.textContent;
+    
+        // Update scores
+        const homeScore = match.homeScore?.current ?? '';
+        const awayScore = match.awayScore?.current ?? '';
+    
+        // Check if there's a change in the scores
+        const homeScoreChanged = previousHomeScore !== homeScore;
+        const awayScoreChanged = previousAwayScore !== awayScore;
+    
+        // Highlight the changed scores with a CSS class
+        if (homeScoreChanged) {
+            homeScoreElement.textContent = homeScore;
+            homeScoreElement.classList.add('highlight-score');
+            // Remove the highlight after 3 seconds (3000 milliseconds)
+            setTimeout(() => {
+                homeScoreElement.classList.remove('highlight-score');
+            }, 3000);
+        }
+    
+        if (awayScoreChanged) {
+            awayScoreElement.textContent = awayScore;
+            awayScoreElement.classList.add('highlight-score');
+            // Remove the highlight after 3 seconds (3000 milliseconds)
+            setTimeout(() => {
+                awayScoreElement.classList.remove('highlight-score');
+            }, 3000);
+        }
+    }
+    
+
 function updateMatches(matchData, oddsData) {
     
     const matchEventsDiv = document.getElementById('match-events');
@@ -752,61 +1866,427 @@ function updateMatches(matchData, oddsData) {
 }
 
 
-function updateMatchElement(matchElement, match, odds) { 
-    // Update scores
-    const homeScore = match.homeScore?.current ?? '';
-    const awayScore = match.awayScore?.current ?? ''; 
+async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, matchId) {
+    try { 
+        const teamIdInt = parseInt(teamId, 10); // Ensure teamId is an integer
+        const response = await fetch(`https://api.sofascore.com/api/v1/team/${teamIdInt}/performance`);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch performance data for ${teamType} team (ID: ${teamId})`);
+        }
+        
+        const performanceData = await response.json(); 
 
-    const homeOdds = odds ? fractionalToDecimal(odds.choices[0].initialFractionalValue) : '';
-    const drawOdds = odds ? fractionalToDecimal(odds.choices[1].initialFractionalValue) : '';
-    const awayOdds = odds ? fractionalToDecimal(odds.choices[2].initialFractionalValue) : '';
+        if (performanceData && performanceData.events && performanceData.points) {
+            // Filter events for the given season and remove the one matching matchId
+            const eventsWithWinnerCodes = performanceData.events
+                .filter(event => event.season.id === seasonId && event.id !== matchId);
+ 
+            
+            if (teamType === 'home') {
+                window.homeTeamEvents = eventsWithWinnerCodes;
+            } else if (teamType === 'away') {
+                window.awayTeamEvents = eventsWithWinnerCodes;
+            }
+ 
+            const events = generateTeamEvents(performanceData, seasonId, matchId);
+            displayTeamEvents(teamIdInt, teamType, events);  
 
-    const homeOddsNew = odds ? fractionalToDecimal(odds.choices[0].fractionalValue) : '';
-    const drawOddsNew = odds ? fractionalToDecimal(odds.choices[1].fractionalValue) : '';
-    const awayOddsNew = odds ? fractionalToDecimal(odds.choices[2].fractionalValue) : '';
-
-    const homeOddsChange = odds ? checkOddsChange(odds.choices[0]) : '';
-    const drawOddsChange = odds ? checkOddsChange(odds.choices[1]) : '';
-    const awayOddsChange = odds ? checkOddsChange(odds.choices[2]) : '';
-
-    matchElement.querySelector('.start-time').textContent = new Date(match.startTimestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-    matchElement.querySelector('.teams span:first-child').textContent = match.homeTeam.shortName;
-    matchElement.querySelector('.teams span:last-child').textContent = match.awayTeam.shortName;
-    matchElement.querySelector('.score span:first-child').textContent = homeScore;
-    matchElement.querySelector('.score span:last-child').textContent = awayScore;
-
-    const oddsDivs = matchElement.querySelectorAll('.odds div');
-    oddsDivs[0].className = homeOddsChange;
-    oddsDivs[0].querySelector('span:first-child').textContent = homeOdds;
-    oddsDivs[0].querySelector('.decrease-hidden').textContent = homeOddsNew;
-    
-    oddsDivs[1].className = drawOddsChange;
-    oddsDivs[1].querySelector('span:first-child').textContent = drawOdds;
-    oddsDivs[1].querySelector('.decrease-hidden').textContent = drawOddsNew;
-    
-    oddsDivs[2].className = awayOddsChange;
-    oddsDivs[2].querySelector('span:first-child').textContent = awayOdds;
-    oddsDivs[2].querySelector('.decrease-hidden').textContent = awayOddsNew;
+            return performanceData;
+        } else {
+            console.error(`Invalid performance data for ${teamType}:`, performanceData);
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error fetching ${teamType} team performance data:`, error);
+        return null;
+    }
 }
 
-function handleMatchClick(matchData) {
-    const tournamentId = parseInt(matchData.tournamentId);
-
-    //console.log("Tournament ID:", tournamentId); // Logging the tournamentId
-
-    const uniqueTournamentId = parseInt(matchData.uniqueTournamentId);
-    const matchId = parseInt(matchData.matchId);
-    const customId = matchData.customId;
-    const seasonId = parseInt(matchData.seasonId); // This is the seasonId
-    const homeTeamId = parseInt(matchData.homeTeamId);
-    const awayTeamId = parseInt(matchData.awayTeamId); 
-    const homeTeamName = matchData.homeTeamName;
-    const awayTeamName = matchData.awayTeamName;
- 
-    //fetchMatchDetails(matchId); 
+function calculateAverage(numbers) {
+    if (!Array.isArray(numbers) || numbers.length === 0) {
+        //console.log("No valid numbers provided for average calculation.");
+        return 0;
+    }
+    //console.log("Calculating average of numbers:", numbers);
+    const parsedNumbers = numbers.map(Number); // Convert array of strings to array of numbers
+    //console.log("Parsed numbers:", parsedNumbers);
+    const sum = parsedNumbers.reduce((acc, num) => acc + num, 0);
+    const average = sum / parsedNumbers.length;
+    //console.log("Sum of numbers:", sum);
+    //console.log("Number of elements:", parsedNumbers.length);
+    //console.log("Average:", average);
+    return average;
 }
 
+
+// Add the determineWinningChoice function to determine the winning choice based on the match result
+function determineWinningChoice(eventDescription) {
+    const [homeScore, awayScore] = eventDescription.split(' - ').map(Number);
+    if (homeScore > awayScore) return '1';
+    if (homeScore < awayScore) return '2';
+    return 'X';
+}
+
+
+function generateTeamEvents(performanceData, seasonId, matchId) {
+    return performanceData.events
+        .filter(match => match.season.id === seasonId && match.id !== matchId)
+        .map(match => {
+            const eventDate = new Date(match.startTimestamp * 1000);
+            const month = String(eventDate.getMonth() + 1).padStart(2, '0');
+            const day = String(eventDate.getDate()).padStart(2, '0');
+            const year = String(eventDate.getFullYear()).slice(-2);
+            const roundedPoints = (performanceData.points[match.id] || 0).toFixed(2);
+
+            return {
+                homeName: match.homeTeam.nameCode,
+                awayName: match.awayTeam.nameCode,
+                matchId: match.id,
+                seasonId: match.season.id,
+                homeId: match.homeTeam.id,
+                awayId: match.awayTeam.id,
+                eventTime: `${month}.${day}.${year}`,
+                eventType: match.status.description,
+                eventDescription: `${match.homeScore.display} - ${match.awayScore.display}`,
+                points: roundedPoints,
+                timestamp: match.startTimestamp,
+            };
+        })
+        .sort((a, b) => b.timestamp - a.timestamp || b.points - a.points);
+}
+
+
+async function displayTeamEvents(teamId, teamType, events) { 
+    if (!events || events.length === 0) {
+        console.error(`No events found for ${teamType} team`);
+        return;
+    }
+
+    const eventsDiv = document.getElementById(`${teamType}-team-events`);
+    if (!eventsDiv) {
+        console.error(`No element found for team events: ${teamType}-team-events`);
+        return;
+    }
+
+    // Fetch odds for each event
+    const eventsWithOdds = await Promise.all(events.map(async event => {
+        const odds = await fetchOddsForMatch(event.matchId);
+        return { ...event, odds };
+    }));
+
+    // Calculate average odds for home and away teams
+    const homeTeamOdds = [];
+    const awayTeamOdds = [];
+
+    eventsWithOdds.forEach(event => {
+    // Check if the team is playing at home and the event has odds
+    if (teamType === 'home' && event.homeId === parseInt(teamId) && event.odds) {
+            const homeOdd = fractionalToDecimal(event.odds[0].fractionalValue);
+            homeTeamOdds.push(homeOdd);
+        } 
+        // Check if the team is playing away and the event has odds
+        else if (teamType === 'away' && event.awayId === parseInt(teamId) && event.odds) {
+            const awayOdd = fractionalToDecimal(event.odds[2].fractionalValue);
+            awayTeamOdds.push(awayOdd);
+        }
+    });
+
+    // Calculate averages directly from the numeric arrays
+    const averageHomeOdds = calculateAverage(homeTeamOdds);
+    const averageAwayOdds = calculateAverage(awayTeamOdds);
  
+    const teamWithLowerOdds = averageHomeOdds < averageAwayOdds ? 'Home Team' : 'Away Team';
+    //console.log(`${teamWithLowerOdds} has lower average odds`);
+
+    const tableHtml = `
+        <table class="events-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Teams</th>
+                    <th>1</th>
+                    <th>X</th>
+                    <th>2</th>
+                    <th>R</th>
+                    <th> </th>
+                    <th>Pts</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${eventsWithOdds.map(event => {
+                    const winningChoice = determineWinningChoice(event.eventDescription);
+                    let recentForm = '';
+                    const homeSideId = parseInt(event.homeId);
+                    const awaySideId = parseInt(event.awayId);
+                    const eventId = parseInt(event.matchId);
+                    const homeScore = parseInt(event.eventDescription.split(' - ')[0]);
+                    const awayScore = parseInt(event.eventDescription.split(' - ')[1]);
+
+                    if (awaySideId === parseInt(teamId)) {
+                        if (awayScore > homeScore) {
+                            recentForm += '<span class="W">W</span>';
+                        } else if (awayScore === homeScore) {
+                            recentForm += '<span class="D">D</span>';
+                        } else {
+                            recentForm += '<span class="L">L</span>';
+                        }
+                    } else if (homeSideId === parseInt(teamId)) {
+                        if (homeScore > awayScore) {
+                            recentForm += '<span class="W">W</span>';
+                        } else if (homeScore === awayScore) {
+                            recentForm += '<span class="D">D</span>';
+                        } else {
+                            recentForm += '<span class="L">L</span>';
+                        }
+                    }
+
+                    //<tr data-event-id="${eventId}" onclick="handleRowClick(${eventId})">
+                    const formResult = recentForm;
+                    return `
+                    <tr data-event-id="${eventId}">
+                        <td>${event.eventTime}</td>
+                        <td>${event.homeName} - ${event.awayName}</td>
+                        <td class="odd ${event.odds && event.odds[0].name === winningChoice ? 'highlight' : ''}">
+                            ${event.odds ? fractionalToDecimal(event.odds[0].fractionalValue) : '-'}
+                        </td>
+                        <td class="odd ${event.odds && event.odds[1].name === winningChoice ? 'highlight' : ''}">
+                            ${event.odds ? fractionalToDecimal(event.odds[1].fractionalValue) : '-'}
+                        </td>
+                        <td class="odd ${event.odds && event.odds[2].name === winningChoice ? 'highlight' : ''}">
+                            ${event.odds ? fractionalToDecimal(event.odds[2].fractionalValue) : '-'}
+                        </td>
+                        <td>${event.eventDescription}</td>
+                        <td>${formResult}</td>
+                        <td>${event.points}</td>
+                    </tr>
+                `;
+            }).join('')}
+        </tbody>
+    </table>
+    `;
+    eventsDiv.innerHTML = tableHtml;
+    //showEventDetails(eventId);
+}
+
+
+async function updateLeagueTable(tournamentId, seasonId, matchId, homeTeamId, awayTeamId) {
+    try {
+        // Fetch and display home standings
+        const homeStandingsData = await fetchLeagueStandings(tournamentId, seasonId, 'home');
+        displayLeagueTable(homeStandingsData, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
+
+        // Fetch and display away standings
+        const awayStandingsData = await fetchLeagueStandings(tournamentId, seasonId, 'away');
+        displayLeagueTable(awayStandingsData, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
+
+        // Fetch and display total standings
+        const totalStandingsData = await fetchLeagueStandings(tournamentId, seasonId, 'total');
+        displayLeagueTable(totalStandingsData, 'Total', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
+
+    } catch (error) {
+        console.error('Error updating league table:', error);
+    }
+} 
+
+
+function displayLeagueTable(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms = null) {
+    const leagueTableDiv = document.getElementById(`${standingsType.toLowerCase()}-league-table`);
+    const table = leagueTableDiv.querySelector('table');
+
+    // If table exists, update rows; otherwise, create a new table
+    if (table) {
+        updateTableRows(table, standingsData, standingsType, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
+    } else {
+        createTable(leagueTableDiv, standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms);
+    }
+}
+
+function createTable(leagueTableDiv, standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms) {
+    leagueTableDiv.innerHTML = '';
+
+    const tableNameHeader = document.createElement('h4');
+    tableNameHeader.textContent = standingsType.toLowerCase() === 'total' ? 'Overall Standings' : `${standingsType} Standings`;
+
+    leagueTableDiv.appendChild(tableNameHeader);
+
+    const table = document.createElement('table');
+    table.className = 'league-table';
+
+    const header = `
+        <thead>
+            <tr>
+                <th>#</th>
+                <th class="team-name-column">Team</th>
+                <th>GP</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>Goals</th> 
+                <th>Pts</th>
+                ${standingsType.toLowerCase() !== 'total' ? '<th class="teamForm">Form</th>' : ''}
+            </tr>
+        </thead>
+    `;
+    table.innerHTML = header;
+
+    const tbody = document.createElement('tbody');
+    tbody.innerHTML = buildTableRows(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
+
+    table.appendChild(tbody);
+    leagueTableDiv.appendChild(table);
+}
+
+function buildTableRows(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms, leagueTableDiv) {
+    const promotionClasses = [
+        'promotion-to-x',
+        'promotion-to-x-playoff',
+        'promotion-to-y',
+        'promotion-to-y-playoff',
+        'promotion-to-z',
+        'promotion-to-z-playoff',
+        'promotion-to-z-playoff-secondary'
+    ];
+
+    let currentPromotionText = '';
+    let promotionTextIndex = -1;
+
+    return standingsData.standings[0].rows.map(row => {
+        const { team, position, points, wins, draws, losses, scoresFor: goalsFor, scoresAgainst: goalsAgainst, promotion, liveMatchWinnerCodeColumn } = row;
+
+        if (standingsType.toLowerCase() !== 'total' && team.id !== homeTeamId && team.id !== awayTeamId) {
+            return ''; // Skip if not relevant
+        }
+
+        let classNames = [];
+        if (promotion && leagueTableDiv.id === 'total-league-table') {
+            const promotionText = promotion.text.toLowerCase();
+            if (promotionText.includes("relegation")) {
+                classNames.push(promotionText.replace(/\s+/g, '-'));
+            } else {
+                if (promotionText !== currentPromotionText) {
+                    promotionTextIndex++;
+                    currentPromotionText = promotionText;
+                }
+                if (promotionTextIndex < promotionClasses.length) {
+                    classNames.push(promotionClasses[promotionTextIndex]);
+                }
+            }
+        }
+
+        if (team.id === homeTeamId || team.id === awayTeamId) {
+            classNames.push('is-team');
+        }
+
+        const totalGames = wins + draws + losses;
+        const resultForm = teamForms ? teamForms[team.id] || 'N/A' : 'N/A';
+
+        return `
+            <tr class="${classNames.join(' ')}">
+                <td>${position}</td>
+                <td class="team-name-column">
+                    <img src="https://api.sofascore.app/api/v1/team/${team.id}/image" width="16" height="16" alt="${team.shortName}" loading="lazy">
+                    <span class="team-name">${team.shortName}</span>
+                </td>
+                <td class="gamesPlayed${liveMatchWinnerCodeColumn ? ` live-match-${liveMatchWinnerCodeColumn}` : ''}">${totalGames}</td>
+                <td>${wins}</td>
+                <td>${draws}</td>
+                <td>${losses}</td>
+                <td>${goalsFor}:${goalsAgainst}</td> 
+                <td>${points}</td>
+                ${standingsType.toLowerCase() !== 'total' ? `<td class="teamForm">${resultForm}</td>` : ''}
+            </tr>
+        `;
+    }).join('');
+}
+
+function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTeamId, teamForms, leagueTableDiv) {
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = buildTableRows(standingsData, standingsType, null, null, null, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
+        }
+
+ 
+
+        // Function to initiate auto-refresh
+        async function autoRefreshLeagueTable(standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms = null, interval = 60000) {
+            async function refreshTable() {
+                const standingsData = await fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeamId, awayTeamId, homeTeamName, awayTeamName);
+                if (standingsData) {
+                    displayLeagueTable(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms);
+                }
+            }
+
+            // Refresh immediately
+            await refreshTable();
+
+            // Set up interval for auto-refresh
+            setInterval(refreshTable, interval);
+        }
+
+
+        async function displayOddsForMatch(matchId, homeTeamName, awayTeamName, homeTeamId, awayTeamId) {
+    const oddsDiv = document.getElementById('match-odds');
+    if (!oddsDiv) {
+        console.error('No element found for odds display: match-odds');
+        return;
+    }
+
+    const odds = await fetchOddsForMatch(matchId);
+    //console.log(odds);
+
+    if (!odds || !Array.isArray(odds)) {
+        oddsDiv.innerHTML = '<p>No odds available for this match.</p>';
+        return;
+    }
+
+    // Create and append headers list
+    const headersList = document.createElement('ul');
+
+    // Create and append home team name
+    const homeTeamItem = document.createElement('li');
+    homeTeamItem.textContent = homeTeamName;
+    headersList.appendChild(homeTeamItem);
+
+    // Create and append "Match Odds" header
+    const matchOddsHeader = document.createElement('li');
+    const header = document.createElement('h4');
+    header.textContent = ' ';
+    matchOddsHeader.appendChild(header);
+    headersList.appendChild(matchOddsHeader);
+
+    // Create and append away team name
+    const awayTeamItem = document.createElement('li');
+    awayTeamItem.textContent = awayTeamName;
+    headersList.appendChild(awayTeamItem);
+
+    // Create and append odds list
+    const oddsList = document.createElement('ul');
+
+    odds.forEach(choice => {
+        const choiceItem = document.createElement('li');
+        choiceItem.innerHTML = `${choice.name} <span class="ParticipantFixtureOdd_Odds">${fractionalToDecimal(choice.fractionalValue)}</span>`;
+        oddsList.appendChild(choiceItem);
+    });
+
+    oddsDiv.innerHTML = ''; // Clear previous content
+    oddsDiv.appendChild(headersList);
+    oddsDiv.appendChild(oddsList);
+ 
+}
+// Function to fetch odds for a match
+async function fetchOddsForMatch(matchId) {
+    try {
+        const oddsResponse = await fetch(`https://api.sofascore.com/api/v1/event/${matchId}/odds/1/all`);
+        const oddsData = await oddsResponse.json();
+        return oddsData.markets && oddsData.markets.length > 0 ? oddsData.markets[0].choices : null;
+    } catch (error) {
+        console.error('Error fetching odds:', error);
+        return null;
+    }
+}
+
+
+// Function to create a match element
 function createMatchElement(match, odds) {
     const matchElement = document.createElement('div');
     matchElement.classList.add('match');
@@ -847,25 +2327,63 @@ function createMatchElement(match, odds) {
             <span>${awayScore}</span>
         </div>
         <div class="odds">
-    <div class="${homeOddsChange}">
-        <span>${homeOdds}</span>
-        ${match.status.type !== 'inprogress' ? `<span class="decrease-hidden">${homeOddsNew}</span>` : ''}
-    </div>
-    <div class="${drawOddsChange}">
-        <span>${drawOdds}</span>
-        ${match.status.type !== 'inprogress' ? `<span class="decrease-hidden">${drawOddsNew}</span>` : ''}
-    </div>
-    <div class="${awayOddsChange}">
-        <span>${awayOdds}</span>
-        ${match.status.type !== 'inprogress' ? `<span class="decrease-hidden">${awayOddsNew}</span>` : ''}
-    </div>
-</div>
-
+            <div class="${homeOddsChange}">
+                <span>${homeOdds}</span>
+                ${match.status.type !== 'inprogress' ? `<span class="decrease-hidden">${homeOddsNew}</span>` : ''}
+            </div>
+            <div class="${drawOddsChange}">
+                <span>${drawOdds}</span>
+                ${match.status.type !== 'inprogress' ? `<span class="decrease-hidden">${drawOddsNew}</span>` : ''}
+            </div>
+            <div class="${awayOddsChange}">
+                <span>${awayOdds}</span>
+                ${match.status.type !== 'inprogress' ? `<span class="decrease-hidden">${awayOddsNew}</span>` : ''}
+            </div>
+        </div>
     `;
- 
+
     return matchElement;
 }
 
+// Function to update a match element
+function updateMatchElement(matchElement, match, odds) {
+    // Update scores
+    const homeScore = match.homeScore?.current ?? '';
+    const awayScore = match.awayScore?.current ?? '';
+
+    const homeOdds = odds ? fractionalToDecimal(odds.choices[0].initialFractionalValue) : '';
+    const drawOdds = odds ? fractionalToDecimal(odds.choices[1].initialFractionalValue) : '';
+    const awayOdds = odds ? fractionalToDecimal(odds.choices[2].initialFractionalValue) : '';
+
+    const homeOddsNew = odds ? fractionalToDecimal(odds.choices[0].fractionalValue) : '';
+    const drawOddsNew = odds ? fractionalToDecimal(odds.choices[1].fractionalValue) : '';
+    const awayOddsNew = odds ? fractionalToDecimal(odds.choices[2].fractionalValue) : '';
+
+    const homeOddsChange = odds ? checkOddsChange(odds.choices[0]) : '';
+    const drawOddsChange = odds ? checkOddsChange(odds.choices[1]) : '';
+    const awayOddsChange = odds ? checkOddsChange(odds.choices[2]) : '';
+
+    matchElement.querySelector('.start-time').textContent = new Date(match.startTimestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    matchElement.querySelector('.teams span:first-child').textContent = match.homeTeam.shortName;
+    matchElement.querySelector('.teams span:last-child').textContent = match.awayTeam.shortName;
+    matchElement.querySelector('.score span:first-child').textContent = homeScore;
+    matchElement.querySelector('.score span:last-child').textContent = awayScore;
+
+    const oddsDivs = matchElement.querySelectorAll('.odds div');
+    oddsDivs[0].className = homeOddsChange;
+    oddsDivs[0].querySelector('span:first-child').textContent = homeOdds;
+    oddsDivs[0].querySelector('.decrease-hidden').textContent = homeOddsNew;
+
+    oddsDivs[1].className = drawOddsChange;
+    oddsDivs[1].querySelector('span:first-child').textContent = drawOdds;
+    oddsDivs[1].querySelector('.decrease-hidden').textContent = drawOddsNew;
+
+    oddsDivs[2].className = awayOddsChange;
+    oddsDivs[2].querySelector('span:first-child').textContent = awayOdds;
+    oddsDivs[2].querySelector('.decrease-hidden').textContent = awayOddsNew;
+}
+
+ 
     </script>
 </body>
 </html>
