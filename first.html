@@ -745,7 +745,7 @@ sup {
     color: var(--draw-color);
     font-weight: 700;
     text-align: center;
-    font-size: 30px;
+    font-size: 20px;
 }
 
 #expected-actual, #match-prediction {
@@ -960,6 +960,40 @@ tr.is-team {
     font-size: 10px;
     align-items: center;
 }
+#status-description {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items:center;
+    position: relative;
+} 
+.match-date,
+.match-time { 
+    margin-bottom: 5px;
+}
+.detailScore__wrapper {
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 15px;
+}
+.match-status {
+    margin-top: 0;
+    font-size: 11px;
+    display: inline-flex;
+    align-items: center;
+    font-weight: normal;
+    justify-content: center;
+}
+.match-status.live { 
+    border-radius: 25px;
+    padding: 5px 0;
+    font-weight: 600;
+    color: #F44336; 
+}
     </style>
 </head>
 <body>
@@ -1041,6 +1075,8 @@ tr.is-team {
     </footer>
     <script> 
 
+
+const baseURL = 'https://api.sofascore.com/api/v1';
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('scripts/sw.js').then((registration) => {
@@ -1230,11 +1266,24 @@ async function fetchMatchDetails(matchId, matchElement) {
                 </div>
                 <div class="score-dec">
                     <div class="score" id="scoreline">
-                        <span id="home-score">${homeScore}</span>
+                        ${match.status.type === 'inprogress' 
+                        ? `<span id="homeScores-${match.id}">${homeScore}</span>
                         -
-                        <span id="away-score">${awayScore}</span>
-                    </div>
-                    <div id="status-description">${status.description}</div>
+                        <span id="awayScores-${match.id}">${awayScore}</span>
+                        ` 
+                        : match.status.type === 'finished'
+                        ? `<span id="homeScores-${match.id}">${homeScore}</span>
+                        -
+                        <span id="awayScores-${match.id}">${awayScore}</span>` 
+                            : `
+                                 <div class="match-time">${new Date(match.startTimestamp * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
+                            `} 
+
+                    </div> 
+                    
+                    <div class="match-status ${match.status.type === 'inprogress' ? 'live' : 'default'}">
+                        <span id="live-timer-${match.id}"></span>
+                    </div> 
                 </div>
                 <div class="team" id="away-team">
                     <img src="https://api.sofascore.app/api/v1/team/${awayTeam.id}/image" width="38" height="38" alt="${awayTeam.name}" loading="lazy">
@@ -1262,6 +1311,45 @@ async function fetchMatchDetails(matchId, matchElement) {
             <div id="total-league-table" class="loading-animation league-table" style="min-height: 200px;"></div>
         `;
 
+       /*  // Schedule the match time refresh
+        scheduleMatchStartRefresh(match);
+        // Start the live timer if the match is in progress
+        if (match.status.type === 'inprogress') {
+            startLiveTimer(match);
+        } else if (match.status.description === 'Ended') {
+            const timerElement = document.getElementById(`live-timer-${match.id}`);
+            timerElement.innerHTML = 'FT';
+        }
+
+        // Function to refresh scores
+        const refreshScores = async () => {
+            try {
+                const updatedEventDetails = await fetchJson(`${baseURL}/event/${match.id}`);
+                if (!updatedEventDetails) return;
+                const updatedEventData = updatedEventDetails.event;
+
+                const homeScoreElement = document.getElementById(`homeScores-${match.id}`);
+                const awayScoreElement = document.getElementById(`awayScores-${match.id}`);
+                if (homeScoreElement) {
+                    homeScoreElement.textContent = updatedEventData.homeScore?.current ?? '';
+                }
+                if (awayScoreElement) {
+                    awayScoreElement.textContent = updatedEventData.awayScore?.current ?? '';
+                }
+
+            } catch (error) {
+                console.error('Error refreshing scores:', error);
+            }
+        };
+
+        // Refresh scores every 5 seconds
+        const scoreUpdateInterval = setInterval(refreshScores, 5000);
+
+        // Clear interval when navigating away from the event details
+        const clearUpdateInterval = () => {
+            clearInterval(scoreUpdateInterval);
+        }; */
+
         // Ensure matchElement is defined before calling .after
         if (matchElement) {
             matchElement.after(matchDetailsDiv); // Insert details after clicked match element
@@ -1278,14 +1366,95 @@ async function fetchMatchDetails(matchId, matchElement) {
         ]);
         fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeam.id, awayTeam.id, homeTeam.name, awayTeam.name);
             
-        // Auto-refresh score functionality
+        /* // Auto-refresh score functionality
         if (status.type === 'inprogress') {
             setTimeout(() => refreshScores(matchId), 60000); // Refresh every minute
-        }
+        } */
     } catch (error) {
         console.error('Error fetching match details:', error);
     }
 }
+
+
+const startLiveTimer = (event) => {
+        const timerElement = document.getElementById(`live-timer-${event.id}`);
+        const interval = setInterval(() => {
+            if (event.status.type === 'inprogress') {
+                const elapsedTime = calculateElapsedTime(event);
+                timerElement.innerHTML = `${elapsedTime}`;
+            } else {
+                clearInterval(interval); // Stop the timer if the game is finished
+                timerElement.innerHTML = calculateElapsedTime(event); // Display the final state (FT)
+            }
+        }, 1000); // Update every second
+    };
+
+
+
+const fetchJson = async (url) => {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Error ${response.status}: ${errorData.message}`);
+        }
+        return response.json();
+    } catch (error) {
+        console.error('Fetch error:', error.message);
+        return null;
+    }
+};
+
+// Function to refresh match time div when the match starts
+const scheduleMatchStartRefresh = (event) => {
+    const matchStartTime = event.startTimestamp * 1000; // Convert to milliseconds
+    const currentTime = Date.now(); // Current time in milliseconds
+    const timeUntilStart = matchStartTime - currentTime;
+
+    if (timeUntilStart > 0) {
+        // Schedule the update at the match start time
+        setTimeout(() => {
+            const matchTimeElement = document.querySelector(`.match-time[data-event-id="${event.id}"]`);
+            if (matchTimeElement) {
+                matchTimeElement.innerHTML = `<span class="live-status">Live</span>`;
+                startLiveTimer(event); // Start the live timer
+            }
+        }, timeUntilStart);
+    }
+};
+
+
+const formatTime = (time) => {
+        return time < 10 ? `0${time}` : time; // Add leading zero if less than 10
+    };
+
+    const calculateElapsedTime = (event) => {
+        const now = Math.floor(Date.now() / 1000);
+        let elapsedSeconds = now - event.time.currentPeriodStartTimestamp;
+            //console.log(event.time.currentPeriodStartTimestamp);
+        // Check for match status descriptions
+        if (event.status.description === 'Halftime') {
+            return "HT"; // Display Halftime when it's halftime
+        } else if (event.status.description === 'Ended') {
+            return "Ended"; // Display Ended when the match has ended
+        } else if (event.status.description === '1st half') {
+            if (elapsedSeconds < 2700) {
+                const minutes = Math.floor(elapsedSeconds / 60);
+                const seconds = elapsedSeconds % 60;
+                return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
+            }
+            return "HT"; // Full time for 1st half
+        } else if (event.status.description === '2nd half') {
+            if (elapsedSeconds < 5400) {
+                const minutes = Math.floor((elapsedSeconds + 2700) / 60); // Add 2700 seconds for the 1st half
+                const seconds = (elapsedSeconds + 2700) % 60;
+                return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
+            }
+            return "FT"; // Full time for 2nd half
+        } 
+        return "00:00"; // Default if not in progress
+    };
+
 
 async function fetchAndDisplayWinningOdds(matchId) {
     try {
