@@ -109,6 +109,10 @@
             height: 100vh;
             overflow: hidden;
             font-size: 13px;
+        background-size: 100% 100%;
+        background-image: linear-gradient(rgba(12, 22, 20, .1), transparent 20px), 
+                            radial-gradient(122% 370px at center -220px, #009969 0, transparent 100%), 
+                            linear-gradient(to right bottom, #0c1614, #084436);
         }
         
     header { 
@@ -131,10 +135,6 @@
         width: 100%;
         height: 100%;
         left: 0;
-        background-size: 100% 100%;
-        background-image: linear-gradient(rgba(12, 22, 20, .1), transparent 20px), 
-                            radial-gradient(122% 370px at center -220px, #009969 0, transparent 100%), 
-                            linear-gradient(to right bottom, #0c1614, #084436);
     }
     header h2 { 
                 position: relative;
@@ -160,10 +160,9 @@
         }
         main {
             flex: 1;
-            margin-top: 50px; /* Height of header */
+            margin-top: 70px; /* Height of header */
             margin-bottom: 50px; /* Height of footer */
             overflow-y: auto; 
-            background: #f5f5f5;
         }
         footer { 
             color: white;
@@ -198,7 +197,6 @@
     position: relative;
     background: rgb(6, 12, 26);
     border-radius: 3px;
-    margin-right: 15px;
 }
 
 .calendar__navigation {
@@ -208,13 +206,11 @@
     padding: 5px;
 }
 
-
 .calendar__datepicker svg {
     width: 20px;
     height: 20px;
     fill: #fff;
 }
-
 
 .calendar__datepicker {
     align-items: center;
@@ -361,7 +357,7 @@
     flex: 1;
     background-color: rgb(17, 22, 28);
     min-height: 18px;
-    font-size: 13px;
+    font-size: 12px;
 }
 .decrease-greater-than-0-1 span {
     background-color: var(--decrease-greater);
@@ -379,8 +375,6 @@
     display: flex;
     justify-content: space-around;
     padding: 5px 0;
-        background-size: 100% 100%; 
-    background-image: linear-gradient(rgba(12, 22, 20, .1), transparent 20px), radial-gradient(122% 370px at center -220px, #28453c 0, transparent 100%), linear-gradient(to right bottom, #0c1614, #084436);
 }
 
 .bottom-nav div {
