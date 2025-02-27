@@ -302,13 +302,13 @@
     gap: 10px;
     font-weight: 700;
     font-size: 14px;
-    min-height: 40px;
+    min-height: 45px;
 }
 .match {
     display: flex;
     align-items: center;
     padding-left: 10px;
-    min-height: 40px;
+    min-height: 45px;
     background-color: var(--color-black1); 
 }
 .match:not(:last-child) {
@@ -317,6 +317,8 @@
 .start-time {
     padding-right: 5px;
     flex: 0.5;
+    display: flex;
+    align-items: center;
 }
 .teams {
     flex: 4;
@@ -324,6 +326,8 @@
     display: flex;
     padding-left: 10px;
     gap: 1px;
+    height: inherit;
+    justify-content: center;
 }
 
 .score {
@@ -344,6 +348,8 @@
     text-align: center;
     gap: 2px;
     font-weight: 400;
+    justify-content: center;
+    align-items: stretch;
 }
 .odds div {
     display: flex;
@@ -351,7 +357,9 @@
     flex: 1;
     gap: 1px;
     width: 32px;
+    justify-content: center;
 }
+
 
 .odds span {
     padding: 2px 4px;
@@ -359,6 +367,9 @@
     background-color: rgb(17, 22, 28);
     min-height: 18px;
     font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .decrease-greater-than-0-1 span {
     background-color: var(--decrease-greater);
