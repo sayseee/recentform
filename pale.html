@@ -2433,8 +2433,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         
         // Fetch last 15 and 10 games for each team in parallel
         const [homeTeamLastEvents, awayTeamLastEvents, homeTeamEvents, awayTeamEvents] = await Promise.all([
-            fetchLastEvents(homeTeamId, eventId, uniqueTournament.id),
-            fetchLastEvents(awayTeamId, eventId, uniqueTournament.id),
+            fetchLastTenEvents(homeTeamId, eventId, uniqueTournament.id),
+            fetchLastTenEvents(awayTeamId, eventId, uniqueTournament.id),
             fetchLastTenEvents(homeTeamId, eventId, uniqueTournament.id),
             fetchLastTenEvents(awayTeamId, eventId, uniqueTournament.id)
         ]);
@@ -2443,8 +2443,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
         const homeTeamPoints = getLastGamesForm(homeTeamLastEvents, homeTeamId, eventId);
         const awayTeamPoints = getLastGamesForm(awayTeamLastEvents, awayTeamId, eventId);
         
-        const homeOverallForm = getLastTenGamesForm(homeTeamEvents, homeTeamId, eventId, 'overall', 10);
-        const awayOverallForm = getLastTenGamesForm(awayTeamEvents, awayTeamId, eventId, 'overall', 10);
+        const homeOverallForm = getLastTenGamesForm(homeTeamEvents, homeTeamId, eventId, 'home');
+        const awayOverallForm = getLastTenGamesForm(awayTeamEvents, awayTeamId, eventId, 'away');
         
         // Fetch team statistics in parallel
         const [homeStats, awayStats, overallStats] = await Promise.all([
@@ -3207,7 +3207,7 @@ const getLastGamesForm = (events, teamId, currentMatchId, maxMatches = 6) => {
 };
 
 
-const getLastTenGamesForm = (events, teamId, currentMatchId, location = 'overall', numberOfGames = 10) => {
+const getLastTenGamesForm = (events, teamId, currentMatchId, location = 'overall') => {
     // Filter finished matches excluding the current match
     const finishedEvents = events.filter((event) => event.status.type === 'finished' && event.id !== currentMatchId);
 
