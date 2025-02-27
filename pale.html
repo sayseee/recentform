@@ -2497,8 +2497,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="awayPregameForm-${event.id}" class="pregame-form"></div>  
                     </div>
                 </div> 
-                 
-                <div class="h2h-event" id="${uniqueEventId}"></div>   
+                  
                 <div class="match-details">
                     ${event.status.type === 'inprogress' 
                         ? `<div class="detailScore__wrapper">
@@ -2618,9 +2617,7 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                         <div id="home-odds-${event.id}"></div><span class="odds"><span>${homeIcon} ${homeOdds}</span></span>
                         <span class="odds">${drawIcon} ${drawOdds}</span>
                         <span class="odds"><span>${awayIcon} ${awayOdds}</span></span><div id="away-odds-${event.id}"></div>
-                    </div>  
-                    
-           
+                    </div>    
                 <h4 style="text-align:center; margin-top:10px;">Tactics & Performance</h4>
                 <div class="teams-form manager">
                     <div class="homes-team-form">  
@@ -2629,7 +2626,8 @@ const loadEvents = async (events, odds, eventsContainer, leagueStats) => {
                     <div class="aways-team-form">  
                         <div id="awayManagerInfo-${event.id}" class="manager-info"></div> 
                     </div>
-                </div>
+                </div> 
+                <div class="h2h-event" id="${uniqueEventId}"></div> 
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>
                 <div id="form-table-container-${event.id}"></div> 
       
