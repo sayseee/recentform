@@ -2113,7 +2113,7 @@ function determineWinningChoice(eventDescription) {
 
 function generateTeamEvents(performanceData, seasonId, matchId) {
     return performanceData.events
-        .filter(match => match.season.id === seasonId && match.id !== matchId)
+        .filter(match => match.season.id === seasonId && Number(match.id) !== Number(matchId))
         .reverse()
         .slice(0, 5)
         .map(match => {
