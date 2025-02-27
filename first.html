@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
     <title>Mobile First Layout</title>
     <style>
  
@@ -502,6 +503,16 @@
             </nav>
     </footer>
     <script> 
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('scripts/sw.js').then((registration) => {
+        //console.log('Service Worker registered with scope:', registration.scope);
+      }).catch((error) => {
+        //console.error('Service Worker registration failed:', error);
+      });
+    });
+  }
 document.addEventListener('DOMContentLoaded', () => {
     const calendarMenu = document.getElementById('calendarMenu');
     const calendarDays = document.querySelector('.calendar__days');
