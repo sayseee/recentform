@@ -121,9 +121,14 @@ h4 {
     text-overflow: ellipsis;
     overflow: hidden;
     transition: color 0.2slinear 0s;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.4;
     font-weight: 700;
+    text-align: center;
+    margin: 0;
+    padding: 6px 0; 
+    text-transform: uppercase; 
+    font-family: "Sofascore Sans", "Arial Unicode MS", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
         
     .W, .D, .L {
@@ -472,7 +477,7 @@ h4 {
 
 /* Base styles for match-details */
 .match-details { 
-    background-color: rgb(17, 22, 28);
+    background-color: rgb(45, 52, 45);
     overflow: hidden;
     transition: all 0.3sease-in-out;
     transform: translateY(-10px);
@@ -1932,6 +1937,8 @@ function determineWinningChoice(eventDescription) {
 function generateTeamEvents(performanceData, seasonId, matchId) {
     return performanceData.events
         .filter(match => match.season.id === seasonId && match.id !== matchId)
+        .reverse()
+        .slice(0, 5)
         .map(match => {
             const eventDate = new Date(match.startTimestamp * 1000);
             const month = String(eventDate.getMonth() + 1).padStart(2, '0');
@@ -1956,8 +1963,7 @@ function generateTeamEvents(performanceData, seasonId, matchId) {
         .sort((a, b) => b.timestamp - a.timestamp || b.points - a.points);
 }
 
-
-async function displayTeamEvents(teamId, teamType, events) { 
+async function displayTeamEvents(teamId, teamType, events) {
     if (!events || events.length === 0) {
         console.error(`No events found for ${teamType} team`);
         return;
@@ -1968,6 +1974,14 @@ async function displayTeamEvents(teamId, teamType, events) {
         console.error(`No element found for team events: ${teamType}-team-events`);
         return;
     }
+
+    // Clear the existing content of the eventsDiv
+    eventsDiv.innerHTML = '';
+
+    // Create and append the header
+    const eventsHeader = document.createElement('h4');
+    eventsHeader.textContent = teamType === 'home' ? 'Home Team Events' : 'Away Team Events';
+    eventsDiv.appendChild(eventsHeader);
 
     // Fetch odds for each event
     const eventsWithOdds = await Promise.all(events.map(async event => {
@@ -1980,11 +1994,11 @@ async function displayTeamEvents(teamId, teamType, events) {
     const awayTeamOdds = [];
 
     eventsWithOdds.forEach(event => {
-    // Check if the team is playing at home and the event has odds
-    if (teamType === 'home' && event.homeId === parseInt(teamId) && event.odds) {
+        // Check if the team is playing at home and the event has odds
+        if (teamType === 'home' && event.homeId === parseInt(teamId) && event.odds) {
             const homeOdd = fractionalToDecimal(event.odds[0].fractionalValue);
             homeTeamOdds.push(homeOdd);
-        } 
+        }
         // Check if the team is playing away and the event has odds
         else if (teamType === 'away' && event.awayId === parseInt(teamId) && event.odds) {
             const awayOdd = fractionalToDecimal(event.odds[2].fractionalValue);
@@ -1995,10 +2009,11 @@ async function displayTeamEvents(teamId, teamType, events) {
     // Calculate averages directly from the numeric arrays
     const averageHomeOdds = calculateAverage(homeTeamOdds);
     const averageAwayOdds = calculateAverage(awayTeamOdds);
- 
+
     const teamWithLowerOdds = averageHomeOdds < averageAwayOdds ? 'Home Team' : 'Away Team';
     //console.log(`${teamWithLowerOdds} has lower average odds`);
 
+    // Create the table HTML
     const tableHtml = `
         <table class="events-table">
             <thead>
@@ -2041,34 +2056,32 @@ async function displayTeamEvents(teamId, teamType, events) {
                         }
                     }
 
-                    //<tr data-event-id="${eventId}" onclick="handleRowClick(${eventId})">
-                    const formResult = recentForm;
                     return `
-                    <tr data-event-id="${eventId}">
-                        <td>${event.eventTime}</td>
-                        <td>${event.homeName} - ${event.awayName}</td>
-                        <td class="odd ${event.odds && event.odds[0].name === winningChoice ? 'highlight' : ''}">
-                            ${event.odds ? fractionalToDecimal(event.odds[0].fractionalValue) : '-'}
-                        </td>
-                        <td class="odd ${event.odds && event.odds[1].name === winningChoice ? 'highlight' : ''}">
-                            ${event.odds ? fractionalToDecimal(event.odds[1].fractionalValue) : '-'}
-                        </td>
-                        <td class="odd ${event.odds && event.odds[2].name === winningChoice ? 'highlight' : ''}">
-                            ${event.odds ? fractionalToDecimal(event.odds[2].fractionalValue) : '-'}
-                        </td>
-                        <td>${event.eventDescription}</td>
-                        <td>${formResult}</td>
-                        <td>${event.points}</td>
-                    </tr>
-                `;
-            }).join('')}
-        </tbody>
-    </table>
+                        <tr data-event-id="${eventId}">
+                            <td>${event.eventTime}</td>
+                            <td>${event.homeName} - ${event.awayName}</td>
+                            <td class="odd ${event.odds && event.odds[0].name === winningChoice ? 'highlight' : ''}">
+                                ${event.odds ? fractionalToDecimal(event.odds[0].fractionalValue) : '-'}
+                            </td>
+                            <td class="odd ${event.odds && event.odds[1].name === winningChoice ? 'highlight' : ''}">
+                                ${event.odds ? fractionalToDecimal(event.odds[1].fractionalValue) : '-'}
+                            </td>
+                            <td class="odd ${event.odds && event.odds[2].name === winningChoice ? 'highlight' : ''}">
+                                ${event.odds ? fractionalToDecimal(event.odds[2].fractionalValue) : '-'}
+                            </td>
+                            <td>${event.eventDescription}</td>
+                            <td>${recentForm}</td>
+                            <td>${event.points}</td>
+                        </tr>
+                    `;
+                }).join('')}
+            </tbody>
+        </table>
     `;
-    eventsDiv.innerHTML = tableHtml;
-    //showEventDetails(eventId);
-}
 
+    // Append the table HTML to the eventsDiv
+    eventsDiv.insertAdjacentHTML('beforeend', tableHtml);
+}
 
 async function updateLeagueTable(tournamentId, seasonId, matchId, homeTeamId, awayTeamId) {
     try {
