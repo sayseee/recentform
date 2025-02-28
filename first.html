@@ -345,6 +345,18 @@ h4 {
     color: var(--color-white60p);
 
 }
+.categoryText { 
+    display: flex;  
+    flex-direction: column;
+    gap: 3px;
+}
+.categoryText span:first-child {
+    color: rgb(155, 146, 107);
+}
+.categoryText span:last-child {
+    text-transform: uppercase;
+    font-size: 11px;
+}
 .tournament {
     display: flex;
     flex-direction: column;
@@ -2256,7 +2268,8 @@ function updateMatches(matchData, oddsData) {
         const tournamentDiv = document.createElement('div');
         tournamentDiv.classList.add('tournament');
 
-        tournamentDiv.innerHTML = `<div class="category-name"><img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy"> ${tournament.categoryName} - ${tournament.uniqueTournamentName}</div>`;
+        tournamentDiv.innerHTML = `<div class="category-name">
+            <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy"><div class="categoryText"><span>${tournament.uniqueTournamentName}</span><span>${tournament.categoryName}</span></div></div>`;
 
         tournament.matches.forEach(match => {
             const matchOdds = oddsData.odds[match.id];
