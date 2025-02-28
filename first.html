@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <title>Mobile First Layout</title>
@@ -39,8 +42,8 @@
         
         :root {
             --color-white20p: hsla(0,0%,100%,.2);
-            --color-black1: rgb(3,5,7);
-            --color-black2: rgb(56,56,56);
+            --color-black1: rgb(4, 5, 7);
+            --color-black2: rgb(17, 20, 25);
             --color-black3: rgb(40,40,40);
             --color-black4: rgb(17, 20, 24);
             --color-green2: rgb(18,110,81);
@@ -100,9 +103,11 @@
             box-sizing: border-box;
         }
         body {
-            -webkit-font-smoothing: antialiased;
-            font-family: "Sofascore Sans", "Arial Unicode MS", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            font-weight: 400; 
+            -webkit-font-smoothing: antialiased; 
+            font-family: "Inter", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
             font-feature-settings: "kern";
             font-kerning: normal;
             display: flex;
@@ -110,10 +115,7 @@
             height: 100vh;
             overflow: hidden;
             font-size: 13px;
-        background-size: 100% 100%;
-        background-image: linear-gradient(rgba(12, 22, 20, .1), transparent 20px), 
-                            radial-gradient(122% 370px at center -220px, #009969 0, transparent 100%), 
-                            linear-gradient(to right bottom, #0c1614, #084436);
+        background-color: rgb(1, 79, 55);
         }
         
 h4 {
@@ -123,7 +125,7 @@ h4 {
     transition: color 0.2slinear 0s;
     font-size: 12px;
     line-height: 1.4;
-    font-weight: 700;
+    font-weight: 600;
     text-align: center;
     margin: 0;
     padding: 6px 0; 
@@ -138,7 +140,7 @@ h4 {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
+        font-weight: 600;
         font-size: 10px;
             border-radius: 50%;  
     }
@@ -182,7 +184,8 @@ h4 {
                 max-width: 100%;
                 min-height: 50px;
                 background-color: transparent; 
-                font-weight: 500; 
+                font-weight: 600;
+                margin-left: 5px; 
     }  
         header { 
             color: white;
@@ -257,7 +260,7 @@ h4 {
     display: flex;
     font-family: inherit;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     grid-area: datepicker;
     height: 100%;
     justify-content: center;
@@ -335,7 +338,7 @@ h4 {
     padding: 0 10px;
     align-items: center;
     gap: 10px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 14px;
     min-height: 45px;
 }
@@ -378,7 +381,7 @@ h4 {
     gap: 1px;
     justify-content: center;
     text-align: center;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 13px;
 }
 .odds {
@@ -472,7 +475,7 @@ h4 {
     font-weight: 400;
 }
 .logoH {
-    color: rgb(241, 174, 86);
+    color: rgb(239, 230, 47);
 }
 
 /* Base styles for match-details */
@@ -637,7 +640,7 @@ sup {
 .promotion-to-z-playoff-secondary td:first-child, 
 .relegation td:first-child, 
 .relegation-playoff td:first-child {
-    font-weight: 700;
+    font-weight: 600;
     color: var(--color-greyE4);
 }
     
@@ -742,7 +745,7 @@ sup {
     flex-direction: row;
     flex: 1;
     color: var(--draw-color);
-    font-weight: 700;
+    font-weight: 600;
     text-align: center;
     font-size: 20px;
 }
@@ -769,7 +772,7 @@ sup {
     }
 .exWin, .default {
     color: #ffffff;
-    font-weight: 700;
+    font-weight: 600;
     padding: 4px 8px;
     border-radius: 8px;
 }
@@ -807,7 +810,7 @@ sup {
     white-space: nowrap;
     color: #ccc;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 32px;
     border-bottom: 1px solid var(--g5-market-top-border, var(--color-white10p));
     background-image: var(--pbb-background);
@@ -877,7 +880,7 @@ sup {
     white-space: nowrap;
     line-height: 30px;
     font-size: 12px;
-    font-weight: 700;
+    font-weight: 600;
     color: var(--color-greyFF);
     text-align: center;
     margin: 0;
@@ -901,7 +904,7 @@ sup {
     text-transform: uppercase;
     font-size: 12px;
     letter-spacing: 0.41px;
-    font-weight: 700;
+    font-weight: 600;
     font-family: "Sofascore Sans", "Arial Unicode MS", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 .league-table table tr {
@@ -912,7 +915,7 @@ sup {
 }
 tr.is-team {
     background-color: rgb(57, 63, 70);
-    font-weight: 700;
+    font-weight: 600;
     color: #f0f0f0;
 }
 .league-table table th {
@@ -922,7 +925,7 @@ tr.is-team {
     flex: 1;
     padding: 2px 4px;
     text-align: center;
-    font-weight: 700;
+    font-weight: 600;
     font-family: "Sofascore Sans", "Arial Unicode MS", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 .gamesPlayed {
@@ -930,7 +933,7 @@ tr.is-team {
 }
 .team-name {
     text-align: center;
-    font-weight: 700;
+    font-weight: 600;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: clip;
@@ -1041,7 +1044,7 @@ tr.is-team {
     #streaksModule h4 {
         word-wrap: break-word;
         font-size: 12px;
-        font-weight: 700;
+        font-weight: 600;
         color: var(--color-greyFF); 
         margin: 0;
         padding: 10px 10px 0;  
@@ -1051,7 +1054,7 @@ tr.is-team {
     #streaksModule h5 {
         font-size: 13px;
         color: var(--color-greyFF);
-        font-weight: 700;
+        font-weight: 600;
         margin: 0;
         padding: 0;
         margin-bottom: 10px;
@@ -1935,12 +1938,12 @@ async function displayTeamStats(teamStats, divId) {
 
     // Helper function to style percentages
     function stylePercentage(value) {
-        return value >= 80 ? `style="color: var(--secondary-default); font-weight: 700;"` : '';
+        return value >= 80 ? `style="color: var(--secondary-default); font-weight: 600;"` : '';
     }
 
     // Helper function to style percentages
     function concededPercentage(value) {
-        return value >= 80 ? `style="color: var(--loss-color); font-weight: 700;"` : '';
+        return value >= 80 ? `style="color: var(--loss-color); font-weight: 600;"` : '';
     }
 
     // Loop through teamStats and add each team's stats for the first section
