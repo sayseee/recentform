@@ -486,8 +486,7 @@ h4 {
     left: 0;
     display: flex; 
     flex-direction: column;
-    justify-content: space-between; 
-    gap: 10px;
+    justify-content: space-between;  
 }
 sup {
     border-radius: 24px;
@@ -994,6 +993,79 @@ tr.is-team {
     font-weight: 600;
     color: #F44336; 
 }
+
+.streaksModule_Insider {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 10px;
+        gap: 10px;
+    }  
+.streaksModule_Insider #home-streaks, .streaksModule_Insider #away-streaks {
+    flex: 1;
+} 
+
+
+.StreakLine {
+        position: relative;
+        margin-bottom: 5px;
+        font-size: 12px;
+        color: var(--color-white60p);
+        line-height: 15px;
+        padding-left: 16px;
+    }
+    .StreakLine:before { 
+        position: absolute;
+        top: 58%;
+        left: 0;
+        transform: translateY(-50%);
+        content: " ";
+        border: 1px solid var(--color-green2);
+        border-radius: 7px;
+        width: 7px;
+        height: 7px;
+    }  
+
+    .StreakLine:last-child {
+        margin-bottom: 0;
+    }
+
+    .StreakLine:last-child:after {
+        content: "";
+        background-color: transparent;
+    } 
+    #streaksModule {
+        display: flex;
+        flex-direction: column;
+        background-image: var(--pbb-background);
+        border-bottom: 1px solid var(--color-white10p);
+    }
+    #streaksModule h4 {
+        word-wrap: break-word;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--color-greyFF); 
+        margin: 0;
+        padding: 10px 10px 0;  
+        text-transform: uppercase;
+    } 
+
+    #streaksModule h5 {
+        font-size: 13px;
+        color: var(--color-greyFF);
+        font-weight: 700;
+        margin: 0;
+        padding: 0;
+        margin-bottom: 10px;
+    }
+    #home-streaks, #away-streaks { 
+        display: flex;
+        flex-direction: column; 
+        padding: 15px 10px 20px; 
+        background-color: var(--color-grey00-25p);
+        border-radius: 5px;
+        letter-spacing: 0.45px; 
+    }
     </style>
 </head>
 <body>
@@ -1291,18 +1363,24 @@ async function fetchMatchDetails(matchId, matchElement) {
                 </div>
             </div>
                 
-            <div id="expected-actual"></div>
-            
-            
-            <div class="team-data">
-                <div id="home-team-stats"></div>
-                <div id="away-team-stats"></div>
-            </div>
+            <div id="expected-actual"></div> 
 
             <div class="team-events"> 
                 <div id="home-league-table" class="league-table" style="min-height: 120px;"></div> 
                 <div id="away-league-table" class="league-table" style="min-height: 120px;"></div> 
             </div>
+             
+            <div class="team-data">
+                <div id="home-team-stats"></div>
+                <div id="away-team-stats"></div>
+            </div>
+            <div id="streaksModule">
+                <div class="streaksModule_Insider"> 
+                    <div id="home-streaks"></div>
+                    <div id="away-streaks"></div>
+                </div>
+            </div>
+
             <div class="team-events">
                 <div id="home-team-events"></div>
                 <div id="away-team-events"></div>
@@ -1365,7 +1443,7 @@ async function fetchMatchDetails(matchId, matchElement) {
             fetchAndDisplayTeamPerformance(awayTeam.id, 'away', seasonId, matchId)
         ]);
         fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeam.id, awayTeam.id, homeTeam.name, awayTeam.name);
-            
+         fetchAndDisplayTeamStreaks(matchId, homeTeam.name, awayTeam.name)   
         /* // Auto-refresh score functionality
         if (status.type === 'inprogress') {
             setTimeout(() => refreshScores(matchId), 60000); // Refresh every minute
@@ -1517,6 +1595,128 @@ async function fetchAndDisplayWinningOdds(matchId) {
     }
 }
 
+
+
+async function fetchAndDisplayTeamStreaks(matchId, homeTeamName, awayTeamName) {
+    try {
+        const response = await fetch(`https://api.sofascore.com/api/v1/event/${matchId}/team-streaks`);
+        const streakData = await response.json();
+        //console.log('Streak data', streakData);
+        //console.log('Match ID', matchId);
+        
+        if (streakData && streakData.general && Array.isArray(streakData.general)) {
+            displayStreaks(streakData.general, homeTeamName, awayTeamName);
+        } else {
+            console.error('Invalid streak data');
+        }
+    } catch (error) {
+        console.error('Error fetching team streaks:', error);
+    }
+}
+
+function displayStreaks(streaks, homeTeamName, awayTeamName) {
+    const streakMessages = {
+        "Losses": (teamName, value) => `Are on a ${value} game losing streak.`,
+        "No losses": (teamName, value) => `Have not lost in their last ${value} games.`,
+        "Without clean sheet": (teamName, value) => `Have gone ${value} games without a clean sheet.`,
+        "No goals scored": (teamName, value) => `Have gone ${value} games without scoring a goal.`,
+        "More than": (teamName, name, value) => {
+            const [numerator, denominator] = value.split('/');
+            const percentage = Math.round((numerator / denominator) * 100);
+            return `Has seen ${name.toLowerCase()} in ${percentage}% of their ${denominator} games.`;
+        },
+        "Both teams scoring": (teamName, value) => {
+            const [numerator, denominator] = value.split('/');
+            const percentage = Math.round((numerator / denominator) * 100);
+            return `Have seen both teams score in ${percentage}% of their ${denominator} games.`;
+        },
+        "First to score": (teamName, value) => {
+            const [numerator, denominator] = value.split('/');
+            const percentage = Math.round((numerator / denominator) * 100);
+            return `Scored first in ${percentage}% of their ${denominator} games.`;
+        },
+        "First to concede": (teamName, value) => {
+            const [numerator, denominator] = value.split('/');
+            const percentage = Math.round((numerator / denominator) * 100);
+            return `Conceded first in ${percentage}% of their ${denominator} games.`;
+        },
+        "Less than": (teamName, name, value) => {
+            const [numerator, denominator] = value.split('/');
+            const percentage = Math.round((numerator / denominator) * 100);
+            return `Has seen ${name.toLowerCase()} in ${percentage}% of their ${denominator} games.`;
+        },
+        "No wins": (teamName, value) => `Have not won in their last ${value} games.`,
+        "Wins": (teamName, value) => `Are on a ${value} game winning streak.`,
+        "First half winner": (teamName, value) => {
+            const [numerator, denominator] = value.split('/');
+            const percentage = Math.round((numerator / denominator) * 100);
+            return `Have been the first half winner in ${percentage}% of their ${denominator} games.`; 
+        },
+        "First half loser": (teamName, value) => {
+            const [numerator, denominator] = value.split('/');
+            const percentage = Math.round((numerator / denominator) * 100);
+            return `Have been the first half loser in ${percentage}% of their ${denominator} games.`;
+        },
+    };
+
+    // Clear previous content for the module div
+    const streaksModuleDiv = document.getElementById('streaksModule');
+    if (!streaksModuleDiv) {
+        console.error('Div with ID "streaksModule" not found');
+        return;
+    }
+    streaksModuleDiv.innerHTML = ''; // Clear previous content in the module div
+
+    // Add a single header outside the new insider div but inside the streaksModule div
+    const streakHeader = document.createElement('h4');
+    streakHeader.textContent = 'Team Streaks - All COMPETITIONS';
+    streaksModuleDiv.appendChild(streakHeader);
+
+    // Create and append the new insider div
+    const streaksModuleInsiderDiv = document.createElement('div');
+    streaksModuleInsiderDiv.className = 'streaksModule_Insider';
+    streaksModuleDiv.appendChild(streaksModuleInsiderDiv);
+
+    // Create home-streaks and away-streaks divs with team name headers
+    const homeStreaksDiv = document.createElement('div');
+    homeStreaksDiv.id = 'home-streaks';
+    streaksModuleInsiderDiv.appendChild(homeStreaksDiv);
+
+    const homeTeamHeader = document.createElement('h5');
+    homeTeamHeader.textContent = homeTeamName;
+    homeStreaksDiv.appendChild(homeTeamHeader);
+
+    const awayStreaksDiv = document.createElement('div');
+    awayStreaksDiv.id = 'away-streaks';
+    streaksModuleInsiderDiv.appendChild(awayStreaksDiv);
+
+    const awayTeamHeader = document.createElement('h5');
+    awayTeamHeader.textContent = awayTeamName;
+    awayStreaksDiv.appendChild(awayTeamHeader);
+
+    // Populate streaks
+    streaks.forEach(streak => {
+        const { name, value, team } = streak;
+        const teamName = team === 'home' ? homeTeamName : awayTeamName;
+        const streakDiv = team === 'home' ? homeStreaksDiv : awayStreaksDiv;
+
+        // Find the appropriate message template
+        let message = '';
+        if (streakMessages[name]) {
+            message = streakMessages[name](teamName, value);
+        } else if (name.startsWith('More than') || name.startsWith('Less than')) {
+            const [firstPart, restOfName] = name.split(' than ');
+            message = streakMessages[firstPart + ' than'](teamName, name, value);
+        } else {
+            message = `${teamName} have a streak: ${name} - ${value}`;
+        }
+
+        const streakItemDiv = document.createElement('div');
+        streakItemDiv.classList.add('StreakLine');
+        streakItemDiv.textContent = message;
+        streakDiv.appendChild(streakItemDiv);
+    });
+}
 
 async function fetchTeamForm(uniqueTournamentId, seasonId, type) {
     const response = await fetch(`https://api.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/team-events/${type}`);
