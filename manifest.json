@@ -1,6 +1,6 @@
 {
-  "short_name": "Betos",
-  "name": "Bet on Soccer",
+  "short_name": "Soccer",
+  "name": "Soccer Stats",
   "icons": [
     {
       "src": "icons/icon-192x192.png",
@@ -13,7 +13,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/recentform/first.html",
+  "start_url": "/recentform/pale.html",
   "display": "standalone",
   "theme_color": "#030229",
   "background_color": "#030229"
