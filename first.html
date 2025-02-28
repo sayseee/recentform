@@ -686,8 +686,7 @@ sup {
     display: flex;
     align-items: center;
     flex-direction: row;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border-green1);
+    justify-content: space-between; 
     margin: 10px;
 }
 #match-details div {
@@ -699,13 +698,14 @@ sup {
     justify-content: flex-end;
 }
 #match-details #home-team, #match-details #away-team {
-    font-weight: 700;
+    font-weight: 600;
     font-size: 17px;
     flex: 2;
     max-height: 75px;
-    font-size: 20px;
+    font-size: 15px;
     line-height: 25px;
     color: var(--color-greyFF);
+    flex-direction: column;
 }
 /* Animation for appearing */
 .match-details.appearing { 
@@ -749,7 +749,7 @@ sup {
 
 #expected-actual, #match-prediction {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: space-around; 
         gap: 10px;
     }
@@ -1333,9 +1333,8 @@ async function fetchMatchDetails(matchId, matchElement) {
             </div>
             <div id="match-details">
                 <div class="team" id="home-team">
-                    <span>${homeTeam.shortName}</span>
                     <img src="https://api.sofascore.app/api/v1/team/${homeTeam.id}/image" width="38" height="38" alt="${homeTeam.name}" loading="lazy">
-                </div>
+                    <span>${homeTeam.shortName}</span></div>
                 <div class="score-dec">
                     <div class="score" id="scoreline">
                         ${match.status.type === 'inprogress' 
@@ -1557,7 +1556,7 @@ async function fetchAndDisplayWinningOdds(matchId) {
                     const homeDiv = document.createElement('div');
                     homeDiv.className = 'actual-home';
                     homeDiv.innerHTML = `
-                        <p>Home Exp. Win: ${expectedHomeOdds}%</p>
+                        <p>HEW: ${expectedHomeOdds}%</p>
                         <p class="${homeWinClass}">W: ${actualHomeOdds}%</p>
                         <p>${fractionalHomeOdds}</p>
                     `;
@@ -1576,7 +1575,7 @@ async function fetchAndDisplayWinningOdds(matchId) {
                     const awayDiv = document.createElement('div');
                     awayDiv.className = 'actual-away';
                     awayDiv.innerHTML = `
-                        <p>Away Exp. Win: ${expectedAwayOdds}%</p>
+                        <p>AEW: ${expectedAwayOdds}%</p>
                         <p class="${awayWinClass}">W: ${actualAwayOdds}%</p>
                         <p>${fractionalAwayOdds}</p>
                     `;
@@ -2313,7 +2312,7 @@ function determineWinningChoice(eventDescription) {
 
 function generateTeamEvents(performanceData, seasonId, matchId) {
     return performanceData.events
-        .filter(match => match.season.id === seasonId && match.id !== matchId)
+    .filter(match => match.season.id === seasonId && Number(match.id) !== Number(matchId))
         .reverse()
         .slice(0, 5)
         .map(match => {
