@@ -657,11 +657,23 @@ sup {
 .relegation-playoff td:first-child {
     font-weight: 600;
     color: var(--color-greyE4);
-}
-.live-match-draws::before {
-    content: "";
-    background-color: rgb(255, 153, 1);
-}
+} 
+.live-match-wins::before {
+        content: "";
+        background-color: rgb(27,184,145);
+        font-weight: bold;
+    }
+
+    .live-match-draws::before {
+        content: "";
+        background-color: rgb(255,153,1); 
+    }
+
+    .live-match-losses::before {
+        content: "";
+        background-color: rgb(253,29,91);
+        font-weight: bold;
+    }
 .live-match-wins::before, .live-match-draws::before, .live-match-losses::before {
     position: absolute;
     top: 40%;
@@ -671,6 +683,7 @@ sup {
     border-radius: 50%;
     animation: blink 2s infinite;
 }  
+
     @keyframes blink {
         0% {
             opacity: 1;
