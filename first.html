@@ -1156,14 +1156,16 @@ if ('serviceWorker' in navigator) {
       });
     });
   }
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     const calendarMenu = document.getElementById('calendarMenu');
     const calendarDays = document.querySelector('.calendar__days');
     const selectedDateElement = document.getElementById('selectedDate');
     const yesterdayButton = document.querySelector('.calendar__navigation--yesterday');
     const tomorrowButton = document.querySelector('.calendar__navigation--tomorrow');
+    const filterButtons = document.querySelectorAll('.filters__group a');
 
     let currentDate = new Date();
+    let status = ''; // Default status (all games)
 
     // Function to format date as "DD/MM Day"
     const formatDate = (date) => {
@@ -1193,7 +1195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             button.addEventListener('click', () => {
                 currentDate = date;
                 selectedDateElement.textContent = formatDate(date);
-                fetchDataForSelectedDate(date.toISOString().split('T')[0]); // Fetch data for the selected date
+                fetchDataForSelectedDate(date.toISOString().split('T')[0], status);
                 calendarMenu.setAttribute('aria-expanded', 'false');
                 calendarDays.style.display = 'none';
             });
@@ -1203,9 +1205,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Function to fetch data for the selected date
-    const fetchDataForSelectedDate = (date) => {
-        fetchAndDisplayMatchAndOddsData(date);
+    // Function to fetch data for the selected date with status filtering
+    const fetchDataForSelectedDate = (date, selectedStatus = '') => {
+        status = selectedStatus; // Update global status
+        fetchAndDisplayMatchAndOddsData(date, status);
         fetchAndDisplayMatchScores(date);
     };
 
@@ -1220,7 +1223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     yesterdayButton.addEventListener('click', () => {
         currentDate.setDate(currentDate.getDate() - 1);
         selectedDateElement.textContent = formatDate(currentDate);
-        fetchDataForSelectedDate(currentDate.toISOString().split('T')[0]); // Fetch data for the new date
+        fetchDataForSelectedDate(currentDate.toISOString().split('T')[0], status);
         updateCalendarDays();
     });
 
@@ -1228,49 +1231,52 @@ document.addEventListener('DOMContentLoaded', () => {
     tomorrowButton.addEventListener('click', () => {
         currentDate.setDate(currentDate.getDate() + 1);
         selectedDateElement.textContent = formatDate(currentDate);
-        fetchDataForSelectedDate(currentDate.toISOString().split('T')[0]); // Fetch data for the new date
+        fetchDataForSelectedDate(currentDate.toISOString().split('T')[0], status);
         updateCalendarDays();
+    });
+
+    // Handle filter button clicks
+    filterButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            filterButtons.forEach(btn => btn.classList.remove('active')); // Remove active class from all
+            button.classList.add('active'); // Set active class to the clicked button
+            
+            const selectedStatus = button.dataset.status;
+            fetchDataForSelectedDate(currentDate.toISOString().split('T')[0], selectedStatus);
+        });
     });
 
     // Initialize
     const today = new Date().toISOString().split('T')[0];
     selectedDateElement.textContent = formatDate(new Date(today));
-    fetchDataForSelectedDate(today);
+    fetchDataForSelectedDate(today, status);
     updateCalendarDays();
 
-    // Set a timeout to fetch and display match scores every minute (60000 milliseconds)
+    // Set interval to refresh scores every minute
     setInterval(() => fetchAndDisplayMatchScores(currentDate.toISOString().split('T')[0]), 60000);
-        
+
     const matchEventsDiv = document.getElementById('match-events');
-        let currentlyOpenMatch = null; // Track the currently open match
+    let currentlyOpenMatch = null; // Track the currently open match
 
-        // Event delegation for match clicks
-        matchEventsDiv.addEventListener('click', async (event) => {
-            const matchElement = event.target.closest('.match');
-            if (!matchElement) return;
+    // Event delegation for match clicks
+    matchEventsDiv.addEventListener('click', async (event) => {
+        const matchElement = event.target.closest('.match');
+        if (!matchElement) return;
 
-            const matchData = matchElement.dataset;
-            //console.log('Match Clicked:', matchData); 
-            const tournamentId = matchData.tournamentId;
-            const uniqueTournamentId = matchData.uniqueTournamentId;
-            const matchId = matchData.matchId;
-            const customId = matchData.customId;
-            const seasonId = matchData.seasonId;
-            const homeTeamId = parseInt(matchData.homeTeamId); // Ensure these are integers
-            const awayTeamId = parseInt(matchData.awayTeamId);
-            const homeTeamName = matchData.homeTeamName;
-            const awayTeamName = matchData.awayTeamName; 
+        const matchData = matchElement.dataset;
+        const matchId = matchData.matchId;
 
-            if (currentlyOpenMatch === matchId) {
-                // If the clicked match is already open, close it
-                closeMatchDetails();
-                return;
-            }
+        if (currentlyOpenMatch === matchId) {
+            closeMatchDetails();
+            return;
+        }
 
-            currentlyOpenMatch = matchId; // Set new active match
-            fetchMatchDetails(matchId, matchElement); // Pass matchElement to fetchMatchDetails  
-        });
+        currentlyOpenMatch = matchId;
+        fetchMatchDetails(matchId, matchElement);
+    });
 });
+
 
 function handleMatchClick(matchData) {
     const tournamentId = parseInt(matchData.tournamentId);
@@ -2106,7 +2112,7 @@ function displayTeamInfo(teamId, divId, standingsData, isHomeTeam) {
         }
     }
     
-async function fetchAndDisplayMatchAndOddsData(dateStr) {
+    async function fetchAndDisplayMatchAndOddsData(dateStr, status = 'all') {
     try {
         const startOfDay = new Date(dateStr).setHours(0, 30, 0, 0) / 1000;
         const endOfDay = startOfDay + 36 * 60 * 60; // 36 hours later
@@ -2116,18 +2122,37 @@ async function fetchAndDisplayMatchAndOddsData(dateStr) {
         const matchData = await matchResponse.json();
 
         // Filter matches to include only those within the current day and 36 hours later
-        const filteredMatches = matchData.events.filter(match => match.startTimestamp >= startOfDay && match.startTimestamp <= endOfDay);
+        let filteredEvents = matchData.events.filter(match => 
+            match.startTimestamp >= startOfDay && match.startTimestamp <= endOfDay
+        );
 
-        // Fetch odds for the selected date only
+        // Apply event status filter
+        if (status !== 'all') {
+            filteredEvents = filteredEvents.filter(event => {
+                switch (status) {
+                    case 'live':
+                        return event.status?.type === 'inprogress';
+                    case 'finished':
+                        return event.status?.type === 'finished';
+                    case 'scheduled':
+                        return event.status?.type === 'notstarted';
+                    default:
+                        return true;
+                }
+            });
+        }
+
+        // Fetch odds for the selected date
         const oddsResponse = await fetch(`https://api.sofascore.com/api/v1/sport/football/odds/1/${dateStr}`);
         const oddsData = await oddsResponse.json();
 
-        // Update matches with filtered data
-        updateMatches({ events: filteredMatches }, oddsData);
+        // Update matches display
+        updateMatches({ events: filteredEvents }, oddsData);
     } catch (error) {
         console.error('Error fetching and displaying data:', error);
     }
 }
+
 
 async function fetchAndDisplayMatchScores(dateStr) {
     try {
@@ -2714,18 +2739,25 @@ function createMatchElement(match, odds) {
             <span>${awayScore}</span>
         </div>
         <div class="odds">
-            <div class="${homeOddsChange}">
+           <div class="${homeOddsChange}">
                 <span>${homeOdds}</span>
-                ${match.status.type !== 'inprogress' ? `<span class="decrease-hidden">${homeOddsNew}</span>` : ''}
+                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : 'inline'};">
+                    ${homeOddsNew}
+                </span>
             </div>
             <div class="${drawOddsChange}">
                 <span>${drawOdds}</span>
-                ${match.status.type !== 'inprogress' ? `<span class="decrease-hidden">${drawOddsNew}</span>` : ''}
+                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : 'inline'};">
+                    ${drawOddsNew}
+                </span>
             </div>
             <div class="${awayOddsChange}">
                 <span>${awayOdds}</span>
-                ${match.status.type !== 'inprogress' ? `<span class="decrease-hidden">${awayOddsNew}</span>` : ''}
+                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : 'inline'};">
+                    ${awayOddsNew}
+                </span>
             </div>
+
         </div>
     `;
 
