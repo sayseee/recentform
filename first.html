@@ -1833,16 +1833,16 @@ async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, season
             const leagueTableDiv = document.getElementById('league-table');
             leagueTableDiv.innerHTML = '<p>No standings available</p>';
         }
-        
+                
         // Fetch team stats for home and away teams
         const [homeTeamStats, awayTeamStats] = await Promise.all([
-            fetchTeamStats(uniqueTournamentId, seasonId, homeTeamId, 'home'),
-            fetchTeamStats(uniqueTournamentId, seasonId, awayTeamId, 'away')
+            getTeamStats(uniqueTournamentId, seasonId, matchId, homeTeamId),
+            getTeamStats(uniqueTournamentId, seasonId, matchId, awayTeamId)
         ]);
 
         // Display team stats
         displayTeamStats(homeTeamStats, 'home-team-stats');
-        displayTeamStats(awayTeamStats, 'away-team-stats'); 
+        displayTeamStats(awayTeamStats, 'away-team-stats');
          
 
     } catch (error) {
@@ -1856,114 +1856,107 @@ async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, season
 
 
 
-async function fetchTeamStats(uniqueTournamentId, seasonId, teamId, type) {
-    const response = await fetch(`https://api.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/team-events/${type}`);
+async function getTeamStats(uniqueTournamentId, seasonId, matchId, teamId) {
+    const response = await fetch(`https://api.sofascore.com/api/v1/team/${teamId}/events/last/0`);
     const data = await response.json();
-    const teamStats = {};
 
-    const events = data.tournamentTeamEvents;
-    //console.log(events);
-    //console.log(teamId);
-    for (const tournamentKey in events) {
-        const teams = events[tournamentKey];
-        for (const teamKey in teams) {
-            const teamEvents = teams[teamKey];
-            if (!teamStats[teamId]) {
-                teamStats[teamId] = {
-                    wins: 0,
-                    draws: 0,
-                    losses: 0,
-                    goalsScored: 0,
-                    goalsConceded: 0,
-                    over05Scored: 0,
-                    over05Conceded: 0,
-                    btts: 0,
-                    over15: 0,
-                    over25: 0,
-                    over35: 0,
-                    nilDraws: 0,
-                    winToNil: 0,
-                    lossToNil: 0
-                };
-            }
-            teamEvents.forEach(event => {  
-                if (teamKey == teamId) {
-                    if (type === 'home') {
-                        if (event.winnerCode === 1) {
-                            teamStats[teamId].wins++;
-                            if (event.awayScore.current === 0) {
-                                teamStats[teamId].winToNil++;
-                            }
-                        }
-                        else if (event.winnerCode === 2) {
-                            teamStats[teamId].losses++;
-                            if (event.homeScore.current === 0) {
-                                teamStats[teamId].lossToNil++;
-                            }
-                        }
-                        else {
-                            teamStats[teamId].draws++;
-                            if (event.homeScore.current === 0 && event.awayScore.current === 0) {
-                                teamStats[teamId].nilDraws++;
-                            }
-                        }
+    const teamStats = {
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        goalsScored: 0,
+        goalsConceded: 0,
+        over05Scored: 0,
+        over05Conceded: 0,
+        btts: 0,
+        over15: 0,
+        over25: 0,
+        over35: 0,
+        nilDraws: 0,
+        winToNil: 0,
+        lossToNil: 0
+    };
 
-                        teamStats[teamId].goalsScored += event.homeScore?.current ?? '';
-                        teamStats[teamId].goalsConceded += event.awayScore?.current ?? '';
+    const events = data.events
+        .filter(event => event.tournament.uniqueTournament.id === uniqueTournamentId && event.season.id === seasonId && Number(event.id) !== Number(matchId) && event.status.type === 'finished')
+        .reverse()
+        .slice(0, 5); // Get the last 5 finished events
+    events.forEach(event => {
+        const isHomeTeam = event.homeTeam.id === teamId;
+        const isAwayTeam = event.awayTeam.id === teamId;
 
-                        if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats[teamId].btts++;
-                        if (event.homeScore.current > 0.5) teamStats[teamId].over05Scored++;
-                        if (event.awayScore.current > 0.5) teamStats[teamId].over05Conceded++;
-                        if (event.homeScore.current + event.awayScore.current > 1.5) teamStats[teamId].over15++;
-                        if (event.homeScore.current + event.awayScore.current > 2.5) teamStats[teamId].over25++;
-                        if (event.homeScore.current + event.awayScore.current > 3.5) teamStats[teamId].over35++;
-                    } else if (type === 'away') {
-                        if (event.winnerCode === 1) {
-                            teamStats[teamId].losses++;
-                            if (event.awayScore.current === 0) {
-                                teamStats[teamId].lossToNil++;
-                            }
-                        }
-                        else if (event.winnerCode === 2) {
-                            teamStats[teamId].wins++;
-                            if (event.homeScore.current === 0) {
-                                teamStats[teamId].winToNil++;
-                            }
-                        }
-                        else {
-                            teamStats[teamId].draws++;
-                            if (event.homeScore.current === 0 && event.awayScore.current === 0) {
-                                teamStats[teamId].nilDraws++;
-                            }
-                        }
-
-                        teamStats[teamId].goalsScored += event.awayScore?.current ?? '';
-                        teamStats[teamId].goalsConceded += event.homeScore?.current ?? '';
-
-
-                        if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats[teamId].btts++;
-                        if (event.awayScore.current > 0.5) teamStats[teamId].over05Scored++;
-                        if (event.homeScore.current > 0.5) teamStats[teamId].over05Conceded++;
-                        if (event.homeScore.current + event.awayScore.current > 1.5) teamStats[teamId].over15++;
-                        if (event.homeScore.current + event.awayScore.current > 2.5) teamStats[teamId].over25++;
-                        if (event.homeScore.current + event.awayScore.current > 3.5) teamStats[teamId].over35++;
-                    }
+        // Logic for home or away games
+        if (isHomeTeam) {
+            if (event.winnerCode === 1) {
+                teamStats.wins++;
+                if (event.awayScore.current === 0) {
+                    teamStats.winToNil++;
                 }
-            });
+            } else if (event.winnerCode === 2) {
+                teamStats.losses++;
+                if (event.homeScore.current === 0) {
+                    teamStats.lossToNil++;
+                }
+            } else {
+                teamStats.draws++;
+                if (event.homeScore.current === 0 && event.awayScore.current === 0) {
+                    teamStats.nilDraws++;
+                }
+            }
+
+            teamStats.goalsScored += event.homeScore?.current ?? 0;
+            teamStats.goalsConceded += event.awayScore?.current ?? 0;
+
+            if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats.btts++;
+            if (event.homeScore.current > 0.5) teamStats.over05Scored++;
+            if (event.awayScore.current > 0.5) teamStats.over05Conceded++;
+            if (event.homeScore.current + event.awayScore.current > 1.5) teamStats.over15++;
+            if (event.homeScore.current + event.awayScore.current > 2.5) teamStats.over25++;
+            if (event.homeScore.current + event.awayScore.current > 3.5) teamStats.over35++;
+        } else if (isAwayTeam) {
+            if (event.winnerCode === 1) {
+                teamStats.losses++;
+                if (event.awayScore.current === 0) {
+                    teamStats.lossToNil++;
+                }
+            } else if (event.winnerCode === 2) {
+                teamStats.wins++;
+                if (event.homeScore.current === 0) {
+                    teamStats.winToNil++;
+                }
+            } else {
+                teamStats.draws++;
+                if (event.homeScore.current === 0 && event.awayScore.current === 0) {
+                    teamStats.nilDraws++;
+                }
+            }
+
+            teamStats.goalsScored += event.awayScore?.current ?? 0;
+            teamStats.goalsConceded += event.homeScore?.current ?? 0;
+
+            if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats.btts++;
+            if (event.awayScore.current > 0.5) teamStats.over05Scored++;
+            if (event.homeScore.current > 0.5) teamStats.over05Conceded++;
+            if (event.homeScore.current + event.awayScore.current > 1.5) teamStats.over15++;
+            if (event.homeScore.current + event.awayScore.current > 2.5) teamStats.over25++;
+            if (event.homeScore.current + event.awayScore.current > 3.5) teamStats.over35++;
         }
-    }
-    return teamStats;
+    });
+
+    return { [teamId]: teamStats }; // Return an object with teamId as the key
 }
 
 
 async function displayTeamStats(teamStats, divId) {
+
+    console.log(teamStats);
     const div = document.getElementById(divId);
-    div.innerHTML = '';
+    div.innerHTML = ''; // Clear the div
     let teamStatsHTML = '';
 
     // Add the header for the first section of statistics
     teamStatsHTML += `
-        <div> 
+        <div>
             <span>Played</span>
             <span>Win</span>
             <span>Draw</span>
@@ -1971,17 +1964,17 @@ async function displayTeamStats(teamStats, divId) {
             <span>Win - 0</span>
             <span>Draw - 0</span>
             <span>Loss - 0</span>
-        </div>  
+        </div>
     `;
 
     // Helper function to style percentages
     function stylePercentage(value) {
-        return value >= 80 ? `style="color: var(--secondary-default); font-weight: 600;"` : '';
+        return value >= 80 ? `style="color: var(--secondary-default); font-weight: 700;"` : '';
     }
 
-    // Helper function to style percentages
+    // Helper function to style conceded percentages
     function concededPercentage(value) {
-        return value >= 80 ? `style="color: var(--loss-color); font-weight: 600;"` : '';
+        return value >= 80 ? `style="color: var(--loss-color); font-weight: 700;"` : '';
     }
 
     // Loop through teamStats and add each team's stats for the first section
@@ -1996,7 +1989,7 @@ async function displayTeamStats(teamStats, divId) {
         const lossToNilPercentage = ((stats.lossToNil / totalMatches) * 100).toFixed(0);
 
         teamStatsHTML += `
-            <div> 
+            <div>
                 <span>${totalMatches}</span>
                 <span>${winsPercentage}%</span>
                 <span ${stylePercentage(drawsPercentage)}>${drawsPercentage}%</span>
@@ -2004,20 +1997,20 @@ async function displayTeamStats(teamStats, divId) {
                 <span ${stylePercentage(winToNilPercentage)}>${winToNilPercentage}%</span>
                 <span ${stylePercentage(nilDrawsPercentage)}>${nilDrawsPercentage}%</span>
                 <span ${stylePercentage(lossToNilPercentage)}>${lossToNilPercentage}%</span>
-            </div>  
+            </div>
         `;
     }
 
     // Add the header for the second section of statistics
-    teamStatsHTML += ` 
-        <div>  
+    teamStatsHTML += `
+        <div>
             <span>GS</span>
-            <span>GC</span>   
+            <span>GC</span>
             <span>S+0.5</span>
             <span>C+0.5</span>
             <span>BTTS</span>
             <span>+1.5</span>
-            <span>+2.5</span> 
+            <span>+2.5</span>
         </div>
     `;
 
@@ -2032,17 +2025,16 @@ async function displayTeamStats(teamStats, divId) {
         const over25Percentage = ((stats.over25 / totalMatches) * 100).toFixed(0);
         const avScored = ((stats.goalsScored / totalMatches)).toFixed(2);
         const avConceded = ((stats.goalsConceded / totalMatches)).toFixed(2);
-        //const over35Percentage = ((stats.over35 / totalMatches) * 100).toFixed(0);
 
-        teamStatsHTML += ` 
-            <div>     
+        teamStatsHTML += `
+            <div>
                 <span>${stats.goalsScored} <sub>(${avScored})</sub></span>
-                <span>${stats.goalsConceded} <sub>(${avConceded})</sub></span> 
-                <span ${stylePercentage(over05ScoredPercentage)}>${over05ScoredPercentage}%</span> 
+                <span>${stats.goalsConceded} <sub>(${avConceded})</sub></span>
+                <span ${stylePercentage(over05ScoredPercentage)}>${over05ScoredPercentage}%</span>
                 <span ${concededPercentage(over05ConcededPercentage)}>${over05ConcededPercentage}%</span>
                 <span ${stylePercentage(bttsPercentage)}>${bttsPercentage}%</span>
                 <span ${stylePercentage(over15Percentage)}>${over15Percentage}%</span>
-                <span ${stylePercentage(over25Percentage)}>${over25Percentage}%</span> 
+                <span ${stylePercentage(over25Percentage)}>${over25Percentage}%</span>
             </div>
         `;
     }
@@ -2050,7 +2042,6 @@ async function displayTeamStats(teamStats, divId) {
     // Insert the generated HTML into the div
     div.insertAdjacentHTML('beforeend', teamStatsHTML);
 }
-
 
 function displayFallbackTeamInfo(teamId, divId, isHomeTeam) {
           const teamComparisonDiv = document.getElementById(divId);
