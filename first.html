@@ -437,9 +437,31 @@ h4 {
 .decrease-less-than-0-1 span {
     background-color: var(--decrease-less);
 }
+.goalStats {
+    max-width: 60px;
+    flex: 2.5;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#h2hStats {
+    display: flex; 
+    justify-content: space-between;
+    min-width: 10px;
+    padding: 2px 4px;
+    gap: 5px;
+}
+#h2hGoalStats {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between;
+    min-width: 10px;
+    padding: 2px 4px;
+    gap: 5px;
+} 
 .filters {
-    display: flex
-;
+    display: flex;
     justify-content: center;
 }
 /* Bottom Navigation Bar */
@@ -1498,6 +1520,66 @@ async function fetchMatchDetails(matchId, matchElement) {
     }
 }
 
+ 
+// Function to calculate H2H stats for the last 3 years
+function calculateH2HStats(events, homeTeamId, awayTeamId) {
+    let homeWins = 0, awayWins = 0, draws = 0;
+
+    const twoYearsAgo = new Date();
+    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 3);
+
+    events.forEach(event => {
+        const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
+        if (eventDate >= twoYearsAgo) {
+            if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
+                const homeScore = event.homeScore?.current ?? 0;
+                const awayScore = event.awayScore?.current ?? 0; 
+                if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
+                    // Home team is homeTeamId, Away team is awayTeamId
+                    if (homeScore > awayScore) homeWins++;
+                    else if (homeScore < awayScore) awayWins++;
+                    else draws++;
+                } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
+                    // Home team is awayTeamId, Away team is homeTeamId
+                    if (homeScore > awayScore) awayWins++;
+                    else if (homeScore < awayScore) homeWins++;
+                    else draws++;
+                }
+            }
+        }
+    });
+
+    return `<small>${homeWins}</small><small>${draws}</small><small>${awayWins}</small>`;
+}
+
+// Function to calculate H2H stats for the last 3 years
+function h2HGoalStats(events, homeTeamId, awayTeamId) {
+    let homeGoals = 0, awayGoals = 0;
+
+    const twoYearsAgo = new Date();
+    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 3);
+
+    events.forEach(event => {
+        const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
+        if (eventDate >= twoYearsAgo) {
+            if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
+                const homeScore = event.homeScore?.current ?? 0;
+                const awayScore = event.awayScore?.current ?? 0; 
+                if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
+                    // Home team is homeTeamId, Away team is awayTeamId
+                    homeGoals += homeScore;
+                    awayGoals += awayScore; 
+                } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
+                    // Home team is awayTeamId, Away team is homeTeamId
+                    homeGoals += awayScore;
+                    awayGoals += homeScore; 
+                }
+            }
+        }
+    });
+
+    return `<span>${homeGoals}</span> <span>${awayGoals}</span> `;
+}
 
 const startLiveTimer = (event) => {
         const timerElement = document.getElementById(`live-timer-${event.id}`);
@@ -2248,59 +2330,73 @@ function updateMatchScores(matchElement, match) {
     }
     
 
-function updateMatches(matchData, oddsData) {
-    
+    async function updateMatches(matchData, oddsData) {
     const matchEventsDiv = document.getElementById('match-events');
     const existingMatches = matchEventsDiv.querySelectorAll('.match');
     const existingMatchesMap = {};
 
+    // Map existing matches by their IDs
     existingMatches.forEach(matchElement => {
         const matchId = matchElement.getAttribute('data-match-id');
         existingMatchesMap[matchId] = matchElement;
     });
 
     const matchMap = {};
-    let firstMatchStandingsFetched = false;
 
-
+    // Organize matches by tournament
     for (const match of matchData.events) {
         const uniqueTournamentId = match.tournament.uniqueTournament.id;
-        const tournamentId = match.tournament.id;
-        const uniqueTournamentName = match.tournament.uniqueTournament.name;
         const categoryName = match.tournament.category.name;
+        const uniqueTournamentName = match.tournament.uniqueTournament.name;
 
         if (!matchMap[uniqueTournamentId]) {
-            matchMap[uniqueTournamentId] = { categoryName: categoryName, uniqueTournamentName: uniqueTournamentName, matches: [] };
+            matchMap[uniqueTournamentId] = { 
+                categoryName: categoryName, 
+                uniqueTournamentName: uniqueTournamentName, 
+                matches: [] 
+            };
         }
         matchMap[uniqueTournamentId].matches.push(match);
-
-         
     }
 
+    // Clear the container
     matchEventsDiv.innerHTML = '';
 
-    Object.entries(matchMap).forEach(([tournamentId, tournament]) => {
+    // Iterate over tournaments and matches
+    for (const [tournamentId, tournament] of Object.entries(matchMap)) {
         const tournamentDiv = document.createElement('div');
         tournamentDiv.classList.add('tournament');
 
-        tournamentDiv.innerHTML = `<div class="category-name">
-            <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy"><div class="categoryText"><span>${tournament.uniqueTournamentName}</span><span>${tournament.categoryName}</span></div></div>`;
+        tournamentDiv.innerHTML = `
+            <div class="category-name">
+                <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy">
+                <div class="categoryText">
+                    <span>${tournament.uniqueTournamentName}</span>
+                    <span>${tournament.categoryName}</span>
+                </div>
+            </div>
+        `;
 
-        tournament.matches.forEach(match => {
+        // Process each match in the tournament
+        for (const match of tournament.matches) {
             const matchOdds = oddsData.odds[match.id];
             let matchElement = existingMatchesMap[match.id];
 
             if (matchElement) {
+                // Update existing match element
                 updateMatchElement(matchElement, match, matchOdds);
             } else {
-                matchElement = createMatchElement(match, matchOdds);
+                // Create a new match element (await the async function)
+                matchElement = await createMatchElement(match, matchOdds);
             }
 
+            // Append the match element to the tournament
             tournamentDiv.appendChild(matchElement);
-        });
+        }
 
+        // Append the tournament to the container
         matchEventsDiv.appendChild(tournamentDiv);
-    });
+    }
 }
 
 
@@ -2731,9 +2827,7 @@ async function fetchOddsForMatch(matchId) {
     }
 }
 
-
-// Function to create a match element
-function createMatchElement(match, odds) {
+const createMatchElement = async (match, odds) => {
     const matchElement = document.createElement('div');
     matchElement.classList.add('match');
     matchElement.setAttribute('data-status', match.status.type);
@@ -2791,12 +2885,55 @@ function createMatchElement(match, odds) {
                     ${awayOddsNew}
                 </span>
             </div>
-
+        </div>
+        <div class="goalStats">
+            <div id="h2hStats"></div>
+            <div id="h2hGoalStats"></div>
         </div>
     `;
 
+    // Append the matchElement to the DOM first
+    const parentElement = document.getElementById('match-events'); // Ensure this element exists
+    if (parentElement && matchElement instanceof Node) {
+        parentElement.appendChild(matchElement);
+    } else {
+        console.error('Parent element or matchElement is not valid');
+    }
+
+    // Now fetch and update H2H data
+    let h2hData = { events: [] };
+    try {
+        const h2hResponse = await fetch(`${baseURL}/event/${match.customId}/h2h/events`);
+        if (!h2hResponse.ok) {
+            throw new Error(`Network response was not ok: ${h2hResponse.statusText}`);
+        }
+        h2hData = await h2hResponse.json(); 
+    } catch (error) {
+        console.error('Failed to fetch H2H data:', error);
+    }
+
+    const h2hStats = calculateH2HStats(h2hData.events, match.homeTeam.id, match.awayTeam.id);
+    const h2hGoalStats = h2HGoalStats(h2hData.events, match.homeTeam.id, match.awayTeam.id);
+
+    const h2hStatsElement = matchElement.querySelector('#h2hStats');
+    const h2hGoalStatsElement = matchElement.querySelector('#h2hGoalStats');
+
+    if (h2hStatsElement) {
+        h2hStatsElement.innerHTML = h2hStats; // Insert H2H stats data
+    } else {
+        console.error('h2hStats element not found');
+    }
+
+    if (h2hGoalStatsElement) {
+        h2hGoalStatsElement.innerHTML = h2hGoalStats; // Insert H2H goal stats data
+    } else {
+        console.error('h2hGoalStats element not found');
+    }
+
     return matchElement;
 }
+
+ 
 
 // Function to update a match element
 function updateMatchElement(matchElement, match, odds) {
