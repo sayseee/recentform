@@ -860,8 +860,7 @@ sup {
     gap: 10px;
     /* background-image: linear-gradient(to bottom right, #364D3C, var(--color-grey40)); */
     padding: 10px;
-}
-
+} 
 .home-team-stats, .away-team-stats {
     display: flex;
     flex-direction: column; 
@@ -977,11 +976,11 @@ sup {
     background: var(--gl-podGradient);
     border-radius: 5px;
     border: var(--gl-podBorder);
-    padding: 5px;
 }
 .league-table table {
-    width: 100%;
+    width: 99%;
     border-collapse: collapse;
+    margin: 5px;
 }
 .league-table h4, #h2h-team-stat h4, #h2h-stat h4 {
     text-align: center;
@@ -1465,14 +1464,9 @@ async function fetchMatchDetails(matchId, matchElement) {
             </div> 
 
             <div class="team-events"> 
-                <div id="home-league-table" class="league-table" style="min-height: 120px;"></div> 
-                <div id="away-league-table" class="league-table" style="min-height: 120px;"></div> 
-            </div>
-             
-            <div class="team-data">
-                <div id="home-team-stats"></div>
-                <div id="away-team-stats"></div>
-            </div>
+                <div id="home-league-table" class="league-table"></div> 
+                <div id="away-league-table" class="league-table"></div> 
+            </div> 
              <div id="team-stats-container" class="home-team-stats away-team-stats"></div>
             <div id="team-advanced-stats-container" class="home-team-stats away-team-stats"></div>
             </div>
@@ -1482,7 +1476,7 @@ async function fetchMatchDetails(matchId, matchElement) {
                     <div id="away-streaks"></div>
                 </div>
             </div>
-            <div id="total-league-table" class="loading-animation league-table" style="min-height: 200px;"></div>
+            <div id="total-league-table" class="loading-animation league-table"></div>
         `;
 
        /*  // Schedule the match time refresh
@@ -1922,10 +1916,20 @@ async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, season
             fetchTeamForm(uniqueTournamentId, seasonId, 'away'), 
         ]);
 
-        // Ensure at least total standings exist before proceeding
+        // Check and clear home standings if data is missing
+        if (!homeStandingsResponse) {
+            document.getElementById('home-league-table').innerHTML = '';
+        }
+
+        // Check and clear away standings if data is missing
+        if (!awayStandingsResponse) {
+            document.getElementById('away-league-table').innerHTML = '';
+        }
+
+        // Check and clear total standings if data is missing
         if (!totalStandingsResponse) {
-            document.getElementById('league-table').innerHTML = '<p>No standings available</p>';
-            return;
+            document.getElementById('total-league-table').innerHTML = '';
+            return; // Stop execution if total standings are missing
         }
 
         // Display team comparison info
@@ -2165,103 +2169,6 @@ async function getTeamStats(uniqueTournamentId, seasonId, matchId, teamId) {
     });
 
     return { [teamId]: teamStats }; // Return an object with teamId as the key
-}
- 
-
-async function vdisplayTeamStats(teamStats, divId) {
-
-    console.log(teamStats);
-    const div = document.getElementById(divId);
-    div.innerHTML = ''; // Clear the div
-    let teamStatsHTML = '';
-
-    // Add the header for the first section of statistics
-    teamStatsHTML += `
-        <div>
-            <span>Played</span>
-            <span>Win</span>
-            <span>Draw</span>
-            <span>Loss</span>
-            <span>W - 0</span>
-            <span>D - 0</span>
-            <span>L - 0</span>
-        </div>
-    `;
-
-    // Helper function to style percentages
-    function stylePercentage(value) {
-        return value >= 80 ? `style="color: var(--secondary-default); font-weight: 700;"` : '';
-    }
-
-    // Helper function to style conceded percentages
-    function concededPercentage(value) {
-        return value >= 80 ? `style="color: var(--loss-color); font-weight: 700;"` : '';
-    }
-
-    // Loop through teamStats and add each team's stats for the first section
-    for (const teamId in teamStats) {
-        const stats = teamStats[teamId];
-        const totalMatches = stats.wins + stats.draws + stats.losses;
-        const winsPercentage = ((stats.wins / totalMatches) * 100).toFixed(0);
-        const drawsPercentage = ((stats.draws / totalMatches) * 100).toFixed(0);
-        const lossesPercentage = ((stats.losses / totalMatches) * 100).toFixed(0);
-        const winToNilPercentage = ((stats.winToNil / totalMatches) * 100).toFixed(0);
-        const nilDrawsPercentage = ((stats.nilDraws / totalMatches) * 100).toFixed(0);
-        const lossToNilPercentage = ((stats.lossToNil / totalMatches) * 100).toFixed(0);
-
-        teamStatsHTML += `
-            <div>
-                <span>${totalMatches}</span>
-                <span>${winsPercentage}%</span>
-                <span ${stylePercentage(drawsPercentage)}>${drawsPercentage}%</span>
-                <span ${stylePercentage(lossesPercentage)}>${lossesPercentage}%</span>
-                <span ${stylePercentage(winToNilPercentage)}>${winToNilPercentage}%</span>
-                <span ${stylePercentage(nilDrawsPercentage)}>${nilDrawsPercentage}%</span>
-                <span ${stylePercentage(lossToNilPercentage)}>${lossToNilPercentage}%</span>
-            </div>
-        `;
-    }
-
-    // Add the header for the second section of statistics
-    teamStatsHTML += `
-        <div>
-            <span>GS</span>
-            <span>GC</span>
-            <span>S+0.5</span>
-            <span>C+0.5</span>
-            <span>BTTS</span>
-            <span>+1.5</span>
-            <span>+2.5</span>
-        </div>
-    `;
-
-    // Loop through teamStats and add each team's stats for the second section
-    for (const teamId in teamStats) {
-        const stats = teamStats[teamId];
-        const totalMatches = stats.wins + stats.draws + stats.losses;
-        const over05ScoredPercentage = ((stats.over05Scored / totalMatches) * 100).toFixed(0); 
-        const over05ConcededPercentage = ((stats.over05Conceded / totalMatches) * 100).toFixed(0);
-        const bttsPercentage = ((stats.btts / totalMatches) * 100).toFixed(0);
-        const over15Percentage = ((stats.over15 / totalMatches) * 100).toFixed(0);
-        const over25Percentage = ((stats.over25 / totalMatches) * 100).toFixed(0);
-        const avScored = ((stats.goalsScored / totalMatches)).toFixed(2);
-        const avConceded = ((stats.goalsConceded / totalMatches)).toFixed(2);
-
-        teamStatsHTML += `
-            <div>
-                <span>${stats.goalsScored} <sub>(${avScored})</sub></span>
-                <span>${stats.goalsConceded} <sub>(${avConceded})</sub></span>
-                <span ${stylePercentage(over05ScoredPercentage)}>${over05ScoredPercentage}%</span>
-                <span ${concededPercentage(over05ConcededPercentage)}>${over05ConcededPercentage}%</span>
-                <span ${stylePercentage(bttsPercentage)}>${bttsPercentage}%</span>
-                <span ${stylePercentage(over15Percentage)}>${over15Percentage}%</span>
-                <span ${stylePercentage(over25Percentage)}>${over25Percentage}%</span>
-            </div>
-        `;
-    }
-
-    // Insert the generated HTML into the div
-    div.insertAdjacentHTML('beforeend', teamStatsHTML);
 }
 
 function displayFallbackTeamInfo(teamId, divId, isHomeTeam) {
