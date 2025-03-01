@@ -142,6 +142,17 @@ h4 {
         font-weight: 600;
         font-size: 10px;
             border-radius: 50%;  
+    }    
+    .events-table .W, .events-table .D, .events-table .L {
+        height: inherit;
+        width: inherit; 
+        color: var(--color-greyFF);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 10px;
+            border-radius: 0;  
     }
     .W {
         background-color: var(--win-color);
@@ -922,6 +933,9 @@ sup {
     transition: color 0.2slinear 0s;
     max-width: 110px;
 }
+.events-table td:nth-child(n+3) {
+    text-align: center;
+}
 .highlight {
     color: var(--color-green2);
     font-weight: 300;
@@ -1009,10 +1023,8 @@ tr.is-team {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    max-width: 150px;
-    flex: 6 !important;
+    flex: 3 !important;
     text-align: left !important;
-    width: 100px !important;
     text-wrap: nowrap;
 }
 .teamForm {
@@ -1433,6 +1445,11 @@ async function fetchMatchDetails(matchId, matchElement) {
                 
             <div id="expected-actual"></div> 
 
+            <div class="team-events">
+                <div id="home-team-events"></div>
+                <div id="away-team-events"></div>
+            </div> 
+
             <div class="team-events"> 
                 <div id="home-league-table" class="league-table" style="min-height: 120px;"></div> 
                 <div id="away-league-table" class="league-table" style="min-height: 120px;"></div> 
@@ -1448,12 +1465,6 @@ async function fetchMatchDetails(matchId, matchElement) {
                     <div id="away-streaks"></div>
                 </div>
             </div>
-
-            <div class="team-events">
-                <div id="home-team-events"></div>
-                <div id="away-team-events"></div>
-            </div> 
-            
             <div id="total-league-table" class="loading-animation league-table" style="min-height: 200px;"></div>
         `;
 
@@ -2553,8 +2564,7 @@ async function displayTeamEvents(teamId, teamType, events) {
                     <th>1</th>
                     <th>X</th>
                     <th>2</th>
-                    <th>R</th>
-                    <th> </th>
+                    <th>R</th> 
                     <th>Pts</th>
                 </tr>
             </thead>
@@ -2570,19 +2580,19 @@ async function displayTeamEvents(teamId, teamType, events) {
 
                     if (awaySideId === parseInt(teamId)) {
                         if (awayScore > homeScore) {
-                            recentForm += '<span class="W">W</span>';
+                            recentForm += 'W';
                         } else if (awayScore === homeScore) {
-                            recentForm += '<span class="D">D</span>';
+                            recentForm += 'D';
                         } else {
-                            recentForm += '<span class="L">L</span>';
+                            recentForm += 'L';
                         }
                     } else if (homeSideId === parseInt(teamId)) {
                         if (homeScore > awayScore) {
-                            recentForm += '<span class="W">W</span>';
+                            recentForm += 'W';
                         } else if (homeScore === awayScore) {
-                            recentForm += '<span class="D">D</span>';
+                            recentForm += 'D';
                         } else {
-                            recentForm += '<span class="L">L</span>';
+                            recentForm += 'L';
                         }
                     }
 
@@ -2600,8 +2610,7 @@ async function displayTeamEvents(teamId, teamType, events) {
                                 ${event.odds ? fractionalToDecimal(event.odds[2].fractionalValue) : '-'}
                             </td>
                             <td>${event.eventDescription}</td>
-                            <td>${recentForm}</td>
-                            <td>${event.points}</td>
+                            <td class="${recentForm}">${event.points}</td>
                         </tr>
                     `;
                 }).join('')}
@@ -2729,7 +2738,7 @@ function buildTableRows(standingsData, standingsType, tournamentId, seasonId, ma
                 <td>${position}</td>
                 <td class="team-name-column">
                     <img src="https://api.sofascore.app/api/v1/team/${team.id}/image" width="16" height="16" alt="${team.shortName}" loading="lazy">
-                    <span class="team-name">${team.shortName}</span>
+                ${standingsType.toLowerCase() !== 'total' ? `<span class="team-name">${team.nameCode}</span>` : `<span class="team-name">${team.shortName}</span>`}
                 </td>
                 <td class="gamesPlayed${liveMatchWinnerCodeColumn ? ` live-match-${liveMatchWinnerCodeColumn}` : ''}">${totalGames}</td>
                 <td>${wins}</td>
