@@ -133,8 +133,8 @@ h4 {
  }
         
     .W, .D, .L {
-        height: 16px;
-        width: 16px; 
+        height: 10px;
+        width: 10px;
         color: var(--color-black1);
         display: flex;
         align-items: center;
@@ -1892,7 +1892,7 @@ async function fetchTeamForm(uniqueTournamentId, seasonId, type) {
                     else if (event.winnerCode === 2) formResult = 'W';
                     else formResult = 'D';
                 }
-                return `<span class="${formResult}">${formResult}</span>`;
+                return `<span class="${formResult}"></span>`;
             }).join(' ');
         }
     }
