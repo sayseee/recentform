@@ -1154,6 +1154,54 @@ tr.is-team {
     border-radius: 5px;
     padding: 5px;
     }
+
+    #match-odds ul:first-child {
+    font-size: 13px;
+    color: var(--color-greyFF);
+    font-weight: 500;
+}
+#match-odds ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 13px;
+    line-height: 15px;
+}
+
+#match-odds li {
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    list-style: none;
+    text-align: center;
+    height: 25px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 13px;
+    line-height: 15px;
+    justify-content: center;
+}
+.ParticipantFixtureOdd_Odds {
+    color: var(--draw-color);
+    padding-left: 5px;
+    flex: 0 0 auto;
+}
+.prediction {
+    display:flex;
+    flex-direction: column;
+    margin: 10px;
+    justify-content: center;
+    align-items: center;
+}
+.prediction ul {
+    display:flex;
+    flex-direction: column;
+    padding: 5px;
+    margin: 0;
+}
     </style>
 </head>
 <body>
@@ -1455,7 +1503,8 @@ async function fetchMatchDetails(matchId, matchElement) {
                     <span>${awayTeam.nameCode}</span>
                 </div>
             </div>
-                
+                 
+            <div id="match-odds"></div> 
             <div id="expected-actual"></div> 
 
             <div class="team-events">
@@ -2459,7 +2508,7 @@ async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, matchI
         if (performanceData && performanceData.events && performanceData.points) {
             // Filter events for the given season and remove the one matching matchId
             const eventsWithWinnerCodes = performanceData.events
-                .filter(event => event.season.id === seasonId && event.id !== matchId);
+                .filter(event => event.season.id === seasonId && Number(event.id) !== Number(matchId));
  
             
             if (teamType === 'home') {
@@ -2808,56 +2857,296 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
             setInterval(refreshTable, interval);
         }
 
-
-        async function displayOddsForMatch(matchId, homeTeamName, awayTeamName, homeTeamId, awayTeamId) {
+        async function displayOddsForMatch(matchId, homeTeamName, awayTeamName, homeTeamId, awayTeamId, seasonId) {
     const oddsDiv = document.getElementById('match-odds');
     if (!oddsDiv) {
         console.error('No element found for odds display: match-odds');
         return;
     }
-
+console.log(matchId);
     const odds = await fetchOddsForMatch(matchId);
-    //console.log(odds);
-
     if (!odds || !Array.isArray(odds)) {
         oddsDiv.innerHTML = '<p>No odds available for this match.</p>';
         return;
     }
 
-    // Create and append headers list
-    const headersList = document.createElement('ul');
+    // Fetch previous match events and their odds for both teams using performance API
+    const homeTeamEvents = await fetchAndDisplayTeamPerformance(homeTeamId, 'home', seasonId, matchId);
+    const awayTeamEvents = await fetchAndDisplayTeamPerformance(awayTeamId, 'away', seasonId, matchId);
 
-    // Create and append home team name
-    const homeTeamItem = document.createElement('li');
-    homeTeamItem.textContent = homeTeamName;
-    headersList.appendChild(homeTeamItem);
+    // Check if events arrays are available
+    if (!homeTeamEvents || !Array.isArray(homeTeamEvents.events)) {
+        console.warn('No valid events found for home team');
+        return;
+    }
+    if (!awayTeamEvents || !Array.isArray(awayTeamEvents.events)) {
+        console.warn('No valid events found for away team');
+        return;
+    }
 
-    // Create and append "Match Odds" header
-    const matchOddsHeader = document.createElement('li');
-    const header = document.createElement('h4');
-    header.textContent = ' ';
-    matchOddsHeader.appendChild(header);
-    headersList.appendChild(matchOddsHeader);
+    // Extract previous home and away odds (limit to last 5 matches)
+    const previousHomeOdds = await extractPreviousOdds(homeTeamId, 'home', homeTeamEvents.events.reverse(), matchId);
+    const previousAwayOdds = await extractPreviousOdds(awayTeamId, 'away', awayTeamEvents.events.reverse(), matchId);
 
-    // Create and append away team name
-    const awayTeamItem = document.createElement('li');
-    awayTeamItem.textContent = awayTeamName;
-    headersList.appendChild(awayTeamItem);
 
-    // Create and append odds list
-    const oddsList = document.createElement('ul');
+    console.log(`Previous home odds:`, previousHomeOdds);
+    console.log(`Previous away odds:`, previousAwayOdds);
+    // Current home and away odds
+    const currentHomeOdds = odds[0] ? fractionalToDecimal(odds[0].fractionalValue) : null;
+    const currentAwayOdds = odds[2] ? fractionalToDecimal(odds[2].fractionalValue) : null;
 
-    odds.forEach(choice => {
-        const choiceItem = document.createElement('li');
-        choiceItem.innerHTML = `${choice.name} <span class="ParticipantFixtureOdd_Odds">${fractionalToDecimal(choice.fractionalValue)}</span>`;
-        oddsList.appendChild(choiceItem);
+    console.log(`Current home odds:`, currentHomeOdds);
+    console.log(`Current away odds:`, currentAwayOdds);
+
+    // Prepare data for prediction model (limit to last 5 matches)
+    const pastMatches = preparePastMatchesData(previousHomeOdds, previousAwayOdds, homeTeamName, awayTeamName, matchId);
+
+    // Apply the prediction model
+    const prediction = analyzeMatch(homeTeamName, awayTeamName, pastMatches, currentHomeOdds, currentAwayOdds);
+
+    // Display odds
+    oddsDiv.innerHTML = `
+        <h4>Match Odds</h4>
+        <ul>
+            ${odds.map(choice => `<li>${choice.name}: <span class="ParticipantFixtureOdd_Odds">${fractionalToDecimal(choice.fractionalValue)}</span></li>`).join('')}
+        </ul>
+        <div class="prediction">
+        <p><strong>Prediction:</strong> ${prediction.prediction}</p>
+        <p><strong>Reasons:</strong></p>
+            <ul>
+                ${prediction.reasons.map(reason => `<li>${reason}</li>`).join('')}
+            </ul>
+        </div>
+    `;
+}
+
+async function extractPreviousOdds(teamId, teamType, events, currentMatchId) {
+    if (!events || events.length === 0) {
+        console.error(`No events found for ${teamType} team`);
+        return [];
+    }
+
+    // Exclude the current match first before slicing or reversing the events array
+    const filteredEvents = events.filter(event => Number(event.id) !== Number(currentMatchId))
+                                .slice(0, 5);
+
+    // Fetch odds for each past event (limit to last 5 matches)
+    const eventsWithOdds = await Promise.all(filteredEvents.map(async event => {
+        const odds = await fetchOddsForMatch(event.id);
+        return { ...event, odds };
+    }));
+
+    // Store previous odds
+    const previousOdds = eventsWithOdds.map(event => {
+        if (!event.odds || event.odds.length < 3) return null; // Ensure odds array is long enough
+
+        return {
+            matchId: event.id,
+            homeTeam: event.homeTeam.name,
+            awayTeam: event.awayTeam.name,
+            winnerCode: event.winnerCode,
+            odds: {
+                homeWin: fractionalToDecimal(event.odds[0].fractionalValue),
+                draw: fractionalToDecimal(event.odds[1].fractionalValue),
+                awayWin: fractionalToDecimal(event.odds[2].fractionalValue)
+            }
+        };
+    }).filter(Boolean); // Remove null values
+
+    console.log(previousOdds);
+    return previousOdds;
+}
+
+
+function preparePastMatchesData(previousHomeOdds, previousAwayOdds, homeTeamName, awayTeamName, currentMatchId) {
+    const pastMatches = [];
+
+    // Process home team data (limit to last 5 matches)
+    previousHomeOdds.forEach(match => {
+        // Skip the current match
+        if (Number(match.id) === Number(currentMatchId)) {
+            return;  // Skip this match
+        }
+        const isHomeTeam = match.homeTeam === homeTeamName;
+        const result = determineResult(match.winnerCode, isHomeTeam);
+
+        pastMatches.push({
+            team: homeTeamName,
+            result: result,
+            odds: match.odds.homeWin,
+            opponentStrength: 50 // Placeholder, adjust based on actual data
+        });
     });
 
-    oddsDiv.innerHTML = ''; // Clear previous content
-    oddsDiv.appendChild(headersList);
-    oddsDiv.appendChild(oddsList);
- 
+    // Process away team data (limit to last 5 matches)
+    previousAwayOdds.forEach(match => {
+        // Skip the current match
+        if (Number(match.id) !== Number(currentMatchId)) {
+            return;  // Skip this match
+        }
+        const isAwayTeam = match.awayTeam === awayTeamName;
+        const result = determineResult(match.winnerCode, !isAwayTeam);
+
+        pastMatches.push({
+            team: awayTeamName,
+            result: result,
+            odds: match.odds.awayWin,
+            opponentStrength: 50 // Placeholder, adjust based on actual data
+        });
+    });
+
+    console.log(`Past Matches:`, pastMatches);
+    return pastMatches;
 }
+
+
+function determineResult(winnerCode, isHomeTeam) {
+    if (winnerCode === 1) {
+        return isHomeTeam ? "win" : "loss"; // Home team won
+    } else if (winnerCode === 2) {
+        return isHomeTeam ? "loss" : "win"; // Away team won
+    } else if (winnerCode === 3) {
+        return "draw"; // Draw
+    }
+    return "unknown"; // Fallback
+}
+
+function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentAwayOdds) {
+    function evaluatePerformance(team) {
+        let totalMatches = 0, wins = 0, losses = 0, draws = 0, competitiveWins = 0;
+        let performanceAgainstWeaker = 0, toughMatchHandling = 0, surpriseWins = 0, badLosses = 0;
+        let recentForm = []; // Track results of the last 5 matches
+        let historicalOdds = []; // Track historical odds for the team
+        let heavyFavoriteLosses = 0; // Track losses as heavy favorites (odds < 1.50)
+
+        pastMatches.forEach(match => {
+            if (match.team === team) {
+                totalMatches++;
+                let isWin = match.result === "win";
+                let isLoss = match.result === "loss";
+                let isDraw = match.result === "draw";
+                let isCompetitive = match.odds < 2.50;
+                let isWeakerOpponent = match.opponentStrength < 40; // Example threshold
+                let isHeavyUnderdogWin = isWin && match.odds > 4.00;
+                let isHeavyFavoriteLoss = isLoss && match.odds < 1.50; // Heavy favorite loss
+
+                if (isWin) wins++;
+                if (isLoss) losses++;
+                if (isDraw) draws++;
+                if (isWin && isCompetitive) competitiveWins++;
+                if (isWin && isWeakerOpponent) performanceAgainstWeaker++;
+                if (isWin && match.opponentStrength > 60) toughMatchHandling++;
+                if (isHeavyUnderdogWin) surpriseWins++;
+                if (isHeavyFavoriteLoss) heavyFavoriteLosses++;
+
+                // Track recent form (last 5 matches)
+                if (recentForm.length < 5) {
+                    recentForm.push(match.result);
+                }
+
+                // Track historical odds
+                historicalOdds.push(match.odds);
+            }
+        });
+
+        // Calculate recent form (percentage of wins in the last 5 matches)
+        const recentWinRate = recentForm.filter(result => result === "win").length / recentForm.length;
+
+        // Calculate average historical odds
+        const averageHistoricalOdds = historicalOdds.reduce((sum, odds) => sum + odds, 0) / historicalOdds.length;
+
+        return {
+            winRate: wins / totalMatches,
+            lossRate: losses / totalMatches,
+            drawRate: draws / totalMatches,
+            competitiveWinRate: competitiveWins / totalMatches,
+            weakTeamWinRate: performanceAgainstWeaker / totalMatches,
+            toughMatchHandlingRate: toughMatchHandling / totalMatches,
+            surpriseWinRate: surpriseWins / totalMatches, // Wins when odds were high
+            badLossRate: heavyFavoriteLosses / totalMatches, // Losses as heavy favorites
+            recentWinRate: recentWinRate || 0, // Recent form (last 5 matches)
+            averageHistoricalOdds: averageHistoricalOdds || 0 // Average historical odds
+        };
+    }
+
+    let homeStats = evaluatePerformance(homeTeam);
+    let awayStats = evaluatePerformance(awayTeam);
+
+    // Calculate weighted scores for home and away teams
+    const homeScore =
+        homeStats.winRate * 0.3 + // Win rate (30%)
+        homeStats.recentWinRate * 0.25 + // Recent form (25%)
+        homeStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
+        (currentHomeOdds < homeStats.averageHistoricalOdds ? 0.15 : 0) + // Odds mispricing (15%)
+        homeStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
+        homeStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
+
+    const awayScore =
+        awayStats.winRate * 0.3 + // Win rate (30%)
+        awayStats.recentWinRate * 0.25 + // Recent form (25%)
+        awayStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
+        (currentAwayOdds > awayStats.averageHistoricalOdds ? 0.15 : 0) + // Odds mispricing (15%)
+        awayStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
+        awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
+
+    // Determine prediction based on weighted scores
+    let prediction = awayScore > homeScore ? "Away Win" : "Home Win";
+    let reasons = [];
+
+    // Add reasoning based on weighted factors
+    if (homeStats.winRate > awayStats.winRate) {
+        reasons.push(`Home Win: ${homeTeam} has a higher win rate.`);
+    }
+    if (homeStats.recentWinRate > awayStats.recentWinRate) {
+        reasons.push(`Home Win: ${homeTeam} is in better recent form.`);
+    }
+    if (homeStats.competitiveWinRate > awayStats.competitiveWinRate) {
+        reasons.push(`Home Win: ${homeTeam} performs better in competitive matches.`);
+    }
+    if (currentHomeOdds < homeStats.averageHistoricalOdds) {
+        reasons.push(`Home Win: ${homeTeam}'s current odds are lower than their historical average, indicating they may be undervalued.`);
+    }
+    if (homeStats.surpriseWinRate > awayStats.surpriseWinRate) {
+        reasons.push(`Home Win: ${homeTeam} has a history of winning as underdogs.`);
+    }
+    if (homeStats.badLossRate > 0.2) {
+        reasons.push(`Warning: ${homeTeam} has a history of underperforming as heavy favorites.`);
+    }
+
+    if (awayStats.winRate > homeStats.winRate) {
+        reasons.push(`Away Win: ${awayTeam} has a higher win rate.`);
+    }
+    if (awayStats.recentWinRate > homeStats.recentWinRate) {
+        reasons.push(`Away Win: ${awayTeam} is in better recent form.`);
+    }
+    if (awayStats.competitiveWinRate > homeStats.competitiveWinRate) {
+        reasons.push(`Away Win: ${awayTeam} performs better in competitive matches.`);
+    }
+    if (currentAwayOdds > awayStats.averageHistoricalOdds) {
+        reasons.push(`Away Win: ${awayTeam}'s current odds are higher than their historical average, indicating they may be undervalued.`);
+    }
+    if (awayStats.surpriseWinRate > homeStats.surpriseWinRate) {
+        reasons.push(`Away Win: ${awayTeam} has a history of winning as underdogs.`);
+    }
+    if (awayStats.badLossRate > 0.2) {
+        reasons.push(`Warning: ${awayTeam} has a history of underperforming as heavy favorites.`);
+    }
+
+    // Final decision
+    if (reasons.length === 0) {
+        reasons.push("Prediction is based on overall weighted scores.");
+    }
+
+    return {
+        homeStats,
+        awayStats,
+        prediction,
+        reasons,
+        homeScore: homeScore.toFixed(2),
+        awayScore: awayScore.toFixed(2)
+    };
+}
+
 // Function to fetch odds for a match
 async function fetchOddsForMatch(matchId) {
     try {
@@ -2869,7 +3158,6 @@ async function fetchOddsForMatch(matchId) {
         return null;
     }
 }
-
 const createMatchElement = async (match, odds) => {
     const matchElement = document.createElement('div');
     matchElement.classList.add('match');
