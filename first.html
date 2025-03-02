@@ -1160,6 +1160,11 @@ tr.is-team {
     color: var(--color-greyFF);
     font-weight: 500;
 }
+#match-odds {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
 #match-odds ul {
     margin: 0;
     padding: 0;
@@ -1190,11 +1195,16 @@ tr.is-team {
     flex: 0 0 auto;
 }
 .prediction {
-    display:flex;
+    display: flex;
     flex-direction: column;
-    margin: 10px;
     justify-content: center;
     align-items: center;
+    background: var(--color-green3);
+    padding: 10px 10px 15px;
+    border-radius: 5px;
+    gap: 10px;
+    color: var(--color-white60p);
+    font-size: 11px;
 }
 .prediction ul {
     display:flex;
