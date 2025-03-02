@@ -2903,15 +2903,9 @@ console.log(matchId);
     const previousHomeOdds = await extractPreviousOdds(homeTeamId, 'home', homeTeamEvents.events.reverse(), matchId);
     const previousAwayOdds = await extractPreviousOdds(awayTeamId, 'away', awayTeamEvents.events.reverse(), matchId);
 
-
-    console.log(`Previous home odds:`, previousHomeOdds);
-    console.log(`Previous away odds:`, previousAwayOdds);
     // Current home and away odds
     const currentHomeOdds = odds[0] ? fractionalToDecimal(odds[0].fractionalValue) : null;
     const currentAwayOdds = odds[2] ? fractionalToDecimal(odds[2].fractionalValue) : null;
-
-    console.log(`Current home odds:`, currentHomeOdds);
-    console.log(`Current away odds:`, currentAwayOdds);
 
     // Prepare data for prediction model (limit to last 5 matches)
     const pastMatches = preparePastMatchesData(previousHomeOdds, previousAwayOdds, homeTeamName, awayTeamName, matchId);
@@ -3110,38 +3104,38 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
 
     // Add reasoning based on weighted factors
     if (homeStats.winRate > awayStats.winRate) {
-        reasons.push(`Home Win: ${homeTeam} has a higher win rate.`);
+        reasons.push(`${homeTeam} has a higher win rate.`);
     }
     if (homeStats.recentWinRate > awayStats.recentWinRate) {
-        reasons.push(`Home Win: ${homeTeam} is in better recent form.`);
+        reasons.push(`${homeTeam} is in better recent form.`);
     }
     if (homeStats.competitiveWinRate > awayStats.competitiveWinRate) {
-        reasons.push(`Home Win: ${homeTeam} performs better in competitive matches.`);
+        reasons.push(`${homeTeam} performs better in competitive matches.`);
     }
     if (currentHomeOdds < homeStats.averageHistoricalOdds) {
-        reasons.push(`Home Win: ${homeTeam}'s current odds are lower than their historical average, indicating they may be undervalued.`);
+        reasons.push(`${homeTeam}'s current odds are lower than their historical average, indicating they may be undervalued.`);
     }
     if (homeStats.surpriseWinRate > awayStats.surpriseWinRate) {
-        reasons.push(`Home Win: ${homeTeam} has a history of winning as underdogs.`);
+        reasons.push(`${homeTeam} has a history of winning as underdogs.`);
     }
     if (homeStats.badLossRate > 0.2) {
         reasons.push(`Warning: ${homeTeam} has a history of underperforming as heavy favorites.`);
     }
 
     if (awayStats.winRate > homeStats.winRate) {
-        reasons.push(`Away Win: ${awayTeam} has a higher win rate.`);
+        reasons.push(`${awayTeam} has a higher win rate.`);
     }
     if (awayStats.recentWinRate > homeStats.recentWinRate) {
-        reasons.push(`Away Win: ${awayTeam} is in better recent form.`);
+        reasons.push(`${awayTeam} is in better recent form.`);
     }
     if (awayStats.competitiveWinRate > homeStats.competitiveWinRate) {
-        reasons.push(`Away Win: ${awayTeam} performs better in competitive matches.`);
+        reasons.push(`${awayTeam} performs better in competitive matches.`);
     }
     if (currentAwayOdds > awayStats.averageHistoricalOdds) {
-        reasons.push(`Away Win: ${awayTeam}'s current odds are higher than their historical average, indicating they may be undervalued.`);
+        reasons.push(`${awayTeam}'s current odds are higher than their historical average, indicating they may be undervalued.`);
     }
     if (awayStats.surpriseWinRate > homeStats.surpriseWinRate) {
-        reasons.push(`Away Win: ${awayTeam} has a history of winning as underdogs.`);
+        reasons.push(`${awayTeam} has a history of winning as underdogs.`);
     }
     if (awayStats.badLossRate > 0.2) {
         reasons.push(`Warning: ${awayTeam} has a history of underperforming as heavy favorites.`);
