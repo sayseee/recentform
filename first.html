@@ -1165,17 +1165,16 @@ tr.is-team {
     flex-direction: column;
     padding: 10px;
 }
-#match-odds ul {
+#match-odds ul.game-odds {
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: row; 
     font-size: 13px;
     line-height: 15px;
 }
 
-#match-odds li {
+#match-odds ul.game-odds li {
     margin: 0;
     padding: 0;
     flex: 1;
@@ -1195,9 +1194,7 @@ tr.is-team {
 }
 .prediction {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column; 
     background: var(--color-green3);
     padding: 10px 10px 15px;
     border-radius: 5px;
@@ -1205,20 +1202,30 @@ tr.is-team {
     color: var(--color-white60p);
     font-size: 11px;
 }
-.prediction ul { 
-    flex-direction: column !important; 
-    justify-content: flex-start !important;
-    align-items: flex-start !important;
+
+.prediction ul {
+    display: flex;
+    flex-direction: column !important;
+    justify-content: center;
+    gap: 10px;
+}
+.prediction h5  {
+        color: var(--color-greyFF);
+        font-weight: 600;
+        margin: 0;
+        padding: 0;
+        margin-bottom: 10px;
+        font-size: 12px;
 }
 .prediction ul li {
     font-size: 11px !important;
     position: relative;
-    padding-left: 25px !important;
-    padding-bottom: 5px !important;
+    padding-left: 15px !important; 
+    list-style: none;
 }
 .prediction ul li:before {
     position: absolute;
-    top: 58%;
+    top: 50%;
     left: 0;
     transform: translateY(-50%);
     content: " ";
@@ -1617,27 +1624,25 @@ async function fetchMatchDetails(matchId, matchElement) {
     }
 }
 
- 
 // Function to calculate H2H stats for the last 3 years
 function calculateH2HStats(events, homeTeamId, awayTeamId) {
     let homeWins = 0, awayWins = 0, draws = 0;
 
-    const twoYearsAgo = new Date();
-    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 3);
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setUTCFullYear(threeYearsAgo.getUTCFullYear() - 3);
+    threeYearsAgo.setUTCHours(0, 0, 0, 0); // Ensure time is set to midnight UTC
 
     events.forEach(event => {
         const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
-        if (eventDate >= twoYearsAgo) {
+        if (eventDate >= threeYearsAgo) {
             if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
                 const homeScore = event.homeScore?.current ?? 0;
                 const awayScore = event.awayScore?.current ?? 0; 
                 if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
-                    // Home team is homeTeamId, Away team is awayTeamId
                     if (homeScore > awayScore) homeWins++;
                     else if (homeScore < awayScore) awayWins++;
                     else draws++;
                 } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
-                    // Home team is awayTeamId, Away team is homeTeamId
                     if (homeScore > awayScore) awayWins++;
                     else if (homeScore < awayScore) homeWins++;
                     else draws++;
@@ -1649,25 +1654,24 @@ function calculateH2HStats(events, homeTeamId, awayTeamId) {
     return `<small>${homeWins}</small><small>${draws}</small><small>${awayWins}</small>`;
 }
 
-// Function to calculate H2H stats for the last 3 years
+// Function to calculate H2H goal stats for the last 3 years
 function h2HGoalStats(events, homeTeamId, awayTeamId) {
     let homeGoals = 0, awayGoals = 0;
 
-    const twoYearsAgo = new Date();
-    twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 3);
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setUTCFullYear(threeYearsAgo.getUTCFullYear() - 3);
+    threeYearsAgo.setUTCHours(0, 0, 0, 0); // Ensure time is set to midnight UTC
 
     events.forEach(event => {
         const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
-        if (eventDate >= twoYearsAgo) {
+        if (eventDate >= threeYearsAgo) {
             if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
                 const homeScore = event.homeScore?.current ?? 0;
                 const awayScore = event.awayScore?.current ?? 0; 
                 if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
-                    // Home team is homeTeamId, Away team is awayTeamId
                     homeGoals += homeScore;
                     awayGoals += awayScore; 
                 } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
-                    // Home team is awayTeamId, Away team is homeTeamId
                     homeGoals += awayScore;
                     awayGoals += homeScore; 
                 }
@@ -1675,7 +1679,7 @@ function h2HGoalStats(events, homeTeamId, awayTeamId) {
         }
     });
 
-    return `<span>${homeGoals}</span> <span>${awayGoals}</span> `;
+    return `<span>${homeGoals}</span> <span>${awayGoals}</span>`;
 }
 
 const startLiveTimer = (event) => {
@@ -2926,12 +2930,11 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
             // Display odds
             oddsDiv.innerHTML = `
                 <h4>Match Odds</h4>
-                <ul>
+                <ul class="game-odds">
                     ${odds.map(choice => `<li>${choice.name}: <span class="ParticipantFixtureOdd_Odds">${fractionalToDecimal(choice.fractionalValue)}</span></li>`).join('')}
                 </ul>
-                <div class="prediction">
-                <p><strong>Prediction:</strong> ${prediction.prediction}</p>
-                <p><strong>Reasons:</strong></p>
+                <div class="prediction"> 
+                <h5><strong>Bet Bullets</strong></h5>
                     <ul>
                         ${prediction.reasons.map(reason => `<li>${reason}</li>`).join('')}
                     </ul>
@@ -3104,11 +3107,7 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
         awayStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
         (currentAwayOdds > awayStats.averageHistoricalOdds ? 0.15 : 0) + // Odds mispricing (15%)
         awayStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
-        awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
-        console.log(`Home Teams Historical Odds:`, homeStats.historicalOdds);
-        console.log(`Away Teams Historical Odds:`, awayStats.historicalOdds);
-        console.log(`Home Teams averageHistorical Odds:`, homeStats.averageHistoricalOdds);
-        console.log(`Away Teams averageHistorical Odds:`, awayStats.averageHistoricalOdds);
+        awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%) 
     // Determine prediction based on weighted scores
     let prediction = awayScore > homeScore ? "Away Win" : "Home Win";
     let reasons = [];
