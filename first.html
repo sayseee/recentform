@@ -3065,12 +3065,17 @@ function determineResult(winnerCode, isHomeTeam) {
 }
 
 function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentAwayOdds) {
-    function evaluatePerformance(team) {
+    function evaluatePerformance(team, currentOdds) {
         let totalMatches = 0, wins = 0, losses = 0, draws = 0, competitiveWins = 0;
         let performanceAgainstWeaker = 0, toughMatchHandling = 0, surpriseWins = 0, badLosses = 0;
         let recentForm = []; // Track results of the last 5 matches
         let historicalOdds = []; // Track historical odds for the team
         let heavyFavoriteLosses = 0; // Track losses as heavy favorites (odds < 1.50)
+
+        // Odds-specific performance tracking
+        let lowOddsMatches = []; // Odds < 1.99
+        let midOddsMatches = []; // Odds between 2.00 and 3.20
+        let highOddsMatches = []; // Odds > 3.40
 
         pastMatches.forEach(match => {
             if (match.team === team) {
@@ -3097,16 +3102,47 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
                     recentForm.push(match.result);
                 }
 
-                // Track historical odds (ensure they are numbers)
+                // Track historical odds
                 historicalOdds.push(Number(match.odds));
+
+                // Categorize matches by odds range
+                if (match.odds < 1.99) {
+                    lowOddsMatches.push(match);
+                } else if (match.odds >= 2.00 && match.odds <= 3.20) {
+                    midOddsMatches.push(match);
+                } else if (match.odds > 3.40) {
+                    highOddsMatches.push(match);
+                }
             }
         });
 
         // Calculate recent form (percentage of wins in the last 5 matches)
         const recentWinRate = recentForm.filter(result => result === "win").length / recentForm.length;
+
         // Calculate average historical odds
         const averageHistoricalOdds = historicalOdds.reduce((sum, odds) => sum + odds, 0) / historicalOdds.length;
-        console.log(averageHistoricalOdds);
+
+        // Determine if current odds are the lowest or highest in their range
+        const isCurrentOddsLowest = (rangeMatches, currentOdds) => {
+            if (rangeMatches.length === 0) return false;
+            return currentOdds < Math.min(...rangeMatches.map(m => m.odds));
+        };
+
+        const isCurrentOddsHighest = (rangeMatches, currentOdds) => {
+            if (rangeMatches.length === 0) return false;
+            return currentOdds > Math.max(...rangeMatches.map(m => m.odds));
+        };
+
+        // Determine which range the current odds fall into
+        let currentRangeMatches;
+        if (currentOdds < 1.99) {
+            currentRangeMatches = lowOddsMatches;
+        } else if (currentOdds >= 2.00 && currentOdds <= 3.20) {
+            currentRangeMatches = midOddsMatches;
+        } else if (currentOdds > 3.40) {
+            currentRangeMatches = highOddsMatches;
+        }
+
         return {
             winRate: wins / totalMatches,
             lossRate: losses / totalMatches,
@@ -3114,23 +3150,26 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
             competitiveWinRate: competitiveWins / totalMatches,
             weakTeamWinRate: performanceAgainstWeaker / totalMatches,
             toughMatchHandlingRate: toughMatchHandling / totalMatches,
-            surpriseWinRate: surpriseWins / totalMatches, // Wins when odds were high
-            badLossRate: heavyFavoriteLosses / totalMatches, // Losses as heavy favorites
-            recentWinRate: recentWinRate || 0, // Recent form (last 5 matches)
-            historicalOdds: historicalOdds || 0, // Average historical odds
-            averageHistoricalOdds: averageHistoricalOdds || 0 // Average historical odds
+            surpriseWinRate: surpriseWins / totalMatches,
+            badLossRate: heavyFavoriteLosses / totalMatches,
+            recentWinRate: recentWinRate || 0,
+            historicalOdds: historicalOdds || 0,
+            averageHistoricalOdds: averageHistoricalOdds || 0,
+            isCurrentOddsLowest: isCurrentOddsLowest(currentRangeMatches, currentOdds),
+            isCurrentOddsHighest: isCurrentOddsHighest(currentRangeMatches, currentOdds)
         };
     }
 
-    let homeStats = evaluatePerformance(homeTeam);
-    let awayStats = evaluatePerformance(awayTeam);
+    // Evaluate performance for home and away teams
+    const homeStats = evaluatePerformance(homeTeam, currentHomeOdds);
+    const awayStats = evaluatePerformance(awayTeam, currentAwayOdds);
 
-    // Calculate weighted scores for home and away teams
+    // Calculate weighted scores
     const homeScore =
         homeStats.winRate * 0.3 + // Win rate (30%)
         homeStats.recentWinRate * 0.25 + // Recent form (25%)
         homeStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
-        (currentHomeOdds < homeStats.averageHistoricalOdds ? 0.15 : 0) + // Odds mispricing (15%)
+        (homeStats.isCurrentOddsLowest ? 0.15 : 0) + // Bonus for lowest odds in range (15%)
         homeStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
         homeStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
 
@@ -3138,12 +3177,13 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
         awayStats.winRate * 0.3 + // Win rate (30%)
         awayStats.recentWinRate * 0.25 + // Recent form (25%)
         awayStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
-        (currentAwayOdds > awayStats.averageHistoricalOdds ? 0.15 : 0) + // Odds mispricing (15%)
+        (awayStats.isCurrentOddsLowest ? 0.15 : 0) + // Bonus for lowest odds in range (15%)
         awayStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
-        awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%) 
-    // Determine prediction based on weighted scores
-    let prediction = awayScore > homeScore ? "Away Win" : "Home Win";
-    let reasons = [];
+        awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
+
+    // Determine prediction
+    const prediction = awayScore > homeScore ? "Away Win" : "Home Win";
+    const reasons = [];
 
     // Add reasoning based on weighted factors
     if (homeStats.winRate > awayStats.winRate) {
@@ -3155,8 +3195,8 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
     if (homeStats.competitiveWinRate > awayStats.competitiveWinRate) {
         reasons.push(`${homeTeam} performs better in competitive matches.`);
     }
-    if (currentHomeOdds < homeStats.averageHistoricalOdds) {
-        reasons.push(`${homeTeam}'s current odds are lower than their historical average, indicating they may be undervalued.`);
+    if (homeStats.isCurrentOddsLowest) {
+        reasons.push(`${homeTeam}'s current odds are the lowest in their range, indicating potential value.`);
     }
     if (homeStats.surpriseWinRate > awayStats.surpriseWinRate) {
         reasons.push(`${homeTeam} has a history of winning as underdogs.`);
@@ -3174,8 +3214,8 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
     if (awayStats.competitiveWinRate > homeStats.competitiveWinRate) {
         reasons.push(`${awayTeam} performs better in competitive matches.`);
     }
-    if (currentAwayOdds > awayStats.averageHistoricalOdds) {
-        reasons.push(`${awayTeam}'s current odds are higher than their historical average, indicating they may be undervalued.`);
+    if (awayStats.isCurrentOddsLowest) {
+        reasons.push(`${awayTeam}'s current odds are the lowest in their range, indicating potential value.`);
     }
     if (awayStats.surpriseWinRate > homeStats.surpriseWinRate) {
         reasons.push(`${awayTeam} has a history of winning as underdogs.`);
