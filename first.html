@@ -366,6 +366,9 @@ h4 {
 .categoryText span:last-child {
     text-transform: uppercase;
     font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 .tournament {
     display: flex;
@@ -2414,12 +2417,21 @@ async function updateMatches(matchData, oddsData) {
         const categoryName = match.tournament.category.name;
         const uniqueTournamentName = match.tournament.uniqueTournament.name;
         const priority = match.tournament.priority || 0; // Default to 0 if priority is not defined
+        
+        // Determine the category image URL
+        const categoryAlpha2 = match.tournament?.category?.country?.alpha2;
+        const categoryFlag = match.tournament?.category?.flag;
+        const staticImageUrl = 'https://www.sofascore.com/static/images'; // Base URL for static images
+        const categoryImageUrl = categoryAlpha2
+            ? `${staticImageUrl}/flags/${categoryAlpha2.toLowerCase()}.png`
+            : `${staticImageUrl}/flags/${categoryFlag}.png`;
 
         if (!matchMap[uniqueTournamentId]) {
             matchMap[uniqueTournamentId] = { 
                 categoryName: categoryName, 
                 uniqueTournamentName: uniqueTournamentName, 
                 priority: priority,
+                categoryImageUrl: categoryImageUrl, // Add category image URL
                 matches: [] 
             };
         }
@@ -2457,7 +2469,7 @@ async function updateMatches(matchData, oddsData) {
                 <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy">
                 <div class="categoryText">
                     <span>${tournament.uniqueTournamentName}</span>
-                    <span>${tournament.categoryName}</span>
+                    <span><img class="tourn" src="${tournament.categoryImageUrl}" height="14" loading="lazy">${tournament.categoryName}</span>
                 </div>
             </div>
         `;
