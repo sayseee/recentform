@@ -439,7 +439,7 @@ h4 {
 
 
 .odds span {
-    padding: 4px;
+    padding: 0 4px;
     flex: 1;
     background-color: rgb(17, 22, 28);
     min-height: 18px;
@@ -3237,19 +3237,19 @@ const createMatchElement = async (match, odds) => {
         <div class="odds">
            <div class="${homeOddsChange}">
                 <span>${homeOdds}</span>
-                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : 'inline'};">
+                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : ''};">
                     ${homeOddsNew}
                 </span>
             </div>
             <div class="${drawOddsChange}">
                 <span>${drawOdds}</span>
-                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : 'inline'};">
+                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : ''};">
                     ${drawOddsNew}
                 </span>
             </div>
             <div class="${awayOddsChange}">
                 <span>${awayOdds}</span>
-                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : 'inline'};">
+                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : ''};">
                     ${awayOddsNew}
                 </span>
             </div>
