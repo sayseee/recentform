@@ -2392,6 +2392,96 @@ function displayTeamInfo(teamId, divId, standingsData, isHomeTeam) {
 }
 
 
+async function updateMatches(matchData, oddsData) {
+    const matchEventsDiv = document.getElementById('match-events');
+    const existingMatches = matchEventsDiv.querySelectorAll('.match');
+    const existingMatchesMap = {};
+
+    // Map existing matches by their IDs
+    existingMatches.forEach(matchElement => {
+        const matchId = matchElement.getAttribute('data-match-id');
+        existingMatchesMap[matchId] = matchElement;
+    });
+
+    const matchMap = {};
+
+    // Organize matches by tournament
+    for (const match of matchData.events) {
+        const uniqueTournamentId = match.tournament.uniqueTournament.id;
+        const categoryName = match.tournament.category.name;
+        const uniqueTournamentName = match.tournament.uniqueTournament.name;
+        const priority = match.tournament.priority || 0; // Default to 0 if priority is not defined
+
+        if (!matchMap[uniqueTournamentId]) {
+            matchMap[uniqueTournamentId] = { 
+                categoryName: categoryName, 
+                uniqueTournamentName: uniqueTournamentName, 
+                priority: priority,
+                matches: [] 
+            };
+        }
+        matchMap[uniqueTournamentId].matches.push(match);
+    }
+
+    // Clear the container
+    matchEventsDiv.innerHTML = '';
+
+    // Convert matchMap to an array and sort it
+    const sortedTournaments = Object.entries(matchMap).sort((a, b) => {
+        const priorityA = a[1].priority;
+        const priorityB = b[1].priority;
+
+        // Sort by priority in descending order
+        if (priorityA !== priorityB) {
+            return priorityB - priorityA;
+        }
+
+        // If priority is 0, sort alphabetically by uniqueTournamentName
+        if (priorityA === 0 && priorityB === 0) {
+            return a[1].uniqueTournamentName.localeCompare(b[1].uniqueTournamentName);
+        }
+
+        return 0;
+    });
+
+    // Iterate over sorted tournaments and matches
+    for (const [tournamentId, tournament] of sortedTournaments) {
+        const tournamentDiv = document.createElement('div');
+        tournamentDiv.classList.add('tournament');
+
+        tournamentDiv.innerHTML = `
+            <div class="category-name">
+                <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy">
+                <div class="categoryText">
+                    <span>${tournament.uniqueTournamentName}</span>
+                    <span>${tournament.categoryName}</span>
+                </div>
+            </div>
+        `;
+
+        // Process each match in the tournament
+        for (const match of tournament.matches) {
+            const matchOdds = oddsData.odds[match.id];
+            let matchElement = existingMatchesMap[match.id];
+
+            if (matchElement) {
+                // Update existing match element
+                updateMatchElement(matchElement, match, matchOdds);
+            } else {
+                // Create a new match element (await the async function)
+                matchElement = await createMatchElement(match, matchOdds);
+            }
+
+            // Append the match element to the tournament
+            tournamentDiv.appendChild(matchElement);
+        }
+
+        // Append the tournament to the container
+        matchEventsDiv.appendChild(tournamentDiv);
+    }
+}
+
+
 async function fetchAndDisplayMatchScores(dateStr) {
     try {
         
@@ -2451,77 +2541,6 @@ function updateMatchScores(matchElement, match) {
             }, 3000);
         }
     }
-    
-
-    async function updateMatches(matchData, oddsData) {
-    const matchEventsDiv = document.getElementById('match-events');
-    const existingMatches = matchEventsDiv.querySelectorAll('.match');
-    const existingMatchesMap = {};
-
-    // Map existing matches by their IDs
-    existingMatches.forEach(matchElement => {
-        const matchId = matchElement.getAttribute('data-match-id');
-        existingMatchesMap[matchId] = matchElement;
-    });
-
-    const matchMap = {};
-
-    // Organize matches by tournament
-    for (const match of matchData.events) {
-        const uniqueTournamentId = match.tournament.uniqueTournament.id;
-        const categoryName = match.tournament.category.name;
-        const uniqueTournamentName = match.tournament.uniqueTournament.name;
-
-        if (!matchMap[uniqueTournamentId]) {
-            matchMap[uniqueTournamentId] = { 
-                categoryName: categoryName, 
-                uniqueTournamentName: uniqueTournamentName, 
-                matches: [] 
-            };
-        }
-        matchMap[uniqueTournamentId].matches.push(match);
-    }
-
-    // Clear the container
-    matchEventsDiv.innerHTML = '';
-
-    // Iterate over tournaments and matches
-    for (const [tournamentId, tournament] of Object.entries(matchMap)) {
-        const tournamentDiv = document.createElement('div');
-        tournamentDiv.classList.add('tournament');
-
-        tournamentDiv.innerHTML = `
-            <div class="category-name">
-                <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy">
-                <div class="categoryText">
-                    <span>${tournament.uniqueTournamentName}</span>
-                    <span>${tournament.categoryName}</span>
-                </div>
-            </div>
-        `;
-
-        // Process each match in the tournament
-        for (const match of tournament.matches) {
-            const matchOdds = oddsData.odds[match.id];
-            let matchElement = existingMatchesMap[match.id];
-
-            if (matchElement) {
-                // Update existing match element
-                updateMatchElement(matchElement, match, matchOdds);
-            } else {
-                // Create a new match element (await the async function)
-                matchElement = await createMatchElement(match, matchOdds);
-            }
-
-            // Append the match element to the tournament
-            tournamentDiv.appendChild(matchElement);
-        }
-
-        // Append the tournament to the container
-        matchEventsDiv.appendChild(tournamentDiv);
-    }
-}
-
 
 async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, uniqueTournamentId, matchId) {
     try { 
