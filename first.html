@@ -396,37 +396,46 @@ h4 {
     flex-direction: column;
     display: flex;
     padding-left: 10px;
-    gap: 1px;
+    gap: 10px;
     height: inherit;
     justify-content: center;
 }
+
+.teams span {
+    flex-direction: row;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
 
 .score {
     display: flex;
     flex-direction: column;
     flex: 0.5;
-    gap: 1px;
+    gap: 10px;
     justify-content: center;
     text-align: center;
     font-weight: 600;
+    color: var(--color-greyFF);
 }
 .odds {
     display: flex;
-    flex-direction: row;
-    flex: 3;
+    flex: 1;
+    flex-direction: column;
     text-align: center;
     gap: 2px;
     justify-content: center;
     align-items: stretch;
     color: var(--color-white60p);
-    font-size: 11px;
+    font-size: 10px;
 }
 .odds div {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex: 1;
     gap: 1px;
-    width: 32px;
     justify-content: center;
 }
 
@@ -467,7 +476,7 @@ h4 {
     justify-content: space-between;
     min-width: 10px;
     padding: 2px 4px;
-    gap: 5px;
+    gap: 10px;
     align-items: center;
     font-size: 11px;
 } 
@@ -3220,8 +3229,8 @@ const createMatchElement = async (match, odds) => {
     matchElement.innerHTML = `
         <div class="start-time">${new Date(match.startTimestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</div>
         <div class="teams">
-            <span>${match.homeTeam.shortName}</span>
-            <span>${match.awayTeam.shortName}</span>
+            <span><img src="${baseURL}/team/${match.homeTeam.id}/image" width="14" height="14" alt="${match.homeTeam.shortName}" loading="lazy" class="team-logo">${match.homeTeam.shortName}</span>
+            <span><img src="${baseURL}/team/${match.awayTeam.id}/image" width="14" height="14" alt="${match.awayTeam.shortName}" loading="lazy" class="team-logo">${match.awayTeam.shortName}</span>
         </div>
         <div class="score">
             <span>${homeScore}</span>
