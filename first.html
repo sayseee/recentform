@@ -1564,31 +1564,31 @@ async function fetchMatchDetails(matchId, matchElement) {
                 </div>
             </div>
                  
-            <div id="match-odds"></div> 
-            <div id="expected-actual"></div> 
-                <h4>H2H Stats</h4>
-            <div class="goalStats">
-                <div id="h2hStats"></div>
-                <div id="h2hGoalStats"></div>
-            </div>
-            <div class="team-events">
-                <div id="home-team-events"></div>
-                <div id="away-team-events"></div>
-            </div> 
-
-            <div class="team-events"> 
-                <div id="home-league-table" class="league-table"></div> 
-                <div id="away-league-table" class="league-table"></div> 
-            </div> 
-             <div id="team-stats-container" class="home-team-stats away-team-stats"></div>
-            <div id="team-advanced-stats-container" class="home-team-stats away-team-stats"></div>
-            </div>
             <div id="streaksModule">
                 <div class="streaksModule_Insider"> 
                     <div id="home-streaks"></div>
                     <div id="away-streaks"></div>
                 </div>
             </div>
+            <div id="expected-actual"></div> 
+                <h4>H2H Stats</h4>
+            <div class="goalStats">
+                <div id="h2hStats"></div>
+                <div id="h2hGoalStats"></div>
+            </div>
+            <div id="match-odds"></div> 
+            
+            <div class="team-events">
+                <div id="home-team-events"></div>
+                <div id="away-team-events"></div>
+            </div> 
+             <div id="team-stats-container" class="home-team-stats away-team-stats"></div>
+            <div id="team-advanced-stats-container" class="home-team-stats away-team-stats"></div>
+            <div class="team-events"> 
+                <div id="home-league-table" class="league-table"></div> 
+                <div id="away-league-table" class="league-table"></div> 
+            </div> 
+            
             <div id="total-league-table" class="loading-animation league-table"></div>
         `;
 
@@ -1729,9 +1729,7 @@ function h2HGoalStats(events, homeTeamId, awayTeamId) {
         if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
             const homeScore = event.homeScore?.current ?? 0;
             const awayScore = event.awayScore?.current ?? 0;  
-
-            console.log(`Home Team:`, event.homeTeam.shortName, ` Score:`, homeScore);
-            console.log(`Away Team:`, event.awayTeam.shortName, ` Score:`, awayScore); 
+ 
             if (homeScore > 0 && awayScore > 0) btts++;
             if (homeScore + awayScore > 1.5) over1_5++;
             if (homeScore + awayScore > 2.5) over2_5++;
@@ -3015,19 +3013,19 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
             }
 
             // Extract previous home and away odds (limit to last 5 matches)
-            const previousHomeOdds = await extractPreviousOdds(homeTeamId, 'home', homeTeamEvents.events.reverse(), matchId);
-            const previousAwayOdds = await extractPreviousOdds(awayTeamId, 'away', awayTeamEvents.events.reverse(), matchId);
-
+            const previousHomeOdds = await extractPreviousOdds(homeTeamId, 'home', homeTeamEvents.events, matchId, uniqueTournamentId);
+            const previousAwayOdds = await extractPreviousOdds(awayTeamId, 'away', awayTeamEvents.events, matchId, uniqueTournamentId);
+ 
             // Current home and away odds
             const currentHomeOdds = odds[0] ? fractionalToDecimal(odds[0].fractionalValue) : null;
             const currentAwayOdds = odds[2] ? fractionalToDecimal(odds[2].fractionalValue) : null;
 
             // Prepare data for prediction model (limit to last 5 matches)
             const pastMatches = preparePastMatchesData(previousHomeOdds, previousAwayOdds, homeTeamName, awayTeamName, matchId);
-
+ 
             // Apply the prediction model
             const prediction = analyzeMatch(homeTeamName, awayTeamName, pastMatches, currentHomeOdds, currentAwayOdds);
-
+          
             // Display odds
             oddsDiv.innerHTML = `
                 <h4>Match Odds</h4>
@@ -3038,8 +3036,11 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
                 <h5><strong>Bet Bullets</strong></h5>
                     <ul>
                         ${prediction.reasons.map(reason => `<li>${reason}</li>`).join('')}
-                    </ul>
-                </div>
+                    </ul> 
+                    <h5><strong>Historical Odds</strong></h5>
+                    <p><strong>${homeTeamName} Historical Odds:</strong> ${prediction.historicalOdds.homeTeam.lastFiveOdds.join(', ')}</p>
+                    <p><strong>${awayTeamName} Historical Odds:</strong> ${prediction.historicalOdds.awayTeam.lastFiveOdds.join(', ')}</p>
+                 </div>
             `;
 
         // Now fetch and update H2H data
@@ -3056,8 +3057,7 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
 
         // Filter only finished events
         const finishedEvents = h2hData.events.filter(event => event.status.type === "finished" && Number(event.id) !== Number(matchId));
-
-        console.log(finishedEvents);
+ 
 
         const h2hStats = calculateH2HStats(finishedEvents, homeTeamId, awayTeamId);
         const h2hGoalStats = h2HGoalStats(finishedEvents, homeTeamId, awayTeamId);
@@ -3079,15 +3079,17 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
 
         }
 
-async function extractPreviousOdds(teamId, teamType, events, currentMatchId) {
+async function extractPreviousOdds(teamId, teamType, events, currentMatchId, uniqueTournamentId) {
     if (!events || events.length === 0) {
         console.error(`No events found for ${teamType} team`);
         return [];
     }
 
     // Exclude the current match first before slicing or reversing the events array
-    const filteredEvents = events.filter(event => Number(event.id) !== Number(currentMatchId))
-                                .slice(0, 5);
+    const filteredEvents = events.filter(event => 
+                    Number(event.id) !== Number(currentMatchId) && 
+                    Number(event.tournament.uniqueTournament.id) === Number(uniqueTournamentId))
+                    .reverse().slice(0, 5);
 
     // Fetch odds for each past event (limit to last 5 matches)
     const eventsWithOdds = await Promise.all(filteredEvents.map(async event => {
@@ -3121,13 +3123,12 @@ function preparePastMatchesData(previousHomeOdds, previousAwayOdds, homeTeamName
 
     // Process home team data (limit to last 5 matches)
     previousHomeOdds.forEach(match => {
-         
         const isHomeTeam = match.homeTeam === homeTeamName;
         const result = determineResult(match.winnerCode, isHomeTeam);
 
         // If home team is the current team, we pick the homeWin odds
         const odds = isHomeTeam ? match.odds.homeWin : match.odds.awayWin;
-
+ 
         pastMatches.push({
             team: homeTeamName,
             result: result,
@@ -3180,7 +3181,6 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
         let lowOddsMatches = []; // Odds < 1.99
         let midOddsMatches = []; // Odds between 2.00 and 3.20
         let highOddsMatches = []; // Odds > 3.40
-
         pastMatches.forEach(match => {
             if (match.team === team) {
                 totalMatches++;
@@ -3339,8 +3339,23 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
         prediction,
         reasons,
         homeScore: homeScore.toFixed(2),
-        awayScore: awayScore.toFixed(2)
+        awayScore: awayScore.toFixed(2),
+        historicalOdds: {
+            homeTeam: {
+                lastFiveOdds: homeStats.historicalOdds.slice(-5),
+                averageOdds: homeStats.averageHistoricalOdds.toFixed(2),
+                isCurrentOddsLowest: homeStats.isCurrentOddsLowest,
+                isCurrentOddsHighest: homeStats.isCurrentOddsHighest
+            },
+            awayTeam: {
+                lastFiveOdds: awayStats.historicalOdds.slice(-5),
+                averageOdds: awayStats.averageHistoricalOdds.toFixed(2),
+                isCurrentOddsLowest: awayStats.isCurrentOddsLowest,
+                isCurrentOddsHighest: awayStats.isCurrentOddsHighest
+            }
+        }
     };
+
 }
 
 // Function to fetch odds for a match
