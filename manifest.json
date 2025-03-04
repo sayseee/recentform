@@ -1,5 +1,5 @@
 {
-  "short_name": "Soccer",
+  "short_name": "Betas",
   "name": "Soccer Stats",
   "icons": [
     {
@@ -24,6 +24,6 @@
   ],
   "start_url": "/recentform/first.html",
   "display": "standalone",
-  "theme_color": "#030229",
-  "background_color": "#030229"
+  "theme_color": "#014f37",
+  "background_color": "#014f37"
 }

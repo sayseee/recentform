@@ -50,8 +50,7 @@
             --color-black4: rgb(17, 20, 24);
             --color-green2: rgb(18,110,81);
             --decrease-greater: rgba(253,29,91,0.5);
-            --decrease-less: rgba(229, 156, 3, 0.5); 
-            --decrease-less: rgba(229, 156, 3, 0.5); 
+            --decrease-less: rgba(229, 156, 3, 0.7); 
             --border-green1: rgb(6,41,32);
             --pbb-background: linear-gradient(to bottom right,#1b4d42,#153c34);
             --color-grey00-25p: rgba(0,0,0,.25);
@@ -67,7 +66,7 @@
             --color-white60p: hsla(0,0%,100%,.6); 
             --color-grey0-25p: rgba(0,0,0,.25);
             --win-color: rgba(27,184,145,.6); /* Wins */
-            --draw-color: rgb(255,153,1);/* Draws */
+            --draw-color: rgba(229, 156, 3, 0.9);/* Draws */
             --loss-color: rgba(253,29,91,0.5);/* Losses */
             --color-green28FFBB: rgb(18,110,81);
             --primary-default: #374df5;
@@ -80,7 +79,7 @@
             --playoffs-promotion-to-z-playoff: #018e8d;
             --playoffs-promotion-to-z-playoff-secondary: #01b7b6;
             --playoffs-promotion-to-relegation: #c1262d;
-            --playoffs-promotion-to-relegation-playoff: #fea500;
+            --playoffs-promotion-to-relegation-playoff: rgba(229, 156, 3, 0.9);
             --color-support-2-rgb: 153, 153, 153;    
             --color-grey7: #ddd;
             --gl-podGradient: linear-gradient(126deg,#404a47,var(--color-grey44));
@@ -116,7 +115,7 @@
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
-            font-size: 12px;
+            font-size: 0.75rem;
         background-color: rgb(1, 79, 55);
         }
         
@@ -272,8 +271,7 @@ h4 {
     color: inherit;
     cursor: pointer;
     display: flex;
-    font-family: inherit;
-    font-size: 12px;
+    font-family: inherit; 
     font-weight: 600;
     grid-area: datepicker;
     height: 100%;
@@ -284,6 +282,7 @@ h4 {
     flex: 1;
     width: 100px;
     gap: 10px;
+    font-size: 11px;
 }
 
 .calendar__days {
@@ -347,13 +346,13 @@ h4 {
 }
 
 .category-name {
-    background-color: var(--color-black2);
+    background-color: rgb(31, 36, 45);
     display: flex;
     padding: 0 10px;
     align-items: center;
     gap: 10px;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12px;
     min-height: 45px;
     color: var(--color-white60p);
 
@@ -369,6 +368,9 @@ h4 {
 .categoryText span:last-child {
     text-transform: uppercase;
     font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 .tournament {
     display: flex;
@@ -386,61 +388,65 @@ h4 {
 .match:not(:last-child) {
     border-bottom:1px solid var(--list-line); 
 }
-.start-time {
-    padding-right: 5px;
+.start-time { 
     display: flex;
     align-items: center;
-    font-size: 12px;
-    min-width: 40px;
-    flex: 0.5;
+    min-width: 32px;
+    font-size: 11px;
 }
 .teams {
     flex: 4;
     flex-direction: column;
     display: flex;
-    padding-left: 10px;
-    gap: 1px;
+    padding-left: 5px;
+    gap: 10px;
     height: inherit;
     justify-content: center;
 }
 
+.teams span {
+    flex-direction: row;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+
 .score {
-    display: flex
-;
+    display: flex;
     flex-direction: column;
     flex: 0.5;
-    gap: 1px;
+    gap: 10px;
     justify-content: center;
     text-align: center;
-    font-weight: 600;
-    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-greyFF);
 }
 .odds {
     display: flex;
-    flex-direction: row;
-    flex: 3;
+    flex: 1.5;
+    flex-direction: column;
     text-align: center;
     gap: 2px;
-    font-weight: 400;
     justify-content: center;
     align-items: stretch;
+    color: var(--color-white60p);
+    font-size: 10px;
 }
 .odds div {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex: 1;
     gap: 1px;
-    width: 32px;
     justify-content: center;
 }
 
 
 .odds span {
-    padding: 2px 4px;
+    padding: 1px 4px 2px;
     flex: 1;
     background-color: rgb(17, 22, 28);
-    min-height: 18px;
-    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -472,8 +478,9 @@ h4 {
     justify-content: space-between;
     min-width: 10px;
     padding: 2px 4px;
-    gap: 5px;
+    gap: 10px;
     align-items: center;
+    font-size: 11px;
 } 
 .filters {
     display: flex;
@@ -834,7 +841,6 @@ sup {
         flex-direction: row;
         justify-content: space-around; 
         gap: 10px;
-        font-size: 12px;
 }
 .actual-home, .actual-away {
     display: flex;
@@ -945,7 +951,7 @@ sup {
     text-align: center;
 }
 .highlight {
-    color: #e59c03;
+    color: rgba(229, 156, 3, 0.9);
     font-weight: 500;
     opacity: 0.9;
     letter-spacing: 1.42px;
@@ -966,7 +972,6 @@ sup {
     overflow: hidden;
     white-space: nowrap;
     line-height: 30px;
-    font-size: 12px;
     font-weight: 600;
     color: var(--color-greyFF);
     text-align: center;
@@ -980,7 +985,7 @@ sup {
     border: var(--gl-podBorder);
 }
 .league-table table {
-    width: 98%;
+    width: 97%;
     border-collapse: collapse;
     margin: 5px;
 }
@@ -989,7 +994,6 @@ sup {
     margin: 0;
     padding: 6px 0;
     text-transform: uppercase;
-    font-size: 12px;
     letter-spacing: 0.41px;
     font-weight: 600;
     color: var(--color-greyFF);
@@ -1005,6 +1009,10 @@ tr.is-team {
     font-weight: 600;
     color: #f0f0f0;
 }
+#home-league-table tr.is-team, #away-league-table tr.is-team {
+    background-color: transparent;
+    font-weight: 400 !important;
+}
 .league-table table th {
     padding: 8px 4px;
 }
@@ -1012,14 +1020,12 @@ tr.is-team {
     flex: 1;
     padding: 2px 4px;
     text-align: center;
-    font-weight: 600;
  }
 .gamesPlayed {
     position: relative;
 }
 .team-name {
     text-align: center;
-    font-weight: 600;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: clip;
@@ -1127,7 +1133,6 @@ tr.is-team {
     }
     #streaksModule h4 {
         word-wrap: break-word;
-        font-size: 12px;
         font-weight: 600;
         color: var(--color-greyFF); 
         margin: 0;
@@ -1141,7 +1146,7 @@ tr.is-team {
         margin: 0;
         padding: 0;
         margin-bottom: 10px;
-        font-size: 12px;
+        font-size: 0.75rem;
     }
     #home-streaks, #away-streaks { 
         display: flex;
@@ -1158,7 +1163,7 @@ tr.is-team {
     }
 
     #match-odds ul:first-child {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--color-greyFF);
     font-weight: 500;
 }
@@ -1172,7 +1177,7 @@ tr.is-team {
     padding: 0;
     display: flex;
     flex-direction: row; 
-    font-size: 13px;
+    font-size: 12px;
     line-height: 15px;
 }
 
@@ -1185,7 +1190,7 @@ tr.is-team {
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 15px;
     justify-content: center;
 }
@@ -1217,7 +1222,7 @@ tr.is-team {
         margin: 0;
         padding: 0;
         margin-bottom: 10px;
-        font-size: 12px;
+        font-size: 0.75rem;
 }
 .prediction ul li {
     font-size: 11px !important;
@@ -1240,7 +1245,7 @@ tr.is-team {
 </head>
 <body>
     <header>
-        <h2>Soc<span class="logoH">cer</span></h2> 
+        <h2><img src="icons/SOCCER1.png" height="35"></h2> 
         <div class="calendar">
             <!-- Previous Day Button -->
             <button class="calendar__navigation calendar__navigation--yesterday" title="Previous day">
@@ -2394,6 +2399,105 @@ function displayTeamInfo(teamId, divId, standingsData, isHomeTeam) {
 }
 
 
+async function updateMatches(matchData, oddsData) {
+    const matchEventsDiv = document.getElementById('match-events');
+    const existingMatches = matchEventsDiv.querySelectorAll('.match');
+    const existingMatchesMap = {};
+
+    // Map existing matches by their IDs
+    existingMatches.forEach(matchElement => {
+        const matchId = matchElement.getAttribute('data-match-id');
+        existingMatchesMap[matchId] = matchElement;
+    });
+
+    const matchMap = {};
+
+    // Organize matches by tournament
+    for (const match of matchData.events) {
+        const uniqueTournamentId = match.tournament.uniqueTournament.id;
+        const categoryName = match.tournament.category.name;
+        const uniqueTournamentName = match.tournament.uniqueTournament.name;
+        const priority = match.tournament.priority || 0; // Default to 0 if priority is not defined
+        
+        // Determine the category image URL
+        const categoryAlpha2 = match.tournament?.category?.country?.alpha2;
+        const categoryFlag = match.tournament?.category?.flag;
+        const staticImageUrl = 'https://www.sofascore.com/static/images'; // Base URL for static images
+        const categoryImageUrl = categoryAlpha2
+            ? `${staticImageUrl}/flags/${categoryAlpha2.toLowerCase()}.png`
+            : `${staticImageUrl}/flags/${categoryFlag}.png`;
+
+        if (!matchMap[uniqueTournamentId]) {
+            matchMap[uniqueTournamentId] = { 
+                categoryName: categoryName, 
+                uniqueTournamentName: uniqueTournamentName, 
+                priority: priority,
+                categoryImageUrl: categoryImageUrl, // Add category image URL
+                matches: [] 
+            };
+        }
+        matchMap[uniqueTournamentId].matches.push(match);
+    }
+
+    // Clear the container
+    matchEventsDiv.innerHTML = '';
+
+    // Convert matchMap to an array and sort it
+    const sortedTournaments = Object.entries(matchMap).sort((a, b) => {
+        const priorityA = a[1].priority;
+        const priorityB = b[1].priority;
+
+        // Sort by priority in descending order
+        if (priorityA !== priorityB) {
+            return priorityB - priorityA;
+        }
+
+        // If priority is 0, sort alphabetically by uniqueTournamentName
+        if (priorityA === 0 && priorityB === 0) {
+            return a[1].uniqueTournamentName.localeCompare(b[1].uniqueTournamentName);
+        }
+
+        return 0;
+    });
+
+    // Iterate over sorted tournaments and matches
+    for (const [tournamentId, tournament] of sortedTournaments) {
+        const tournamentDiv = document.createElement('div');
+        tournamentDiv.classList.add('tournament');
+
+        tournamentDiv.innerHTML = `
+            <div class="category-name">
+                <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="25" height="25" loading="lazy">
+                <div class="categoryText">
+                    <span>${tournament.uniqueTournamentName}</span>
+                    <span><img class="tourn" src="${tournament.categoryImageUrl}" height="14" loading="lazy">${tournament.categoryName}</span>
+                </div>
+            </div>
+        `;
+
+        // Process each match in the tournament
+        for (const match of tournament.matches) {
+            const matchOdds = oddsData.odds[match.id];
+            let matchElement = existingMatchesMap[match.id];
+
+            if (matchElement) {
+                // Update existing match element
+                updateMatchElement(matchElement, match, matchOdds);
+            } else {
+                // Create a new match element (await the async function)
+                matchElement = await createMatchElement(match, matchOdds);
+            }
+
+            // Append the match element to the tournament
+            tournamentDiv.appendChild(matchElement);
+        }
+
+        // Append the tournament to the container
+        matchEventsDiv.appendChild(tournamentDiv);
+    }
+}
+
+
 async function fetchAndDisplayMatchScores(dateStr) {
     try {
         
@@ -2453,77 +2557,6 @@ function updateMatchScores(matchElement, match) {
             }, 3000);
         }
     }
-    
-
-    async function updateMatches(matchData, oddsData) {
-    const matchEventsDiv = document.getElementById('match-events');
-    const existingMatches = matchEventsDiv.querySelectorAll('.match');
-    const existingMatchesMap = {};
-
-    // Map existing matches by their IDs
-    existingMatches.forEach(matchElement => {
-        const matchId = matchElement.getAttribute('data-match-id');
-        existingMatchesMap[matchId] = matchElement;
-    });
-
-    const matchMap = {};
-
-    // Organize matches by tournament
-    for (const match of matchData.events) {
-        const uniqueTournamentId = match.tournament.uniqueTournament.id;
-        const categoryName = match.tournament.category.name;
-        const uniqueTournamentName = match.tournament.uniqueTournament.name;
-
-        if (!matchMap[uniqueTournamentId]) {
-            matchMap[uniqueTournamentId] = { 
-                categoryName: categoryName, 
-                uniqueTournamentName: uniqueTournamentName, 
-                matches: [] 
-            };
-        }
-        matchMap[uniqueTournamentId].matches.push(match);
-    }
-
-    // Clear the container
-    matchEventsDiv.innerHTML = '';
-
-    // Iterate over tournaments and matches
-    for (const [tournamentId, tournament] of Object.entries(matchMap)) {
-        const tournamentDiv = document.createElement('div');
-        tournamentDiv.classList.add('tournament');
-
-        tournamentDiv.innerHTML = `
-            <div class="category-name">
-                <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy">
-                <div class="categoryText">
-                    <span>${tournament.uniqueTournamentName}</span>
-                    <span>${tournament.categoryName}</span>
-                </div>
-            </div>
-        `;
-
-        // Process each match in the tournament
-        for (const match of tournament.matches) {
-            const matchOdds = oddsData.odds[match.id];
-            let matchElement = existingMatchesMap[match.id];
-
-            if (matchElement) {
-                // Update existing match element
-                updateMatchElement(matchElement, match, matchOdds);
-            } else {
-                // Create a new match element (await the async function)
-                matchElement = await createMatchElement(match, matchOdds);
-            }
-
-            // Append the match element to the tournament
-            tournamentDiv.appendChild(matchElement);
-        }
-
-        // Append the tournament to the container
-        matchEventsDiv.appendChild(tournamentDiv);
-    }
-}
-
 
 async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, uniqueTournamentId, matchId) {
     try { 
@@ -3034,12 +3067,17 @@ function determineResult(winnerCode, isHomeTeam) {
 }
 
 function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentAwayOdds) {
-    function evaluatePerformance(team) {
+    function evaluatePerformance(team, currentOdds) {
         let totalMatches = 0, wins = 0, losses = 0, draws = 0, competitiveWins = 0;
         let performanceAgainstWeaker = 0, toughMatchHandling = 0, surpriseWins = 0, badLosses = 0;
         let recentForm = []; // Track results of the last 5 matches
         let historicalOdds = []; // Track historical odds for the team
         let heavyFavoriteLosses = 0; // Track losses as heavy favorites (odds < 1.50)
+
+        // Odds-specific performance tracking
+        let lowOddsMatches = []; // Odds < 1.99
+        let midOddsMatches = []; // Odds between 2.00 and 3.20
+        let highOddsMatches = []; // Odds > 3.40
 
         pastMatches.forEach(match => {
             if (match.team === team) {
@@ -3066,16 +3104,47 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
                     recentForm.push(match.result);
                 }
 
-                // Track historical odds (ensure they are numbers)
+                // Track historical odds
                 historicalOdds.push(Number(match.odds));
+
+                // Categorize matches by odds range
+                if (match.odds < 1.99) {
+                    lowOddsMatches.push(match);
+                } else if (match.odds >= 2.00 && match.odds <= 3.20) {
+                    midOddsMatches.push(match);
+                } else if (match.odds > 3.40) {
+                    highOddsMatches.push(match);
+                }
             }
         });
 
         // Calculate recent form (percentage of wins in the last 5 matches)
         const recentWinRate = recentForm.filter(result => result === "win").length / recentForm.length;
+
         // Calculate average historical odds
         const averageHistoricalOdds = historicalOdds.reduce((sum, odds) => sum + odds, 0) / historicalOdds.length;
-        console.log(averageHistoricalOdds);
+
+        // Determine if current odds are the lowest or highest in their range
+        const isCurrentOddsLowest = (rangeMatches, currentOdds) => {
+            if (rangeMatches.length === 0) return false;
+            return currentOdds < Math.min(...rangeMatches.map(m => m.odds));
+        };
+
+        const isCurrentOddsHighest = (rangeMatches, currentOdds) => {
+            if (rangeMatches.length === 0) return false;
+            return currentOdds > Math.max(...rangeMatches.map(m => m.odds));
+        };
+
+        // Determine which range the current odds fall into
+        let currentRangeMatches;
+        if (currentOdds < 1.99) {
+            currentRangeMatches = lowOddsMatches;
+        } else if (currentOdds >= 2.00 && currentOdds <= 3.20) {
+            currentRangeMatches = midOddsMatches;
+        } else if (currentOdds > 3.40) {
+            currentRangeMatches = highOddsMatches;
+        }
+
         return {
             winRate: wins / totalMatches,
             lossRate: losses / totalMatches,
@@ -3083,23 +3152,26 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
             competitiveWinRate: competitiveWins / totalMatches,
             weakTeamWinRate: performanceAgainstWeaker / totalMatches,
             toughMatchHandlingRate: toughMatchHandling / totalMatches,
-            surpriseWinRate: surpriseWins / totalMatches, // Wins when odds were high
-            badLossRate: heavyFavoriteLosses / totalMatches, // Losses as heavy favorites
-            recentWinRate: recentWinRate || 0, // Recent form (last 5 matches)
-            historicalOdds: historicalOdds || 0, // Average historical odds
-            averageHistoricalOdds: averageHistoricalOdds || 0 // Average historical odds
+            surpriseWinRate: surpriseWins / totalMatches,
+            badLossRate: heavyFavoriteLosses / totalMatches,
+            recentWinRate: recentWinRate || 0,
+            historicalOdds: historicalOdds || 0,
+            averageHistoricalOdds: averageHistoricalOdds || 0,
+            isCurrentOddsLowest: isCurrentOddsLowest(currentRangeMatches, currentOdds),
+            isCurrentOddsHighest: isCurrentOddsHighest(currentRangeMatches, currentOdds)
         };
     }
 
-    let homeStats = evaluatePerformance(homeTeam);
-    let awayStats = evaluatePerformance(awayTeam);
+    // Evaluate performance for home and away teams
+    const homeStats = evaluatePerformance(homeTeam, currentHomeOdds);
+    const awayStats = evaluatePerformance(awayTeam, currentAwayOdds);
 
-    // Calculate weighted scores for home and away teams
+    // Calculate weighted scores
     const homeScore =
         homeStats.winRate * 0.3 + // Win rate (30%)
         homeStats.recentWinRate * 0.25 + // Recent form (25%)
         homeStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
-        (currentHomeOdds < homeStats.averageHistoricalOdds ? 0.15 : 0) + // Odds mispricing (15%)
+        (homeStats.isCurrentOddsLowest ? 0.15 : 0) + // Bonus for lowest odds in range (15%)
         homeStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
         homeStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
 
@@ -3107,12 +3179,13 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
         awayStats.winRate * 0.3 + // Win rate (30%)
         awayStats.recentWinRate * 0.25 + // Recent form (25%)
         awayStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
-        (currentAwayOdds > awayStats.averageHistoricalOdds ? 0.15 : 0) + // Odds mispricing (15%)
+        (awayStats.isCurrentOddsLowest ? 0.15 : 0) + // Bonus for lowest odds in range (15%)
         awayStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
-        awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%) 
-    // Determine prediction based on weighted scores
-    let prediction = awayScore > homeScore ? "Away Win" : "Home Win";
-    let reasons = [];
+        awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
+
+    // Determine prediction
+    const prediction = awayScore > homeScore ? "Away Win" : "Home Win";
+    const reasons = [];
 
     // Add reasoning based on weighted factors
     if (homeStats.winRate > awayStats.winRate) {
@@ -3124,8 +3197,8 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
     if (homeStats.competitiveWinRate > awayStats.competitiveWinRate) {
         reasons.push(`${homeTeam} performs better in competitive matches.`);
     }
-    if (currentHomeOdds < homeStats.averageHistoricalOdds) {
-        reasons.push(`${homeTeam}'s current odds are lower than their historical average, indicating they may be undervalued.`);
+    if (homeStats.isCurrentOddsLowest) {
+        reasons.push(`${homeTeam}'s current odds are the lowest in their range, indicating potential value.`);
     }
     if (homeStats.surpriseWinRate > awayStats.surpriseWinRate) {
         reasons.push(`${homeTeam} has a history of winning as underdogs.`);
@@ -3143,8 +3216,8 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
     if (awayStats.competitiveWinRate > homeStats.competitiveWinRate) {
         reasons.push(`${awayTeam} performs better in competitive matches.`);
     }
-    if (currentAwayOdds > awayStats.averageHistoricalOdds) {
-        reasons.push(`${awayTeam}'s current odds are higher than their historical average, indicating they may be undervalued.`);
+    if (awayStats.isCurrentOddsLowest) {
+        reasons.push(`${awayTeam}'s current odds are the lowest in their range, indicating potential value.`);
     }
     if (awayStats.surpriseWinRate > homeStats.surpriseWinRate) {
         reasons.push(`${awayTeam} has a history of winning as underdogs.`);
@@ -3211,8 +3284,8 @@ const createMatchElement = async (match, odds) => {
     matchElement.innerHTML = `
         <div class="start-time">${new Date(match.startTimestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</div>
         <div class="teams">
-            <span>${match.homeTeam.shortName}</span>
-            <span>${match.awayTeam.shortName}</span>
+            <span><img src="${baseURL}/team/${match.homeTeam.id}/image" width="14" height="14" alt="${match.homeTeam.shortName}" loading="lazy" class="team-logo">${match.homeTeam.shortName}</span>
+            <span><img src="${baseURL}/team/${match.awayTeam.id}/image" width="14" height="14" alt="${match.awayTeam.shortName}" loading="lazy" class="team-logo">${match.awayTeam.shortName}</span>
         </div>
         <div class="score">
             <span>${homeScore}</span>
@@ -3221,19 +3294,19 @@ const createMatchElement = async (match, odds) => {
         <div class="odds">
            <div class="${homeOddsChange}">
                 <span>${homeOdds}</span>
-                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : 'inline'};">
+                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : ''};">
                     ${homeOddsNew}
                 </span>
             </div>
             <div class="${drawOddsChange}">
                 <span>${drawOdds}</span>
-                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : 'inline'};">
+                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : ''};">
                     ${drawOddsNew}
                 </span>
             </div>
             <div class="${awayOddsChange}">
                 <span>${awayOdds}</span>
-                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : 'inline'};">
+                <span class="decrease-hidden" style="display: ${match.status.type === 'inprogress' ? 'none' : ''};">
                     ${awayOddsNew}
                 </span>
             </div>
