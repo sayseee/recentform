@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/app-icon-ios.png">
+    <link rel="apple-touch-startup-image" href="/icons/splash-screen-ios.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="manifest" href="scripts/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <title>Mobile First Layout</title>
     <style>
  
@@ -64,7 +66,7 @@
             --color-green3: rgb(15,54,51);
             --color-white60p: hsla(0,0%,100%,.6); 
             --color-grey0-25p: rgba(0,0,0,.25);
-            --win-color: rgb(27,184,145); /* Wins */
+            --win-color: rgba(27,184,145,.6); /* Wins */
             --draw-color: rgb(255,153,1);/* Draws */
             --loss-color: rgba(253,29,91,0.5);/* Losses */
             --color-green28FFBB: rgb(18,110,81);
@@ -83,7 +85,7 @@
             --color-grey7: #ddd;
             --gl-podGradient: linear-gradient(126deg,#404a47,var(--color-grey44));
             --gl-podBorder: none;
-            --list-line: hsla(0,0%,100%,.2);
+            --list-line: hsla(0,0%,100%,.1);
         }
         
         
@@ -133,8 +135,8 @@ h4 {
  }
         
     .W, .D, .L {
-        height: 16px;
-        width: 16px; 
+        height: 10px;
+        width: 10px;
         color: var(--color-black1);
         display: flex;
         align-items: center;
@@ -142,6 +144,17 @@ h4 {
         font-weight: 600;
         font-size: 10px;
             border-radius: 50%;  
+    }    
+    .events-table .W, .events-table .D, .events-table .L {
+        height: inherit;
+        width: inherit; 
+        color: var(--color-greyFF);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 10px;
+            border-radius: 0;  
     }
     .W {
         background-color: var(--win-color);
@@ -166,6 +179,7 @@ h4 {
         justify-content: center; 
         flex-shrink: 0;
         position: relative;
+        background-color: rgb(1, 79, 55);
     }
     header:before {content: "";
         position: absolute;
@@ -367,17 +381,18 @@ h4 {
     padding-left: 10px;
     min-height: 45px;
     background-color: var(--color-black1); 
-    font-size: 13px;
+    font-size: 0.785rem;
 }
 .match:not(:last-child) {
     border-bottom:1px solid var(--list-line); 
 }
 .start-time {
     padding-right: 5px;
-    flex: 0.5;
     display: flex;
     align-items: center;
     font-size: 12px;
+    min-width: 40px;
+    flex: 0.5;
 }
 .teams {
     flex: 4;
@@ -436,9 +451,32 @@ h4 {
 .decrease-less-than-0-1 span {
     background-color: var(--decrease-less);
 }
+.goalStats {
+    max-width: 60px;
+    flex: 2.5;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#h2hStats {
+    display: flex; 
+    justify-content: space-between;
+    min-width: 10px;
+    padding: 2px 4px;
+    gap: 5px;
+}
+#h2hGoalStats {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between;
+    min-width: 10px;
+    padding: 2px 4px;
+    gap: 5px;
+    align-items: center;
+} 
 .filters {
-    display: flex
-;
+    display: flex;
     justify-content: center;
 }
 /* Bottom Navigation Bar */
@@ -824,19 +862,19 @@ sup {
     gap: 10px;
     /* background-image: linear-gradient(to bottom right, #364D3C, var(--color-grey40)); */
     padding: 10px;
-}
-
-#home-team-stats, #away-team-stats {
+} 
+.home-team-stats, .away-team-stats {
     display: flex;
     flex-direction: column; 
     background-color: var(--color-grey0-25p);
     border-radius: 5px;
+    margin: 10px;
 }
-#home-team-stats span, #away-team-stats span {
+.home-team-stats span, .away-team-stats span {
     flex: 1;
     text-align: center;
 }
-#home-team-stats div, #away-team-stats div {
+.home-team-stats div, .away-team-stats div {
     display: flex;
     align-items: stretch;
     height: 34px;
@@ -845,7 +883,7 @@ sup {
     cursor: pointer;
     justify-content: center;
 }
-#home-team-stats div:first-child, #home-team-stats div:nth-child(3), #away-team-stats div:first-child, #away-team-stats div:nth-child(3) {
+.home-team-stats div:first-child, .away-team-stats div:first-child {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -855,6 +893,8 @@ sup {
     line-height: 32px;
     border-bottom: 1px solid var(--g5-market-top-border, var(--color-white10p));
     background-image: var(--pbb-background);
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
 }
 .events-table, .h2hTable {
     color: rgb(140 143 145);
@@ -868,6 +908,9 @@ sup {
 
 .events-table tr:nth-child(odd), .h2hTable tr:nth-child(odd) {
     background-color: rgb(17, 22, 28);
+}
+.events-table tr:nth-child(even), .h2hTable tr:nth-child(even) {
+    background-color: rgb(45, 52, 45);
 }
 .events-table thead tr {
     min-height: 25px;
@@ -898,9 +941,12 @@ sup {
     transition: color 0.2slinear 0s;
     max-width: 110px;
 }
+.events-table td:nth-child(n+3) {
+    text-align: center;
+}
 .highlight {
-    color: var(--color-green2);
-    font-weight: 300;
+    color: #e59c03;
+    font-weight: 500;
     opacity: 0.9;
     letter-spacing: 1.42px;
 }
@@ -911,7 +957,7 @@ sup {
     gap: 10px;
 }
 #total-league-table {
-    padding: 10px;
+    margin: 10px;
 }
 .team-events .league-table h4, #h2h-team-stat h4, #h2h-stat h4 {
     width: 100%;
@@ -928,24 +974,25 @@ sup {
     background-color: transparent;
 }
 
-.team-events .league-table {
+.league-table {
     background: var(--gl-podGradient);
     border-radius: 5px;
     border: var(--gl-podBorder);
 }
 .league-table table {
-    width: 100%;
+    width: 98%;
     border-collapse: collapse;
+    margin: 5px;
 }
 .league-table h4, #h2h-team-stat h4, #h2h-stat h4 {
     text-align: center;
     margin: 0;
     padding: 6px 0;
-    background-color: var(--color-black1);
     text-transform: uppercase;
     font-size: 12px;
     letter-spacing: 0.41px;
     font-weight: 600;
+    color: var(--color-greyFF);
  }
 .league-table table tr {
     display: flex;
@@ -954,7 +1001,7 @@ sup {
     min-height: 25px;
 }
 tr.is-team {
-    background-color: rgb(57, 63, 70);
+    background-color: rgb(45, 52, 45);
     font-weight: 600;
     color: #f0f0f0;
 }
@@ -985,17 +1032,15 @@ tr.is-team {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    max-width: 150px;
-    flex: 6 !important;
+    flex: 3 !important;
     text-align: left !important;
-    width: 100px !important;
     text-wrap: nowrap;
 }
 .teamForm {
     display: flex;
     gap: 3px;
-    flex: 5 !important;
-    justify-content: flex-end;
+    flex: 3 !important;
+    justify-content: center;
     font-size: 10px;
     align-items: center;
 }
@@ -1048,11 +1093,11 @@ tr.is-team {
 
 .StreakLine {
         position: relative;
-        margin-bottom: 5px;
-        font-size: 12px;
+        margin-bottom: 5px; 
         color: var(--color-white60p);
         line-height: 15px;
         padding-left: 16px;
+        font-size: 11px;
     }
     .StreakLine:before { 
         position: absolute;
@@ -1096,6 +1141,7 @@ tr.is-team {
         margin: 0;
         padding: 0;
         margin-bottom: 10px;
+        font-size: 12px;
     }
     #home-streaks, #away-streaks { 
         display: flex;
@@ -1105,6 +1151,91 @@ tr.is-team {
         border-radius: 5px;
         letter-spacing: 0.45px; 
     }
+    #home-team-events, #away-team-events {
+    background-color: rgb(17, 22, 28);
+    border-radius: 5px;
+    padding: 5px;
+    }
+
+    #match-odds ul:first-child {
+    font-size: 13px;
+    color: var(--color-greyFF);
+    font-weight: 500;
+}
+#match-odds {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+#match-odds ul.game-odds {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row; 
+    font-size: 13px;
+    line-height: 15px;
+}
+
+#match-odds ul.game-odds li {
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    list-style: none;
+    height: 25px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 13px;
+    line-height: 15px;
+    justify-content: center;
+}
+.ParticipantFixtureOdd_Odds {
+    color: var(--draw-color);
+    padding-left: 5px;
+    flex: 0 0 auto;
+}
+.prediction {
+    display: flex;
+    flex-direction: column; 
+    background: var(--color-green3);
+    padding: 10px 10px 15px;
+    border-radius: 5px;
+    gap: 10px;
+    color: var(--color-white60p);
+    font-size: 11px;
+}
+
+.prediction ul {
+    display: flex;
+    flex-direction: column !important;
+    justify-content: center;
+    gap: 10px;
+}
+.prediction h5  {
+        color: var(--color-greyFF);
+        font-weight: 600;
+        margin: 0;
+        padding: 0;
+        margin-bottom: 10px;
+        font-size: 12px;
+}
+.prediction ul li {
+    font-size: 11px !important;
+    position: relative;
+    padding-left: 15px !important; 
+    list-style: none;
+}
+.prediction ul li:before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    content: " ";
+    border: 1px solid var(--color-green2);
+    border-radius: 7px;
+    width: 7px;
+    height: 7px;
+}
     </style>
 </head>
 <body>
@@ -1379,7 +1510,7 @@ async function fetchMatchDetails(matchId, matchElement) {
             <div id="match-details">
                 <div class="team" id="home-team">
                     <img src="https://api.sofascore.app/api/v1/team/${homeTeam.id}/image" width="38" height="38" alt="${homeTeam.name}" loading="lazy">
-                    <span>${homeTeam.shortName}</span></div>
+                    <span>${homeTeam.nameCode}</span></div>
                 <div class="score-dec">
                     <div class="score" id="scoreline">
                         ${match.status.type === 'inprogress' 
@@ -1403,20 +1534,24 @@ async function fetchMatchDetails(matchId, matchElement) {
                 </div>
                 <div class="team" id="away-team">
                     <img src="https://api.sofascore.app/api/v1/team/${awayTeam.id}/image" width="38" height="38" alt="${awayTeam.name}" loading="lazy">
-                    <span>${awayTeam.shortName}</span>
+                    <span>${awayTeam.nameCode}</span>
                 </div>
             </div>
-                
+                 
+            <div id="match-odds"></div> 
             <div id="expected-actual"></div> 
 
+            <div class="team-events">
+                <div id="home-team-events"></div>
+                <div id="away-team-events"></div>
+            </div> 
+
             <div class="team-events"> 
-                <div id="home-league-table" class="league-table" style="min-height: 120px;"></div> 
-                <div id="away-league-table" class="league-table" style="min-height: 120px;"></div> 
-            </div>
-             
-            <div class="team-data">
-                <div id="home-team-stats"></div>
-                <div id="away-team-stats"></div>
+                <div id="home-league-table" class="league-table"></div> 
+                <div id="away-league-table" class="league-table"></div> 
+            </div> 
+             <div id="team-stats-container" class="home-team-stats away-team-stats"></div>
+            <div id="team-advanced-stats-container" class="home-team-stats away-team-stats"></div>
             </div>
             <div id="streaksModule">
                 <div class="streaksModule_Insider"> 
@@ -1424,13 +1559,7 @@ async function fetchMatchDetails(matchId, matchElement) {
                     <div id="away-streaks"></div>
                 </div>
             </div>
-
-            <div class="team-events">
-                <div id="home-team-events"></div>
-                <div id="away-team-events"></div>
-            </div> 
-            
-            <div id="total-league-table" class="loading-animation league-table" style="min-height: 200px;"></div>
+            <div id="total-league-table" class="loading-animation league-table"></div>
         `;
 
        /*  // Schedule the match time refresh
@@ -1481,10 +1610,10 @@ async function fetchMatchDetails(matchId, matchElement) {
 
         // Call fetchAndDisplayWinningOdds after the match details are inserted
         fetchAndDisplayWinningOdds(matchId);
-        displayOddsForMatch(matchId, homeTeam.name, awayTeam.name, homeTeam.id, awayTeam.id);
+        displayOddsForMatch(matchId, homeTeam.name, awayTeam.name, homeTeam.id, awayTeam.id, uniqueTournamentId);
         await Promise.all([
-            fetchAndDisplayTeamPerformance(homeTeam.id, 'home', seasonId, matchId),
-            fetchAndDisplayTeamPerformance(awayTeam.id, 'away', seasonId, matchId)
+            fetchAndDisplayTeamPerformance(homeTeam.id, 'home', seasonId, uniqueTournamentId, matchId),
+            fetchAndDisplayTeamPerformance(awayTeam.id, 'away', seasonId, uniqueTournamentId, matchId)
         ]);
         fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeam.id, awayTeam.id, homeTeam.name, awayTeam.name);
          fetchAndDisplayTeamStreaks(matchId, homeTeam.name, awayTeam.name)   
@@ -1497,6 +1626,63 @@ async function fetchMatchDetails(matchId, matchElement) {
     }
 }
 
+// Function to calculate H2H stats for the last 3 years
+function calculateH2HStats(events, homeTeamId, awayTeamId) {
+    let homeWins = 0, awayWins = 0, draws = 0;
+
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setUTCFullYear(threeYearsAgo.getUTCFullYear() - 3);
+    threeYearsAgo.setUTCHours(0, 0, 0, 0); // Ensure time is set to midnight UTC
+
+    events.forEach(event => {
+        const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
+        if (eventDate >= threeYearsAgo) {
+            if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
+                const homeScore = event.homeScore?.current ?? 0;
+                const awayScore = event.awayScore?.current ?? 0; 
+                if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
+                    if (homeScore > awayScore) homeWins++;
+                    else if (homeScore < awayScore) awayWins++;
+                    else draws++;
+                } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
+                    if (homeScore > awayScore) awayWins++;
+                    else if (homeScore < awayScore) homeWins++;
+                    else draws++;
+                }
+            }
+        }
+    });
+
+    return `<small>${homeWins}</small><small>${draws}</small><small>${awayWins}</small>`;
+}
+
+// Function to calculate H2H goal stats for the last 3 years
+function h2HGoalStats(events, homeTeamId, awayTeamId) {
+    let homeGoals = 0, awayGoals = 0;
+
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setUTCFullYear(threeYearsAgo.getUTCFullYear() - 3);
+    threeYearsAgo.setUTCHours(0, 0, 0, 0); // Ensure time is set to midnight UTC
+
+    events.forEach(event => {
+        const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
+        if (eventDate >= threeYearsAgo) {
+            if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
+                const homeScore = event.homeScore?.current ?? 0;
+                const awayScore = event.awayScore?.current ?? 0; 
+                if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
+                    homeGoals += homeScore;
+                    awayGoals += awayScore; 
+                } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
+                    homeGoals += awayScore;
+                    awayGoals += homeScore; 
+                }
+            }
+        }
+    });
+
+    return `<span>${homeGoals}</span> <span>${awayGoals}</span>`;
+}
 
 const startLiveTimer = (event) => {
         const timerElement = document.getElementById(`live-timer-${event.id}`);
@@ -1786,63 +1972,64 @@ async function fetchTeamForm(uniqueTournamentId, seasonId, type) {
                     else if (event.winnerCode === 2) formResult = 'W';
                     else formResult = 'D';
                 }
-                return `<span class="${formResult}">${formResult}</span>`;
+                return `<span class="${formResult}"></span>`;
             }).join(' ');
         }
     }
     return teamForms;
 }
+
 async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeamId, awayTeamId, homeTeamName, awayTeamName) {
     try {
-        // Fetch home standings
-        const homeStandingsResponse = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/home`);
-        let homeStandingsData;
-        if (homeStandingsResponse.ok) {
-            homeStandingsData = await homeStandingsResponse.json();
-        }
-
-        // Fetch away standings
-        const awayStandingsResponse = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/away`);
-        let awayStandingsData;
-        if (awayStandingsResponse.ok) {
-            awayStandingsData = await awayStandingsResponse.json();
-        }
-
-        // Fetch total standings
-        const totalStandingsResponse = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/total`);
-        let totalStandingsData;
-        if (totalStandingsResponse.ok) {
-            totalStandingsData = await totalStandingsResponse.json();
-        }
-
-        // Fetch form data for home and away
-        const [homeTeamForms, awayTeamForms] = await Promise.all([
+        // Fetch all necessary data in parallel
+        const [
+            homeStandingsResponse,
+            awayStandingsResponse,
+            totalStandingsResponse,
+            homeTeamForms,
+            awayTeamForms
+        ] = await Promise.all([
+            fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/home`).then(res => res.ok ? res.json() : null),
+            fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/away`).then(res => res.ok ? res.json() : null),
+            fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/total`).then(res => res.ok ? res.json() : null),
             fetchTeamForm(uniqueTournamentId, seasonId, 'home'),
-            fetchTeamForm(uniqueTournamentId, seasonId, 'away')
-            
+            fetchTeamForm(uniqueTournamentId, seasonId, 'away'), 
         ]);
 
-        // Display home, away, and total standings
-        if (homeStandingsData && awayStandingsData && totalStandingsData) {
-            displayTeamInfo(homeTeamId, 'home-team-comparison', totalStandingsData, true);
-            displayTeamInfo(awayTeamId, 'away-team-comparison', totalStandingsData, false);
-            displayLeagueTable(homeStandingsData, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, homeTeamForms);
-            displayLeagueTable(awayStandingsData, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, awayTeamForms);
-            displayLeagueTable(totalStandingsData, 'Total', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
-        } else {
-            const leagueTableDiv = document.getElementById('league-table');
-            leagueTableDiv.innerHTML = '<p>No standings available</p>';
+        // Check and clear home standings if data is missing
+        if (!homeStandingsResponse) {
+            document.getElementById('home-league-table').innerHTML = '';
         }
-        
-        // Fetch team stats for home and away teams
-        const [homeTeamStats, awayTeamStats] = await Promise.all([
-            fetchTeamStats(uniqueTournamentId, seasonId, homeTeamId, 'home'),
-            fetchTeamStats(uniqueTournamentId, seasonId, awayTeamId, 'away')
-        ]);
 
-        // Display team stats
-        displayTeamStats(homeTeamStats, 'home-team-stats');
-        displayTeamStats(awayTeamStats, 'away-team-stats'); 
+        // Check and clear away standings if data is missing
+        if (!awayStandingsResponse) {
+            document.getElementById('away-league-table').innerHTML = '';
+        }
+
+        // Check and clear total standings if data is missing
+        if (!totalStandingsResponse) {
+            document.getElementById('total-league-table').innerHTML = '';
+            return; // Stop execution if total standings are missing
+        }
+
+        // Display team comparison info
+        displayTeamInfo(homeTeamId, 'home-team-comparison', totalStandingsResponse, true);
+        displayTeamInfo(awayTeamId, 'away-team-comparison', totalStandingsResponse, false);
+
+        // Display league tables
+        if (homeStandingsResponse) displayLeagueTable(homeStandingsResponse, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, homeTeamForms);
+        if (awayStandingsResponse) displayLeagueTable(awayStandingsResponse, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, awayTeamForms);
+        displayLeagueTable(totalStandingsResponse, 'Total', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
+        
+        const homeStatsData = await getTeamStats(uniqueTournamentId, seasonId, matchId, homeTeamId);
+        const awayStatsData = await getTeamStats(uniqueTournamentId, seasonId, matchId, awayTeamId);
+
+        const homeStats = homeStatsData[homeTeamId]; // Extract the stats object
+        const awayStats = awayStatsData[awayTeamId]; // Extract the stats object
+
+        displayCombinedTeamStats(homeStats, awayStats, homeTeamName, awayTeamName); 
+
+ 
          
 
     } catch (error) {
@@ -1853,204 +2040,216 @@ async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, season
         displayFallbackTeamInfo(homeTeamId, 'home-team-comparison', null, true); 
     }
 }
+function displayCombinedTeamStats(homeStats, awayStats, homeTeamName, awayTeamName) {
+    const generalStatsContainer = document.getElementById('team-stats-container');
+    const advancedStatsContainer = document.getElementById('team-advanced-stats-container');
+
+    // Calculate percentages for home team
+    const homeTotalMatches = homeStats.wins + homeStats.draws + homeStats.losses;
+
+    const avHomeScored = ((homeStats.goalsScored / homeTotalMatches)).toFixed(2);
+    const avHomeConceded = ((homeStats.goalsConceded / homeTotalMatches)).toFixed(2);
+
+    const homeWinsPercentage = ((homeStats.wins / homeTotalMatches) * 100).toFixed(0);
+    const homeDrawsPercentage = ((homeStats.draws / homeTotalMatches) * 100).toFixed(0);
+    const homeLossesPercentage = ((homeStats.losses / homeTotalMatches) * 100).toFixed(0);
+    const homeWinToNilPercentage = ((homeStats.winToNil / homeTotalMatches) * 100).toFixed(0);
+    const homeNilDrawsPercentage = ((homeStats.nilDraws / homeTotalMatches) * 100).toFixed(0);
+    const homeLossToNilPercentage = ((homeStats.lossToNil / homeTotalMatches) * 100).toFixed(0);
+
+    // Additional stats as percentages for home team
+    const homeOver05ScoredPercentage = ((homeStats.over05Scored / homeTotalMatches) * 100).toFixed(0);
+    const homeOver05ConcededPercentage = ((homeStats.over05Conceded / homeTotalMatches) * 100).toFixed(0);
+    const homeBttsPercentage = ((homeStats.btts / homeTotalMatches) * 100).toFixed(0);
+    const homeOver15Percentage = ((homeStats.over15 / homeTotalMatches) * 100).toFixed(0);
+    const homeOver25Percentage = ((homeStats.over25 / homeTotalMatches) * 100).toFixed(0);
+
+    // Calculate percentages for away team
+    const awayTotalMatches = awayStats.wins + awayStats.draws + awayStats.losses;
+
+    const avAwayScored = ((awayStats.goalsScored / awayTotalMatches)).toFixed(2);
+    const avAwayConceded = ((awayStats.goalsConceded / awayTotalMatches)).toFixed(2);
+
+    const awayWinsPercentage = ((awayStats.wins / awayTotalMatches) * 100).toFixed(0);
+    const awayDrawsPercentage = ((awayStats.draws / awayTotalMatches) * 100).toFixed(0);
+    const awayLossesPercentage = ((awayStats.losses / awayTotalMatches) * 100).toFixed(0);
+    const awayWinToNilPercentage = ((awayStats.winToNil / awayTotalMatches) * 100).toFixed(0);
+    const awayNilDrawsPercentage = ((awayStats.nilDraws / awayTotalMatches) * 100).toFixed(0);
+    const awayLossToNilPercentage = ((awayStats.lossToNil / awayTotalMatches) * 100).toFixed(0);
 
 
+    // Additional stats as percentages for away team
+    const awayOver05ScoredPercentage = ((awayStats.over05Scored / awayTotalMatches) * 100).toFixed(0);
+    const awayOver05ConcededPercentage = ((awayStats.over05Conceded / awayTotalMatches) * 100).toFixed(0);
+    const awayBttsPercentage = ((awayStats.btts / awayTotalMatches) * 100).toFixed(0);
+    const awayOver15Percentage = ((awayStats.over15 / awayTotalMatches) * 100).toFixed(0);
+    const awayOver25Percentage = ((awayStats.over25 / awayTotalMatches) * 100).toFixed(0);
 
-async function fetchTeamStats(uniqueTournamentId, seasonId, teamId, type) {
-    const response = await fetch(`https://api.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/team-events/${type}`);
-    const data = await response.json();
-    const teamStats = {};
-
-    const events = data.tournamentTeamEvents;
-    //console.log(events);
-    //console.log(teamId);
-    for (const tournamentKey in events) {
-        const teams = events[tournamentKey];
-        for (const teamKey in teams) {
-            const teamEvents = teams[teamKey];
-            if (!teamStats[teamId]) {
-                teamStats[teamId] = {
-                    wins: 0,
-                    draws: 0,
-                    losses: 0,
-                    goalsScored: 0,
-                    goalsConceded: 0,
-                    over05Scored: 0,
-                    over05Conceded: 0,
-                    btts: 0,
-                    over15: 0,
-                    over25: 0,
-                    over35: 0,
-                    nilDraws: 0,
-                    winToNil: 0,
-                    lossToNil: 0
-                };
-            }
-            teamEvents.forEach(event => {  
-                if (teamKey == teamId) {
-                    if (type === 'home') {
-                        if (event.winnerCode === 1) {
-                            teamStats[teamId].wins++;
-                            if (event.awayScore.current === 0) {
-                                teamStats[teamId].winToNil++;
-                            }
-                        }
-                        else if (event.winnerCode === 2) {
-                            teamStats[teamId].losses++;
-                            if (event.homeScore.current === 0) {
-                                teamStats[teamId].lossToNil++;
-                            }
-                        }
-                        else {
-                            teamStats[teamId].draws++;
-                            if (event.homeScore.current === 0 && event.awayScore.current === 0) {
-                                teamStats[teamId].nilDraws++;
-                            }
-                        }
-
-                        teamStats[teamId].goalsScored += event.homeScore?.current ?? '';
-                        teamStats[teamId].goalsConceded += event.awayScore?.current ?? '';
-
-                        if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats[teamId].btts++;
-                        if (event.homeScore.current > 0.5) teamStats[teamId].over05Scored++;
-                        if (event.awayScore.current > 0.5) teamStats[teamId].over05Conceded++;
-                        if (event.homeScore.current + event.awayScore.current > 1.5) teamStats[teamId].over15++;
-                        if (event.homeScore.current + event.awayScore.current > 2.5) teamStats[teamId].over25++;
-                        if (event.homeScore.current + event.awayScore.current > 3.5) teamStats[teamId].over35++;
-                    } else if (type === 'away') {
-                        if (event.winnerCode === 1) {
-                            teamStats[teamId].losses++;
-                            if (event.awayScore.current === 0) {
-                                teamStats[teamId].lossToNil++;
-                            }
-                        }
-                        else if (event.winnerCode === 2) {
-                            teamStats[teamId].wins++;
-                            if (event.homeScore.current === 0) {
-                                teamStats[teamId].winToNil++;
-                            }
-                        }
-                        else {
-                            teamStats[teamId].draws++;
-                            if (event.homeScore.current === 0 && event.awayScore.current === 0) {
-                                teamStats[teamId].nilDraws++;
-                            }
-                        }
-
-                        teamStats[teamId].goalsScored += event.awayScore?.current ?? '';
-                        teamStats[teamId].goalsConceded += event.homeScore?.current ?? '';
-
-
-                        if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats[teamId].btts++;
-                        if (event.awayScore.current > 0.5) teamStats[teamId].over05Scored++;
-                        if (event.homeScore.current > 0.5) teamStats[teamId].over05Conceded++;
-                        if (event.homeScore.current + event.awayScore.current > 1.5) teamStats[teamId].over15++;
-                        if (event.homeScore.current + event.awayScore.current > 2.5) teamStats[teamId].over25++;
-                        if (event.homeScore.current + event.awayScore.current > 3.5) teamStats[teamId].over35++;
-                    }
-                }
-            });
-        }
+    
+    // Helper function to style percentages
+    function stylePercentage(value) {
+        return value >= 80 ? `style="color: var(--secondary-default); font-weight: 700;"` : '';
     }
-    return teamStats;
-}
+
+    // Helper function to style conceded percentages
+    function concededPercentage(value) {
+        return value >= 80 ? `style="color: var(--loss-color); font-weight: 700;"` : '';
+    }
 
 
-async function displayTeamStats(teamStats, divId) {
-    const div = document.getElementById(divId);
-    div.innerHTML = '';
-    let teamStatsHTML = '';
-
-    // Add the header for the first section of statistics
-    teamStatsHTML += `
-        <div> 
+    // General Stats Container
+    generalStatsContainer.innerHTML = `
+        <div class="stats-row"> 
             <span>Played</span>
             <span>Win</span>
             <span>Draw</span>
             <span>Loss</span>
-            <span>Win - 0</span>
-            <span>Draw - 0</span>
-            <span>Loss - 0</span>
-        </div>  
-    `;
-
-    // Helper function to style percentages
-    function stylePercentage(value) {
-        return value >= 80 ? `style="color: var(--secondary-default); font-weight: 600;"` : '';
-    }
-
-    // Helper function to style percentages
-    function concededPercentage(value) {
-        return value >= 80 ? `style="color: var(--loss-color); font-weight: 600;"` : '';
-    }
-
-    // Loop through teamStats and add each team's stats for the first section
-    for (const teamId in teamStats) {
-        const stats = teamStats[teamId];
-        const totalMatches = stats.wins + stats.draws + stats.losses;
-        const winsPercentage = ((stats.wins / totalMatches) * 100).toFixed(0);
-        const drawsPercentage = ((stats.draws / totalMatches) * 100).toFixed(0);
-        const lossesPercentage = ((stats.losses / totalMatches) * 100).toFixed(0);
-        const winToNilPercentage = ((stats.winToNil / totalMatches) * 100).toFixed(0);
-        const nilDrawsPercentage = ((stats.nilDraws / totalMatches) * 100).toFixed(0);
-        const lossToNilPercentage = ((stats.lossToNil / totalMatches) * 100).toFixed(0);
-
-        teamStatsHTML += `
-            <div> 
-                <span>${totalMatches}</span>
-                <span>${winsPercentage}%</span>
-                <span ${stylePercentage(drawsPercentage)}>${drawsPercentage}%</span>
-                <span ${stylePercentage(lossesPercentage)}>${lossesPercentage}%</span>
-                <span ${stylePercentage(winToNilPercentage)}>${winToNilPercentage}%</span>
-                <span ${stylePercentage(nilDrawsPercentage)}>${nilDrawsPercentage}%</span>
-                <span ${stylePercentage(lossToNilPercentage)}>${lossToNilPercentage}%</span>
-            </div>  
-        `;
-    }
-
-    // Add the header for the second section of statistics
-    teamStatsHTML += ` 
-        <div>  
-            <span>GS</span>
-            <span>GC</span>   
-            <span>S+0.5</span>
-            <span>C+0.5</span>
-            <span>BTTS</span>
-            <span>+1.5</span>
-            <span>+2.5</span> 
+            <span>W - 0</span>
+            <span>D - 0</span>
+            <span>L - 0</span>
+        </div>
+        <div class="stats-row"> 
+            <span>${homeTotalMatches}</span>        
+            <span ${stylePercentage(homeWinsPercentage)}>${homeWinsPercentage}%</span>
+            <span>${homeDrawsPercentage}%</span>
+            <span ${concededPercentage(homeLossesPercentage)}>${homeLossesPercentage}%</span>
+            <span ${stylePercentage(homeWinToNilPercentage)}>${homeWinToNilPercentage}%</span>
+            <span>${homeNilDrawsPercentage}%</span>
+            <span ${concededPercentage(homeLossToNilPercentage)}>${homeLossToNilPercentage}%</span>
+    </div>
+        <div class="stats-row"> 
+            <span>${awayTotalMatches}</span>     
+            <span ${stylePercentage(awayWinsPercentage)}>${awayWinsPercentage}%</span>
+            <span>${awayDrawsPercentage}%</span>
+            <span ${concededPercentage(awayLossesPercentage)}>${awayLossesPercentage}%</span>
+            <span ${stylePercentage(awayWinToNilPercentage)}>${awayWinToNilPercentage}%</span>
+            <span>${awayNilDrawsPercentage}%</span>
+            <span ${concededPercentage(awayLossToNilPercentage)}>${awayLossToNilPercentage}%</span>
+    
         </div>
     `;
 
-    // Loop through teamStats and add each team's stats for the second section
-    for (const teamId in teamStats) {
-        const stats = teamStats[teamId];
-        const totalMatches = stats.wins + stats.draws + stats.losses;
-        const over05ScoredPercentage = ((stats.over05Scored / totalMatches) * 100).toFixed(0); 
-        const over05ConcededPercentage = ((stats.over05Conceded / totalMatches) * 100).toFixed(0);
-        const bttsPercentage = ((stats.btts / totalMatches) * 100).toFixed(0);
-        const over15Percentage = ((stats.over15 / totalMatches) * 100).toFixed(0);
-        const over25Percentage = ((stats.over25 / totalMatches) * 100).toFixed(0);
-        const avScored = ((stats.goalsScored / totalMatches)).toFixed(2);
-        const avConceded = ((stats.goalsConceded / totalMatches)).toFixed(2);
-        //const over35Percentage = ((stats.over35 / totalMatches) * 100).toFixed(0);
-
-        teamStatsHTML += ` 
-            <div>     
-                <span>${stats.goalsScored} <sub>(${avScored})</sub></span>
-                <span>${stats.goalsConceded} <sub>(${avConceded})</sub></span> 
-                <span ${stylePercentage(over05ScoredPercentage)}>${over05ScoredPercentage}%</span> 
-                <span ${concededPercentage(over05ConcededPercentage)}>${over05ConcededPercentage}%</span>
-                <span ${stylePercentage(bttsPercentage)}>${bttsPercentage}%</span>
-                <span ${stylePercentage(over15Percentage)}>${over15Percentage}%</span>
-                <span ${stylePercentage(over25Percentage)}>${over25Percentage}%</span> 
-            </div>
-        `;
-    }
-
-    // Insert the generated HTML into the div
-    div.insertAdjacentHTML('beforeend', teamStatsHTML);
+    // Advanced Stats Container
+    advancedStatsContainer.innerHTML = `
+        <div class="stats-row"> 
+            <span>GS</span>
+            <span>GC</span>
+            <span>S+0.5</span>
+            <span>C+0.5</span>
+            <span>BTTS</span>
+            <span>+1.5</span> 
+            <span>+2.5</span> 
+        </div>
+        <div class="stats-row"> 
+            <span>${homeStats?.goalsScored ?? '-'} <sub>(${avHomeScored})</sub></span>
+            <span>${homeStats?.goalsConceded ?? '-'} <sub>(${avHomeConceded})</sub></span> 
+            <span ${stylePercentage(homeOver05ScoredPercentage)}>${homeOver05ScoredPercentage}%</span>
+            <span ${concededPercentage(homeOver05ConcededPercentage)}>${homeOver05ConcededPercentage}%</span>
+            <span ${stylePercentage(homeBttsPercentage)}>${homeBttsPercentage}%</span>
+            <span ${stylePercentage(homeOver15Percentage)}>${homeOver15Percentage}%</span>
+            <span ${stylePercentage(homeOver25Percentage)}>${homeOver25Percentage}%</span>
+        </div>
+        <div class="stats-row"> 
+            <span>${awayStats?.goalsScored ?? '-'} <sub>(${avAwayScored})</sub></span>
+            <span>${awayStats?.goalsConceded ?? '-'} <sub>(${avAwayConceded})</sub></span>
+            <span ${stylePercentage(awayOver05ScoredPercentage)}>${awayOver05ScoredPercentage}%</span>
+            <span ${concededPercentage(awayOver05ConcededPercentage)}>${awayOver05ConcededPercentage}%</span>
+            <span ${stylePercentage(awayBttsPercentage)}>${awayBttsPercentage}%</span>
+            <span ${stylePercentage(awayOver15Percentage)}>${awayOver15Percentage}%</span>
+            <span ${stylePercentage(awayOver25Percentage)}>${awayOver25Percentage}%</span>
+        </div>
+    `;
 }
 
+async function getTeamStats(uniqueTournamentId, seasonId, matchId, teamId) {
+    const response = await fetch(`https://api.sofascore.com/api/v1/team/${teamId}/events/last/0`);
+    const data = await response.json();
+
+    const teamStats = {
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        goalsScored: 0,
+        goalsConceded: 0,
+        over05Scored: 0,
+        over05Conceded: 0,
+        btts: 0,
+        over15: 0,
+        over25: 0,
+        over35: 0,
+        nilDraws: 0,
+        winToNil: 0,
+        lossToNil: 0
+    };
+
+    const events = data.events
+        .filter(event => event.tournament.uniqueTournament.id === uniqueTournamentId && event.season.id === seasonId && Number(event.id) !== Number(matchId) && event.status.type === 'finished')
+        .reverse()
+        .slice(0, 5); // Get the last 5 finished events
+    events.forEach(event => {
+        const isHomeTeam = event.homeTeam.id === teamId;
+        const isAwayTeam = event.awayTeam.id === teamId;
+
+        // Logic for home or away games
+        if (isHomeTeam) {
+            if (event.winnerCode === 1) {
+                teamStats.wins++;
+                if (event.awayScore.current === 0) {
+                    teamStats.winToNil++;
+                }
+            } else if (event.winnerCode === 2) {
+                teamStats.losses++;
+                if (event.homeScore.current === 0) {
+                    teamStats.lossToNil++;
+                }
+            } else {
+                teamStats.draws++;
+                if (event.homeScore.current === 0 && event.awayScore.current === 0) {
+                    teamStats.nilDraws++;
+                }
+            }
+
+            teamStats.goalsScored += event.homeScore?.current ?? 0;
+            teamStats.goalsConceded += event.awayScore?.current ?? 0;
+
+            if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats.btts++;
+            if (event.homeScore.current > 0.5) teamStats.over05Scored++;
+            if (event.awayScore.current > 0.5) teamStats.over05Conceded++;
+            if (event.homeScore.current + event.awayScore.current > 1.5) teamStats.over15++;
+            if (event.homeScore.current + event.awayScore.current > 2.5) teamStats.over25++;
+            if (event.homeScore.current + event.awayScore.current > 3.5) teamStats.over35++;
+        } else if (isAwayTeam) {
+            if (event.winnerCode === 1) {
+                teamStats.losses++;
+                if (event.awayScore.current === 0) {
+                    teamStats.lossToNil++;
+                }
+            } else if (event.winnerCode === 2) {
+                teamStats.wins++;
+                if (event.homeScore.current === 0) {
+                    teamStats.winToNil++;
+                }
+            } else {
+                teamStats.draws++;
+                if (event.homeScore.current === 0 && event.awayScore.current === 0) {
+                    teamStats.nilDraws++;
+                }
+            }
+
+            teamStats.goalsScored += event.awayScore?.current ?? 0;
+            teamStats.goalsConceded += event.homeScore?.current ?? 0;
+
+            if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats.btts++;
+            if (event.awayScore.current > 0.5) teamStats.over05Scored++;
+            if (event.homeScore.current > 0.5) teamStats.over05Conceded++;
+            if (event.homeScore.current + event.awayScore.current > 1.5) teamStats.over15++;
+            if (event.homeScore.current + event.awayScore.current > 2.5) teamStats.over25++;
+            if (event.homeScore.current + event.awayScore.current > 3.5) teamStats.over35++;
+        }
+    });
+
+    return { [teamId]: teamStats }; // Return an object with teamId as the key
+}
 
 function displayFallbackTeamInfo(teamId, divId, isHomeTeam) {
           const teamComparisonDiv = document.getElementById(divId);
@@ -2256,63 +2455,77 @@ function updateMatchScores(matchElement, match) {
     }
     
 
-function updateMatches(matchData, oddsData) {
-    
+    async function updateMatches(matchData, oddsData) {
     const matchEventsDiv = document.getElementById('match-events');
     const existingMatches = matchEventsDiv.querySelectorAll('.match');
     const existingMatchesMap = {};
 
+    // Map existing matches by their IDs
     existingMatches.forEach(matchElement => {
         const matchId = matchElement.getAttribute('data-match-id');
         existingMatchesMap[matchId] = matchElement;
     });
 
     const matchMap = {};
-    let firstMatchStandingsFetched = false;
 
-
+    // Organize matches by tournament
     for (const match of matchData.events) {
         const uniqueTournamentId = match.tournament.uniqueTournament.id;
-        const tournamentId = match.tournament.id;
-        const uniqueTournamentName = match.tournament.uniqueTournament.name;
         const categoryName = match.tournament.category.name;
+        const uniqueTournamentName = match.tournament.uniqueTournament.name;
 
         if (!matchMap[uniqueTournamentId]) {
-            matchMap[uniqueTournamentId] = { categoryName: categoryName, uniqueTournamentName: uniqueTournamentName, matches: [] };
+            matchMap[uniqueTournamentId] = { 
+                categoryName: categoryName, 
+                uniqueTournamentName: uniqueTournamentName, 
+                matches: [] 
+            };
         }
         matchMap[uniqueTournamentId].matches.push(match);
-
-         
     }
 
+    // Clear the container
     matchEventsDiv.innerHTML = '';
 
-    Object.entries(matchMap).forEach(([tournamentId, tournament]) => {
+    // Iterate over tournaments and matches
+    for (const [tournamentId, tournament] of Object.entries(matchMap)) {
         const tournamentDiv = document.createElement('div');
         tournamentDiv.classList.add('tournament');
 
-        tournamentDiv.innerHTML = `<div class="category-name">
-            <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy"><div class="categoryText"><span>${tournament.uniqueTournamentName}</span><span>${tournament.categoryName}</span></div></div>`;
+        tournamentDiv.innerHTML = `
+            <div class="category-name">
+                <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy">
+                <div class="categoryText">
+                    <span>${tournament.uniqueTournamentName}</span>
+                    <span>${tournament.categoryName}</span>
+                </div>
+            </div>
+        `;
 
-        tournament.matches.forEach(match => {
+        // Process each match in the tournament
+        for (const match of tournament.matches) {
             const matchOdds = oddsData.odds[match.id];
             let matchElement = existingMatchesMap[match.id];
 
             if (matchElement) {
+                // Update existing match element
                 updateMatchElement(matchElement, match, matchOdds);
             } else {
-                matchElement = createMatchElement(match, matchOdds);
+                // Create a new match element (await the async function)
+                matchElement = await createMatchElement(match, matchOdds);
             }
 
+            // Append the match element to the tournament
             tournamentDiv.appendChild(matchElement);
-        });
+        }
 
+        // Append the tournament to the container
         matchEventsDiv.appendChild(tournamentDiv);
-    });
+    }
 }
 
 
-async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, matchId) {
+async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, uniqueTournamentId, matchId) {
     try { 
         const teamIdInt = parseInt(teamId, 10); // Ensure teamId is an integer
         const response = await fetch(`https://api.sofascore.com/api/v1/team/${teamIdInt}/performance`);
@@ -2326,7 +2539,7 @@ async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, matchI
         if (performanceData && performanceData.events && performanceData.points) {
             // Filter events for the given season and remove the one matching matchId
             const eventsWithWinnerCodes = performanceData.events
-                .filter(event => event.season.id === seasonId && event.id !== matchId);
+                .filter(event => event.season.id === seasonId && event.tournament.uniqueTournament.id === uniqueTournamentId && Number(event.id) !== Number(matchId));
  
             
             if (teamType === 'home') {
@@ -2464,8 +2677,7 @@ async function displayTeamEvents(teamId, teamType, events) {
                     <th>1</th>
                     <th>X</th>
                     <th>2</th>
-                    <th>R</th>
-                    <th> </th>
+                    <th>R</th> 
                     <th>Pts</th>
                 </tr>
             </thead>
@@ -2481,19 +2693,19 @@ async function displayTeamEvents(teamId, teamType, events) {
 
                     if (awaySideId === parseInt(teamId)) {
                         if (awayScore > homeScore) {
-                            recentForm += '<span class="W">W</span>';
+                            recentForm += 'W';
                         } else if (awayScore === homeScore) {
-                            recentForm += '<span class="D">D</span>';
+                            recentForm += 'D';
                         } else {
-                            recentForm += '<span class="L">L</span>';
+                            recentForm += 'L';
                         }
                     } else if (homeSideId === parseInt(teamId)) {
                         if (homeScore > awayScore) {
-                            recentForm += '<span class="W">W</span>';
+                            recentForm += 'W';
                         } else if (homeScore === awayScore) {
-                            recentForm += '<span class="D">D</span>';
+                            recentForm += 'D';
                         } else {
-                            recentForm += '<span class="L">L</span>';
+                            recentForm += 'L';
                         }
                     }
 
@@ -2511,8 +2723,7 @@ async function displayTeamEvents(teamId, teamType, events) {
                                 ${event.odds ? fractionalToDecimal(event.odds[2].fractionalValue) : '-'}
                             </td>
                             <td>${event.eventDescription}</td>
-                            <td>${recentForm}</td>
-                            <td>${event.points}</td>
+                            <td class="${recentForm}">${event.points}</td>
                         </tr>
                     `;
                 }).join('')}
@@ -2640,7 +2851,7 @@ function buildTableRows(standingsData, standingsType, tournamentId, seasonId, ma
                 <td>${position}</td>
                 <td class="team-name-column">
                     <img src="https://api.sofascore.app/api/v1/team/${team.id}/image" width="16" height="16" alt="${team.shortName}" loading="lazy">
-                    <span class="team-name">${team.shortName}</span>
+                ${standingsType.toLowerCase() !== 'total' ? `<span class="team-name">${team.nameCode}</span>` : `<span class="team-name">${team.shortName}</span>`}
                 </td>
                 <td class="gamesPlayed${liveMatchWinnerCodeColumn ? ` live-match-${liveMatchWinnerCodeColumn}` : ''}">${totalGames}</td>
                 <td>${wins}</td>
@@ -2677,56 +2888,286 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
             setInterval(refreshTable, interval);
         }
 
+        async function displayOddsForMatch(matchId, homeTeamName, awayTeamName, homeTeamId, awayTeamId, seasonId, uniqueTournamentId) {
+            const oddsDiv = document.getElementById('match-odds');
+            if (!oddsDiv) {
+                console.error('No element found for odds display: match-odds');
+                return;
+            }
+            console.log(matchId);
+            const odds = await fetchOddsForMatch(matchId);
+            if (!odds || !Array.isArray(odds)) {
+                oddsDiv.innerHTML = '<p>No odds available for this match.</p>';
+                return;
+            }
 
-        async function displayOddsForMatch(matchId, homeTeamName, awayTeamName, homeTeamId, awayTeamId) {
-    const oddsDiv = document.getElementById('match-odds');
-    if (!oddsDiv) {
-        console.error('No element found for odds display: match-odds');
-        return;
+            // Fetch previous match events and their odds for both teams using performance API
+            const homeTeamEvents = await fetchAndDisplayTeamPerformance(homeTeamId, 'home', seasonId, uniqueTournamentId, matchId);
+            const awayTeamEvents = await fetchAndDisplayTeamPerformance(awayTeamId, 'away', seasonId, uniqueTournamentId, matchId);
+
+            // Check if events arrays are available
+            if (!homeTeamEvents || !Array.isArray(homeTeamEvents.events)) {
+                console.warn('No valid events found for home team');
+                return;
+            }
+            if (!awayTeamEvents || !Array.isArray(awayTeamEvents.events)) {
+                console.warn('No valid events found for away team');
+                return;
+            }
+
+            // Extract previous home and away odds (limit to last 5 matches)
+            const previousHomeOdds = await extractPreviousOdds(homeTeamId, 'home', homeTeamEvents.events.reverse(), matchId);
+            const previousAwayOdds = await extractPreviousOdds(awayTeamId, 'away', awayTeamEvents.events.reverse(), matchId);
+
+            // Current home and away odds
+            const currentHomeOdds = odds[0] ? fractionalToDecimal(odds[0].fractionalValue) : null;
+            const currentAwayOdds = odds[2] ? fractionalToDecimal(odds[2].fractionalValue) : null;
+
+            // Prepare data for prediction model (limit to last 5 matches)
+            const pastMatches = preparePastMatchesData(previousHomeOdds, previousAwayOdds, homeTeamName, awayTeamName, matchId);
+
+            // Apply the prediction model
+            const prediction = analyzeMatch(homeTeamName, awayTeamName, pastMatches, currentHomeOdds, currentAwayOdds);
+
+            // Display odds
+            oddsDiv.innerHTML = `
+                <h4>Match Odds</h4>
+                <ul class="game-odds">
+                    ${odds.map(choice => `<li>${choice.name}: <span class="ParticipantFixtureOdd_Odds">${fractionalToDecimal(choice.fractionalValue)}</span></li>`).join('')}
+                </ul>
+                <div class="prediction"> 
+                <h5><strong>Bet Bullets</strong></h5>
+                    <ul>
+                        ${prediction.reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+async function extractPreviousOdds(teamId, teamType, events, currentMatchId) {
+    if (!events || events.length === 0) {
+        console.error(`No events found for ${teamType} team`);
+        return [];
     }
 
-    const odds = await fetchOddsForMatch(matchId);
-    //console.log(odds);
+    // Exclude the current match first before slicing or reversing the events array
+    const filteredEvents = events.filter(event => Number(event.id) !== Number(currentMatchId))
+                                .slice(0, 5);
 
-    if (!odds || !Array.isArray(odds)) {
-        oddsDiv.innerHTML = '<p>No odds available for this match.</p>';
-        return;
-    }
+    // Fetch odds for each past event (limit to last 5 matches)
+    const eventsWithOdds = await Promise.all(filteredEvents.map(async event => {
+        const odds = await fetchOddsForMatch(event.id);
+        return { ...event, odds };
+    }));
 
-    // Create and append headers list
-    const headersList = document.createElement('ul');
+    // Store previous odds
+    const previousOdds = eventsWithOdds.map(event => {
+        if (!event.odds || event.odds.length < 3) return null; // Ensure odds array is long enough
 
-    // Create and append home team name
-    const homeTeamItem = document.createElement('li');
-    homeTeamItem.textContent = homeTeamName;
-    headersList.appendChild(homeTeamItem);
+        return {
+            matchId: event.id,
+            homeTeam: event.homeTeam.name,
+            awayTeam: event.awayTeam.name,
+            winnerCode: event.winnerCode,
+            odds: {
+                homeWin: fractionalToDecimal(event.odds[0].fractionalValue),
+                draw: fractionalToDecimal(event.odds[1].fractionalValue),
+                awayWin: fractionalToDecimal(event.odds[2].fractionalValue)
+            }
+        };
+    }).filter(Boolean); // Remove null values
+ 
+    return previousOdds;
+}
 
-    // Create and append "Match Odds" header
-    const matchOddsHeader = document.createElement('li');
-    const header = document.createElement('h4');
-    header.textContent = ' ';
-    matchOddsHeader.appendChild(header);
-    headersList.appendChild(matchOddsHeader);
 
-    // Create and append away team name
-    const awayTeamItem = document.createElement('li');
-    awayTeamItem.textContent = awayTeamName;
-    headersList.appendChild(awayTeamItem);
+function preparePastMatchesData(previousHomeOdds, previousAwayOdds, homeTeamName, awayTeamName) {
+    const pastMatches = [];
 
-    // Create and append odds list
-    const oddsList = document.createElement('ul');
+    // Process home team data (limit to last 5 matches)
+    previousHomeOdds.forEach(match => {
+         
+        const isHomeTeam = match.homeTeam === homeTeamName;
+        const result = determineResult(match.winnerCode, isHomeTeam);
 
-    odds.forEach(choice => {
-        const choiceItem = document.createElement('li');
-        choiceItem.innerHTML = `${choice.name} <span class="ParticipantFixtureOdd_Odds">${fractionalToDecimal(choice.fractionalValue)}</span>`;
-        oddsList.appendChild(choiceItem);
+        // If home team is the current team, we pick the homeWin odds
+        const odds = isHomeTeam ? match.odds.homeWin : match.odds.awayWin;
+
+        pastMatches.push({
+            team: homeTeamName,
+            result: result,
+            odds: odds,
+            opponentStrength: 50 // Placeholder, adjust based on actual data
+        });
     });
 
-    oddsDiv.innerHTML = ''; // Clear previous content
-    oddsDiv.appendChild(headersList);
-    oddsDiv.appendChild(oddsList);
- 
+    // Process away team data (limit to last 5 matches)
+    previousAwayOdds.forEach(match => {
+       
+        const isAwayTeam = match.awayTeam === awayTeamName;
+        const result = determineResult(match.winnerCode, !isAwayTeam);
+
+        // If away team is the current team, we pick the awayWin odds
+        const odds = isAwayTeam ? match.odds.awayWin : match.odds.homeWin;
+
+        pastMatches.push({
+            team: awayTeamName,
+            result: result,
+            odds: odds,
+            opponentStrength: 50 // Placeholder, adjust based on actual data
+        });
+    });
+
+    return pastMatches;
 }
+
+
+function determineResult(winnerCode, isHomeTeam) {
+    if (winnerCode === 1) {
+        return isHomeTeam ? "win" : "loss"; // Home team won
+    } else if (winnerCode === 2) {
+        return isHomeTeam ? "loss" : "win"; // Away team won
+    } else if (winnerCode === 3) {
+        return "draw"; // Draw
+    }
+    return "unknown"; // Fallback
+}
+
+function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentAwayOdds) {
+    function evaluatePerformance(team) {
+        let totalMatches = 0, wins = 0, losses = 0, draws = 0, competitiveWins = 0;
+        let performanceAgainstWeaker = 0, toughMatchHandling = 0, surpriseWins = 0, badLosses = 0;
+        let recentForm = []; // Track results of the last 5 matches
+        let historicalOdds = []; // Track historical odds for the team
+        let heavyFavoriteLosses = 0; // Track losses as heavy favorites (odds < 1.50)
+
+        pastMatches.forEach(match => {
+            if (match.team === team) {
+                totalMatches++;
+                let isWin = match.result === "win";
+                let isLoss = match.result === "loss";
+                let isDraw = match.result === "draw";
+                let isCompetitive = match.odds < 2.50;
+                let isWeakerOpponent = match.opponentStrength < 40; // Example threshold
+                let isHeavyUnderdogWin = isWin && match.odds > 4.00;
+                let isHeavyFavoriteLoss = isLoss && match.odds < 1.50; // Heavy favorite loss
+
+                if (isWin) wins++;
+                if (isLoss) losses++;
+                if (isDraw) draws++;
+                if (isWin && isCompetitive) competitiveWins++;
+                if (isWin && isWeakerOpponent) performanceAgainstWeaker++;
+                if (isWin && match.opponentStrength > 60) toughMatchHandling++;
+                if (isHeavyUnderdogWin) surpriseWins++;
+                if (isHeavyFavoriteLoss) heavyFavoriteLosses++;
+
+                // Track recent form (last 5 matches)
+                if (recentForm.length < 5) {
+                    recentForm.push(match.result);
+                }
+
+                // Track historical odds (ensure they are numbers)
+                historicalOdds.push(Number(match.odds));
+            }
+        });
+
+        // Calculate recent form (percentage of wins in the last 5 matches)
+        const recentWinRate = recentForm.filter(result => result === "win").length / recentForm.length;
+        // Calculate average historical odds
+        const averageHistoricalOdds = historicalOdds.reduce((sum, odds) => sum + odds, 0) / historicalOdds.length;
+        console.log(averageHistoricalOdds);
+        return {
+            winRate: wins / totalMatches,
+            lossRate: losses / totalMatches,
+            drawRate: draws / totalMatches,
+            competitiveWinRate: competitiveWins / totalMatches,
+            weakTeamWinRate: performanceAgainstWeaker / totalMatches,
+            toughMatchHandlingRate: toughMatchHandling / totalMatches,
+            surpriseWinRate: surpriseWins / totalMatches, // Wins when odds were high
+            badLossRate: heavyFavoriteLosses / totalMatches, // Losses as heavy favorites
+            recentWinRate: recentWinRate || 0, // Recent form (last 5 matches)
+            historicalOdds: historicalOdds || 0, // Average historical odds
+            averageHistoricalOdds: averageHistoricalOdds || 0 // Average historical odds
+        };
+    }
+
+    let homeStats = evaluatePerformance(homeTeam);
+    let awayStats = evaluatePerformance(awayTeam);
+
+    // Calculate weighted scores for home and away teams
+    const homeScore =
+        homeStats.winRate * 0.3 + // Win rate (30%)
+        homeStats.recentWinRate * 0.25 + // Recent form (25%)
+        homeStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
+        (currentHomeOdds < homeStats.averageHistoricalOdds ? 0.15 : 0) + // Odds mispricing (15%)
+        homeStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
+        homeStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
+
+    const awayScore =
+        awayStats.winRate * 0.3 + // Win rate (30%)
+        awayStats.recentWinRate * 0.25 + // Recent form (25%)
+        awayStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
+        (currentAwayOdds > awayStats.averageHistoricalOdds ? 0.15 : 0) + // Odds mispricing (15%)
+        awayStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
+        awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%) 
+    // Determine prediction based on weighted scores
+    let prediction = awayScore > homeScore ? "Away Win" : "Home Win";
+    let reasons = [];
+
+    // Add reasoning based on weighted factors
+    if (homeStats.winRate > awayStats.winRate) {
+        reasons.push(`${homeTeam} has a higher win rate.`);
+    }
+    if (homeStats.recentWinRate > awayStats.recentWinRate) {
+        reasons.push(`${homeTeam} is in better recent form.`);
+    }
+    if (homeStats.competitiveWinRate > awayStats.competitiveWinRate) {
+        reasons.push(`${homeTeam} performs better in competitive matches.`);
+    }
+    if (currentHomeOdds < homeStats.averageHistoricalOdds) {
+        reasons.push(`${homeTeam}'s current odds are lower than their historical average, indicating they may be undervalued.`);
+    }
+    if (homeStats.surpriseWinRate > awayStats.surpriseWinRate) {
+        reasons.push(`${homeTeam} has a history of winning as underdogs.`);
+    }
+    if (homeStats.badLossRate > 0.2) {
+        reasons.push(`Warning: ${homeTeam} has a history of underperforming as heavy favorites.`);
+    }
+
+    if (awayStats.winRate > homeStats.winRate) {
+        reasons.push(`${awayTeam} has a higher win rate.`);
+    }
+    if (awayStats.recentWinRate > homeStats.recentWinRate) {
+        reasons.push(`${awayTeam} is in better recent form.`);
+    }
+    if (awayStats.competitiveWinRate > homeStats.competitiveWinRate) {
+        reasons.push(`${awayTeam} performs better in competitive matches.`);
+    }
+    if (currentAwayOdds > awayStats.averageHistoricalOdds) {
+        reasons.push(`${awayTeam}'s current odds are higher than their historical average, indicating they may be undervalued.`);
+    }
+    if (awayStats.surpriseWinRate > homeStats.surpriseWinRate) {
+        reasons.push(`${awayTeam} has a history of winning as underdogs.`);
+    }
+    if (awayStats.badLossRate > 0.2) {
+        reasons.push(`Warning: ${awayTeam} has a history of underperforming as heavy favorites.`);
+    }
+
+    // Final decision
+    if (reasons.length === 0) {
+        reasons.push("Prediction is based on overall weighted scores.");
+    }
+
+    return {
+        homeStats,
+        awayStats,
+        prediction,
+        reasons,
+        homeScore: homeScore.toFixed(2),
+        awayScore: awayScore.toFixed(2)
+    };
+}
+
 // Function to fetch odds for a match
 async function fetchOddsForMatch(matchId) {
     try {
@@ -2738,10 +3179,7 @@ async function fetchOddsForMatch(matchId) {
         return null;
     }
 }
-
-
-// Function to create a match element
-function createMatchElement(match, odds) {
+const createMatchElement = async (match, odds) => {
     const matchElement = document.createElement('div');
     matchElement.classList.add('match');
     matchElement.setAttribute('data-status', match.status.type);
@@ -2799,12 +3237,55 @@ function createMatchElement(match, odds) {
                     ${awayOddsNew}
                 </span>
             </div>
-
+        </div>
+        <div class="goalStats">
+            <div id="h2hStats"></div>
+            <div id="h2hGoalStats"></div>
         </div>
     `;
 
+    // Append the matchElement to the DOM first
+    const parentElement = document.getElementById('match-events'); // Ensure this element exists
+    if (parentElement && matchElement instanceof Node) {
+        parentElement.appendChild(matchElement);
+    } else {
+        console.error('Parent element or matchElement is not valid');
+    }
+
+    // Now fetch and update H2H data
+    let h2hData = { events: [] };
+    try {
+        const h2hResponse = await fetch(`${baseURL}/event/${match.customId}/h2h/events`);
+        if (!h2hResponse.ok) {
+            throw new Error(`Network response was not ok: ${h2hResponse.statusText}`);
+        }
+        h2hData = await h2hResponse.json(); 
+    } catch (error) {
+        console.error('Failed to fetch H2H data:', error);
+    }
+
+    const h2hStats = calculateH2HStats(h2hData.events, match.homeTeam.id, match.awayTeam.id);
+    const h2hGoalStats = h2HGoalStats(h2hData.events, match.homeTeam.id, match.awayTeam.id);
+
+    const h2hStatsElement = matchElement.querySelector('#h2hStats');
+    const h2hGoalStatsElement = matchElement.querySelector('#h2hGoalStats');
+
+    if (h2hStatsElement) {
+        h2hStatsElement.innerHTML = h2hStats; // Insert H2H stats data
+    } else {
+        console.error('h2hStats element not found');
+    }
+
+    if (h2hGoalStatsElement) {
+        h2hGoalStatsElement.innerHTML = h2hGoalStats; // Insert H2H goal stats data
+    } else {
+        console.error('h2hGoalStats element not found');
+    }
+
     return matchElement;
 }
+
+ 
 
 // Function to update a match element
 function updateMatchElement(matchElement, match, odds) {

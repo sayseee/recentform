@@ -2,7 +2,9 @@ const CACHE_NAME = 'my-cache-v1';
 const urlsToCache = [ 
   'recentform/pale.html',
   'recentform/icons/icon-192x192.png',
-  'recentform/icons/icon-512x512.png'
+  'recentform/icons/icon-512x512.png',
+  'recentform/icons/splash-screen-512x512.png',
+  'recentform/icons/splash-screen-ios.png'
   // Add other URLs you want to cache
 ];
 
