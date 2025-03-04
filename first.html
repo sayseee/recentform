@@ -461,9 +461,7 @@ h4 {
     background-color: var(--decrease-greater);
 }
 .goalStats {
-    max-width: 60px;
-    flex: 2.5;
-    flex-direction: row;
+    flex-direction: column;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1244,6 +1242,26 @@ tr.is-team {
     width: 7px;
     height: 7px;
 }
+
+.stat-goals {
+    display: flex;
+    flex-direction: row !important;
+}
+
+.stat-goals .stat-title {
+    background-color: var(--color-white7p);
+    color: rgb(140 143 145);
+    font-weight: 700;
+    letter-spacing: 0.42px;
+    flex: 2;
+}
+.stat-goals span {
+    flex-direction: row !important;
+    font-weight: 700;
+    padding: 3px 6px;
+    flex: 1;
+    justify-content: center;
+}
     </style>
 </head>
 <body>
@@ -1548,7 +1566,11 @@ async function fetchMatchDetails(matchId, matchElement) {
                  
             <div id="match-odds"></div> 
             <div id="expected-actual"></div> 
-
+                <h4>H2H Stats</h4>
+            <div class="goalStats">
+                <div id="h2hStats"></div>
+                <div id="h2hGoalStats"></div>
+            </div>
             <div class="team-events">
                 <div id="home-team-events"></div>
                 <div id="away-team-events"></div>
@@ -1616,9 +1638,10 @@ async function fetchMatchDetails(matchId, matchElement) {
             console.error('matchElement is undefined');
         }
 
+        
         // Call fetchAndDisplayWinningOdds after the match details are inserted
         fetchAndDisplayWinningOdds(matchId);
-        displayOddsForMatch(matchId, homeTeam.name, awayTeam.name, homeTeam.id, awayTeam.id, uniqueTournamentId);
+        displayOddsForMatch(matchId, homeTeam.name, awayTeam.name, homeTeam.id, awayTeam.id, uniqueTournamentId, customId);
         await Promise.all([
             fetchAndDisplayTeamPerformance(homeTeam.id, 'home', seasonId, uniqueTournamentId, matchId),
             fetchAndDisplayTeamPerformance(awayTeam.id, 'away', seasonId, uniqueTournamentId, matchId)
@@ -1636,43 +1659,21 @@ async function fetchMatchDetails(matchId, matchElement) {
 
 // Function to calculate H2H stats for the last 3 years
 function calculateH2HStats(events, homeTeamId, awayTeamId) {
-    let homeWins = 0, awayWins = 0, draws = 0;
-
+    let homeGoals = 0, awayGoals = 0, homeWins = 0, awayWins = 0, draws = 0; 
+   
     const threeYearsAgo = new Date();
     threeYearsAgo.setUTCFullYear(threeYearsAgo.getUTCFullYear() - 3);
     threeYearsAgo.setUTCHours(0, 0, 0, 0); // Ensure time is set to midnight UTC
 
-    events.forEach(event => {
-        const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
-        if (eventDate >= threeYearsAgo) {
-            if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
-                const homeScore = event.homeScore?.current ?? 0;
-                const awayScore = event.awayScore?.current ?? 0; 
-                if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
-                    if (homeScore > awayScore) homeWins++;
-                    else if (homeScore < awayScore) awayWins++;
-                    else draws++;
-                } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
-                    if (homeScore > awayScore) awayWins++;
-                    else if (homeScore < awayScore) homeWins++;
-                    else draws++;
-                }
-            }
-        }
+    // Filter events within the last 3 years
+    const recentEvents = events.filter(event => {
+        const eventDate = new Date(event.startTimestamp * 1000);
+        return eventDate >= threeYearsAgo;
     });
 
-    return `<small>${homeWins}</small><small>${draws}</small><small>${awayWins}</small>`;
-}
+    const totalMatches = recentEvents.length; // Count matches within 3 years
 
-// Function to calculate H2H goal stats for the last 3 years
-function h2HGoalStats(events, homeTeamId, awayTeamId) {
-    let homeGoals = 0, awayGoals = 0;
-
-    const threeYearsAgo = new Date();
-    threeYearsAgo.setUTCFullYear(threeYearsAgo.getUTCFullYear() - 3);
-    threeYearsAgo.setUTCHours(0, 0, 0, 0); // Ensure time is set to midnight UTC
-
-    events.forEach(event => {
+    recentEvents.forEach(event => {
         const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to Date
         if (eventDate >= threeYearsAgo) {
             if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
@@ -1681,15 +1682,74 @@ function h2HGoalStats(events, homeTeamId, awayTeamId) {
                 if (event.homeTeam.id === homeTeamId && event.awayTeam.id === awayTeamId) {
                     homeGoals += homeScore;
                     awayGoals += awayScore; 
+                    if (homeScore > awayScore) homeWins++;
+                    else if (homeScore < awayScore) awayWins++;
+                    else draws++;
                 } else if (event.homeTeam.id === awayTeamId && event.awayTeam.id === homeTeamId) {
                     homeGoals += awayScore;
                     awayGoals += homeScore; 
+                    if (homeScore > awayScore) awayWins++;
+                    else if (homeScore < awayScore) homeWins++;
+                    else draws++;
                 }
+
+                
             }
         }
     });
 
-    return `<span>${homeGoals}</span> <span>${awayGoals}</span>`;
+    return `
+        <div class="stat-goals">
+            <span>Played</span><span class="stat-title">${totalMatches}</span>
+            <span>W</span><span class="stat-title">${homeWins}</span>
+            <span>D</span><span class="stat-title">${draws}</span>
+            <span>L</span><span class="stat-title">${awayWins}</span> 
+            <span>HGF</span><span class="stat-title">${homeGoals}</span>
+            <span>AGF</span><span class="stat-title">${awayGoals}</span>
+        </div>
+    `;
+}
+// Function to calculate H2H goal stats for the last 3 years
+function h2HGoalStats(events, homeTeamId, awayTeamId) {
+    let btts = 0, over1_5 = 0, over2_5 = 0; 
+
+    const threeYearsAgo = new Date();
+    threeYearsAgo.setUTCFullYear(threeYearsAgo.getUTCFullYear() - 3);
+    threeYearsAgo.setUTCHours(0, 0, 0, 0); // Ensure time is set to midnight UTC
+
+    // Filter events within the last 3 years
+    const recentEvents = events.filter(event => {
+        const eventDate = new Date(event.startTimestamp * 1000);
+        return eventDate >= threeYearsAgo;
+    });
+
+    const totalMatches = recentEvents.length; // Count matches within 3 years
+
+    recentEvents.forEach(event => {
+        if (event.homeScore?.current !== undefined && event.awayScore?.current !== undefined) {
+            const homeScore = event.homeScore?.current ?? 0;
+            const awayScore = event.awayScore?.current ?? 0;  
+
+            console.log(`Home Team:`, event.homeTeam.shortName, ` Score:`, homeScore);
+            console.log(`Away Team:`, event.awayTeam.shortName, ` Score:`, awayScore); 
+            if (homeScore > 0 && awayScore > 0) btts++;
+            if (homeScore + awayScore > 1.5) over1_5++;
+            if (homeScore + awayScore > 2.5) over2_5++;
+        }
+    });
+
+    // Avoid division by zero
+    const bttsPercentage = totalMatches > 0 ? ((btts / totalMatches) * 100).toFixed(0) : 0;
+    const over1_5Percentage = totalMatches > 0 ? ((over1_5 / totalMatches) * 100).toFixed(0) : 0;
+    const over2_5Percentage = totalMatches > 0 ? ((over2_5 / totalMatches) * 100).toFixed(0) : 0;
+
+    return `
+        <div class="stat-goals">
+            <span>BTTS</span><span class="stat-title">${bttsPercentage}%</span>
+            <span>+1.5</span><span class="stat-title">${over1_5Percentage}%</span>
+            <span>+2.5</span><span class="stat-title">${over2_5Percentage}%</span>
+        </div>
+    `;
 }
 
 const startLiveTimer = (event) => {
@@ -2927,13 +2987,13 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
             setInterval(refreshTable, interval);
         }
 
-        async function displayOddsForMatch(matchId, homeTeamName, awayTeamName, homeTeamId, awayTeamId, seasonId, uniqueTournamentId) {
+        async function displayOddsForMatch(matchId, homeTeamName, awayTeamName, homeTeamId, awayTeamId, uniqueTournamentId, customId, seasonId) {
             const oddsDiv = document.getElementById('match-odds');
             if (!oddsDiv) {
                 console.error('No element found for odds display: match-odds');
                 return;
             }
-            console.log(matchId);
+            
             const odds = await fetchOddsForMatch(matchId);
             if (!odds || !Array.isArray(odds)) {
                 oddsDiv.innerHTML = '<p>No odds available for this match.</p>';
@@ -2981,6 +3041,42 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
                     </ul>
                 </div>
             `;
+
+        // Now fetch and update H2H data
+        let h2hData = { events: [] };
+        try {
+            const h2hResponse = await fetch(`${baseURL}/event/${customId}/h2h/events`);
+            if (!h2hResponse.ok) {
+                throw new Error(`Network response was not ok: ${h2hResponse.statusText}`);
+            }
+            h2hData = await h2hResponse.json(); 
+        } catch (error) {
+            console.error('Failed to fetch H2H data:', error);
+        }
+
+        // Filter only finished events
+        const finishedEvents = h2hData.events.filter(event => event.status.type === "finished" && Number(event.id) !== Number(matchId));
+
+        console.log(finishedEvents);
+
+        const h2hStats = calculateH2HStats(finishedEvents, homeTeamId, awayTeamId);
+        const h2hGoalStats = h2HGoalStats(finishedEvents, homeTeamId, awayTeamId);
+
+        const h2hStatsElement = document.querySelector('#h2hStats');
+        const h2hGoalStatsElement = document.querySelector('#h2hGoalStats');
+
+        if (h2hStatsElement) {
+            h2hStatsElement.innerHTML = h2hStats; // Insert H2H stats data
+        } else {
+            console.error('h2hStats element not found');
+        }
+
+        if (h2hGoalStatsElement) {
+            h2hGoalStatsElement.innerHTML = h2hGoalStats; // Insert H2H goal stats data
+        } else {
+            console.error('h2hGoalStats element not found');
+        }
+
         }
 
 async function extractPreviousOdds(teamId, teamType, events, currentMatchId) {
@@ -3317,10 +3413,6 @@ const createMatchElement = async (match, odds) => {
                 </span>
             </div>
         </div>
-        <div class="goalStats">
-            <div id="h2hStats"></div>
-            <div id="h2hGoalStats"></div>
-        </div>
     `;
 
     // Append the matchElement to the DOM first
@@ -3331,35 +3423,6 @@ const createMatchElement = async (match, odds) => {
         console.error('Parent element or matchElement is not valid');
     }
 
-    // Now fetch and update H2H data
-    let h2hData = { events: [] };
-    try {
-        const h2hResponse = await fetch(`${baseURL}/event/${match.customId}/h2h/events`);
-        if (!h2hResponse.ok) {
-            throw new Error(`Network response was not ok: ${h2hResponse.statusText}`);
-        }
-        h2hData = await h2hResponse.json(); 
-    } catch (error) {
-        console.error('Failed to fetch H2H data:', error);
-    }
-
-    const h2hStats = calculateH2HStats(h2hData.events, match.homeTeam.id, match.awayTeam.id);
-    const h2hGoalStats = h2HGoalStats(h2hData.events, match.homeTeam.id, match.awayTeam.id);
-
-    const h2hStatsElement = matchElement.querySelector('#h2hStats');
-    const h2hGoalStatsElement = matchElement.querySelector('#h2hGoalStats');
-
-    if (h2hStatsElement) {
-        h2hStatsElement.innerHTML = h2hStats; // Insert H2H stats data
-    } else {
-        console.error('h2hStats element not found');
-    }
-
-    if (h2hGoalStatsElement) {
-        h2hGoalStatsElement.innerHTML = h2hGoalStats; // Insert H2H goal stats data
-    } else {
-        console.error('h2hGoalStats element not found');
-    }
 
     return matchElement;
 }
