@@ -3298,7 +3298,7 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
     if (homeStats.winRate > awayStats.winRate) {
         reasons.push(`${homeTeam} has a higher win rate.`);
     }
-    if (homeStats.recentWinRate > awayStats.recentWinRate) {
+    if (homeStats.recentPPG > awayStats.recentPPG) {
         reasons.push(`${homeTeam} is in better recent form.`);
     }
     if (homeStats.competitiveWinRate > awayStats.competitiveWinRate) {
@@ -3317,7 +3317,7 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
     if (awayStats.winRate > homeStats.winRate) {
         reasons.push(`${awayTeam} has a higher win rate.`);
     }
-    if (awayStats.recentWinRate > homeStats.recentWinRate) {
+    if (awayStats.recentPPG > homeStats.recentPPG) {
         reasons.push(`${awayTeam} is in better recent form.`);
     }
     if (awayStats.competitiveWinRate > homeStats.competitiveWinRate) {
