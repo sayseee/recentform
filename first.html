@@ -1643,8 +1643,8 @@ async function fetchMatchDetails(matchId, matchElement) {
         fetchAndDisplayWinningOdds(matchId);
         displayOddsForMatch(matchId, homeTeam.name, awayTeam.name, homeTeam.id, awayTeam.id, uniqueTournamentId, customId);
         await Promise.all([
-            fetchAndDisplayTeamPerformance(homeTeam.id, 'home', seasonId, uniqueTournamentId, matchId),
-            fetchAndDisplayTeamPerformance(awayTeam.id, 'away', seasonId, uniqueTournamentId, matchId)
+            fetchAndDisplayTeamPerformance(homeTeam.id, 'home', seasonId, matchId),
+            fetchAndDisplayTeamPerformance(awayTeam.id, 'away', seasonId, matchId)
         ]);
         fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeam.id, awayTeam.id, homeTeam.name, awayTeam.name);
          fetchAndDisplayTeamStreaks(matchId, homeTeam.name, awayTeam.name)   
@@ -2622,7 +2622,7 @@ function updateMatchScores(matchElement, match) {
         }
     }
 
-async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, uniqueTournamentId, matchId) {
+async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, matchId) {
     try { 
         const teamIdInt = parseInt(teamId, 10); // Ensure teamId is an integer
         const response = await fetch(`https://api.sofascore.com/api/v1/team/${teamIdInt}/performance`);
@@ -2636,7 +2636,7 @@ async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, unique
         if (performanceData && performanceData.events && performanceData.points) {
             // Filter events for the given season and remove the one matching matchId
             const eventsWithWinnerCodes = performanceData.events
-                .filter(event => event.season.id === seasonId && event.tournament.uniqueTournament.id === uniqueTournamentId && Number(event.id) !== Number(matchId));
+                .filter(event => Number(event.id) !== Number(matchId));
  
             
             if (teamType === 'home') {
@@ -2999,8 +2999,8 @@ function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTe
             }
 
             // Fetch previous match events and their odds for both teams using performance API
-            const homeTeamEvents = await fetchAndDisplayTeamPerformance(homeTeamId, 'home', seasonId, uniqueTournamentId, matchId);
-            const awayTeamEvents = await fetchAndDisplayTeamPerformance(awayTeamId, 'away', seasonId, uniqueTournamentId, matchId);
+            const homeTeamEvents = await fetchAndDisplayTeamPerformance(homeTeamId, 'home', seasonId, matchId);
+            const awayTeamEvents = await fetchAndDisplayTeamPerformance(awayTeamId, 'away', seasonId, matchId);
 
             // Check if events arrays are available
             if (!homeTeamEvents || !Array.isArray(homeTeamEvents.events)) {
@@ -3096,7 +3096,7 @@ async function extractPreviousOdds(teamId, teamType, events, currentMatchId, uni
         const odds = await fetchOddsForMatch(event.id);
         return { ...event, odds };
     }));
-
+console.log(eventsWithOdds);
     // Store previous odds
     const previousOdds = eventsWithOdds.map(event => {
         if (!event.odds || event.odds.length < 3) return null; // Ensure odds array is long enough
