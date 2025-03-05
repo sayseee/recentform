@@ -3187,7 +3187,7 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
                 let isWin = match.result === "win";
                 let isLoss = match.result === "loss";
                 let isDraw = match.result === "draw";
-                let isCompetitive = match.odds < 2.50;
+                let isCompetitive = match.odds >= 2.00 && match.odds <= 3.20;
                 let isWeakerOpponent = match.opponentStrength < 40; // Example threshold
                 let isHeavyUnderdogWin = isWin && match.odds > 4.00;
                 let isHeavyFavoriteLoss = isLoss && match.odds < 1.50; // Heavy favorite loss
@@ -3270,17 +3270,17 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
 
     // Calculate weighted scores
     const homeScore =
-        homeStats.winRate * 0.3 + // Win rate (30%)
+        homeStats.winRate * 0.2 + // Win rate (30%)
         homeStats.recentWinRate * 0.25 + // Recent form (25%)
-        homeStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
+        homeStats.competitiveWinRate * 0.3 + // Competitive win rate (20%)
         (homeStats.isCurrentOddsLowest ? 0.15 : 0) + // Bonus for lowest odds in range (15%)
         homeStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
         homeStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
 
     const awayScore =
-        awayStats.winRate * 0.3 + // Win rate (30%)
+        awayStats.winRate * 0.2 + // Win rate (30%)
         awayStats.recentWinRate * 0.25 + // Recent form (25%)
-        awayStats.competitiveWinRate * 0.2 + // Competitive win rate (20%)
+        awayStats.competitiveWinRate * 0.3 + // Competitive win rate (20%)
         (awayStats.isCurrentOddsLowest ? 0.15 : 0) + // Bonus for lowest odds in range (15%)
         awayStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
         awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
