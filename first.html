@@ -3171,7 +3171,7 @@ function determineResult(winnerCode, isHomeTeam) {
 
 function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentAwayOdds) {
     function evaluatePerformance(team, currentOdds) {
-        let totalMatches = 0, wins = 0, losses = 0, draws = 0, competitiveWins = 0;
+        let totalMatches = 0, wins = 0, losses = 0, draws = 0, competitivePoints = 0;
         let performanceAgainstWeaker = 0, toughMatchHandling = 0, surpriseWins = 0, badLosses = 0;
         let recentForm = []; // Track results of the last 5 matches
         let historicalOdds = []; // Track historical odds for the team
@@ -3195,7 +3195,10 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
                 if (isWin) wins++;
                 if (isLoss) losses++;
                 if (isDraw) draws++;
-                if (isWin && isCompetitive) competitiveWins++;
+                if (isCompetitive) {
+                    if (isWin) competitivePoints += 3;
+                    else if (isDraw) competitivePoints += 1;
+                }
                 if (isWin && isWeakerOpponent) performanceAgainstWeaker++;
                 if (isWin && match.opponentStrength > 60) toughMatchHandling++;
                 if (isHeavyUnderdogWin) surpriseWins++;
@@ -3227,7 +3230,6 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
         }, 0);
         const recentPPG = recentPoints / recentForm.length || 0; // Points per game in last 5 matches
 
-
         // Calculate average historical odds
         const averageHistoricalOdds = historicalOdds.reduce((sum, odds) => sum + odds, 0) / historicalOdds.length;
 
@@ -3256,12 +3258,12 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
             winRate: wins / totalMatches,
             lossRate: losses / totalMatches,
             drawRate: draws / totalMatches,
-            competitiveWinRate: competitiveWins / totalMatches,
+            competitivePoints: competitivePoints,
             weakTeamWinRate: performanceAgainstWeaker / totalMatches,
             toughMatchHandlingRate: toughMatchHandling / totalMatches,
             surpriseWinRate: surpriseWins / totalMatches,
             badLossRate: heavyFavoriteLosses / totalMatches,
-            recentWinRate: recentWinRate || 0,
+            recentPPG: recentPPG,
             historicalOdds: historicalOdds || 0,
             averageHistoricalOdds: averageHistoricalOdds || 0,
             isCurrentOddsLowest: isCurrentOddsLowest(currentRangeMatches, currentOdds),
@@ -3275,17 +3277,17 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
 
     // Calculate weighted scores
     const homeScore =
-        homeStats.winRate * 0.2 + // Win rate (30%)
+        homeStats.winRate * 0.2 + // Win rate (20%)
         homeStats.recentPPG * 0.25 + // Recent form (25%)
-        homeStats.competitiveWinRate * 0.3 + // Competitive win rate (20%)
+        (homeStats.competitivePoints / (homeStats.winRate * 3 + homeStats.drawRate)) * 0.3 + // Competitive points (30%)
         (homeStats.isCurrentOddsLowest ? 0.15 : 0) + // Bonus for lowest odds in range (15%)
         homeStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
         homeStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
 
     const awayScore =
-        awayStats.winRate * 0.2 + // Win rate (30%)
+        awayStats.winRate * 0.2 + // Win rate (20%)
         awayStats.recentPPG * 0.25 + // Recent form (25%)
-        awayStats.competitiveWinRate * 0.3 + // Competitive win rate (20%)
+        (awayStats.competitivePoints / (awayStats.winRate * 3 + awayStats.drawRate)) * 0.3 + // Competitive points (30%)
         (awayStats.isCurrentOddsLowest ? 0.15 : 0) + // Bonus for lowest odds in range (15%)
         awayStats.surpriseWinRate * 0.1 - // Surprise wins (10%)
         awayStats.badLossRate * 0.2; // Penalize heavy favorite losses (20%)
@@ -3301,7 +3303,7 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
     if (homeStats.recentPPG > awayStats.recentPPG) {
         reasons.push(`${homeTeam} is in better recent form.`);
     }
-    if (homeStats.competitiveWinRate > awayStats.competitiveWinRate) {
+    if ((homeStats.competitivePoints / (homeStats.winRate * 3 + homeStats.drawRate)) > (awayStats.competitivePoints / (awayStats.winRate * 3 + awayStats.drawRate))) {
         reasons.push(`${homeTeam} performs better in competitive matches.`);
     }
     if (homeStats.isCurrentOddsLowest) {
@@ -3320,7 +3322,7 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
     if (awayStats.recentPPG > homeStats.recentPPG) {
         reasons.push(`${awayTeam} is in better recent form.`);
     }
-    if (awayStats.competitiveWinRate > homeStats.competitiveWinRate) {
+    if ((awayStats.competitivePoints / (awayStats.winRate * 3 + awayStats.drawRate)) > (homeStats.competitivePoints / (homeStats.winRate * 3 + homeStats.drawRate))) {
         reasons.push(`${awayTeam} performs better in competitive matches.`);
     }
     if (awayStats.isCurrentOddsLowest) {
@@ -3360,9 +3362,7 @@ function analyzeMatch(homeTeam, awayTeam, pastMatches, currentHomeOdds, currentA
             }
         }
     };
-
 }
-
 // Function to fetch odds for a match
 async function fetchOddsForMatch(matchId) {
     try {
