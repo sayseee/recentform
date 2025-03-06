@@ -2084,9 +2084,11 @@ async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, season
         displayTeamInfo(homeTeamId, 'home-team-comparison', totalStandingsResponse, true);
         displayTeamInfo(awayTeamId, 'away-team-comparison', totalStandingsResponse, false);
 
-        // Display league tables
-        if (homeStandingsResponse) displayLeagueTable(homeStandingsResponse, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, homeTeamForms);
-        if (awayStandingsResponse) displayLeagueTable(awayStandingsResponse, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, awayTeamForms);
+        // Pass all standings data to displayLeagueTable
+        if (homeStandingsResponse) 
+            displayLeagueTable(homeStandingsResponse, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, homeTeamForms, homeStandingsResponse, awayStandingsResponse, totalStandingsResponse);
+        if (awayStandingsResponse) 
+            displayLeagueTable(awayStandingsResponse, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, awayTeamForms, homeStandingsResponse, awayStandingsResponse, totalStandingsResponse);
         displayLeagueTable(totalStandingsResponse, 'Total', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
         
         const homeStatsData = await getTeamStats(uniqueTournamentId, seasonId, matchId, homeTeamId);
@@ -2129,69 +2131,80 @@ async function updateLeagueTable(tournamentId, seasonId, matchId, homeTeamId, aw
     }
 } 
 
-
-function calculateGoalPercentages(standingsData, standingsType, homeTeamId, awayTeamId) {
+async function calculateGoalPercentages(homeStandingsData, awayStandingsData, totalStandingsData, homeTeamId, awayTeamId) {
     const goalStats = {
         homeTeam: {
             scoredPercentage: 0,
             concededPercentage: 0,
-            totalGoalsScored: 0,
-            totalGoalsConceded: 0
+            homeGoalsScored: 0, // Goals scored at home
+            homeGoalsConceded: 0, // Goals conceded at home
+            totalGoalsScored: 0, // Total goals scored in the league
+            totalGoalsConceded: 0 // Total goals conceded in the league
         },
         awayTeam: {
             scoredPercentage: 0,
             concededPercentage: 0,
-            totalGoalsScored: 0,
-            totalGoalsConceded: 0
+            awayGoalsScored: 0, // Goals scored away
+            awayGoalsConceded: 0, // Goals conceded away
+            totalGoalsScored: 0, // Total goals scored in the league
+            totalGoalsConceded: 0 // Total goals conceded in the league
         }
     };
 
-    if (standingsData && standingsData.standings && standingsData.standings[0]) {
-        const rows = standingsData.standings[0].rows;
-        
-        let leagueTotalScored = 0;
-        let leagueTotalConceded = 0;
-        
-        rows.forEach(row => {
-            leagueTotalScored += row.scoresFor;
-            leagueTotalConceded += row.scoresAgainst;
-        });
-
-        rows.forEach(row => {
-            if (row.team.id === homeTeamId) {
-                goalStats.homeTeam.totalGoalsScored = row.scoresFor;
-                goalStats.homeTeam.totalGoalsConceded = row.scoresAgainst;
-            }
-            if (row.team.id === awayTeamId) {
-                goalStats.awayTeam.totalGoalsScored = row.scoresFor;
-                goalStats.awayTeam.totalGoalsConceded = row.scoresAgainst;
-            }
-        });
-
-        if (standingsType.toLowerCase() === 'home') {
-            goalStats.homeTeam.scoredPercentage = leagueTotalScored > 0 ? 
-                ((goalStats.homeTeam.totalGoalsScored / leagueTotalScored) * 100).toFixed(1) : 0;
-            goalStats.homeTeam.concededPercentage = leagueTotalConceded > 0 ? 
-                ((goalStats.homeTeam.totalGoalsConceded / leagueTotalConceded) * 100).toFixed(1) : 0;
-        } else if (standingsType.toLowerCase() === 'away') {
-            goalStats.awayTeam.scoredPercentage = leagueTotalScored > 0 ? 
-                ((goalStats.awayTeam.totalGoalsScored / leagueTotalScored) * 100).toFixed(1) : 0;
-            goalStats.awayTeam.concededPercentage = leagueTotalConceded > 0 ? 
-                ((goalStats.awayTeam.totalGoalsConceded / leagueTotalConceded) * 100).toFixed(1) : 0;
+    // Helper function to find a team's row in standings
+    const findTeamRow = (standingsData, teamId) => {
+        if (standingsData && standingsData.standings && standingsData.standings[0]) {
+            return standingsData.standings[0].rows.find(row => row.team && row.team.id === teamId);
         }
+        return null;
+    };
+
+    // Get home team stats
+    const homeTeamTotalRow = findTeamRow(totalStandingsData, homeTeamId);
+    const homeTeamHomeRow = findTeamRow(homeStandingsData, homeTeamId);
+
+    if (homeTeamTotalRow && homeTeamHomeRow) {
+        goalStats.homeTeam.totalGoalsScored = homeTeamTotalRow.scoresFor; // Total goals scored in the league
+        goalStats.homeTeam.totalGoalsConceded = homeTeamTotalRow.scoresAgainst; // Total goals conceded in the league
+        goalStats.homeTeam.homeGoalsScored = homeTeamHomeRow.scoresFor; // Goals scored at home
+        goalStats.homeTeam.homeGoalsConceded = homeTeamHomeRow.scoresAgainst; // Goals conceded at home
+
+        // Calculate percentages
+        goalStats.homeTeam.scoredPercentage = homeTeamTotalRow.scoresFor > 0 ?
+            ((goalStats.homeTeam.homeGoalsScored / goalStats.homeTeam.totalGoalsScored) * 100).toFixed(1) : 0;
+        goalStats.homeTeam.concededPercentage = homeTeamTotalRow.scoresAgainst > 0 ?
+            ((goalStats.homeTeam.homeGoalsConceded / goalStats.homeTeam.totalGoalsConceded) * 100).toFixed(1) : 0;
+    } else {
+        console.error("Home team data not found in total or home standings.");
+    }
+
+    // Get away team stats
+    const awayTeamTotalRow = findTeamRow(totalStandingsData, awayTeamId);
+    const awayTeamAwayRow = findTeamRow(awayStandingsData, awayTeamId);
+
+    if (awayTeamTotalRow && awayTeamAwayRow) {
+        goalStats.awayTeam.totalGoalsScored = awayTeamTotalRow.scoresFor; // Total goals scored in the league
+        goalStats.awayTeam.totalGoalsConceded = awayTeamTotalRow.scoresAgainst; // Total goals conceded in the league
+        goalStats.awayTeam.awayGoalsScored = awayTeamAwayRow.scoresFor; // Goals scored away
+        goalStats.awayTeam.awayGoalsConceded = awayTeamAwayRow.scoresAgainst; // Goals conceded away
+
+        // Calculate percentages
+        goalStats.awayTeam.scoredPercentage = awayTeamTotalRow.scoresFor > 0 ?
+            ((goalStats.awayTeam.awayGoalsScored / goalStats.awayTeam.totalGoalsScored) * 100).toFixed(1) : 0;
+        goalStats.awayTeam.concededPercentage = awayTeamTotalRow.scoresAgainst > 0 ?
+            ((goalStats.awayTeam.awayGoalsConceded / goalStats.awayTeam.totalGoalsConceded) * 100).toFixed(1) : 0;
+    } else {
+        console.error("Away team data not found in total or away standings.");
     }
 
     return goalStats;
 }
 
-// Modified displayLeagueTable function using getElementById
-function displayLeagueTable(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms = null) {
+// Modified displayLeagueTable
+function displayLeagueTable(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms = null, homeStandingsData, awayStandingsData, totalStandingsData) {
     const leagueTableDiv = document.getElementById(`${standingsType.toLowerCase()}-league-table`);
     
-    // Calculate goal percentages
-    const goalStats = calculateGoalPercentages(standingsData, standingsType, homeTeamId, awayTeamId);
-    
-    // Update existing table
+    // Update table
     const table = leagueTableDiv.querySelector('table');
     if (table) {
         updateTableRows(table, standingsData, standingsType, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
@@ -2199,21 +2212,27 @@ function displayLeagueTable(standingsData, standingsType, tournamentId, seasonId
         createTable(leagueTableDiv, standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms);
     }
 
-    // Update goal stats using existing elements
-    const statsContainer = document.getElementById(`${standingsType.toLowerCase()}-goal-stats`);
-    if (statsContainer && standingsType.toLowerCase() !== 'total') {
-        if (standingsType.toLowerCase() === 'home') {
-            statsContainer.innerHTML = `
-                <h5>Home Team Goal Stats</h5>
-                <p>Goals Scored: ${goalStats.homeTeam.totalGoalsScored} (${goalStats.homeTeam.scoredPercentage}% of league total)</p>
-                <p>Goals Conceded: ${goalStats.homeTeam.totalGoalsConceded} (${goalStats.homeTeam.concededPercentage}% of league total)</p>
-            `;
-        } else if (standingsType.toLowerCase() === 'away') {
-            statsContainer.innerHTML = `
-                <h5>Away Team Goal Stats</h5>
-                <p>Goals Scored: ${goalStats.awayTeam.totalGoalsScored} (${goalStats.awayTeam.scoredPercentage}% of league total)</p>
-                <p>Goals Conceded: ${goalStats.awayTeam.totalGoalsConceded} (${goalStats.awayTeam.concededPercentage}% of league total)</p>
-            `;
+    // Only calculate and display stats for home and away tables
+    if (standingsType.toLowerCase() !== 'total') {
+        const statsContainer = document.getElementById(`${standingsType.toLowerCase()}-goal-stats`);
+        if (statsContainer) {
+            // Calculate goal percentages using all standings data
+            calculateGoalPercentages(homeStandingsData, awayStandingsData, totalStandingsData, homeTeamId, awayTeamId)
+                .then(goalStats => {
+                    if (standingsType.toLowerCase() === 'home') {
+                        statsContainer.innerHTML = `
+                            <h5>Home Team Goal Stats</h5>
+                            <p>Goals For %: ${goalStats.homeTeam.scoredPercentage}% of season total</p>
+                            <p>Goals Conceded %: ${goalStats.homeTeam.concededPercentage}% of season total</p>
+                        `;
+                    } else if (standingsType.toLowerCase() === 'away') {
+                        statsContainer.innerHTML = `
+                            <h5>Away Team Goal Stats</h5>
+                            <p>Goals For %: ${goalStats.awayTeam.scoredPercentage}% of season total</p>
+                            <p>Goals Conceded %: ${goalStats.awayTeam.concededPercentage}% of season total</p>
+                        `;
+                    }
+                });
         }
     }
 }
