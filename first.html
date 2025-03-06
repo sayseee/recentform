@@ -2622,9 +2622,10 @@ function updateMatchScores(matchElement, match) {
         }
     }
 
+// Update fetchAndDisplayTeamPerformance to pass teamId to generateTeamEvents
 async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, matchId) {
     try { 
-        const teamIdInt = parseInt(teamId, 10); // Ensure teamId is an integer
+        const teamIdInt = parseInt(teamId, 10);
         const response = await fetch(`https://api.sofascore.com/api/v1/team/${teamIdInt}/performance`);
         
         if (!response.ok) {
@@ -2634,18 +2635,17 @@ async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, matchI
         const performanceData = await response.json(); 
 
         if (performanceData && performanceData.events && performanceData.points) {
-            // Filter events for the given season and remove the one matching matchId
             const eventsWithWinnerCodes = performanceData.events
                 .filter(event => Number(event.id) !== Number(matchId));
  
-            
             if (teamType === 'home') {
                 window.homeTeamEvents = eventsWithWinnerCodes;
             } else if (teamType === 'away') {
                 window.awayTeamEvents = eventsWithWinnerCodes;
             }
  
-            const events = generateTeamEvents(performanceData, seasonId, matchId);
+            // Pass teamId and teamType to generateTeamEvents
+            const events = generateTeamEvents(performanceData, seasonId, matchId, teamId, teamType);
             displayTeamEvents(teamIdInt, teamType, events);  
 
             return performanceData;
@@ -2658,6 +2658,8 @@ async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, matchI
         return null;
     }
 }
+
+// The displayTeamEvents function can remain unchanged
 
 function calculateAverage(numbers) {
     if (!Array.isArray(numbers) || numbers.length === 0) {
@@ -2685,9 +2687,23 @@ function determineWinningChoice(eventDescription) {
 }
 
 
-function generateTeamEvents(performanceData, seasonId, matchId) {
+function generateTeamEvents(performanceData, seasonId, matchId, teamId, teamType) {
     return performanceData.events
-    .filter(match => match.season.id === seasonId && Number(match.id) !== Number(matchId))
+        .filter(match => {
+            // Basic filters
+            const matchesSeasonAndNotCurrent = match.season.id === seasonId && 
+                Number(match.id) !== Number(matchId);
+            
+            // Add home/away specific filters
+            if (teamType === 'home') {
+                return matchesSeasonAndNotCurrent && 
+                    match.homeTeam.id === parseInt(teamId);
+            } else if (teamType === 'away') {
+                return matchesSeasonAndNotCurrent && 
+                    match.awayTeam.id === parseInt(teamId);
+            }
+            return matchesSeasonAndNotCurrent;
+        })
         .reverse()
         .slice(0, 5)
         .map(match => {
