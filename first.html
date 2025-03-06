@@ -2227,17 +2227,28 @@ function displayLeagueTable(standingsData, standingsType, tournamentId, seasonId
             // Calculate goal percentages using all standings data
             calculateGoalPercentages(homeStandingsData, awayStandingsData, totalStandingsData, homeTeamId, awayTeamId)
                 .then(goalStats => {
+                    const homeScoredPercentage = goalStats.homeTeam.totalGoalsScored > 0 ? 
+                                           (goalStats.homeTeam.totalGoalsScored/(goalStats.homeTeam.totalGoalsScored + goalStats.awayTeam.totalGoalsScored) * 100).toFixed(1) : 0;
+                    
+                    const awayScoredPercentage = goalStats.awayTeam.totalGoalsScored > 0 ? 
+                                           (goalStats.awayTeam.totalGoalsScored/(goalStats.homeTeam.totalGoalsScored + goalStats.awayTeam.totalGoalsScored) * 100).toFixed(1) : 0;
+                    
+                    const homeConcededPercentage = goalStats.homeTeam.totalGoalsConceded > 0 ? 
+                                           (goalStats.homeTeam.totalGoalsConceded/(goalStats.homeTeam.totalGoalsConceded + goalStats.awayTeam.totalGoalsConceded) * 100).toFixed(1) : 0;
+                    
+                    const awayConcededPercentage = goalStats.awayTeam.totalGoalsConceded > 0 ? 
+                                           (goalStats.awayTeam.totalGoalsConceded/(goalStats.homeTeam.totalGoalsConceded + goalStats.awayTeam.totalGoalsConceded) * 100).toFixed(1) : 0;
                     if (standingsType.toLowerCase() === 'home') {
                         statsContainer.innerHTML = `
                             <h5>Home Team Goal Stats</h5>
-                            <p>Goals Scored: ${goalStats.homeTeam.totalGoalsScored} (${goalStats.homeTeam.scoredPercentage}% of season total)</p>
-                            <p>Goals Conceded: ${goalStats.homeTeam.totalGoalsConceded} (${goalStats.homeTeam.concededPercentage}% of season total)</p>
+                            <p>Goals Scored: ${homeScoredPercentage}% - ${goalStats.homeTeam.totalGoalsScored} (${goalStats.homeTeam.scoredPercentage}% of season total)</p>
+                            <p>Goals Conceded: ${homeConcededPercentage}% - ${goalStats.homeTeam.totalGoalsConceded} (${goalStats.homeTeam.concededPercentage}% of season total)</p>
                         `;
                     } else if (standingsType.toLowerCase() === 'away') {
                         statsContainer.innerHTML = `
                             <h5>Away Team Goal Stats</h5>
-                            <p>Goals Scored: ${goalStats.awayTeam.totalGoalsScored} (${goalStats.awayTeam.scoredPercentage}% of season total)</p>
-                            <p>Goals Conceded: ${goalStats.awayTeam.totalGoalsConceded} (${goalStats.awayTeam.concededPercentage}% of season total)</p>
+                            <p>Goals Scored: ${awayScoredPercentage}% - ${goalStats.awayTeam.totalGoalsScored} (${goalStats.awayTeam.scoredPercentage}% of season total)</p>
+                            <p>Goals Conceded: ${awayConcededPercentage}% - ${goalStats.awayTeam.totalGoalsConceded} (${goalStats.awayTeam.concededPercentage}% of season total)</p>
                         `;
                     }
                 });
