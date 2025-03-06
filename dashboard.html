@@ -59,6 +59,11 @@
         font-size: .75rem;
         overflow: hidden;
     }
+    h2,  h3, h4 {
+        text-transform: uppercase;
+        text-align: center;
+        font-size: .75rem;
+    }
     .W, .D, .L {
         height: 16px; 
         color: var(--color-black1);
@@ -349,6 +354,7 @@
     #match-details {
         display: flex;
         flex-direction: column;
+        padding: 10px;
     }
     .teams-events-data {
         display: flex;
@@ -756,8 +762,7 @@ function updateMatchScores(matchElement, match) {
         }
     }
 
-function updateMatches(matchData, oddsData) {
-    
+    function updateMatches(matchData, oddsData) {
     const matchEventsDiv = document.getElementById('match-events');
     const existingMatches = matchEventsDiv.querySelectorAll('.match');
     const existingMatchesMap = {};
@@ -770,6 +775,8 @@ function updateMatches(matchData, oddsData) {
     const matchMap = {};
     let firstMatchStandingsFetched = false;
 
+    // Sort events by priority (highest to lowest)
+    matchData.events.sort((a, b) => b.tournament.priority - a.tournament.priority);
 
     for (const match of matchData.events) {
         const uniqueTournamentId = match.tournament.uniqueTournament.id;
@@ -778,23 +785,43 @@ function updateMatches(matchData, oddsData) {
         const categoryName = match.tournament.category.name;
 
         if (!matchMap[uniqueTournamentId]) {
-            matchMap[uniqueTournamentId] = { categoryName: categoryName, uniqueTournamentName: uniqueTournamentName, matches: [] };
+            matchMap[uniqueTournamentId] = {
+                categoryName: categoryName,
+                uniqueTournamentName: uniqueTournamentName,
+                priority: match.tournament.priority,
+                matches: []
+            };
         }
         matchMap[uniqueTournamentId].matches.push(match);
 
         if (!firstMatchStandingsFetched) {
-                fetchMatchDetails(match.id);
+            fetchMatchDetails(match.id);
             firstMatchStandingsFetched = true;
         }
     }
 
+    // Sort tournaments by priority (highest to lowest), then alphabetically for priority === 0
+    const sortedTournaments = Object.entries(matchMap).sort(([, a], [, b]) => {
+        if (a.priority === 0 && b.priority === 0) {
+            // Sort alphabetically by categoryName if both priorities are 0
+            return a.categoryName.localeCompare(b.categoryName);
+        }
+        // Otherwise, sort by priority (highest to lowest)
+        return b.priority - a.priority;
+    });
+
     matchEventsDiv.innerHTML = '';
 
-    Object.entries(matchMap).forEach(([tournamentId, tournament]) => {
+    sortedTournaments.forEach(([tournamentId, tournament]) => {
         const tournamentDiv = document.createElement('div');
         tournamentDiv.classList.add('tournament');
 
-        tournamentDiv.innerHTML = `<div class="category-name"><img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy"> ${tournament.categoryName} - ${tournament.uniqueTournamentName}</div>`;
+        tournamentDiv.innerHTML = `
+            <div class="category-name">
+                <img class="tourn" src="https://api.sofascore.app/api/v1/unique-tournament/${tournamentId}/image" width="20" height="20" loading="lazy">
+                ${tournament.categoryName} - ${tournament.uniqueTournamentName}
+            </div>
+        `;
 
         tournament.matches.forEach(match => {
             const matchOdds = oddsData.odds[match.id];
@@ -812,7 +839,6 @@ function updateMatches(matchData, oddsData) {
         matchEventsDiv.appendChild(tournamentDiv);
     });
 }
-
 
 function updateMatchElement(matchElement, match, odds) { 
     // Update scores
@@ -1042,6 +1068,7 @@ async function fetchMatchDetails(matchId) {
         console.error('Error fetching match details:', error);
     }
 }
+
 async function fetchAndDisplayLineups(matchId) {
     try {
         const response = await fetch(`https://www.sofascore.com/api/v1/event/${matchId}/lineups`);
@@ -1052,6 +1079,7 @@ async function fetchAndDisplayLineups(matchId) {
         const matchData = await matchResponse.json();
         const match = matchData.event;
         const uniqueTournamentId = match.tournament.uniqueTournament.id;
+        const seasonYear = match.season.year;
         const homeTeamId = match.homeTeam.id;
         const awayTeamId = match.awayTeam.id;
 
@@ -1060,36 +1088,14 @@ async function fetchAndDisplayLineups(matchId) {
         if (homeLineupsDiv) {
             const homePlayersWithStats = await Promise.all(
                 data.home.players.map(async (player) => {
-                    const stats = await fetchPlayerStatistics(player.player.id, homeTeamId, uniqueTournamentId);
+                    const stats = await fetchPlayerStatistics(player.player.id, homeTeamId, uniqueTournamentId, seasonYear);
                     return { ...player, stats };
                 })
             );
 
-            homeLineupsDiv.innerHTML = `
-                <h2>Home Team Lineup</h2>
+            homeLineupsDiv.innerHTML = ` 
                 <p><strong>Formation:</strong> ${data.home.formation}</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Player</th>
-                            <th>MP</th>
-                            <th>GLS</th>
-                            <th>AST</th>
-                            <th>R</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${homePlayersWithStats.map(player => `
-                            <tr>
-                                <td>${player.player.name} (${player.position})</td>
-                                <td>${player.stats?.appearances ?? 0}</td>
-                                <td>${player.stats?.goals ?? 0}</td>
-                                <td>${player.stats?.assists ?? 0}</td>
-                                <td>${player.stats?.rating ?? 0}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                 
             `;
 
             // Find the home team's top scorer
@@ -1098,12 +1104,12 @@ async function fetchAndDisplayLineups(matchId) {
                 return goals > (topScorer.stats?.goals ?? 0) ? player : topScorer;
             }, { stats: { goals: -1 } });
 
-            // Display the home team's top scorer
+            // Display the home team's top scorer with goals and assists
             const homeTopScorerDiv = document.getElementById('home-topscorer');
             if (homeTopScorerDiv && homeTopScorer.stats?.goals !== -1) {
                 homeTopScorerDiv.innerHTML = `
                     <h3>Top Scorer (Home)</h3>
-                    <p>${homeTopScorer.player.name} - ${homeTopScorer.stats.goals} goals</p>
+                    <p>${homeTopScorer.player.name} - ${homeTopScorer.stats.goals} goals, ${homeTopScorer.stats.assists ?? 0} assists</p>
                 `;
             }
         }
@@ -1113,36 +1119,14 @@ async function fetchAndDisplayLineups(matchId) {
         if (awayLineupsDiv) {
             const awayPlayersWithStats = await Promise.all(
                 data.away.players.map(async (player) => {
-                    const stats = await fetchPlayerStatistics(player.player.id, awayTeamId, uniqueTournamentId);
+                    const stats = await fetchPlayerStatistics(player.player.id, awayTeamId, uniqueTournamentId, seasonYear);
                     return { ...player, stats };
                 })
             );
 
-            awayLineupsDiv.innerHTML = `
-                <h2>Away Team Lineup</h2>
+            awayLineupsDiv.innerHTML = ` 
                 <p><strong>Formation:</strong> ${data.away.formation}</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Player</th>
-                            <th>MP</th>
-                            <th>GLS</th>
-                            <th>AST</th>
-                            <th>R</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${awayPlayersWithStats.map(player => `
-                            <tr>
-                                <td>${player.player.name} (${player.position})</td>
-                                <td>${player.stats?.appearances ?? 0}</td>
-                                <td>${player.stats?.goals ?? 0}</td>
-                                <td>${player.stats?.assists ?? 0}</td>
-                                <td>${player.stats?.rating ?? 0}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                 
             `;
 
             // Find the away team's top scorer
@@ -1151,12 +1135,12 @@ async function fetchAndDisplayLineups(matchId) {
                 return goals > (topScorer.stats?.goals ?? 0) ? player : topScorer;
             }, { stats: { goals: -1 } });
 
-            // Display the away team's top scorer
+            // Display the away team's top scorer with goals and assists
             const awayTopScorerDiv = document.getElementById('away-topscorer');
             if (awayTopScorerDiv && awayTopScorer.stats?.goals !== -1) {
                 awayTopScorerDiv.innerHTML = `
                     <h3>Top Scorer (Away)</h3>
-                    <p>${awayTopScorer.player.name} - ${awayTopScorer.stats.goals} goals</p>
+                    <p>${awayTopScorer.player.name} - ${awayTopScorer.stats.goals} goals, ${awayTopScorer.stats.assists ?? 0} assists</p>
                 `;
             }
         }
@@ -1167,7 +1151,7 @@ async function fetchAndDisplayLineups(matchId) {
             missingPlayersDiv.className = 'missing-players';
             const missingHomePlayersWithStats = await Promise.all(
                 data.home.missingPlayers.map(async (player) => {
-                    const stats = await fetchPlayerStatistics(player.player.id, homeTeamId, uniqueTournamentId);
+                    const stats = await fetchPlayerStatistics(player.player.id, homeTeamId, uniqueTournamentId, seasonYear);
                     return { ...player, stats };
                 })
             );
@@ -1187,7 +1171,7 @@ async function fetchAndDisplayLineups(matchId) {
                     <tbody>
                         ${missingHomePlayersWithStats.map(player => `
                             <tr>
-                                <td>${player.player.name} (${player.player.position}) - ${player.reason}</td>
+                                <td>${player.player.name} (${player.player.position})</td>
                                 <td>${player.stats?.appearances ?? 0}</td>
                                 <td>${player.stats?.goals ?? 0}</td>
                                 <td>${player.stats?.assists ?? 0}</td>
@@ -1205,7 +1189,7 @@ async function fetchAndDisplayLineups(matchId) {
             missingPlayersDiv.className = 'missing-players';
             const missingAwayPlayersWithStats = await Promise.all(
                 data.away.missingPlayers.map(async (player) => {
-                    const stats = await fetchPlayerStatistics(player.player.id, awayTeamId, uniqueTournamentId);
+                    const stats = await fetchPlayerStatistics(player.player.id, awayTeamId, uniqueTournamentId, seasonYear);
                     return { ...player, stats };
                 })
             );
@@ -1225,7 +1209,7 @@ async function fetchAndDisplayLineups(matchId) {
                     <tbody>
                         ${missingAwayPlayersWithStats.map(player => `
                             <tr>
-                                <td>${player.player.name} (${player.player.position}) - ${player.reason}</td>
+                                <td>${player.player.name} (${player.player.position})</td>
                                 <td>${player.stats?.appearances ?? 0}</td>
                                 <td>${player.stats?.goals ?? 0}</td>
                                 <td>${player.stats?.assists ?? 0}</td>
@@ -1241,9 +1225,9 @@ async function fetchAndDisplayLineups(matchId) {
     } catch (error) {
         console.error('Error fetching lineups:', error);
     }
-}
+} 
 
-async function fetchPlayerStatistics(playerId, teamId, uniqueTournamentId) {
+async function fetchPlayerStatistics(playerId, teamId, uniqueTournamentId, seasonYear) {
     try {
         const response = await fetch(`https://www.sofascore.com/api/v1/player/${playerId}/statistics`);
         const data = await response.json();
@@ -1256,7 +1240,7 @@ async function fetchPlayerStatistics(playerId, teamId, uniqueTournamentId) {
 
         // Find the statistics for the current team and season
         const currentSeasonStats = data.seasons.find(season => 
-            season.team?.id === teamId && season.uniqueTournament.id === uniqueTournamentId
+            season.team?.id === teamId && season.uniqueTournament.id === uniqueTournamentId && season.year === seasonYear
         );
 
         // Return the statistics if found, otherwise return null
