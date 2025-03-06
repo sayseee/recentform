@@ -2222,14 +2222,14 @@ function displayLeagueTable(standingsData, standingsType, tournamentId, seasonId
                     if (standingsType.toLowerCase() === 'home') {
                         statsContainer.innerHTML = `
                             <h5>Home Team Goal Stats</h5>
-                            <p>Goals For %: ${goalStats.homeTeam.scoredPercentage}% of season total</p>
-                            <p>Goals Conceded %: ${goalStats.homeTeam.concededPercentage}% of season total</p>
+                            <p>Goals For %: <strong>${goalStats.homeTeam.scoredPercentage}%</strong> of season total</p>
+                            <p>Goals Conceded %: <strong>${goalStats.homeTeam.concededPercentage}%</strong> of season total</p>
                         `;
                     } else if (standingsType.toLowerCase() === 'away') {
                         statsContainer.innerHTML = `
                             <h5>Away Team Goal Stats</h5>
-                            <p>Goals For %: ${goalStats.awayTeam.scoredPercentage}% of season total</p>
-                            <p>Goals Conceded %: ${goalStats.awayTeam.concededPercentage}% of season total</p>
+                            <p>Goals For %: <strong>${goalStats.awayTeam.scoredPercentage}%</strong> of season total</p>
+                            <p>Goals Conceded %: <strong>${goalStats.awayTeam.concededPercentage}%</strong> of season total</p>
                         `;
                     }
                 });
