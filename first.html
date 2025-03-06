@@ -1262,6 +1262,7 @@ tr.is-team {
     flex: 1;
     justify-content: center;
 }
+
 #home-goal-stats, #away-goal-stats {
     text-align: center;
     margin: 15px 0;
@@ -2054,7 +2055,6 @@ async function fetchTeamForm(uniqueTournamentId, seasonId, type) {
     return teamForms;
 }
 
-
 async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeamId, awayTeamId, homeTeamName, awayTeamName) {
     try {
         // Fetch all necessary data in parallel
@@ -2092,9 +2092,11 @@ async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, season
         displayTeamInfo(homeTeamId, 'home-team-comparison', totalStandingsResponse, true);
         displayTeamInfo(awayTeamId, 'away-team-comparison', totalStandingsResponse, false);
 
-        // Display league tables
-        if (homeStandingsResponse) displayLeagueTable(homeStandingsResponse, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, homeTeamForms);
-        if (awayStandingsResponse) displayLeagueTable(awayStandingsResponse, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, awayTeamForms);
+        // Pass all standings data to displayLeagueTable
+        if (homeStandingsResponse) 
+            displayLeagueTable(homeStandingsResponse, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, homeTeamForms, homeStandingsResponse, awayStandingsResponse, totalStandingsResponse);
+        if (awayStandingsResponse) 
+            displayLeagueTable(awayStandingsResponse, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId, awayTeamForms, homeStandingsResponse, awayStandingsResponse, totalStandingsResponse);
         displayLeagueTable(totalStandingsResponse, 'Total', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
         
         const homeStatsData = await getTeamStats(uniqueTournamentId, seasonId, matchId, homeTeamId);
