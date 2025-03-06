@@ -1576,6 +1576,8 @@ async function fetchMatchDetails(matchId, matchElement) {
                 <div id="h2hStats"></div>
                 <div id="h2hGoalStats"></div>
             </div>
+            <div id="home-goal-stats"></div>
+            <div id="away-goal-stats"></div>
             <div id="match-odds"></div> 
             
             <div class="team-events">
@@ -2106,6 +2108,238 @@ async function fetchAndDisplayStandings(tournamentId, uniqueTournamentId, season
         displayFallbackTeamInfo(homeTeamId, 'home-team-comparison', null, true); 
     }
 }
+
+
+async function updateLeagueTable(tournamentId, seasonId, matchId, homeTeamId, awayTeamId) {
+    try {
+        // Fetch and display home standings
+        const homeStandingsData = await fetchLeagueStandings(tournamentId, seasonId, 'home');
+        displayLeagueTable(homeStandingsData, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
+
+        // Fetch and display away standings
+        const awayStandingsData = await fetchLeagueStandings(tournamentId, seasonId, 'away');
+        displayLeagueTable(awayStandingsData, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
+
+        // Fetch and display total standings
+        const totalStandingsData = await fetchLeagueStandings(tournamentId, seasonId, 'total');
+        displayLeagueTable(totalStandingsData, 'Total', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
+
+    } catch (error) {
+        console.error('Error updating league table:', error);
+    }
+} 
+
+
+function calculateGoalPercentages(standingsData, standingsType, homeTeamId, awayTeamId) {
+    const goalStats = {
+        homeTeam: {
+            scoredPercentage: 0,
+            concededPercentage: 0,
+            totalGoalsScored: 0,
+            totalGoalsConceded: 0
+        },
+        awayTeam: {
+            scoredPercentage: 0,
+            concededPercentage: 0,
+            totalGoalsScored: 0,
+            totalGoalsConceded: 0
+        }
+    };
+
+    if (standingsData && standingsData.standings && standingsData.standings[0]) {
+        const rows = standingsData.standings[0].rows;
+        
+        let leagueTotalScored = 0;
+        let leagueTotalConceded = 0;
+        
+        rows.forEach(row => {
+            leagueTotalScored += row.scoresFor;
+            leagueTotalConceded += row.scoresAgainst;
+        });
+
+        rows.forEach(row => {
+            if (row.team.id === homeTeamId) {
+                goalStats.homeTeam.totalGoalsScored = row.scoresFor;
+                goalStats.homeTeam.totalGoalsConceded = row.scoresAgainst;
+            }
+            if (row.team.id === awayTeamId) {
+                goalStats.awayTeam.totalGoalsScored = row.scoresFor;
+                goalStats.awayTeam.totalGoalsConceded = row.scoresAgainst;
+            }
+        });
+
+        if (standingsType.toLowerCase() === 'home') {
+            goalStats.homeTeam.scoredPercentage = leagueTotalScored > 0 ? 
+                ((goalStats.homeTeam.totalGoalsScored / leagueTotalScored) * 100).toFixed(1) : 0;
+            goalStats.homeTeam.concededPercentage = leagueTotalConceded > 0 ? 
+                ((goalStats.homeTeam.totalGoalsConceded / leagueTotalConceded) * 100).toFixed(1) : 0;
+        } else if (standingsType.toLowerCase() === 'away') {
+            goalStats.awayTeam.scoredPercentage = leagueTotalScored > 0 ? 
+                ((goalStats.awayTeam.totalGoalsScored / leagueTotalScored) * 100).toFixed(1) : 0;
+            goalStats.awayTeam.concededPercentage = leagueTotalConceded > 0 ? 
+                ((goalStats.awayTeam.totalGoalsConceded / leagueTotalConceded) * 100).toFixed(1) : 0;
+        }
+    }
+
+    return goalStats;
+}
+
+// Modified displayLeagueTable function using getElementById
+function displayLeagueTable(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms = null) {
+    const leagueTableDiv = document.getElementById(`${standingsType.toLowerCase()}-league-table`);
+    
+    // Calculate goal percentages
+    const goalStats = calculateGoalPercentages(standingsData, standingsType, homeTeamId, awayTeamId);
+    
+    // Update existing table
+    const table = leagueTableDiv.querySelector('table');
+    if (table) {
+        updateTableRows(table, standingsData, standingsType, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
+    } else {
+        createTable(leagueTableDiv, standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms);
+    }
+
+    // Update goal stats using existing elements
+    const statsContainer = document.getElementById(`${standingsType.toLowerCase()}-goal-stats`);
+    if (statsContainer && standingsType.toLowerCase() !== 'total') {
+        if (standingsType.toLowerCase() === 'home') {
+            statsContainer.innerHTML = `
+                <h5>Home Team Goal Stats</h5>
+                <p>Goals Scored: ${goalStats.homeTeam.totalGoalsScored} (${goalStats.homeTeam.scoredPercentage}% of league total)</p>
+                <p>Goals Conceded: ${goalStats.homeTeam.totalGoalsConceded} (${goalStats.homeTeam.concededPercentage}% of league total)</p>
+            `;
+        } else if (standingsType.toLowerCase() === 'away') {
+            statsContainer.innerHTML = `
+                <h5>Away Team Goal Stats</h5>
+                <p>Goals Scored: ${goalStats.awayTeam.totalGoalsScored} (${goalStats.awayTeam.scoredPercentage}% of league total)</p>
+                <p>Goals Conceded: ${goalStats.awayTeam.totalGoalsConceded} (${goalStats.awayTeam.concededPercentage}% of league total)</p>
+            `;
+        }
+    }
+}
+
+function createTable(leagueTableDiv, standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms) {
+    leagueTableDiv.innerHTML = '';
+
+    const tableNameHeader = document.createElement('h4');
+    tableNameHeader.textContent = standingsType.toLowerCase() === 'total' ? 'Overall Standings' : `${standingsType} Standings`;
+
+    leagueTableDiv.appendChild(tableNameHeader);
+
+    const table = document.createElement('table');
+    table.className = 'league-table';
+
+    const header = `
+        <thead>
+            <tr>
+                <th>#</th>
+                <th class="team-name-column">Team</th>
+                <th>GP</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>Goals</th> 
+                <th>Pts</th>
+                ${standingsType.toLowerCase() !== 'total' ? '<th class="teamForm">Form</th>' : ''}
+            </tr>
+        </thead>
+    `;
+    table.innerHTML = header;
+
+    const tbody = document.createElement('tbody');
+    tbody.innerHTML = buildTableRows(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
+
+    table.appendChild(tbody);
+    leagueTableDiv.appendChild(table);
+}
+
+function buildTableRows(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms, leagueTableDiv) {
+    const promotionClasses = [
+        'promotion-to-x',
+        'promotion-to-x-playoff',
+        'promotion-to-y',
+        'promotion-to-y-playoff',
+        'promotion-to-z',
+        'promotion-to-z-playoff',
+        'promotion-to-z-playoff-secondary'
+    ];
+
+    let currentPromotionText = '';
+    let promotionTextIndex = -1;
+
+    return standingsData.standings[0].rows.map(row => {
+        const { team, position, points, wins, draws, losses, scoresFor: goalsFor, scoresAgainst: goalsAgainst, promotion, liveMatchWinnerCodeColumn } = row;
+
+        if (standingsType.toLowerCase() !== 'total' && team.id !== homeTeamId && team.id !== awayTeamId) {
+            return ''; // Skip if not relevant
+        }
+
+        let classNames = [];
+        if (promotion && leagueTableDiv.id === 'total-league-table') {
+            const promotionText = promotion.text.toLowerCase();
+            if (promotionText.includes("relegation")) {
+                classNames.push(promotionText.replace(/\s+/g, '-'));
+            } else {
+                if (promotionText !== currentPromotionText) {
+                    promotionTextIndex++;
+                    currentPromotionText = promotionText;
+                }
+                if (promotionTextIndex < promotionClasses.length) {
+                    classNames.push(promotionClasses[promotionTextIndex]);
+                }
+            }
+        }
+
+        if (team.id === homeTeamId || team.id === awayTeamId) {
+            classNames.push('is-team');
+        }
+
+        const totalGames = wins + draws + losses;
+        const resultForm = teamForms ? teamForms[team.id] || 'N/A' : 'N/A';
+
+        return `
+            <tr class="${classNames.join(' ')}">
+                <td>${position}</td>
+                <td class="team-name-column">
+                    <img src="https://api.sofascore.app/api/v1/team/${team.id}/image" width="16" height="16" alt="${team.shortName}" loading="lazy">
+                ${standingsType.toLowerCase() !== 'total' ? `<span class="team-name">${team.nameCode}</span>` : `<span class="team-name">${team.shortName}</span>`}
+                </td>
+                <td class="gamesPlayed${liveMatchWinnerCodeColumn ? ` live-match-${liveMatchWinnerCodeColumn}` : ''}">${totalGames}</td>
+                <td>${wins}</td>
+                <td>${draws}</td>
+                <td>${losses}</td>
+                <td>${goalsFor}:${goalsAgainst}</td> 
+                <td>${points}</td>
+                ${standingsType.toLowerCase() !== 'total' ? `<td class="teamForm">${resultForm}</td>` : ''}
+            </tr>
+        `;
+    }).join('');
+}
+
+function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTeamId, teamForms, leagueTableDiv) {
+            const tbody = table.querySelector('tbody');
+            tbody.innerHTML = buildTableRows(standingsData, standingsType, null, null, null, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
+        }
+
+ 
+
+        // Function to initiate auto-refresh
+        async function autoRefreshLeagueTable(standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms = null, interval = 60000) {
+            async function refreshTable() {
+                const standingsData = await fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeamId, awayTeamId, homeTeamName, awayTeamName);
+                if (standingsData) {
+                    displayLeagueTable(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms);
+                }
+            }
+
+            // Refresh immediately
+            await refreshTable();
+
+            // Set up interval for auto-refresh
+            setInterval(refreshTable, interval);
+        }
+
+
 function displayCombinedTeamStats(homeStats, awayStats, homeTeamName, awayTeamName) {
     const generalStatsContainer = document.getElementById('team-stats-container');
     const advancedStatsContainer = document.getElementById('team-advanced-stats-container');
@@ -2847,159 +3081,6 @@ async function displayTeamEvents(teamId, teamType, events) {
     // Append the table HTML to the eventsDiv
     eventsDiv.insertAdjacentHTML('beforeend', tableHtml);
 }
-
-async function updateLeagueTable(tournamentId, seasonId, matchId, homeTeamId, awayTeamId) {
-    try {
-        // Fetch and display home standings
-        const homeStandingsData = await fetchLeagueStandings(tournamentId, seasonId, 'home');
-        displayLeagueTable(homeStandingsData, 'Home', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
-
-        // Fetch and display away standings
-        const awayStandingsData = await fetchLeagueStandings(tournamentId, seasonId, 'away');
-        displayLeagueTable(awayStandingsData, 'Away', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
-
-        // Fetch and display total standings
-        const totalStandingsData = await fetchLeagueStandings(tournamentId, seasonId, 'total');
-        displayLeagueTable(totalStandingsData, 'Total', tournamentId, seasonId, matchId, homeTeamId, awayTeamId);
-
-    } catch (error) {
-        console.error('Error updating league table:', error);
-    }
-} 
-
-
-function displayLeagueTable(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms = null) {
-    const leagueTableDiv = document.getElementById(`${standingsType.toLowerCase()}-league-table`);
-    const table = leagueTableDiv.querySelector('table');
-
-    // If table exists, update rows; otherwise, create a new table
-    if (table) {
-        updateTableRows(table, standingsData, standingsType, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
-    } else {
-        createTable(leagueTableDiv, standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms);
-    }
-}
-
-function createTable(leagueTableDiv, standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms) {
-    leagueTableDiv.innerHTML = '';
-
-    const tableNameHeader = document.createElement('h4');
-    tableNameHeader.textContent = standingsType.toLowerCase() === 'total' ? 'Overall Standings' : `${standingsType} Standings`;
-
-    leagueTableDiv.appendChild(tableNameHeader);
-
-    const table = document.createElement('table');
-    table.className = 'league-table';
-
-    const header = `
-        <thead>
-            <tr>
-                <th>#</th>
-                <th class="team-name-column">Team</th>
-                <th>GP</th>
-                <th>W</th>
-                <th>D</th>
-                <th>L</th>
-                <th>Goals</th> 
-                <th>Pts</th>
-                ${standingsType.toLowerCase() !== 'total' ? '<th class="teamForm">Form</th>' : ''}
-            </tr>
-        </thead>
-    `;
-    table.innerHTML = header;
-
-    const tbody = document.createElement('tbody');
-    tbody.innerHTML = buildTableRows(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
-
-    table.appendChild(tbody);
-    leagueTableDiv.appendChild(table);
-}
-
-function buildTableRows(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms, leagueTableDiv) {
-    const promotionClasses = [
-        'promotion-to-x',
-        'promotion-to-x-playoff',
-        'promotion-to-y',
-        'promotion-to-y-playoff',
-        'promotion-to-z',
-        'promotion-to-z-playoff',
-        'promotion-to-z-playoff-secondary'
-    ];
-
-    let currentPromotionText = '';
-    let promotionTextIndex = -1;
-
-    return standingsData.standings[0].rows.map(row => {
-        const { team, position, points, wins, draws, losses, scoresFor: goalsFor, scoresAgainst: goalsAgainst, promotion, liveMatchWinnerCodeColumn } = row;
-
-        if (standingsType.toLowerCase() !== 'total' && team.id !== homeTeamId && team.id !== awayTeamId) {
-            return ''; // Skip if not relevant
-        }
-
-        let classNames = [];
-        if (promotion && leagueTableDiv.id === 'total-league-table') {
-            const promotionText = promotion.text.toLowerCase();
-            if (promotionText.includes("relegation")) {
-                classNames.push(promotionText.replace(/\s+/g, '-'));
-            } else {
-                if (promotionText !== currentPromotionText) {
-                    promotionTextIndex++;
-                    currentPromotionText = promotionText;
-                }
-                if (promotionTextIndex < promotionClasses.length) {
-                    classNames.push(promotionClasses[promotionTextIndex]);
-                }
-            }
-        }
-
-        if (team.id === homeTeamId || team.id === awayTeamId) {
-            classNames.push('is-team');
-        }
-
-        const totalGames = wins + draws + losses;
-        const resultForm = teamForms ? teamForms[team.id] || 'N/A' : 'N/A';
-
-        return `
-            <tr class="${classNames.join(' ')}">
-                <td>${position}</td>
-                <td class="team-name-column">
-                    <img src="https://api.sofascore.app/api/v1/team/${team.id}/image" width="16" height="16" alt="${team.shortName}" loading="lazy">
-                ${standingsType.toLowerCase() !== 'total' ? `<span class="team-name">${team.nameCode}</span>` : `<span class="team-name">${team.shortName}</span>`}
-                </td>
-                <td class="gamesPlayed${liveMatchWinnerCodeColumn ? ` live-match-${liveMatchWinnerCodeColumn}` : ''}">${totalGames}</td>
-                <td>${wins}</td>
-                <td>${draws}</td>
-                <td>${losses}</td>
-                <td>${goalsFor}:${goalsAgainst}</td> 
-                <td>${points}</td>
-                ${standingsType.toLowerCase() !== 'total' ? `<td class="teamForm">${resultForm}</td>` : ''}
-            </tr>
-        `;
-    }).join('');
-}
-
-function updateTableRows(table, standingsData, standingsType, homeTeamId, awayTeamId, teamForms, leagueTableDiv) {
-            const tbody = table.querySelector('tbody');
-            tbody.innerHTML = buildTableRows(standingsData, standingsType, null, null, null, homeTeamId, awayTeamId, teamForms, leagueTableDiv);
-        }
-
- 
-
-        // Function to initiate auto-refresh
-        async function autoRefreshLeagueTable(standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms = null, interval = 60000) {
-            async function refreshTable() {
-                const standingsData = await fetchAndDisplayStandings(tournamentId, uniqueTournamentId, seasonId, customId, matchId, homeTeamId, awayTeamId, homeTeamName, awayTeamName);
-                if (standingsData) {
-                    displayLeagueTable(standingsData, standingsType, tournamentId, seasonId, matchId, homeTeamId, awayTeamId, teamForms);
-                }
-            }
-
-            // Refresh immediately
-            await refreshTable();
-
-            // Set up interval for auto-refresh
-            setInterval(refreshTable, interval);
-        }
 
         async function displayOddsForMatch(matchId, homeTeamName, awayTeamName, homeTeamId, awayTeamId, uniqueTournamentId, customId, seasonId) {
             const oddsDiv = document.getElementById('match-odds');
