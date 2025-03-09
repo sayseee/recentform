@@ -1572,13 +1572,24 @@ async function fetchMatchDetails(matchId, matchElement) {
                 </div>
             </div>
                  
+            <div id="match-odds"></div>  
+            
+            <div id="expected-actual"></div>            
+            
+             <div id="team-stats-container" class="home-team-stats away-team-stats"></div>
+            <div id="team-advanced-stats-container" class="home-team-stats away-team-stats"></div>
+            
+            <div class="team-events">
+                <div id="home-team-events"></div>
+                <div id="away-team-events"></div>
+            </div> 
+
             <div id="streaksModule">
                 <div class="streaksModule_Insider"> 
                     <div id="home-streaks"></div>
                     <div id="away-streaks"></div>
                 </div>
             </div>
-            <div id="expected-actual"></div> 
                 <h4>H2H Stats</h4>
             <div class="goalStats">
                 <div id="h2hStats"></div>
@@ -1586,14 +1597,7 @@ async function fetchMatchDetails(matchId, matchElement) {
             </div>
             <div id="home-goal-stats"></div>
             <div id="away-goal-stats"></div>
-            <div id="match-odds"></div> 
-            
-            <div class="team-events">
-                <div id="home-team-events"></div>
-                <div id="away-team-events"></div>
-            </div> 
-             <div id="team-stats-container" class="home-team-stats away-team-stats"></div>
-            <div id="team-advanced-stats-container" class="home-team-stats away-team-stats"></div>
+
             <div class="team-events"> 
                 <div id="home-league-table" class="league-table"></div> 
                 <div id="away-league-table" class="league-table"></div> 
@@ -2398,6 +2402,8 @@ function displayCombinedTeamStats(homeStats, awayStats, homeTeamName, awayTeamNa
     // Additional stats as percentages for home team
     const homeOver05ScoredPercentage = ((homeStats.over05Scored / homeTotalMatches) * 100).toFixed(0);
     const homeOver05ConcededPercentage = ((homeStats.over05Conceded / homeTotalMatches) * 100).toFixed(0);
+    const homeOver15ScoredPercentage = ((homeStats.over15Scored / homeTotalMatches) * 100).toFixed(0);
+    const homeOver15ConcededPercentage = ((homeStats.over15Conceded / homeTotalMatches) * 100).toFixed(0);
     const homeBttsPercentage = ((homeStats.btts / homeTotalMatches) * 100).toFixed(0);
     const homeOver15Percentage = ((homeStats.over15 / homeTotalMatches) * 100).toFixed(0);
     const homeOver25Percentage = ((homeStats.over25 / homeTotalMatches) * 100).toFixed(0);
@@ -2419,6 +2425,8 @@ function displayCombinedTeamStats(homeStats, awayStats, homeTeamName, awayTeamNa
     // Additional stats as percentages for away team
     const awayOver05ScoredPercentage = ((awayStats.over05Scored / awayTotalMatches) * 100).toFixed(0);
     const awayOver05ConcededPercentage = ((awayStats.over05Conceded / awayTotalMatches) * 100).toFixed(0);
+    const awayOver15ScoredPercentage = ((awayStats.over15Scored / awayTotalMatches) * 100).toFixed(0);
+    const awayOver15ConcededPercentage = ((awayStats.over15Conceded / awayTotalMatches) * 100).toFixed(0);
     const awayBttsPercentage = ((awayStats.btts / awayTotalMatches) * 100).toFixed(0);
     const awayOver15Percentage = ((awayStats.over15 / awayTotalMatches) * 100).toFixed(0);
     const awayOver25Percentage = ((awayStats.over25 / awayTotalMatches) * 100).toFixed(0);
@@ -2434,38 +2442,40 @@ function displayCombinedTeamStats(homeStats, awayStats, homeTeamName, awayTeamNa
         return value >= 80 ? `style="color: var(--loss-color); font-weight: 700;"` : '';
     }
 
+    const statsHeader = document.createElement('h4');
+statsHeader.innerHTML = `<span>Last ${homeTotalMatches} Games Stats</span>`;
+generalStatsContainer.innerHTML = ''; // Clear previous content
+generalStatsContainer.appendChild(statsHeader); // Append the header
 
-    // General Stats Container
-    generalStatsContainer.innerHTML = `
+// Append General Stats Content
+generalStatsContainer.insertAdjacentHTML('beforeend', `
         <div class="stats-row"> 
-            <span>Played</span>
             <span>Win</span>
             <span>Draw</span>
             <span>Loss</span>
-            <span>W - 0</span>
-            <span>D - 0</span>
-            <span>L - 0</span>
+            <span>BTTS</span>
+            <span>+1.5</span> 
+            <span>+2.5</span> 
         </div>
         <div class="stats-row"> 
-            <span>${homeTotalMatches}</span>        
+                   
             <span ${stylePercentage(homeWinsPercentage)}>${homeWinsPercentage}%</span>
             <span>${homeDrawsPercentage}%</span>
             <span ${concededPercentage(homeLossesPercentage)}>${homeLossesPercentage}%</span>
-            <span ${stylePercentage(homeWinToNilPercentage)}>${homeWinToNilPercentage}%</span>
-            <span>${homeNilDrawsPercentage}%</span>
-            <span ${concededPercentage(homeLossToNilPercentage)}>${homeLossToNilPercentage}%</span>
+            <span ${stylePercentage(homeBttsPercentage)}>${homeBttsPercentage}%</span>
+            <span ${stylePercentage(homeOver15Percentage)}>${homeOver15Percentage}%</span>
+            <span ${stylePercentage(homeOver25Percentage)}>${homeOver25Percentage}%</span>
     </div>
-        <div class="stats-row"> 
-            <span>${awayTotalMatches}</span>     
+        <div class="stats-row">    
             <span ${stylePercentage(awayWinsPercentage)}>${awayWinsPercentage}%</span>
             <span>${awayDrawsPercentage}%</span>
             <span ${concededPercentage(awayLossesPercentage)}>${awayLossesPercentage}%</span>
-            <span ${stylePercentage(awayWinToNilPercentage)}>${awayWinToNilPercentage}%</span>
-            <span>${awayNilDrawsPercentage}%</span>
-            <span ${concededPercentage(awayLossToNilPercentage)}>${awayLossToNilPercentage}%</span>
+            <span ${stylePercentage(awayBttsPercentage)}>${awayBttsPercentage}%</span>
+            <span ${stylePercentage(awayOver15Percentage)}>${awayOver15Percentage}%</span>
+            <span ${stylePercentage(awayOver25Percentage)}>${awayOver25Percentage}%</span>
     
         </div>
-    `;
+    `);
 
     // Advanced Stats Container
     advancedStatsContainer.innerHTML = `
@@ -2474,27 +2484,24 @@ function displayCombinedTeamStats(homeStats, awayStats, homeTeamName, awayTeamNa
             <span>GC</span>
             <span>S+0.5</span>
             <span>C+0.5</span>
-            <span>BTTS</span>
-            <span>+1.5</span> 
-            <span>+2.5</span> 
+            <span>S+1.5</span>
+            <span>C+1.5</span>
         </div>
         <div class="stats-row"> 
             <span>${homeStats?.goalsScored ?? '-'} <sub>(${avHomeScored})</sub></span>
             <span>${homeStats?.goalsConceded ?? '-'} <sub>(${avHomeConceded})</sub></span> 
             <span ${stylePercentage(homeOver05ScoredPercentage)}>${homeOver05ScoredPercentage}%</span>
             <span ${concededPercentage(homeOver05ConcededPercentage)}>${homeOver05ConcededPercentage}%</span>
-            <span ${stylePercentage(homeBttsPercentage)}>${homeBttsPercentage}%</span>
-            <span ${stylePercentage(homeOver15Percentage)}>${homeOver15Percentage}%</span>
-            <span ${stylePercentage(homeOver25Percentage)}>${homeOver25Percentage}%</span>
+            <span ${stylePercentage(homeOver15ScoredPercentage)}>${homeOver15ScoredPercentage}%</span>
+            <span ${concededPercentage(homeOver15ConcededPercentage)}>${homeOver15ConcededPercentage}%</span>
         </div>
         <div class="stats-row"> 
             <span>${awayStats?.goalsScored ?? '-'} <sub>(${avAwayScored})</sub></span>
             <span>${awayStats?.goalsConceded ?? '-'} <sub>(${avAwayConceded})</sub></span>
             <span ${stylePercentage(awayOver05ScoredPercentage)}>${awayOver05ScoredPercentage}%</span>
             <span ${concededPercentage(awayOver05ConcededPercentage)}>${awayOver05ConcededPercentage}%</span>
-            <span ${stylePercentage(awayBttsPercentage)}>${awayBttsPercentage}%</span>
-            <span ${stylePercentage(awayOver15Percentage)}>${awayOver15Percentage}%</span>
-            <span ${stylePercentage(awayOver25Percentage)}>${awayOver25Percentage}%</span>
+            <span ${stylePercentage(awayOver15ScoredPercentage)}>${awayOver15ScoredPercentage}%</span>
+            <span ${concededPercentage(awayOver15ConcededPercentage)}>${awayOver15ConcededPercentage}%</span>
         </div>
     `;
 }
@@ -2511,6 +2518,8 @@ async function getTeamStats(uniqueTournamentId, seasonId, matchId, teamId) {
         goalsConceded: 0,
         over05Scored: 0,
         over05Conceded: 0,
+        over15Scored: 0,
+        over15Conceded: 0,
         btts: 0,
         over15: 0,
         over25: 0,
@@ -2553,6 +2562,8 @@ async function getTeamStats(uniqueTournamentId, seasonId, matchId, teamId) {
             if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats.btts++;
             if (event.homeScore.current > 0.5) teamStats.over05Scored++;
             if (event.awayScore.current > 0.5) teamStats.over05Conceded++;
+            if (event.homeScore.current > 1.5) teamStats.over15Scored++;
+            if (event.awayScore.current > 1.5) teamStats.over15Conceded++;
             if (event.homeScore.current + event.awayScore.current > 1.5) teamStats.over15++;
             if (event.homeScore.current + event.awayScore.current > 2.5) teamStats.over25++;
             if (event.homeScore.current + event.awayScore.current > 3.5) teamStats.over35++;
@@ -2580,6 +2591,8 @@ async function getTeamStats(uniqueTournamentId, seasonId, matchId, teamId) {
             if (event.homeScore.current > 0.5 && event.awayScore.current > 0.5) teamStats.btts++;
             if (event.awayScore.current > 0.5) teamStats.over05Scored++;
             if (event.homeScore.current > 0.5) teamStats.over05Conceded++;
+            if (event.awayScore.current > 1.5) teamStats.over15Scored++;
+            if (event.homeScore.current > 1.5) teamStats.over15Conceded++;
             if (event.homeScore.current + event.awayScore.current > 1.5) teamStats.over15++;
             if (event.homeScore.current + event.awayScore.current > 2.5) teamStats.over25++;
             if (event.homeScore.current + event.awayScore.current > 3.5) teamStats.over35++;
