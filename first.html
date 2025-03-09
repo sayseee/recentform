@@ -890,7 +890,7 @@ sup {
     cursor: pointer;
     justify-content: center;
 }
-.home-team-stats div:first-child, .away-team-stats div:first-child {
+.home-team-stats div.stats-row:first-child, .away-team-stats div.stats-row:first-child, #team-stats-container .top-row {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -2449,7 +2449,7 @@ generalStatsContainer.appendChild(statsHeader); // Append the header
 
 // Append General Stats Content
 generalStatsContainer.insertAdjacentHTML('beforeend', `
-        <div class="stats-row"> 
+        <div class="stats-row top-row"> 
             <span>Win</span>
             <span>Draw</span>
             <span>Loss</span>
