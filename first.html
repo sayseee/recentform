@@ -2431,10 +2431,14 @@ function displayCombinedTeamStats(homeStats, awayStats, homeTeamName, awayTeamNa
     const awayOver15Percentage = ((awayStats.over15 / awayTotalMatches) * 100).toFixed(0);
     const awayOver25Percentage = ((awayStats.over25 / awayTotalMatches) * 100).toFixed(0);
 
-    
+
     // Helper function to style percentages
     function stylePercentage(value) {
-        return value >= 80 ? `style="color: var(--secondary-default); font-weight: 700;"` : '';
+        return value >= 80 
+            ? `style="color: var(--secondary-default); font-weight: 700;"`
+            : value >= 60 && value < 79 
+            ? `style="color: rgba(229, 156, 3, 0.9); font-weight: 700;"`
+            : '';
     }
 
     // Helper function to style conceded percentages
