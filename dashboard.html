@@ -574,6 +574,25 @@
         display: flex;
         justify-content: space-between;
     }
+    .results-form {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .team-name-column {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 150px;  
+        flex: 6 !important;
+        text-align: left !important;
+        width: 100px !important;
+        text-wrap: nowrap;
+    }
             </style>
     </head>
     <body> 
@@ -1027,6 +1046,8 @@ async function fetchMatchDetails(matchId) {
         const awayScore = match.awayScore?.current ?? '';
         const status = match.status;
         const seasonId = match.season.id;
+        const tournamentId = match.tournament.id;
+        const uniqueTournamentId = match.tournament.uniqueTournament.id;
         const customId = match.customId;
 
         // Update match details in the DOM
@@ -1070,6 +1091,12 @@ async function fetchMatchDetails(matchId) {
                 </div>
                 <div class="" id="away-team-events"></div>
             </div>
+ 
+            
+            <div class="teams-events-data scrollable missingPlayers">
+                <div id="home-league-table"></div>
+                <div id="away-league-table"></div>
+            </div>
             
             <div class="teams-events-data h2h-manager">
                 <div id="home-topscorer"></div> 
@@ -1092,7 +1119,7 @@ async function fetchMatchDetails(matchId) {
         fetchTeamManager(homeTeam.id, "home-manager");
         fetchTeamManager(awayTeam.id, "away-manager");
 
-
+        fetchAndDisplayStandings(tournamentId, seasonId, uniqueTournamentId, homeTeam.id, awayTeam.id);
         // Auto-refresh score functionality
         if (status.type === 'inprogress') {
             setTimeout(() => refreshScores(matchId), 60000); // Refresh every minute
@@ -1186,6 +1213,168 @@ async function fetchPregameForm(matchId) {
         console.error('Error fetching pregame form:', error);
     }
 }
+
+async function fetchAndDisplayStandings(tournamentId, seasonId, uniqueTournamentId, homeTeamId, awayTeamId) {
+    try {
+        // Fetch home standings
+        const homeStandingsResponse = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/home`);
+        let homeStandingsData;
+        if (homeStandingsResponse.ok) {
+            homeStandingsData = await homeStandingsResponse.json();
+        }
+
+        // Fetch away standings
+        const awayStandingsResponse = await fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/standings/away`);
+        let awayStandingsData;
+        if (awayStandingsResponse.ok) {
+            awayStandingsData = await awayStandingsResponse.json();
+        }
+
+        // Fetch team forms for home and away
+        const [homeTeamForms, awayTeamForms] = await Promise.all([
+            fetchTeamForm(uniqueTournamentId, seasonId, 'home'),
+            fetchTeamForm(uniqueTournamentId, seasonId, 'away')
+        ]);
+
+        // Display home and away standings
+        if (homeStandingsData && awayStandingsData) {
+            displayLeagueTable(homeStandingsData, 'Home', homeTeamId, awayTeamId, homeTeamForms);
+            displayLeagueTable(awayStandingsData, 'Away', homeTeamId, awayTeamId, awayTeamForms);
+        } else {
+            const leagueTableDiv = document.getElementById('league-table');
+            leagueTableDiv.innerHTML = '<p>No standings available</p>';
+        }
+    } catch (error) {
+        console.error('Error fetching and displaying standings:', error);
+        const leagueTableDiv = document.getElementById('league-table');
+        leagueTableDiv.innerHTML = '<p>Error loading standings</p>';
+    }
+}
+
+function displayLeagueTable(standingsData, standingsType, homeTeamId, awayTeamId, teamForms) {
+    const leagueTableDiv = document.getElementById(`${standingsType.toLowerCase()}-league-table`);
+    leagueTableDiv.innerHTML = '';
+
+    const tableNameHeader = document.createElement('h4');
+    tableNameHeader.textContent = `${standingsType} Standings`;
+    leagueTableDiv.appendChild(tableNameHeader);
+
+    const table = document.createElement('table');
+    table.className = 'league-table';
+
+    const header = `
+        <thead>
+            <tr>
+                <th>#</th>
+                <th class="team-name-column">Team</th>
+                <th>GP</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>Goals</th> 
+                <th>Pts</th> 
+                <th>Form</th>
+                <th>Form Pts</th> <!-- Added Form Points column -->
+            </tr>
+        </thead>
+    `;
+    table.innerHTML = header;
+
+    const tbody = document.createElement('tbody');
+    tbody.innerHTML = buildTableRows(standingsData, homeTeamId, awayTeamId, teamForms);
+    table.appendChild(tbody);
+    leagueTableDiv.appendChild(table);
+}
+
+function buildTableRows(standingsData, homeTeamId, awayTeamId, teamForms) {
+    return standingsData.standings[0].rows.map(row => {
+        const { team, position, points, wins, draws, losses, scoresFor: goalsFor, scoresAgainst: goalsAgainst } = row;
+
+        if (team.id !== homeTeamId && team.id !== awayTeamId) {
+            return ''; // Skip if not relevant
+        }
+
+        const totalGames = wins + draws + losses;
+        const classNames = team.id === homeTeamId || team.id === awayTeamId ? 'is-team' : '';
+
+        // Get resultForm for the team
+        const resultForm = teamForms[team.id] || 'N/A';
+
+        // Extract raw form results (e.g., "W W W W D") from the HTML string
+        const rawFormResults = extractRawFormResults(resultForm);
+
+        // Calculate points for the resultForm
+        const formPoints = calculateFormPoints(rawFormResults);
+
+        return `
+            <tr class="${classNames}">
+                <td>${position}</td>
+                <td class="team-name-column">
+                    <img src="https://api.sofascore.app/api/v1/team/${team.id}/image" width="16" height="16" alt="${team.shortName}" loading="lazy">
+                    <span class="team-name">${team.shortName}</span>
+                </td>
+                <td>${totalGames}</td>
+                <td>${wins}</td>
+                <td>${draws}</td>
+                <td>${losses}</td>
+                <td>${goalsFor}:${goalsAgainst}</td> 
+                <td>${points}</td> 
+                <td><div class="results-form">${resultForm}</div></td> <!-- Display resultForm -->
+                <td>${formPoints}</td> <!-- Display form points -->
+            </tr>
+        `;
+    }).join('');
+}
+
+// Function to extract raw form results from the HTML string
+function extractRawFormResults(resultForm) {
+    if (!resultForm || resultForm === 'N/A') return [];
+
+    // Remove HTML tags and extract the raw results
+    const rawResults = resultForm.replace(/<[^>]+>/g, '').split(' ');
+    return rawResults.filter(result => result === 'W' || result === 'D' || result === 'L');
+}
+
+// Function to calculate points from raw form results
+function calculateFormPoints(rawFormResults) {
+    return rawFormResults.reduce((totalPoints, result) => {
+        if (result === 'W') return totalPoints + 3;
+        if (result === 'D') return totalPoints + 1;
+        return totalPoints;
+    }, 0);
+}
+
+async function fetchTeamForm(uniqueTournamentId, seasonId, type) {
+    const response = await fetch(`https://api.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/team-events/${type}`);
+    const data = await response.json();
+    const teamForms = {};
+
+    const events = data.tournamentTeamEvents;
+    for (const tournamentKey in events) {
+        const teams = events[tournamentKey];
+        for (const teamId in teams) {
+            const teamEvents = teams[teamId];
+            if (!teamForms[teamId]) {
+                teamForms[teamId] = '';
+            }
+            teamForms[teamId] = teamEvents.map(event => {
+                let formResult;
+                if (type === 'home') {
+                    if (event.winnerCode === 1) formResult = 'W';
+                    else if (event.winnerCode === 2) formResult = 'L';
+                    else formResult = 'D';
+                } else if (type === 'away') {
+                    if (event.winnerCode === 1) formResult = 'L';
+                    else if (event.winnerCode === 2) formResult = 'W';
+                    else formResult = 'D';
+                }
+                return `<span class="${formResult}">${formResult}</span>`;
+            }).join(' ');
+        }
+    }
+    return teamForms;
+}
+
 
 const fetchManager = async (managerId, managerContainerId) => {
     try {
@@ -1380,8 +1569,7 @@ async function fetchAndDisplayLineups(matchId) {
 async function fetchPlayerStatistics(playerId, teamId, uniqueTournamentId, seasonYear) {
     try {
         const response = await fetch(`https://www.sofascore.com/api/v1/player/${playerId}/statistics`);
-        const data = await response.json();
-        console.log(data.seasons);
+        const data = await response.json(); 
         // Check if the 'seasons' property exists and is an array
         if (!data.seasons || !Array.isArray(data.seasons)) {
             console.warn(`No seasons data found for player ${playerId}`);
@@ -1411,15 +1599,12 @@ async function fetchAndDisplayTeamPerformance(teamId, teamType, seasonId, matchI
         }
         
         const performanceData = await response.json(); 
-
-        console.log('performanceData:', performanceData);
+ 
         if (performanceData && performanceData.events && performanceData.points) {
             // Filter events for the given season and remove the one matching matchId
             const eventsWithWinnerCodes = performanceData.events
                 .filter(event => event.season.id === seasonId && event.id !== matchId);
-
-            console.log('Filtered Events:', eventsWithWinnerCodes);
-            console.log('Excluded Match ID:', matchId);
+ 
             
             if (teamType === 'home') {
                 window.homeTeamEvents = eventsWithWinnerCodes;
