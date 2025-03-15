@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
+  <title>Football Tournaments</title>
+  <style>
+    .rF-4 {
+  font-family: "Roboto Flex", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0,
+    "wdth" 100,
+    "GRAD" 0,
+    "XOPQ" 96,
+    "XTRA" 468,
+    "YOPQ" 79,
+    "YTAS" 750,
+    "YTDE" -203,
+    "YTFI" 738,
+    "YTLC" 514,
+    "YTUC" 712;
+}
+    .rF-5 {
+  font-family: "Roboto Flex", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0,
+    "wdth" 100,
+    "GRAD" 0,
+    "XOPQ" 96,
+    "XTRA" 468,
+    "YOPQ" 79,
+    "YTAS" 750,
+    "YTDE" -203,
+    "YTFI" 738,
+    "YTLC" 514,
+    "YTUC" 712;
+}
+    .rF-6 {
+  font-family: "Roboto Flex", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings:
+    "slnt" 0,
+    "wdth" 100,
+    "GRAD" 0,
+    "XOPQ" 96,
+    "XTRA" 468,
+    "YOPQ" 79,
+    "YTAS" 750,
+    "YTDE" -203,
+    "YTFI" 738,
+    "YTLC" 514,
+    "YTUC" 712;
+}
+    body {
+        background-color:rgb(0, 0, 0);
+        color:rgb(219, 222, 218);
+        font-size: 12px;
+    }
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+}
+  </style>
+</head>
+<body class="rF-4">
+  <h1>Football Categories</h1>
+  <div id="categories"></div>
+  
+  <h2>Selected Country: <span id="selected-country"></span></h2>
+  <div id="tournaments"></div>
+
+  <h2>Tournament Details</h2>
+  <div id="tournament-details"></div>
+
+<!-- rounds Info -->
+<div id="rounds"></div>
+  
+<!-- Season Selector Dropdown -->
+<select id="season-select"></select>
+
+<!-- Season Info -->
+<div id="season-info"></div>
+<!-- groups Info -->
+<div id="groups"></div>
+
+  <script>
+// Fetch and display categories (countries)
+function fetchCategories() {
+  fetch('https://www.sofascore.com/api/v1/sport/football/categories')
+    .then(response => response.json())
+    .then(data => {
+      const categoriesContainer = document.getElementById('categories');
+      categoriesContainer.innerHTML = '';
+
+      // Sort categories by priority (descending) and then alphabetically for priority 0
+      const sortedCategories = data.categories.sort((a, b) => {
+        if (a.priority === 0 && b.priority === 0) {
+          // Sort alphabetically if both priorities are 0
+          return a.name.localeCompare(b.name);
+        } else if (a.priority === 0) {
+          // Move priority 0 items to the end
+          return 1;
+        } else if (b.priority === 0) {
+          // Move priority 0 items to the end
+          return -1;
+        } else {
+          // Sort by priority in descending order
+          return b.priority - a.priority;
+        }
+      });
+
+      // Loop through sorted categories and create buttons
+      sortedCategories.forEach((category, index) => {
+        const button = document.createElement('button');
+        button.textContent = category.name;
+        button.onclick = () => fetchTournaments(category.id, category.name);
+
+        categoriesContainer.appendChild(button);
+
+        // Auto-click the first category to load its tournaments
+        if (index === 0) {
+          fetchTournaments(category.id, category.name);
+        }
+      });
+    })
+    .catch(error => console.error('Error fetching categories:', error));
+}
+
+// Fetch tournaments for a selected category
+function fetchTournaments(categoryId, categoryName) {
+  document.getElementById('selected-country').textContent = categoryName;
+  
+  fetch(`https://www.sofascore.com/api/v1/category/${categoryId}/unique-tournaments`)
+    .then(response => response.json())
+    .then(data => {
+      const tournamentsContainer = document.getElementById('tournaments');
+      tournamentsContainer.innerHTML = '';
+      
+      // Check if there are any tournaments in the category
+      if (data.groups.length > 0 && data.groups[0].uniqueTournaments.length > 0) {
+        // Automatically display the first tournament in the list
+        const firstTournament = data.groups[0].uniqueTournaments[0];
+        
+        // Display the tournaments
+        data.groups.forEach(group => {
+          group.uniqueTournaments.forEach(tournament => {
+            const tournamentButton = document.createElement('button');
+            tournamentButton.textContent = tournament.name;
+            tournamentButton.onclick = () => fetchTournamentDetails(tournament.id);
+            tournamentsContainer.appendChild(tournamentButton);
+          });
+        });
+
+        // Fetch the details of the first tournament automatically
+        fetchTournamentDetails(firstTournament.id);
+      }
+    })
+    .catch(error => console.error('Error fetching tournaments:', error));
+}
+
+// Fetch and display season-specific info (e.g., stats, standings)
+function fetchSeasonInfo(tournamentId, tournamentName, seasonId) {
+  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}/season/${seasonId}/info`)
+    .then(response => response.json())
+    .then(data => {
+      const seasonInfoContainer = document.getElementById('season-info');
+      
+      seasonInfoContainer.innerHTML = ` 
+        <h4>Season Info for ${tournamentName}</h4>
+        <p><strong>Goals:</strong> ${data.info.goals}</p>
+        <p><strong>Home Team Wins:</strong> ${data.info.homeTeamWins}</p>
+        <p><strong>Away Team Wins:</strong> ${data.info.awayTeamWins}</p>
+        <p><strong>Draws:</strong> ${data.info.draws}</p>
+        <p><strong>Yellow Cards:</strong> ${data.info.yellowCards}</p>
+        <p><strong>Red Cards:</strong> ${data.info.redCards}</p>
+      `;
+    })
+    .catch(error => console.error('Error fetching season info:', error));
+}
+
+// Fetch details of a specific tournament
+function fetchTournamentDetails(tournamentId) {
+  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}`)
+    .then(response => response.json())
+    .then(data => {
+      const tournamentDetailsContainer = document.getElementById('tournament-details');
+      const tournament = data.uniqueTournament;
+
+      // Get true values for rounds, groups, playoff series, performance graph
+      const hasRounds = tournament.hasRounds ? 'Yes' : 'No';
+      const hasGroups = tournament.hasGroups ? 'Yes' : 'No';
+      const hasPlayoffSeries = tournament.hasPlayoffSeries ? 'Yes' : 'No';
+      const hasPerformanceGraphFeature = tournament.hasPerformanceGraphFeature ? 'Yes' : 'No';
+
+      const tournamentImage = `https://img.sofascore.com/api/v1/unique-tournament/${tournament.id}/image`;
+      tournamentDetailsContainer.innerHTML = `
+        <h3>${tournament.name}</h3>
+        <p><strong>Title Holder:</strong> ${tournament.titleHolder.name}</p>
+        <p><strong>Most Titles:</strong> ${tournament.mostTitles}</p>
+        <div><img src="${tournamentImage}" alt="${tournament.name} logo"></div>
+        
+        <h4>Tournament Features:</h4>
+        <ul>
+          <li><strong>Has Rounds:</strong> ${hasRounds}</li>
+          <li><strong>Has Groups:</strong> ${hasGroups}</li>
+          <li><strong>Has Playoff Series:</strong> ${hasPlayoffSeries}</li>
+          <li><strong>Has Performance Graph Feature:</strong> ${hasPerformanceGraphFeature}</li>
+        </ul>
+      `; 
+
+      // Fetch and display seasons for the selected tournament
+      fetchSeasons(tournamentId, tournament.name);
+    })
+    .catch(error => console.error('Error fetching tournament details:', error));
+}
+
+// Fetch and display seasons for a selected tournament
+function fetchSeasons(tournamentId, tournamentName) {
+  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}/seasons`)
+    .then(response => response.json())
+    .then(data => {
+      const seasonSelect = document.getElementById('season-select');
+      seasonSelect.innerHTML = ''; // Clear previous options
+
+      // Create a default "Select Season" option
+      const defaultOption = document.createElement('option');
+      defaultOption.textContent = "Select Season";
+      defaultOption.value = "";
+      seasonSelect.appendChild(defaultOption);
+
+      // Loop through the seasons and create an option for each one
+      data.seasons.forEach((season, index) => {
+        const option = document.createElement('option');
+        option.value = season.id;
+        option.textContent = season.name;
+        seasonSelect.appendChild(option);
+
+        // Automatically select the first season and fetch its info
+        if (index === 0) {
+          option.selected = true;
+          fetchSeasonInfo(tournamentId, tournamentName, season.id); // Fetch the first season's info
+
+          // After selecting the first season, fetch rounds for that season
+          fetchRounds(tournamentId, season.id);
+        }
+      });
+
+      // Add event listener for changing season
+      seasonSelect.onchange = () => {
+        const selectedSeasonId = seasonSelect.value;
+        if (selectedSeasonId) {
+          fetchSeasonInfo(tournamentId, tournamentName, selectedSeasonId);
+          fetchRounds(tournamentId, selectedSeasonId);  // Fetch rounds when season changes
+        }
+      };
+    })
+    .catch(error => console.error('Error fetching seasons:', error));
+}
+
+// Fetch rounds for the tournament and season
+function fetchRounds(tournamentId, seasonId) {
+  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}/season/${seasonId}/rounds`)
+    .then(response => response.json())
+    .then(data => {
+      const roundsContainer = document.getElementById('rounds');
+      roundsContainer.innerHTML = '<h4>Rounds</h4>';
+      
+      // Check if the rounds property exists and is an array
+      if (data.rounds && Array.isArray(data.rounds)) {
+        const currentRound = data.currentRound?.round; // Get the current round number
+
+        data.rounds.forEach(round => {
+          const roundButton = document.createElement('button');
+          roundButton.textContent = `Round ${round.round}`;
+          roundButton.onclick = () => fetchEventsForRound(tournamentId, round.round);
+
+          // Highlight the current round
+          if (round.round === currentRound) {
+            roundButton.style.backgroundColor = '#4CAF50'; // Green background for the current round
+            roundButton.style.color = 'white'; // White text for better contrast
+            roundButton.style.border = '2px solid #45a049'; // Add a border
+          }
+
+          roundsContainer.appendChild(roundButton);
+        });
+      } else {
+        roundsContainer.innerHTML = '<p>No rounds data available.</p>';
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching rounds:', error);
+      document.getElementById('rounds').innerHTML = '<p>Failed to load rounds.</p>';
+    });
+}
+
+// Initialize the app
+fetchCategories();
+</script>
+</body>
+</html>
