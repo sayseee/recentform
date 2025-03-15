@@ -69,7 +69,7 @@
     body {
         background-color:rgb(0, 0, 0);
         color:rgb(219, 222, 218);
-        font-size: 12px;
+        font-size: 11px;
         margin: 10px;
         display: flex;
         flex-direction: column; 
@@ -82,6 +82,9 @@
     }
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
+}
+li {
+  list-style: none;
 }
 .scrollable {
   overflow-y: auto;
@@ -109,7 +112,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .main {
   display: flex;
-  background-color: rgb(52, 52, 52);
+  background-color: rgb(40, 40, 40);
   border: 1px solid rgb(74, 74, 74);
   flex: 1;
   flex-direction: row;
@@ -124,13 +127,107 @@ h1, h2, h3, h4, h5, h6 {
 #categories li, #tournaments li {
   margin: 0;
   list-style: none;
-  padding: 10px 3px;
+  padding: 3px 0 3px 10px;
+  display: flex;
+  align-items: center;
+} 
+#categories  {
+  flex: 0.8;
 }
-#categories li {
-  background-color: rgb(26, 35, 42);
+.tournaments {
+  background-color:rgb(0, 0, 0);
+  border-right: 1px solid rgba(40, 40, 40, 0.8);
+  border-left: 1px solid rgba(40, 40, 40, 0.8);
+  flex: 1.2;
+} 
+.tournament-details {
+  flex: 5.8;
+  display: flex;
+  flex-direction: column;
 }
-#categories li:not(:last-child) {
-  border-bottom: 1px solid rgb(12, 21, 26);
+#categories a {
+  color: rgb(128, 128, 128);
+} 
+
+.tournaments h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  text-align: center;
+} 
+#tournaments a {
+  color: rgb(223, 189, 106);
+} 
+#categories li:nth-child(even) {
+  background-color:rgb(0, 0, 0);
+  border-right: 1px solid rgba(40, 40, 40, 0.8);
+}
+#tournaments li {
+  border-bottom: 1px solid rgba(40, 40, 40, 0.8);
+  padding-right: 10px;
+}
+.tournament-data {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+#rounds, #rounds ul {
+  display: flex;
+  align-items: center;
+}
+#rounds {
+  display: flex; /* Make the container a flexbox */
+  align-items: center; /* Vertically center the content */
+  gap: 10px; /* Add spacing between the heading and the list */
+}
+
+#rounds h4 {
+  width: 40px; /* Fixed width for the heading */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  color: white; /* Ensure the text is visible */
+}
+
+#rounds ul {
+  flex-grow: 1; /* Allow the list to grow and fill the remaining space */
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  list-style: none; /* Remove default list styling */
+  display: flex; /* Make the list a flex container */
+  flex-wrap: wrap; /* Allow list items to wrap to the next line */
+  gap: 5px; /* Add spacing between list items */
+}
+
+#rounds ul li { 
+  text-align: center; /* Center the text inside list items */
+}
+
+#rounds ul li a {
+  text-decoration: none; /* Remove underline from links */
+  color: white; /* Set link text color */
+  padding: 5px 10px; /* Add padding to links */
+  background-color: rgba(255, 255, 255, 0.1); /* Default background color */
+  border-radius: 4px; /* Rounded corners for links */
+  display: block; /* Make links fill the entire list item */
+}
+
+#rounds ul li a:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Hover background color */
+}
+
+#season-info {  
+  color: white;
+} 
+#season-info .stats {
+  display: flex; /* Arrange stats in a row */
+  gap: 15px; /* Add spacing between stats */
+  flex-wrap: wrap; /* Allow wrapping if the container is too small */
+}
+
+#season-info .stats div {
+  background-color: rgba(255, 255, 255, 0.1); /* Light background for each stat */
+  padding: 5px 10px; /* Add padding */
+  border-radius: 4px; /* Rounded corners */
+  font-size: 14px;
 }
   </style>
 </head>
@@ -142,17 +239,17 @@ h1, h2, h3, h4, h5, h6 {
       <div id="tournaments" class="scrollable"></div>
     </div>
 
-    <div class="tournament-details">
-      <h2>Tournament Details</h2>
-      <div id="tournament-details"></div>
+    <div class="tournament-details scrollable"> 
+      <div class="tournament-data">
+        <div id="tournament-details"></div>
+        <!-- Season Selector Dropdown -->
+        <select id="season-select"></select> 
+        <!-- Season Info -->
+        <div id="season-info"></div>
+      </div> 
       <!-- rounds Info -->
       <div id="rounds"></div>
         
-      <!-- Season Selector Dropdown -->
-      <select id="season-select"></select>
-
-      <!-- Season Info -->
-      <div id="season-info"></div>
       <!-- groups Info -->
       <div id="groups"></div>
     </div>
@@ -261,14 +358,13 @@ function fetchSeasonInfo(tournamentId, tournamentName, seasonId) {
     .then(data => {
       const seasonInfoContainer = document.getElementById('season-info');
       
-      seasonInfoContainer.innerHTML = ` 
-        <h4>Season Info for ${tournamentName}</h4>
-        <p><strong>Goals:</strong> ${data.info.goals}</p>
-        <p><strong>Home Team Wins:</strong> ${data.info.homeTeamWins}</p>
-        <p><strong>Away Team Wins:</strong> ${data.info.awayTeamWins}</p>
-        <p><strong>Draws:</strong> ${data.info.draws}</p>
-        <p><strong>Yellow Cards:</strong> ${data.info.yellowCards}</p>
-        <p><strong>Red Cards:</strong> ${data.info.redCards}</p>
+      seasonInfoContainer.innerHTML = `  
+        <div class="stats">
+          <div><strong>G:</strong> ${data.info.goals}</div>
+          <div><strong>HW:</strong> ${data.info.homeTeamWins}</div>
+          <div><strong>AW:</strong> ${data.info.awayTeamWins}</div>
+          <div><strong>D:</strong> ${data.info.draws}</div>
+        </div>
       `;
     })
     .catch(error => console.error('Error fetching season info:', error));
