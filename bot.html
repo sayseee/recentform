@@ -62,36 +62,97 @@
     "YTLC" 514,
     "YTUC" 712;
 }
+:root {
+        --color-white20p: hsla(0,0%,100%,.2);
+        --color-black1: rgb(3,5,7);
+}
     body {
         background-color:rgb(0, 0, 0);
         color:rgb(219, 222, 218);
         font-size: 12px;
+        margin: 10px;
+        display: flex;
+        flex-direction: column; 
+        height: 100vh;
+        overflow: hidden;
+    }
+    a {
+      text-decoration: none;
+      color:rgb(219, 222, 218);
     }
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
 }
+.scrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  -ms-overflow-style: scrollbar; /* For Edge */
+  scrollbar-width: thin; /* Thin scrollbar for Firefox */
+  scrollbar-color: var(--color-white20p) var(--color-black1); /* Scrollbar color for Firefox */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling for WebKit */
+}
+
+/* Custom scrollbar for WebKit browsers (Chrome, Safari) */
+.scrollable::-webkit-scrollbar {
+  width: 1px; /* Set scrollbar width to 1px */
+}
+
+.scrollable::-webkit-scrollbar-track {
+  background: var(--color-black1); /* Track color */
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  background: var(--color-white20p); /* Thumb color */
+  border-radius: 1px; /* Rounded corners for the thumb */
+}
+
+.main {
+  display: flex;
+  background-color: rgb(52, 52, 52);
+  border: 1px solid rgb(74, 74, 74);
+  flex: 1;
+  flex-direction: row;
+  height: 100vh;
+}
+
+#categories ul, #tournaments ul {
+  margin: 0;
+  padding: 0;
+}
+
+#categories li, #tournaments li {
+  margin: 0;
+  list-style: none;
+}
+#categories li {
+  background-color: rgb(26, 35, 42);
+}
   </style>
 </head>
 <body class="rF-4">
-  <h1>Football Categories</h1>
-  <div id="categories"></div>
-  
-  <h2>Selected Country: <span id="selected-country"></span></h2>
-  <div id="tournaments"></div>
+  <div class="main">
+    <div id="categories" class="scrollable"></div>  
+    <div class="tournaments">
+      <h2><span id="selected-country"></span></h2>
+      <div id="tournaments" class="scrollable"></div>
+    </div>
 
-  <h2>Tournament Details</h2>
-  <div id="tournament-details"></div>
+    <div class="tournament-details">
+      <h2>Tournament Details</h2>
+      <div id="tournament-details"></div>
+      <!-- rounds Info -->
+      <div id="rounds"></div>
+        
+      <!-- Season Selector Dropdown -->
+      <select id="season-select"></select>
 
-<!-- rounds Info -->
-<div id="rounds"></div>
-  
-<!-- Season Selector Dropdown -->
-<select id="season-select"></select>
-
-<!-- Season Info -->
-<div id="season-info"></div>
-<!-- groups Info -->
-<div id="groups"></div>
+      <!-- Season Info -->
+      <div id="season-info"></div>
+      <!-- groups Info -->
+      <div id="groups"></div>
+    </div>
+</div>
 
   <script>
 // Fetch and display categories (countries)
@@ -119,13 +180,23 @@ function fetchCategories() {
         }
       });
 
-      // Loop through sorted categories and create buttons
-      sortedCategories.forEach((category, index) => {
-        const button = document.createElement('button');
-        button.textContent = category.name;
-        button.onclick = () => fetchTournaments(category.id, category.name);
+      // Create a <ul> element to hold the category links
+        const categoryList = document.createElement('ul');
+      categoriesContainer.appendChild(categoryList);
 
-        categoriesContainer.appendChild(button);
+      // Loop through sorted categories and create <li> links
+      sortedCategories.forEach((category, index) => {
+        const listItem = document.createElement('li');
+        const categoryLink = document.createElement('a');
+        categoryLink.href = '#'; // Use a placeholder href
+        categoryLink.textContent = category.name;
+        categoryLink.onclick = (e) => {
+          e.preventDefault(); // Prevent the default link behavior
+          fetchTournaments(category.id, category.name);
+        };
+
+        listItem.appendChild(categoryLink);
+        categoryList.appendChild(listItem);
 
         // Auto-click the first category to load its tournaments
         if (index === 0) {
@@ -150,14 +221,25 @@ function fetchTournaments(categoryId, categoryName) {
       if (data.groups.length > 0 && data.groups[0].uniqueTournaments.length > 0) {
         // Automatically display the first tournament in the list
         const firstTournament = data.groups[0].uniqueTournaments[0];
+
+        // Create a <ul> element to hold the tournament links
+        const tournamentList = document.createElement('ul');
+        tournamentsContainer.appendChild(tournamentList);
         
         // Display the tournaments
         data.groups.forEach(group => {
           group.uniqueTournaments.forEach(tournament => {
-            const tournamentButton = document.createElement('button');
-            tournamentButton.textContent = tournament.name;
-            tournamentButton.onclick = () => fetchTournamentDetails(tournament.id);
-            tournamentsContainer.appendChild(tournamentButton);
+            const listItem = document.createElement('li');
+            const tournamentLink = document.createElement('a');
+            tournamentLink.href = '#'; // Use a placeholder href
+            tournamentLink.textContent = tournament.name;
+            tournamentLink.onclick = (e) => {
+              e.preventDefault(); // Prevent the default link behavior
+              fetchTournamentDetails(tournament.id);
+            };
+
+            listItem.appendChild(tournamentLink);
+            tournamentList.appendChild(listItem);
           });
         });
 
@@ -279,19 +361,32 @@ function fetchRounds(tournamentId, seasonId) {
       if (data.rounds && Array.isArray(data.rounds)) {
         const currentRound = data.currentRound?.round; // Get the current round number
 
+        // Create a <ul> element to hold the round links
+        const roundList = document.createElement('ul');
+        roundsContainer.appendChild(roundList);
+
+        // Loop through rounds and create <li> links
         data.rounds.forEach(round => {
-          const roundButton = document.createElement('button');
-          roundButton.textContent = `Round ${round.round}`;
-          roundButton.onclick = () => fetchEventsForRound(tournamentId, round.round);
+          const listItem = document.createElement('li');
+          const roundLink = document.createElement('a');
+          roundLink.href = '#'; // Use a placeholder href
+          roundLink.textContent = `${round.round}`;
+          roundLink.onclick = (e) => {
+            e.preventDefault(); // Prevent the default link behavior
+            fetchEventsForRound(tournamentId, round.round);
+          };
 
           // Highlight the current round
           if (round.round === currentRound) {
-            roundButton.style.backgroundColor = '#4CAF50'; // Green background for the current round
-            roundButton.style.color = 'white'; // White text for better contrast
-            roundButton.style.border = '2px solid #45a049'; // Add a border
+            roundLink.style.backgroundColor = '#4CAF50'; // Green background for the current round
+            roundLink.style.color = 'white'; // White text for better contrast
+            roundLink.style.border = '2px solid #45a049'; // Add a border
+            roundLink.style.padding = '5px 10px'; // Add padding for better appearance
+            roundLink.style.borderRadius = '4px'; // Add rounded corners
           }
 
-          roundsContainer.appendChild(roundButton);
+          listItem.appendChild(roundLink);
+          roundList.appendChild(listItem);
         });
       } else {
         roundsContainer.innerHTML = '<p>No rounds data available.</p>';
