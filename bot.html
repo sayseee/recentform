@@ -248,6 +248,29 @@ li {
   border-radius: 4px; /* Rounded corners */
   font-size: 14px;
 }
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+table.events-table {
+  font-size: 10.5px;
+}
+table.events-table td, table.events-table th {
+  padding: 5px;
+}
+tr.headerTitle th {
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
+  border-bottom: 1px solid rgb(48, 125, 153);
+} 
+
+table.events-table tbody tr:nth-child(even) {
+  background-color:rgb(0, 0, 0);
+}
+table.events-table thead th.score, table.events-table tbody td.score {
+  text-align: center;
+}
   </style>
 </head>
 <body class="rF-4">
@@ -288,17 +311,14 @@ if ('serviceWorker' in navigator) {
 
   let cachedEvents = null; // Global variable to store cached events
 
-// Fetch and cache scheduled events
+// Fetch and cache only scheduled events (without inverse events)
 function fetchAndCacheScheduledEvents(date) {
   const scheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${date}`;
-  const inverseScheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${date}/inverse`;
 
-  return Promise.all([
-    fetch(scheduledEventsUrl).then(response => response.json()),
-    fetch(inverseScheduledEventsUrl).then(response => response.json())
-  ])
-    .then(([scheduledData, inverseData]) => {
-      cachedEvents = [...scheduledData.events, ...inverseData.events]; // Cache the events
+  return fetch(scheduledEventsUrl)
+    .then(response => response.json())
+    .then(scheduledData => {
+      cachedEvents = scheduledData.events; // Cache only the scheduled events
       return cachedEvents;
     })
     .catch(error => {
@@ -463,16 +483,17 @@ function displayEventsInTable(events, tournamentId, date) {
 
   // Create a table element for the event display
   const table = document.createElement('table');
+  table.classList.add('events-table');
   table.innerHTML = `
     <thead>
-      <tr>
+      <tr class="headerTitle">
         <th>Time</th>
         <th>Home</th>
         <th>Away</th>
         <th>1</th>
         <th>X</th>
         <th>2</th>
-        <th>Score</th>
+        <th class="score">Score</th>
       </tr>
     </thead>
     <tbody>
@@ -490,7 +511,10 @@ function displayEventsInTable(events, tournamentId, date) {
         const eventId = event.id;
         const homeTeam = event.homeTeam.shortName;
         const awayTeam = event.awayTeam.shortName;
-        const startTime = new Date(event.startTimestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        const eventDate = new Date(event.startTimestamp * 1000);
+        const startTime = eventDate.toLocaleDateString('en-GB') + ' ' + 
+                                  eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+ 
 
         // Default values for odds
         let odds1 = '-';
@@ -500,13 +524,12 @@ function displayEventsInTable(events, tournamentId, date) {
         // Find the odds for this event (if available) by checking if the eventId exists in the odds data
         const eventOdds = oddsData.odds[eventId];
         if (eventOdds) {
-          const choices = eventOdds.choices || [];
-          console.log(eventOdds);
+          const choices = eventOdds.choices || []; 
 
           // Find the odds for '1', 'X', and '2'
-          odds1 = choices.find(choice => choice.name === '1')?.fractionalValue || '-';
-          oddsX = choices.find(choice => choice.name === 'X')?.fractionalValue || '-';
-          odds2 = choices.find(choice => choice.name === '2')?.fractionalValue || '-';
+          odds1 = choices.find(choice => choice.name === '1')?.initialFractionalValue || '-';
+          oddsX = choices.find(choice => choice.name === 'X')?.initialFractionalValue || '-';
+          odds2 = choices.find(choice => choice.name === '2')?.initialFractionalValue || '-';
 
           // Convert fractional odds to decimal odds
           odds1 = odds1 !== '-' ? fractionalToDecimal(odds1) : '-';
@@ -525,7 +548,7 @@ function displayEventsInTable(events, tournamentId, date) {
           <td>${odds1}</td>
           <td>${oddsX}</td>
           <td>${odds2}</td>
-          <td>${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
+          <td class="score">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
         `;
         table.querySelector('tbody').appendChild(row);
       });
