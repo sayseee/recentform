@@ -1,6 +1,6 @@
 const CACHE_NAME = 'soccer-cache-v1';
 const urlsToCache = [ 
-  'recentform/first.html',
+  'recentform/bot.html',
   'recentform/icons/icon-192x192.png',
   'recentform/icons/icon-512x512.png',
   'recentform/icons/splash-screen-512x512.png',

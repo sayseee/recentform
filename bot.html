@@ -88,17 +88,13 @@ li {
 }
 .scrollable {
   overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: none;
-  -ms-overflow-style: scrollbar; /* For Edge */
-  scrollbar-width: thin; /* Thin scrollbar for Firefox */
-  scrollbar-color: var(--color-white20p) var(--color-black1); /* Scrollbar color for Firefox */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling for WebKit */
+  overflow-x: hidden; 
 }
 
 /* Custom scrollbar for WebKit browsers (Chrome, Safari) */
 .scrollable::-webkit-scrollbar {
-  width: 1px; /* Set scrollbar width to 1px */
+    width: 2px; /* Set scrollbar width to 1px */
+    height: 2px; /* Set scrollbar width to 1px */
 }
 
 .scrollable::-webkit-scrollbar-track {
@@ -127,9 +123,6 @@ li {
 #categories li, #tournaments li {
   margin: 0;
   list-style: none;
-  padding: 3px 0 3px 10px;
-  display: flex;
-  align-items: center;
 } 
 #categories  {
   flex: 0.8;
@@ -145,8 +138,26 @@ li {
   display: flex;
   flex-direction: column;
 }
+#tournament-details, #tournament-details ul {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#tournament-details div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 10px;
+}
+#tournament-details img {
+    height: 70px;
+}
 #categories a {
   color: rgb(128, 128, 128);
+  padding: 3px 0 3px 10px;
+  display: flex;
+  align-items: center;
 } 
 
 .tournaments h2 {
@@ -156,6 +167,9 @@ li {
 } 
 #tournaments a {
   color: rgb(223, 189, 106);
+  padding: 3px 0 3px 10px;
+  display: flex;
+  align-items: center;
 } 
 #categories li:nth-child(even) {
   background-color:rgb(0, 0, 0);
@@ -169,6 +183,10 @@ li {
   display: flex;
   flex-direction: row;
   align-items: center;
+    background-color: white;
+    color: rgb(40, 40, 40);
+    justify-content: space-between;
+
 }
 #rounds, #rounds ul {
   display: flex;
@@ -177,14 +195,17 @@ li {
 #rounds {
   display: flex; /* Make the container a flexbox */
   align-items: center; /* Vertically center the content */
-  gap: 10px; /* Add spacing between the heading and the list */
+  border-bottom: 1px solid #666;
 }
 
 #rounds h4 {
-  width: 40px; /* Fixed width for the heading */
-  margin: 0; /* Remove default margin */
-  padding: 0; /* Remove default padding */
-  color: white; /* Ensure the text is visible */
+    width: 50px;
+    margin: 0;
+    padding: 12px 10px;
+    color: white;
+    text-transform: uppercase;
+    border-right: 1px solid #666;
+    margin-right: 10px;
 }
 
 #rounds ul {
@@ -193,8 +214,9 @@ li {
   padding: 0; /* Remove default padding */
   list-style: none; /* Remove default list styling */
   display: flex; /* Make the list a flex container */
-  flex-wrap: wrap; /* Allow list items to wrap to the next line */
-  gap: 5px; /* Add spacing between list items */
+  flex-wrap: nowrap; /* Allow list items to wrap to the next line */
+  gap: 1px;
+  overflow-x: auto;
 }
 
 #rounds ul li { 
@@ -204,9 +226,8 @@ li {
 #rounds ul li a {
   text-decoration: none; /* Remove underline from links */
   color: white; /* Set link text color */
-  padding: 5px 10px; /* Add padding to links */
+  padding:2px 8px; /* Add padding to links */
   background-color: rgba(255, 255, 255, 0.1); /* Default background color */
-  border-radius: 4px; /* Rounded corners for links */
   display: block; /* Make links fill the entire list item */
 }
 
@@ -214,9 +235,6 @@ li {
   background-color: rgba(255, 255, 255, 0.2); /* Hover background color */
 }
 
-#season-info {  
-  color: white;
-} 
 #season-info .stats {
   display: flex; /* Arrange stats in a row */
   gap: 15px; /* Add spacing between stats */
@@ -385,19 +403,15 @@ function fetchTournamentDetails(tournamentId) {
       const hasPerformanceGraphFeature = tournament.hasPerformanceGraphFeature ? 'Yes' : 'No';
 
       const tournamentImage = `https://img.sofascore.com/api/v1/unique-tournament/${tournament.id}/image`;
-      tournamentDetailsContainer.innerHTML = `
-        <h3>${tournament.name}</h3>
-        <p><strong>Title Holder:</strong> ${tournament.titleHolder.name}</p>
-        <p><strong>Most Titles:</strong> ${tournament.mostTitles}</p>
-        <div><img src="${tournamentImage}" alt="${tournament.name} logo"></div>
-        
-        <h4>Tournament Features:</h4>
+      tournamentDetailsContainer.innerHTML = `        
+        <div><img src="${tournamentImage}" alt="${tournament.name} logo"></div>        
         <ul>
-          <li><strong>Has Rounds:</strong> ${hasRounds}</li>
-          <li><strong>Has Groups:</strong> ${hasGroups}</li>
-          <li><strong>Has Playoff Series:</strong> ${hasPlayoffSeries}</li>
-          <li><strong>Has Performance Graph Feature:</strong> ${hasPerformanceGraphFeature}</li>
+          <li><strong>Rs:</strong> ${hasRounds}</li>
+          <li><strong>Gs:</strong> ${hasGroups}</li>
+          <li><strong>PS:</strong> ${hasPlayoffSeries}</li>
+          <li><strong>PG:</strong> ${hasPerformanceGraphFeature}</li>
         </ul>
+        <h3>${tournament.name}</h3>
       `; 
 
       // Fetch and display seasons for the selected tournament
@@ -463,11 +477,14 @@ function fetchRounds(tournamentId, seasonId) {
 
         // Create a <ul> element to hold the round links
         const roundList = document.createElement('ul');
+            // Add the class to the list item
+            roundList.classList.add('scrollable'); // Correctly adding the class here
         roundsContainer.appendChild(roundList);
 
         // Loop through rounds and create <li> links
         data.rounds.forEach(round => {
           const listItem = document.createElement('li');
+  
           const roundLink = document.createElement('a');
           roundLink.href = '#'; // Use a placeholder href
           roundLink.textContent = `${round.round}`;
@@ -480,9 +497,7 @@ function fetchRounds(tournamentId, seasonId) {
           if (round.round === currentRound) {
             roundLink.style.backgroundColor = '#4CAF50'; // Green background for the current round
             roundLink.style.color = 'white'; // White text for better contrast
-            roundLink.style.border = '2px solid #45a049'; // Add a border
-            roundLink.style.padding = '5px 10px'; // Add padding for better appearance
-            roundLink.style.borderRadius = '4px'; // Add rounded corners
+            roundLink.style.padding = '2px 8px'; // Add padding for better appearance
           }
 
           listItem.appendChild(roundLink);
