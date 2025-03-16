@@ -63,7 +63,7 @@
     "YTUC" 712;
 }
 :root {
-        --color-white20p: hsla(0,0%,100%,.2);
+        --color-white20p: rgb(48, 125, 153);
         --color-black1: rgb(3,5,7);
 }
     body {
@@ -93,8 +93,8 @@ li {
 
 /* Custom scrollbar for WebKit browsers (Chrome, Safari) */
 .scrollable::-webkit-scrollbar {
-    width: 2px; /* Set scrollbar width to 1px */
-    height: 2px; /* Set scrollbar width to 1px */
+    width: 5px; /* Set scrollbar width to 1px */
+    height: 5px; /* Set scrollbar width to 1px */
 }
 
 .scrollable::-webkit-scrollbar-track {
@@ -217,6 +217,7 @@ li {
   flex-wrap: nowrap; /* Allow list items to wrap to the next line */
   gap: 1px;
   overflow-x: auto;
+  margin-right: 10px;
 }
 
 #rounds ul li { 
@@ -274,96 +275,129 @@ li {
 </div>
 
   <script>
-// Fetch and display categories (countries)
+// Fetch and display categories with scheduled events
 function fetchCategories() {
-  fetch('https://www.sofascore.com/api/v1/sport/football/categories')
-    .then(response => response.json())
-    .then(data => {
-      const categoriesContainer = document.getElementById('categories');
-      categoriesContainer.innerHTML = '';
+  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+  const scheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${today}`;
+  const inverseScheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${today}/inverse`;
 
-      // Sort categories by priority (descending) and then alphabetically for priority 0
-      const sortedCategories = data.categories.sort((a, b) => {
-        if (a.priority === 0 && b.priority === 0) {
-          // Sort alphabetically if both priorities are 0
-          return a.name.localeCompare(b.name);
-        } else if (a.priority === 0) {
-          // Move priority 0 items to the end
-          return 1;
-        } else if (b.priority === 0) {
-          // Move priority 0 items to the end
-          return -1;
-        } else {
-          // Sort by priority in descending order
-          return b.priority - a.priority;
-        }
+  // Fetch both scheduled and inverse scheduled events
+  Promise.all([
+    fetch(scheduledEventsUrl).then(response => response.json()),
+    fetch(inverseScheduledEventsUrl).then(response => response.json())
+  ])
+    .then(([scheduledData, inverseData]) => {
+      const categoriesWithEvents = new Set(); // Use a Set to store unique category IDs
+      const tournamentsWithEvents = new Set(); // Use a Set to store unique tournament IDs
+
+      // Loop through scheduled events and collect unique category and tournament IDs
+      scheduledData.events.forEach(event => {
+        categoriesWithEvents.add(event.tournament.category.id);
+        tournamentsWithEvents.add(event.tournament.uniqueTournament.id);
       });
 
-      // Create a <ul> element to hold the category links
-        const categoryList = document.createElement('ul');
-      categoriesContainer.appendChild(categoryList);
-
-      // Loop through sorted categories and create <li> links
-      sortedCategories.forEach((category, index) => {
-        const listItem = document.createElement('li');
-        const categoryLink = document.createElement('a');
-        categoryLink.href = '#'; // Use a placeholder href
-        categoryLink.textContent = category.name;
-        categoryLink.onclick = (e) => {
-          e.preventDefault(); // Prevent the default link behavior
-          fetchTournaments(category.id, category.name);
-        };
-
-        listItem.appendChild(categoryLink);
-        categoryList.appendChild(listItem);
-
-        // Auto-click the first category to load its tournaments
-        if (index === 0) {
-          fetchTournaments(category.id, category.name);
-        }
+      // Loop through inverse scheduled events and collect unique category and tournament IDs
+      inverseData.events.forEach(event => {
+        categoriesWithEvents.add(event.tournament.category.id);
+        tournamentsWithEvents.add(event.tournament.uniqueTournament.id);
       });
+
+      // Fetch all categories
+      fetch('https://www.sofascore.com/api/v1/sport/football/categories')
+        .then(response => response.json())
+        .then(categoriesData => {
+          const categoriesContainer = document.getElementById('categories');
+          categoriesContainer.innerHTML = '';
+
+          // Filter categories to only include those with scheduled events
+          const filteredCategories = categoriesData.categories.filter(category =>
+            categoriesWithEvents.has(category.id)
+          );
+
+          // Sort filtered categories by priority (descending) and then alphabetically for priority 0
+          const sortedCategories = filteredCategories.sort((a, b) => {
+            if (a.priority === 0 && b.priority === 0) {
+              return a.name.localeCompare(b.name);
+            } else if (a.priority === 0) {
+              return 1;
+            } else if (b.priority === 0) {
+              return -1;
+            } else {
+              return b.priority - a.priority;
+            }
+          });
+
+          // Create a <ul> element to hold the category links
+          const categoryList = document.createElement('ul');
+          categoriesContainer.appendChild(categoryList);
+
+          // Loop through sorted categories and create <li> links
+          sortedCategories.forEach((category, index) => {
+            const listItem = document.createElement('li');
+            const categoryLink = document.createElement('a');
+            categoryLink.href = '#'; // Use a placeholder href
+            categoryLink.textContent = category.name;
+            categoryLink.onclick = (e) => {
+              e.preventDefault(); // Prevent the default link behavior
+              fetchTournaments(category.id, category.name, tournamentsWithEvents);
+            };
+
+            listItem.appendChild(categoryLink);
+            categoryList.appendChild(listItem);
+
+            // Auto-click the first category to load its tournaments
+            if (index === 0) {
+              fetchTournaments(category.id, category.name, tournamentsWithEvents);
+            }
+          });
+        })
+        .catch(error => console.error('Error fetching categories:', error));
     })
-    .catch(error => console.error('Error fetching categories:', error));
+    .catch(error => console.error('Error fetching scheduled events:', error));
 }
 
 // Fetch tournaments for a selected category
-function fetchTournaments(categoryId, categoryName) {
+function fetchTournaments(categoryId, categoryName, tournamentsWithEvents) {
   document.getElementById('selected-country').textContent = categoryName;
-  
+
   fetch(`https://www.sofascore.com/api/v1/category/${categoryId}/unique-tournaments`)
     .then(response => response.json())
     .then(data => {
       const tournamentsContainer = document.getElementById('tournaments');
       tournamentsContainer.innerHTML = '';
-      
+
       // Check if there are any tournaments in the category
       if (data.groups.length > 0 && data.groups[0].uniqueTournaments.length > 0) {
-        // Automatically display the first tournament in the list
-        const firstTournament = data.groups[0].uniqueTournaments[0];
-
         // Create a <ul> element to hold the tournament links
         const tournamentList = document.createElement('ul');
         tournamentsContainer.appendChild(tournamentList);
-        
-        // Display the tournaments
-        data.groups.forEach(group => {
-          group.uniqueTournaments.forEach(tournament => {
-            const listItem = document.createElement('li');
-            const tournamentLink = document.createElement('a');
-            tournamentLink.href = '#'; // Use a placeholder href
-            tournamentLink.textContent = tournament.name;
-            tournamentLink.onclick = (e) => {
-              e.preventDefault(); // Prevent the default link behavior
-              fetchTournamentDetails(tournament.id);
-            };
 
-            listItem.appendChild(tournamentLink);
-            tournamentList.appendChild(listItem);
-          });
+        // Filter tournaments to only include those with scheduled events
+        const filteredTournaments = data.groups.flatMap(group =>
+          group.uniqueTournaments.filter(tournament =>
+            tournamentsWithEvents.has(tournament.id)
+          )
+        );
+
+        // Display the filtered tournaments
+        filteredTournaments.forEach((tournament, index) => {
+          const listItem = document.createElement('li');
+          const tournamentLink = document.createElement('a');
+          tournamentLink.href = '#'; // Use a placeholder href
+          tournamentLink.textContent = tournament.name;
+          tournamentLink.onclick = (e) => {
+            e.preventDefault(); // Prevent the default link behavior
+            fetchTournamentDetails(tournament.id);
+          };
+
+          listItem.appendChild(tournamentLink);
+          tournamentList.appendChild(listItem);
+
+          // Auto-click the first tournament to load its details
+          if (index === 0) {
+            fetchTournamentDetails(tournament.id);
+          }
         });
-
-        // Fetch the details of the first tournament automatically
-        fetchTournamentDetails(firstTournament.id);
       }
     })
     .catch(error => console.error('Error fetching tournaments:', error));
@@ -404,14 +438,14 @@ function fetchTournamentDetails(tournamentId) {
 
       const tournamentImage = `https://img.sofascore.com/api/v1/unique-tournament/${tournament.id}/image`;
       tournamentDetailsContainer.innerHTML = `        
-        <div><img src="${tournamentImage}" alt="${tournament.name} logo"></div>        
+        <div><img src="${tournamentImage}" alt="${tournament.name} logo"></div>
+        <h3>${tournament.name}</h3>        
         <ul>
           <li><strong>Rs:</strong> ${hasRounds}</li>
           <li><strong>Gs:</strong> ${hasGroups}</li>
           <li><strong>PS:</strong> ${hasPlayoffSeries}</li>
           <li><strong>PG:</strong> ${hasPerformanceGraphFeature}</li>
         </ul>
-        <h3>${tournament.name}</h3>
       `; 
 
       // Fetch and display seasons for the selected tournament
