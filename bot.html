@@ -253,9 +253,9 @@ li {
 <body class="rF-4">
   <div class="main">
     <div id="categories" class="scrollable"></div>  
-    <div class="tournaments">
+    <div class="tournaments scrollable">
       <h2><span id="selected-country"></span></h2>
-      <div id="tournaments" class="scrollable"></div>
+      <div id="tournaments"></div>
     </div>
 
     <div class="tournament-details scrollable"> 
@@ -269,12 +269,25 @@ li {
       <!-- rounds Info -->
       <div id="rounds"></div>
         
+      <div id="tournament-events"></div>
       <!-- groups Info -->
       <div id="groups"></div>
     </div>
 </div>
 
   <script>
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then((registration) => {
+        //console.log('Service Worker registered with scope:', registration.scope);
+      }).catch((error) => {
+        //console.error('Service Worker registration failed:', error);
+      });
+    });
+  }
+
+
 // Fetch and display categories with scheduled events
 function fetchCategories() {
   const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
@@ -472,7 +485,7 @@ function fetchSeasons(tournamentId, tournamentName) {
       data.seasons.forEach((season, index) => {
         const option = document.createElement('option');
         option.value = season.id;
-        option.textContent = season.name;
+        option.textContent = season.year;
         seasonSelect.appendChild(option);
 
         // Automatically select the first season and fetch its info
