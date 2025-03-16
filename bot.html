@@ -265,9 +265,7 @@ li {
         <select id="season-select"></select> 
         <!-- Season Info -->
         <div id="season-info"></div>
-      </div> 
-      <!-- rounds Info -->
-      <div id="rounds"></div>
+      </div>  
         
       <div id="tournament-events"></div>
       <!-- groups Info -->
@@ -288,29 +286,39 @@ if ('serviceWorker' in navigator) {
   }
 
 
-// Fetch and display categories with scheduled events
-function fetchCategories() {
-  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-  const scheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${today}`;
-  const inverseScheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${today}/inverse`;
+  let cachedEvents = null; // Global variable to store cached events
 
-  // Fetch both scheduled and inverse scheduled events
-  Promise.all([
+// Fetch and cache scheduled events
+function fetchAndCacheScheduledEvents(date) {
+  const scheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${date}`;
+  const inverseScheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${date}/inverse`;
+
+  return Promise.all([
     fetch(scheduledEventsUrl).then(response => response.json()),
     fetch(inverseScheduledEventsUrl).then(response => response.json())
   ])
     .then(([scheduledData, inverseData]) => {
+      cachedEvents = [...scheduledData.events, ...inverseData.events]; // Cache the events
+      return cachedEvents;
+    })
+    .catch(error => {
+      console.error('Error fetching scheduled events:', error);
+      return [];
+    });
+}
+
+// Fetch and display categories with scheduled events
+function fetchCategories() {
+  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+
+  // Fetch and cache scheduled events
+  fetchAndCacheScheduledEvents(today)
+    .then(events => {
       const categoriesWithEvents = new Set(); // Use a Set to store unique category IDs
       const tournamentsWithEvents = new Set(); // Use a Set to store unique tournament IDs
 
-      // Loop through scheduled events and collect unique category and tournament IDs
-      scheduledData.events.forEach(event => {
-        categoriesWithEvents.add(event.tournament.category.id);
-        tournamentsWithEvents.add(event.tournament.uniqueTournament.id);
-      });
-
-      // Loop through inverse scheduled events and collect unique category and tournament IDs
-      inverseData.events.forEach(event => {
+      // Loop through events and collect unique category and tournament IDs
+      events.forEach(event => {
         categoriesWithEvents.add(event.tournament.category.id);
         tournamentsWithEvents.add(event.tournament.uniqueTournament.id);
       });
@@ -379,41 +387,153 @@ function fetchTournaments(categoryId, categoryName, tournamentsWithEvents) {
       const tournamentsContainer = document.getElementById('tournaments');
       tournamentsContainer.innerHTML = '';
 
-      // Check if there are any tournaments in the category
-      if (data.groups.length > 0 && data.groups[0].uniqueTournaments.length > 0) {
+      // Ensure groups exist in data before accessing them
+      if (data.groups && data.groups.length > 0) {
         // Create a <ul> element to hold the tournament links
         const tournamentList = document.createElement('ul');
         tournamentsContainer.appendChild(tournamentList);
 
         // Filter tournaments to only include those with scheduled events
         const filteredTournaments = data.groups.flatMap(group =>
-          group.uniqueTournaments.filter(tournament =>
+          group.uniqueTournaments.filter(tournament => 
             tournamentsWithEvents.has(tournament.id)
-          )
+          ) // <- Closing parenthesis was missing
         );
 
         // Display the filtered tournaments
-        filteredTournaments.forEach((tournament, index) => {
-          const listItem = document.createElement('li');
-          const tournamentLink = document.createElement('a');
-          tournamentLink.href = '#'; // Use a placeholder href
-          tournamentLink.textContent = tournament.name;
-          tournamentLink.onclick = (e) => {
-            e.preventDefault(); // Prevent the default link behavior
-            fetchTournamentDetails(tournament.id);
-          };
+        if (filteredTournaments.length > 0) {
+          filteredTournaments.forEach((tournament, index) => {
+            const listItem = document.createElement('li');
+            const tournamentLink = document.createElement('a');
+            tournamentLink.href = '#'; // Use a placeholder href
+            tournamentLink.textContent = tournament.name;
+            tournamentLink.onclick = (e) => {
+              e.preventDefault(); // Prevent the default link behavior
+              fetchTournamentDetails(tournament.id);
+            };
 
-          listItem.appendChild(tournamentLink);
-          tournamentList.appendChild(listItem);
+            listItem.appendChild(tournamentLink);
+            tournamentList.appendChild(listItem);
 
-          // Auto-click the first tournament to load its details
-          if (index === 0) {
-            fetchTournamentDetails(tournament.id);
-          }
-        });
+            // Auto-click the first tournament to load its details
+            if (index === 0) {
+              fetchTournamentDetails(tournament.id);
+            }
+          });
+        } else {
+          tournamentsContainer.textContent = 'No tournaments with events found.';
+        }
+      } else {
+        tournamentsContainer.textContent = 'No tournaments available for this category.';
       }
     })
     .catch(error => console.error('Error fetching tournaments:', error));
+}
+// Fetch events for a specific tournament (no need for rounds)
+function fetchEventsForTournament(tournamentId, tournamentName) {
+  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+  // No need to check for rounds here, just fetch scheduled events directly
+  fetchScheduledEvents(tournamentId, today);
+}
+
+// Fetch scheduled events for a specific date (including inverse events)
+function fetchScheduledEvents(tournamentId, date) {
+  if (cachedEvents) {
+    // Use cached events if available
+    const filteredEvents = cachedEvents.filter(event =>
+      event.tournament.uniqueTournament.id === tournamentId
+    );
+    displayEventsInTable(filteredEvents, tournamentId, date);
+  } else {
+    // Fetch and cache events if not already cached
+    fetchAndCacheScheduledEvents(date)
+      .then(events => {
+        const filteredEvents = events.filter(event =>
+          event.tournament.uniqueTournament.id === tournamentId
+        );
+        displayEventsInTable(filteredEvents, tournamentId, date);
+      })
+      .catch(error => console.error('Error fetching scheduled events:', error));
+  }
+}
+// Display events in a table
+function displayEventsInTable(events, tournamentId, date) {
+  const eventsContainer = document.getElementById('tournament-events');
+  eventsContainer.innerHTML = ''; // Clear previous content
+
+  // Create a table element for the event display
+  const table = document.createElement('table');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Home</th>
+        <th>Away</th>
+        <th>1</th>
+        <th>X</th>
+        <th>2</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  `;
+  eventsContainer.appendChild(table);
+
+  // Fetch odds for the events (if needed)
+  const oddsUrl = `https://www.sofascore.com/api/v1/sport/football/odds/1/${date}`;
+  fetch(oddsUrl)
+    .then(response => response.json())
+    .then(oddsData => {
+      // Loop through events and create table rows
+      events.forEach(event => {
+        const eventId = event.id;
+        const homeTeam = event.homeTeam.shortName;
+        const awayTeam = event.awayTeam.shortName;
+
+        // Default values for odds
+        let odds1 = '-';
+        let oddsX = '-';
+        let odds2 = '-';
+
+        // Find the odds for this event (if available) by checking if the eventId exists in the odds data
+        const eventOdds = oddsData.odds[eventId];
+        if (eventOdds) {
+          const choices = eventOdds.choices || [];
+          console.log(eventOdds);
+
+          // Find the odds for '1', 'X', and '2'
+          odds1 = choices.find(choice => choice.name === '1')?.fractionalValue || '-';
+          oddsX = choices.find(choice => choice.name === 'X')?.fractionalValue || '-';
+          odds2 = choices.find(choice => choice.name === '2')?.fractionalValue || '-';
+
+          // Convert fractional odds to decimal odds
+          odds1 = odds1 !== '-' ? fractionalToDecimal(odds1) : '-';
+          oddsX = oddsX !== '-' ? fractionalToDecimal(oddsX) : '-';
+          odds2 = odds2 !== '-' ? fractionalToDecimal(odds2) : '-';
+        } else {
+          console.warn(`No odds found for event ${eventId}`);
+        }
+
+        // Create a table row with or without odds
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${homeTeam}</td>
+          <td>${awayTeam}</td>
+          <td>${odds1}</td>
+          <td>${oddsX}</td>
+          <td>${odds2}</td>
+          <td>${event.homeScore?.current ?? 0} - ${event.awayScore?.current ?? 0} </td>
+        `;
+        table.querySelector('tbody').appendChild(row);
+      });
+    })
+    .catch(error => console.error('Error fetching odds:', error));
+}
+
+// Helper function to convert fractional odds to decimal odds
+function fractionalToDecimal(fractional) {
+  const [numerator, denominator] = fractional.split('/').map(Number);
+  return (numerator / denominator + 1).toFixed(2);
 }
 
 // Fetch and display season-specific info (e.g., stats, standings)
@@ -463,6 +583,8 @@ function fetchTournamentDetails(tournamentId) {
 
       // Fetch and display seasons for the selected tournament
       fetchSeasons(tournamentId, tournament.name);
+      
+      fetchEventsForTournament(tournamentId, tournament.name); // Fetch events for Premier League (ID: 17)
     })
     .catch(error => console.error('Error fetching tournament details:', error));
 }
@@ -477,7 +599,7 @@ function fetchSeasons(tournamentId, tournamentName) {
 
       // Create a default "Select Season" option
       const defaultOption = document.createElement('option');
-      defaultOption.textContent = "Select Season";
+      defaultOption.textContent = "Season";
       defaultOption.value = "";
       seasonSelect.appendChild(defaultOption);
 
@@ -494,7 +616,7 @@ function fetchSeasons(tournamentId, tournamentName) {
           fetchSeasonInfo(tournamentId, tournamentName, season.id); // Fetch the first season's info
 
           // After selecting the first season, fetch rounds for that season
-          fetchRounds(tournamentId, season.id);
+          //fetchRounds(tournamentId, season.id);
         }
       });
 
@@ -503,7 +625,7 @@ function fetchSeasons(tournamentId, tournamentName) {
         const selectedSeasonId = seasonSelect.value;
         if (selectedSeasonId) {
           fetchSeasonInfo(tournamentId, tournamentName, selectedSeasonId);
-          fetchRounds(tournamentId, selectedSeasonId);  // Fetch rounds when season changes
+          //fetchRounds(tournamentId, selectedSeasonId);  // Fetch rounds when season changes
         }
       };
     })
