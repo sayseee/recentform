@@ -466,6 +466,7 @@ function displayEventsInTable(events, tournamentId, date) {
   table.innerHTML = `
     <thead>
       <tr>
+        <th>Time</th>
         <th>Home</th>
         <th>Away</th>
         <th>1</th>
@@ -489,6 +490,7 @@ function displayEventsInTable(events, tournamentId, date) {
         const eventId = event.id;
         const homeTeam = event.homeTeam.shortName;
         const awayTeam = event.awayTeam.shortName;
+        const startTime = new Date(match.startTimestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
         // Default values for odds
         let odds1 = '-';
@@ -517,12 +519,13 @@ function displayEventsInTable(events, tournamentId, date) {
         // Create a table row with or without odds
         const row = document.createElement('tr');
         row.innerHTML = `
+          <td>${startTime}</td>
           <td>${homeTeam}</td>
           <td>${awayTeam}</td>
           <td>${odds1}</td>
           <td>${oddsX}</td>
           <td>${odds2}</td>
-          <td>${event.homeScore?.current ?? 0} - ${event.awayScore?.current ?? 0} </td>
+          <td>${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
         `;
         table.querySelector('tbody').appendChild(row);
       });
