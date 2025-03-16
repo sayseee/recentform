@@ -490,7 +490,7 @@ function displayEventsInTable(events, tournamentId, date) {
         const eventId = event.id;
         const homeTeam = event.homeTeam.shortName;
         const awayTeam = event.awayTeam.shortName;
-        const startTime = new Date(match.startTimestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        const startTime = new Date(event.startTimestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
         // Default values for odds
         let odds1 = '-';
