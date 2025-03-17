@@ -149,7 +149,7 @@ li {
   justify-content: center;
   flex-direction: column;
   padding: 0 10px;
-    background-color: white; 
+    background-color: white;
 }
 #tournament-details img {
     height: 45px;
@@ -267,32 +267,15 @@ select {
   flex: 1;
 }
 table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
 }
 table.events-table {
   font-size: 10.5px;
-    color: rgb(179, 179, 179);
 }
-table.events-table td {
-  padding: 3px 5px;
-  border-right: 1px solid rgb(74, 74, 74);
-}
-
-table.events-table th {
+table.events-table td, table.events-table th {
   padding: 5px;
-  border-right: 1px solid rgb(74, 74, 74);
 }
-table.events-table tr:last-child td { 
-  border-bottom: 1px solid rgb(74, 74, 74);
-}
-table.events-table tr td:nth-child(4), table.events-table th:nth-child(4),
-table.events-table tr td:nth-child(5), table.events-table th:nth-child(5),
-table.events-table tr td:nth-child(6), table.events-table th:nth-child(6) {
-    text-align: center;
-    vertical-align: middle; /* Optional: Aligns text vertically */
-}
-
 tr.headerTitle th {
   font-size: 10px;
   font-weight: bold;
@@ -581,13 +564,13 @@ function displayEventsInTable(events, tournamentId, date) {
   table.innerHTML = `
     <thead>
       <tr class="headerTitle">
-        <th width="90">Time</th>
-        <th width="120">Home</th>
-        <th width="120">Away</th>
-        <th width="25">1</th>
-        <th width="25">X</th>
-        <th width="25">2</th>
-        <th class="score" width="35">Score</th>
+        <th>Time</th>
+        <th>Home</th>
+        <th>Away</th>
+        <th>1</th>
+        <th>X</th>
+        <th>2</th>
+        <th class="score">Score</th>
       </tr>
     </thead>
     <tbody>
@@ -636,13 +619,13 @@ function displayEventsInTable(events, tournamentId, date) {
         // Create a table row with or without odds
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${startTime}</td>
-          <td>${homeTeam}</td>
-          <td>${awayTeam}</td>
-          <td>${odds1}</td>
-          <td>${oddsX}</td>
-          <td>${odds2}</td>
-          <td class="score">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
+          <td width="100">${startTime}</td>
+          <td width="120">${homeTeam}</td>
+          <td width="120">${awayTeam}</td>
+          <td width="30">${odds1}</td>
+          <td width="30">${oddsX}</td>
+          <td width="30">${odds2}</td>
+          <td class="score" width="40">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
         `;
         table.querySelector('tbody').appendChild(row);
       });
