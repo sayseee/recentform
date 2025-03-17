@@ -544,13 +544,13 @@ function displayEventsInTable(events, tournamentId, date) {
         // Create a table row with or without odds
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${startTime}</td>
-          <td>${homeTeam}</td>
-          <td>${awayTeam}</td>
-          <td>${odds1}</td>
-          <td>${oddsX}</td>
-          <td>${odds2}</td>
-          <td class="score">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
+          <td width="100">${startTime}</td>
+          <td width="120">${homeTeam}</td>
+          <td width="120">${awayTeam}</td>
+          <td width="30">${odds1}</td>
+          <td width="30">${oddsX}</td>
+          <td width="30">${odds2}</td>
+          <td class="score" width="40">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
         `;
         table.querySelector('tbody').appendChild(row);
       });
