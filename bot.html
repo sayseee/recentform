@@ -131,10 +131,10 @@ li {
   background-color:rgb(0, 0, 0);
   border-right: 1px solid rgba(40, 40, 40, 0.8);
   border-left: 1px solid rgba(40, 40, 40, 0.8);
-  flex: 1.2;
+  flex: 1;
 } 
 .tournament-details {
-  flex: 5.8;
+  flex: 6;
   display: flex;
   flex-direction: column;
 }
@@ -149,9 +149,10 @@ li {
   justify-content: center;
   flex-direction: column;
   padding: 0 10px;
+    background-color: white; 
 }
 #tournament-details img {
-    height: 70px;
+    height: 45px;
 }
 #categories a {
   color: rgb(128, 128, 128);
@@ -182,10 +183,10 @@ li {
 .tournament-data {
   display: flex;
   flex-direction: row;
-  align-items: center;
-    background-color: white;
-    color: rgb(40, 40, 40);
+  align-items: center;    
+    color: white;
     justify-content: space-between;
+    border-bottom: 1px solid rgb(48, 125, 153);
 
 }
 #rounds, #rounds ul {
@@ -248,21 +249,57 @@ li {
   border-radius: 4px; /* Rounded corners */
   font-size: 14px;
 }
+#season-select {
+  margin-right: 10px;
+}
+select {
+    background-color: #2b3034;
+    color: rgb(151, 255, 159);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+.tEs {
+  display: flex;
+  gap: 5px;
+}
+.tEs #standings, .tEs #tournament-events {
+  flex: 1;
+}
 table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 table.events-table {
   font-size: 10.5px;
+    color: rgb(179, 179, 179);
 }
-table.events-table td, table.events-table th {
+table.events-table td {
+  padding: 3px 5px;
+  border-right: 1px solid rgb(74, 74, 74);
+}
+
+table.events-table th {
   padding: 5px;
+  border-right: 1px solid rgb(74, 74, 74);
 }
+table.events-table tr:last-child td { 
+  border-bottom: 1px solid rgb(74, 74, 74);
+}
+table.events-table tr td:nth-child(4), table.events-table th:nth-child(4),
+table.events-table tr td:nth-child(5), table.events-table th:nth-child(5),
+table.events-table tr td:nth-child(6), table.events-table th:nth-child(6) {
+    text-align: center;
+    vertical-align: middle; /* Optional: Aligns text vertically */
+}
+
 tr.headerTitle th {
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 10px;
+  font-weight: bold;
   text-align: left;
+  color: rgb(255, 255, 255);
   border-bottom: 1px solid rgb(48, 125, 153);
+  text-transform: uppercase;
 } 
 
 table.events-table tbody tr:nth-child(even) {
@@ -271,6 +308,39 @@ table.events-table tbody tr:nth-child(even) {
 table.events-table thead th.score, table.events-table tbody td.score {
   text-align: center;
 }
+
+.tabs button {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: 0.3s;
+  color: rgb(179, 179, 179);
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.tabs button:hover {
+  background-color: rgb(92, 92, 92);
+}
+
+.tabs button.active {
+  background-color: rgb(92, 92, 92);
+}
+
+.tabs { 
+  border-bottom: 1px solid rgb(48, 125, 153); 
+}
+.tabcontent {
+  display: none; 
+  padding: 3px 5px;
+  border: 1px solid rgb(74, 74, 74);
+  border-top: none;
+  border-right: none;
+}
+  
   </style>
 </head>
 <body class="rF-4">
@@ -284,13 +354,37 @@ table.events-table thead th.score, table.events-table tbody td.score {
     <div class="tournament-details scrollable"> 
       <div class="tournament-data">
         <div id="tournament-details"></div>
-        <!-- Season Selector Dropdown -->
-        <select id="season-select"></select> 
         <!-- Season Info -->
         <div id="season-info"></div>
+        <!-- Season Selector Dropdown -->
+        <select id="season-select"></select> 
       </div>  
         
-      <div id="tournament-events"></div>
+      <div class="tEs">
+        <div id="tournament-events"></div>
+        <div id="standings">
+          <div class="tabs">
+            <button class="tablink" onclick="openTab('overall')">Overall</button>
+            <button class="tablink" onclick="openTab('home')">Home</button>
+            <button class="tablink" onclick="openTab('away')">Away</button>
+          </div>
+        
+          <div id="overall" class="tabcontent">
+            <span>Overall Standings</span>
+            <table id="overall-standings"></table>
+          </div>
+        
+          <div id="home" class="tabcontent">
+            <span>Home Standings</span>
+            <table id="home-standings"></table>
+          </div>
+        
+          <div id="away" class="tabcontent">
+            <span>Away Standings</span>
+            <table id="away-standings"></table>
+          </div>
+        </div>
+      </div>
       <!-- groups Info -->
       <div id="groups"></div>
     </div>
@@ -471,7 +565,7 @@ function fetchScheduledEvents(tournamentId, date) {
         const filteredEvents = events.filter(event =>
           event.tournament.uniqueTournament.id === tournamentId
         );
-        displayEventsInTable(filteredEvents, tournamentId, date);
+        displayEventsInTable(filteredEvents, tournamentId, date);        
       })
       .catch(error => console.error('Error fetching scheduled events:', error));
   }
@@ -487,13 +581,13 @@ function displayEventsInTable(events, tournamentId, date) {
   table.innerHTML = `
     <thead>
       <tr class="headerTitle">
-        <th>Time</th>
-        <th>Home</th>
-        <th>Away</th>
-        <th>1</th>
-        <th>X</th>
-        <th>2</th>
-        <th class="score">Score</th>
+        <th width="90">Time</th>
+        <th width="120">Home</th>
+        <th width="120">Away</th>
+        <th width="25">1</th>
+        <th width="25">X</th>
+        <th width="25">2</th>
+        <th class="score" width="35">Score</th>
       </tr>
     </thead>
     <tbody>
@@ -562,24 +656,172 @@ function fractionalToDecimal(fractional) {
   return (numerator / denominator + 1).toFixed(2);
 }
 
-// Fetch and display season-specific info (e.g., stats, standings)
 function fetchSeasonInfo(tournamentId, tournamentName, seasonId) {
   fetch(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}/season/${seasonId}/info`)
     .then(response => response.json())
     .then(data => {
       const seasonInfoContainer = document.getElementById('season-info');
       
+      // Calculate total matches
+      const totalMatches = data.info.homeTeamWins + data.info.awayTeamWins + data.info.draws;
+      
+      // Calculate percentages
+      const homeWinPercentage = ((data.info.homeTeamWins / totalMatches) * 100).toFixed(0);
+      const awayWinPercentage = ((data.info.awayTeamWins / totalMatches) * 100).toFixed(0);
+      const drawPercentage = ((data.info.draws / totalMatches) * 100).toFixed(0);
+      
+      // Display the stats with percentages
       seasonInfoContainer.innerHTML = `  
         <div class="stats">
           <div><strong>G:</strong> ${data.info.goals}</div>
-          <div><strong>HW:</strong> ${data.info.homeTeamWins}</div>
-          <div><strong>AW:</strong> ${data.info.awayTeamWins}</div>
-          <div><strong>D:</strong> ${data.info.draws}</div>
+          <div><strong>HW:</strong> ${data.info.homeTeamWins} (${homeWinPercentage}%)</div>
+          <div><strong>AW:</strong> ${data.info.awayTeamWins} (${awayWinPercentage}%)</div>
+          <div><strong>D:</strong> ${data.info.draws} (${drawPercentage}%)</div>
         </div>
       `;
     })
     .catch(error => console.error('Error fetching season info:', error));
 }
+
+// Function to fetch tournament events and calculate standings
+function fetchTournamentEvents(tournamentId, seasonId) {
+  fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/events`)
+    .then(response => response.json())
+    .then(data => {
+      const events = data.events;
+      const standings = calculateStandings(events);
+      displayStandings(standings);
+    })
+    .catch(error => console.error('Error fetching tournament events:', error));
+}
+
+// Function to calculate overall, home, and away standings
+function calculateStandings(events) {
+  const teams = {};
+
+  events.forEach(event => {
+    const homeTeam = event.homeTeam.name;
+    const awayTeam = event.awayTeam.name;
+    const homeScore = event.homeScore.current;
+    const awayScore = event.awayScore.current;
+
+    if (!teams[homeTeam]) {
+      teams[homeTeam] = { overall: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }, home: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }, away: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 } };
+    }
+    if (!teams[awayTeam]) {
+      teams[awayTeam] = { overall: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }, home: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }, away: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 } };
+    }
+
+    // Update overall standings
+    teams[homeTeam].overall.played += 1;
+    teams[awayTeam].overall.played += 1;
+    teams[homeTeam].overall.goalsFor += homeScore;
+    teams[homeTeam].overall.goalsAgainst += awayScore;
+    teams[awayTeam].overall.goalsFor += awayScore;
+    teams[awayTeam].overall.goalsAgainst += homeScore;
+
+    if (homeScore > awayScore) {
+      teams[homeTeam].overall.wins += 1;
+      teams[homeTeam].overall.points += 3;
+      teams[awayTeam].overall.losses += 1;
+    } else if (homeScore < awayScore) {
+      teams[awayTeam].overall.wins += 1;
+      teams[awayTeam].overall.points += 3;
+      teams[homeTeam].overall.losses += 1;
+    } else {
+      teams[homeTeam].overall.draws += 1;
+      teams[homeTeam].overall.points += 1;
+      teams[awayTeam].overall.draws += 1;
+      teams[awayTeam].overall.points += 1;
+    }
+
+    // Update home standings
+    teams[homeTeam].home.played += 1;
+    teams[homeTeam].home.goalsFor += homeScore;
+    teams[homeTeam].home.goalsAgainst += awayScore;
+
+    if (homeScore > awayScore) {
+      teams[homeTeam].home.wins += 1;
+      teams[homeTeam].home.points += 3;
+    } else if (homeScore < awayScore) {
+      teams[homeTeam].home.losses += 1;
+    } else {
+      teams[homeTeam].home.draws += 1;
+      teams[homeTeam].home.points += 1;
+    }
+
+    // Update away standings
+    teams[awayTeam].away.played += 1;
+    teams[awayTeam].away.goalsFor += awayScore;
+    teams[awayTeam].away.goalsAgainst += homeScore;
+
+    if (homeScore < awayScore) {
+      teams[awayTeam].away.wins += 1;
+      teams[awayTeam].away.points += 3;
+    } else if (homeScore > awayScore) {
+      teams[awayTeam].away.losses += 1;
+    } else {
+      teams[awayTeam].away.draws += 1;
+      teams[awayTeam].away.points += 1;
+    }
+  });
+
+  return teams;
+}
+
+// Function to display standings in the respective tables
+function displayStandings(standings) {
+  const overallTable = document.getElementById('overall-standings');
+  const homeTable = document.getElementById('home-standings');
+  const awayTable = document.getElementById('away-standings');
+
+  overallTable.innerHTML = generateTableHTML(standings, 'overall');
+  homeTable.innerHTML = generateTableHTML(standings, 'home');
+  awayTable.innerHTML = generateTableHTML(standings, 'away');
+}
+
+// Function to generate HTML for the standings table
+function generateTableHTML(standings, type) {
+  let html = `<tr><th>Team</th><th>Played</th><th>Wins</th><th>Draws</th><th>Losses</th><th>GF</th><th>GA</th><th>Points</th></tr>`;
+  const sortedTeams = Object.keys(standings).sort((a, b) => standings[b][type].points - standings[a][type].points);
+
+  sortedTeams.forEach(team => {
+    const stats = standings[team][type];
+    html += `<tr>
+      <td>${team}</td>
+      <td>${stats.played}</td>
+      <td>${stats.wins}</td>
+      <td>${stats.draws}</td>
+      <td>${stats.losses}</td>
+      <td>${stats.goalsFor}</td>
+      <td>${stats.goalsAgainst}</td>
+      <td>${stats.points}</td>
+    </tr>`;
+  });
+
+  return html;
+}
+
+// Function to handle tab navigation
+function openTab(tabName) {
+  const tabcontent = document.getElementsByClassName("tabcontent");
+  for (let i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  const tablinks = document.getElementsByClassName("tablink");
+  for (let i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  event.currentTarget.className += " active";
+}
+
+// Initialize the default tab
+document.getElementById('overall').style.display = "block";
+document.getElementsByClassName('tablink')[0].className += " active";
+
 
 // Fetch details of a specific tournament
 function fetchTournamentDetails(tournamentId) {
@@ -609,7 +851,7 @@ function fetchTournamentDetails(tournamentId) {
 
       // Fetch and display seasons for the selected tournament
       fetchSeasons(tournamentId, tournament.name);
-      
+  
       fetchEventsForTournament(tournamentId, tournament.name); // Fetch events for Premier League (ID: 17)
     })
     .catch(error => console.error('Error fetching tournament details:', error));
