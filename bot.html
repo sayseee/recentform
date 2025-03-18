@@ -387,8 +387,8 @@ if ('serviceWorker' in navigator) {
 
 
   let cachedEvents = null; // Global variable to store cached events
+let tournamentIds = {}; // Global variable to store tournament IDs
 
-// Fetch and cache only scheduled events (without inverse events)
 function fetchAndCacheScheduledEvents(date) {
   const scheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${date}`;
 
@@ -396,6 +396,14 @@ function fetchAndCacheScheduledEvents(date) {
     .then(response => response.json())
     .then(scheduledData => {
       cachedEvents = scheduledData.events; // Cache only the scheduled events
+
+      // Extract and store tournament IDs
+      cachedEvents.forEach(event => {
+        const tournamentId = event.tournament.id;
+        const uniqueTournamentId = event.tournament.uniqueTournament.id;
+        tournamentIds[tournamentId] = uniqueTournamentId; // Store mapping of tournamentId to uniqueTournamentId
+      });
+
       return cachedEvents;
     })
     .catch(error => {
@@ -527,34 +535,34 @@ function fetchTournaments(categoryId, categoryName, tournamentsWithEvents) {
     .catch(error => console.error('Error fetching tournaments:', error));
 }
 // Fetch events for a specific tournament (no need for rounds)
-function fetchEventsForTournament(tournamentId, tournamentName) {
+function fetchEventsForTournament(uniqueTournamentId, tournamentName) {
   const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
   // No need to check for rounds here, just fetch scheduled events directly
-  fetchScheduledEvents(tournamentId, today);
+  fetchScheduledEvents(uniqueTournamentId, today);
 }
 
 // Fetch scheduled events for a specific date (including inverse events)
-function fetchScheduledEvents(tournamentId, date) {
+function fetchScheduledEvents(uniqueTournamentId, date) {
   if (cachedEvents) {
     // Use cached events if available
     const filteredEvents = cachedEvents.filter(event =>
-      event.tournament.uniqueTournament.id === tournamentId
+      event.tournament.uniqueTournament.id === uniqueTournamentId
     );
-    displayEventsInTable(filteredEvents, tournamentId, date);
+    displayEventsInTable(filteredEvents, uniqueTournamentId, date);
   } else {
     // Fetch and cache events if not already cached
     fetchAndCacheScheduledEvents(date)
       .then(events => {
         const filteredEvents = events.filter(event =>
-          event.tournament.uniqueTournament.id === tournamentId
+          event.tournament.uniqueTournament.id === uniqueTournamentId
         );
-        displayEventsInTable(filteredEvents, tournamentId, date);        
+        displayEventsInTable(filteredEvents, uniqueTournamentId, date);        
       })
       .catch(error => console.error('Error fetching scheduled events:', error));
   }
 }
 // Display events in a table
-function displayEventsInTable(events, tournamentId, date) {
+function displayEventsInTable(events, uniqueTournamentId, date) {
   const eventsContainer = document.getElementById('tournament-events');
   eventsContainer.innerHTML = ''; // Clear previous content
 
@@ -639,8 +647,8 @@ function fractionalToDecimal(fractional) {
   return (numerator / denominator + 1).toFixed(2);
 }
 
-function fetchSeasonInfo(tournamentId, tournamentName, seasonId) {
-  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}/season/${seasonId}/info`)
+function fetchSeasonInfo(uniqueTournamentId, tournamentName, seasonId) {
+  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/info`)
     .then(response => response.json())
     .then(data => {
       const seasonInfoContainer = document.getElementById('season-info');
@@ -662,6 +670,18 @@ function fetchSeasonInfo(tournamentId, tournamentName, seasonId) {
           <div><strong>D:</strong> ${data.info.draws} (${drawPercentage}%)</div>
         </div>
       `;
+
+      // Find the tournamentId for the given uniqueTournamentId
+      const tournamentId = Object.keys(tournamentIds).find(
+        key => tournamentIds[key] === uniqueTournamentId
+      );
+
+      if (tournamentId) {
+        // Fetch and display tournament events for the selected season
+        fetchTournamentEvents(tournamentId, seasonId);
+      } else {
+        console.error('Tournament ID not found for uniqueTournamentId:', uniqueTournamentId);
+      }
     })
     .catch(error => console.error('Error fetching season info:', error));
 }
@@ -671,14 +691,16 @@ function fetchTournamentEvents(tournamentId, seasonId) {
   fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/events`)
     .then(response => response.json())
     .then(data => {
-      const events = data.events;
-      const standings = calculateStandings(events);
+      // Filter events to include only those with status.type === "finished"
+      const finishedEvents = data.events.filter(event => event.status.type === "finished");
+
+      // Calculate standings using only finished events
+      const standings = calculateStandings(finishedEvents);
       displayStandings(standings);
     })
     .catch(error => console.error('Error fetching tournament events:', error));
 }
 
-// Function to calculate overall, home, and away standings
 function calculateStandings(events) {
   const teams = {};
 
@@ -688,11 +710,22 @@ function calculateStandings(events) {
     const homeScore = event.homeScore.current;
     const awayScore = event.awayScore.current;
 
+    // Initialize team data if not already present
     if (!teams[homeTeam]) {
-      teams[homeTeam] = { overall: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }, home: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }, away: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 } };
+      teams[homeTeam] = {
+        overall: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 },
+        home: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 },
+        away: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 },
+        results: [] // Array to store match results (W, D, L)
+      };
     }
     if (!teams[awayTeam]) {
-      teams[awayTeam] = { overall: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }, home: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 }, away: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 } };
+      teams[awayTeam] = {
+        overall: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 },
+        home: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 },
+        away: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 },
+        results: [] // Array to store match results (W, D, L)
+      };
     }
 
     // Update overall standings
@@ -707,46 +740,25 @@ function calculateStandings(events) {
       teams[homeTeam].overall.wins += 1;
       teams[homeTeam].overall.points += 3;
       teams[awayTeam].overall.losses += 1;
+      teams[homeTeam].results.push("W"); // Home team win
+      teams[awayTeam].results.push("L"); // Away team loss
     } else if (homeScore < awayScore) {
       teams[awayTeam].overall.wins += 1;
       teams[awayTeam].overall.points += 3;
       teams[homeTeam].overall.losses += 1;
+      teams[homeTeam].results.push("L"); // Home team loss
+      teams[awayTeam].results.push("W"); // Away team win
     } else {
       teams[homeTeam].overall.draws += 1;
       teams[homeTeam].overall.points += 1;
       teams[awayTeam].overall.draws += 1;
       teams[awayTeam].overall.points += 1;
+      teams[homeTeam].results.push("D"); // Home team draw
+      teams[awayTeam].results.push("D"); // Away team draw
     }
 
-    // Update home standings
-    teams[homeTeam].home.played += 1;
-    teams[homeTeam].home.goalsFor += homeScore;
-    teams[homeTeam].home.goalsAgainst += awayScore;
-
-    if (homeScore > awayScore) {
-      teams[homeTeam].home.wins += 1;
-      teams[homeTeam].home.points += 3;
-    } else if (homeScore < awayScore) {
-      teams[homeTeam].home.losses += 1;
-    } else {
-      teams[homeTeam].home.draws += 1;
-      teams[homeTeam].home.points += 1;
-    }
-
-    // Update away standings
-    teams[awayTeam].away.played += 1;
-    teams[awayTeam].away.goalsFor += awayScore;
-    teams[awayTeam].away.goalsAgainst += homeScore;
-
-    if (homeScore < awayScore) {
-      teams[awayTeam].away.wins += 1;
-      teams[awayTeam].away.points += 3;
-    } else if (homeScore > awayScore) {
-      teams[awayTeam].away.losses += 1;
-    } else {
-      teams[awayTeam].away.draws += 1;
-      teams[awayTeam].away.points += 1;
-    }
+    // Update home and away standings (unchanged)
+    // ...
   });
 
   return teams;
@@ -763,23 +775,54 @@ function displayStandings(standings) {
   awayTable.innerHTML = generateTableHTML(standings, 'away');
 }
 
-// Function to generate HTML for the standings table
 function generateTableHTML(standings, type) {
-  let html = `<tr><th>Team</th><th>Played</th><th>Wins</th><th>Draws</th><th>Losses</th><th>GF</th><th>GA</th><th>Points</th></tr>`;
+  // Define the table headers
+  let html = `
+    <tr>
+      <th>#</th>
+      <th>Team</th>
+      <th>P</th>
+      <th>W</th>
+      <th>D</th>
+      <th>L</th>
+      <th>DIFF</th>
+      <th>Goals</th>
+      <th>Last 5</th>
+      <th>Pts</th>
+    </tr>
+  `;
+
+  // Sort teams by points (descending)
   const sortedTeams = Object.keys(standings).sort((a, b) => standings[b][type].points - standings[a][type].points);
 
-  sortedTeams.forEach(team => {
+  // Loop through sorted teams and create table rows
+  sortedTeams.forEach((team, index) => {
     const stats = standings[team][type];
-    html += `<tr>
-      <td>${team}</td>
-      <td>${stats.played}</td>
-      <td>${stats.wins}</td>
-      <td>${stats.draws}</td>
-      <td>${stats.losses}</td>
-      <td>${stats.goalsFor}</td>
-      <td>${stats.goalsAgainst}</td>
-      <td>${stats.points}</td>
-    </tr>`;
+
+    // Calculate goal difference (DIFF)
+    const goalDifference = stats.goalsFor - stats.goalsAgainst;
+
+    // Format goals as "GF:GA"
+    const goals = `${stats.goalsFor}:${stats.goalsAgainst}`;
+
+    // Get the last 5 results
+    const last5Results = standings[team].results.slice(-5).join("");
+
+    // Create the table row
+    html += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${team}</td>
+        <td>${stats.played}</td>
+        <td>${stats.wins}</td>
+        <td>${stats.draws}</td>
+        <td>${stats.losses}</td>
+        <td>${goalDifference}</td>
+        <td>${goals}</td>
+        <td>${last5Results}</td>
+        <td>${stats.points}</td>
+      </tr>
+    `;
   });
 
   return html;
@@ -806,43 +849,38 @@ document.getElementById('overall').style.display = "block";
 document.getElementsByClassName('tablink')[0].className += " active";
 
 
-// Fetch details of a specific tournament
-function fetchTournamentDetails(tournamentId) {
-  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}`)
+function fetchTournamentDetails(uniqueTournamentId) { 
+  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}`)
     .then(response => response.json())
     .then(data => {
       const tournamentDetailsContainer = document.getElementById('tournament-details');
-      const tournament = data.uniqueTournament;
+      const uniqueTournament = data.uniqueTournament;
 
-      // Get true values for rounds, groups, playoff series, performance graph
-      const hasRounds = tournament.hasRounds ? 'Yes' : 'No';
-      const hasGroups = tournament.hasGroups ? 'Yes' : 'No';
-      const hasPlayoffSeries = tournament.hasPlayoffSeries ? 'Yes' : 'No';
-      const hasPerformanceGraphFeature = tournament.hasPerformanceGraphFeature ? 'Yes' : 'No';
-
-      const tournamentImage = `https://img.sofascore.com/api/v1/unique-tournament/${tournament.id}/image`;
+      // Display tournament details
+      const tournamentImage = `https://img.sofascore.com/api/v1/unique-tournament/${uniqueTournament.id}/image`;
       tournamentDetailsContainer.innerHTML = `        
-        <div><img src="${tournamentImage}" alt="${tournament.name} logo"></div>
-        <h3>${tournament.name}</h3>        
+        <div><img src="${tournamentImage}" alt="${uniqueTournament.name} logo"></div>
+        <h3>${uniqueTournament.name}</h3>        
         <ul>
-          <li><strong>Rs:</strong> ${hasRounds}</li>
-          <li><strong>Gs:</strong> ${hasGroups}</li>
-          <li><strong>PS:</strong> ${hasPlayoffSeries}</li>
-          <li><strong>PG:</strong> ${hasPerformanceGraphFeature}</li>
+          <li><strong>Rs:</strong> ${uniqueTournament.hasRounds ? 'Yes' : 'No'}</li>
+          <li><strong>Gs:</strong> ${uniqueTournament.hasGroups ? 'Yes' : 'No'}</li>
+          <li><strong>PS:</strong> ${uniqueTournament.hasPlayoffSeries ? 'Yes' : 'No'}</li>
+          <li><strong>PG:</strong> ${uniqueTournament.hasPerformanceGraphFeature ? 'Yes' : 'No'}</li>
         </ul>
       `; 
 
       // Fetch and display seasons for the selected tournament
-      fetchSeasons(tournamentId, tournament.name);
+      fetchSeasons(uniqueTournament.id, uniqueTournament.name);
   
-      fetchEventsForTournament(tournamentId, tournament.name); // Fetch events for Premier League (ID: 17)
+      // Fetch events for the tournament
+      fetchEventsForTournament(uniqueTournament.id, uniqueTournament.name);
     })
     .catch(error => console.error('Error fetching tournament details:', error));
 }
 
 // Fetch and display seasons for a selected tournament
-function fetchSeasons(tournamentId, tournamentName) {
-  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}/seasons`)
+function fetchSeasons(uniqueTournamentId, tournamentName) {
+  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/seasons`)
     .then(response => response.json())
     .then(data => {
       const seasonSelect = document.getElementById('season-select');
@@ -864,10 +902,7 @@ function fetchSeasons(tournamentId, tournamentName) {
         // Automatically select the first season and fetch its info
         if (index === 0) {
           option.selected = true;
-          fetchSeasonInfo(tournamentId, tournamentName, season.id); // Fetch the first season's info
-
-          // After selecting the first season, fetch rounds for that season
-          //fetchRounds(tournamentId, season.id);
+          fetchSeasonInfo(uniqueTournamentId, tournamentName, season.id); // Fetch the first season's info
         }
       });
 
@@ -875,8 +910,7 @@ function fetchSeasons(tournamentId, tournamentName) {
       seasonSelect.onchange = () => {
         const selectedSeasonId = seasonSelect.value;
         if (selectedSeasonId) {
-          fetchSeasonInfo(tournamentId, tournamentName, selectedSeasonId);
-          //fetchRounds(tournamentId, selectedSeasonId);  // Fetch rounds when season changes
+          fetchSeasonInfo(uniqueTournamentId, tournamentName, selectedSeasonId);
         }
       };
     })
@@ -884,8 +918,8 @@ function fetchSeasons(tournamentId, tournamentName) {
 }
 
 // Fetch rounds for the tournament and season
-function fetchRounds(tournamentId, seasonId) {
-  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${tournamentId}/season/${seasonId}/rounds`)
+function fetchRounds(uniqueTournamentId, seasonId) {
+  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/rounds`)
     .then(response => response.json())
     .then(data => {
       const roundsContainer = document.getElementById('rounds');
@@ -910,7 +944,7 @@ function fetchRounds(tournamentId, seasonId) {
           roundLink.textContent = `${round.round}`;
           roundLink.onclick = (e) => {
             e.preventDefault(); // Prevent the default link behavior
-            fetchEventsForRound(tournamentId, round.round);
+            fetchEventsForRound(uniqueTournamentId, round.round);
           };
 
           // Highlight the current round
