@@ -339,8 +339,7 @@ table.events-table thead th.score, table.events-table tbody td.score {
   border-bottom: 1px solid rgb(48, 125, 153); 
 }
 .tabcontent {
-  display: none; 
-  padding: 3px 5px;
+  display: none;  
   border: 1px solid rgb(74, 74, 74);
   border-top: none;
   border-right: none;
@@ -348,8 +347,7 @@ table.events-table thead th.score, table.events-table tbody td.score {
 
 #overall-standings th, #overall-standings td {
   text-align: center; /* Center all text */
-  padding: 8px;
-  border: 1px solid #ddd;
+  padding: 8px; 
   padding: 5px;
 }
 
@@ -765,8 +763,7 @@ function fetchTournamentEvents(tournamentId, seasonId) {
     .then(response => response.json())
     .then(data => {
       const finishedEvents = data.events.filter(event => event.status.type === "finished");
-
-      // Calculate standings using only finished events
+      console.log(finishedEvents);
       const standings = calculateStandings(finishedEvents);
       displayStandings(standings);
     })
@@ -777,13 +774,13 @@ function calculateStandings(events) {
   const teams = {};
 
   events.forEach(event => {
-    const homeTeamId = event.homeTeam.id;
-    const awayTeamId = event.awayTeam.id;
+    const homeTeamId = event.homeTeam.id; // Use team ID instead of name
+    const awayTeamId = event.awayTeam.id; // Use team ID instead of name
     const homeScore = event.homeScore.current;
     const awayScore = event.awayScore.current;
 
-    if (!teams[homeTeamId]) teams[homeTeamId] = initializeTeamStats(event.homeTeam.shortName);
-    if (!teams[awayTeamId]) teams[awayTeamId] = initializeTeamStats(event.awayTeam.shortName);
+    if (!teams[homeTeamId]) teams[homeTeamId] = initializeTeamStats(event.homeTeam.shortName); // Pass team name for display
+    if (!teams[awayTeamId]) teams[awayTeamId] = initializeTeamStats(event.awayTeam.shortName); // Pass team name for display
 
     updateStandings(teams, homeTeamId, awayTeamId, homeScore, awayScore);
   });
@@ -793,7 +790,7 @@ function calculateStandings(events) {
 
 function initializeTeamStats(teamName) {
   return {
-    name: teamName,
+    name: teamName, // Store team name for display
     overall: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 },
     results: []
   };
@@ -807,41 +804,40 @@ function updateStandings(teams, homeTeamId, awayTeamId, homeScore, awayScore) {
   teams[awayTeamId].overall.goalsFor += awayScore;
   teams[awayTeamId].overall.goalsAgainst += homeScore;
 
-    if (homeScore > awayScore) {
-      teams[homeTeam].overall.wins += 1;
-      teams[homeTeam].overall.points += 3;
-      teams[awayTeam].overall.losses += 1;
-      teams[homeTeam].results.push("W"); // Home team win
-      teams[awayTeam].results.push("L"); // Away team loss
-    } else if (homeScore < awayScore) {
-      teams[awayTeam].overall.wins += 1;
-      teams[awayTeam].overall.points += 3;
-      teams[homeTeam].overall.losses += 1;
-      teams[homeTeam].results.push("L"); // Home team loss
-      teams[awayTeam].results.push("W"); // Away team win
-    } else {
-      teams[homeTeam].overall.draws += 1;
-      teams[homeTeam].overall.points += 1;
-      teams[awayTeam].overall.draws += 1;
-      teams[awayTeam].overall.points += 1;
-      teams[homeTeam].results.push("D"); // Home team draw
-      teams[awayTeam].results.push("D"); // Away team draw
-    }
-
-    // Update home and away standings (unchanged)
-    // ...
-  });
-
-  return teams;
+  if (homeScore > awayScore) {
+    handleResult(teams, homeTeamId, awayTeamId, "W", "L");
+  } else if (homeScore < awayScore) {
+    handleResult(teams, awayTeamId, homeTeamId, "W", "L");
+  } else {
+    handleResult(teams, homeTeamId, awayTeamId, "D", "D");
+  }
 }
 
-// Function to display standings in the respective tables
+function handleResult(teams, homeTeamId, awayTeamId, resultHome, resultAway) {
+  if (resultHome === "W") {
+    teams[homeTeamId].overall.wins++;
+    teams[homeTeamId].overall.points += 3;
+    teams[awayTeamId].overall.losses++;
+  } else if (resultHome === "L") {
+    teams[awayTeamId].overall.wins++;
+    teams[awayTeamId].overall.points += 3;
+    teams[homeTeamId].overall.losses++;
+  } else { // Draw Case
+    teams[homeTeamId].overall.draws++;
+    teams[awayTeamId].overall.draws++;
+    teams[homeTeamId].overall.points += 1;
+    teams[awayTeamId].overall.points += 1;
+  }
+
+  teams[homeTeamId].results.push(resultHome);
+  teams[awayTeamId].results.push(resultAway);
+}
+
 function displayStandings(standings) {
-  document.getElementById('overall-standings').innerHTML = generateTableHTML(standings);
+  document.getElementById('overall-standings').innerHTML = generateTableHTML(standings, 'overall');
 }
 
 function generateTableHTML(standings, type) {
-  // Define the table headers
   let html = `
     <tr>
       <th>#</th>
@@ -858,15 +854,15 @@ function generateTableHTML(standings, type) {
   `;
 
   const sortedTeams = Object.keys(standings).sort((a, b) => {
-    if (standings[b].overall.points !== standings[a].overall.points) {
-      return standings[b].overall.points - standings[a].overall.points;
+    if (standings[b][type].points !== standings[a][type].points) {
+      return standings[b][type].points - standings[a][type].points;
     }
-    return (standings[b].overall.goalsFor - standings[b].overall.goalsAgainst) -
-           (standings[a].overall.goalsFor - standings[a].overall.goalsAgainst);
+    return (standings[b][type].goalsFor - standings[b][type].goalsAgainst) -
+           (standings[a][type].goalsFor - standings[a][type].goalsAgainst);
   });
 
   sortedTeams.forEach((teamId, index) => {
-    const stats = standings[teamId].overall;
+    const stats = standings[teamId][type];
     const goalDifference = stats.goalsFor - stats.goalsAgainst;
     const goals = `${stats.goalsFor}:${stats.goalsAgainst}`;
     const last5Results = standings[teamId].results.slice(-5).map(result => `<span class="${result}">${result}</span>`).join("");
@@ -874,7 +870,7 @@ function generateTableHTML(standings, type) {
     html += `
       <tr>
         <td>${index + 1}</td>
-        <td>${standings[teamId].name}</td>
+        <td>${standings[teamId].name}</td> <!-- Use team name for display -->
         <td>${stats.played}</td>
         <td>${stats.wins}</td>
         <td>${stats.draws}</td>
