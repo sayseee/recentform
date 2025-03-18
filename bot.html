@@ -285,8 +285,11 @@ select {
   display: flex;
   gap: 5px;
 }
-.tEs #standings, .tEs #tournament-events {
-  flex: 1;
+.tEs #standings {
+  width: 35%;
+}
+.tEs #tournament-events {
+  width: 65%;
 }
 table {
     width: 100%;
@@ -339,7 +342,6 @@ table.events-table thead th.score, table.events-table tbody td.score {
   border-bottom: 1px solid rgb(48, 125, 153); 
 }
 .tabcontent {
-  display: none;  
   border: 1px solid rgb(74, 74, 74);
   border-top: none;
   border-right: none;
@@ -382,22 +384,10 @@ table.events-table thead th.score, table.events-table tbody td.score {
       <div class="tEs">
         <div id="tournament-events"></div>
         <div id="standings">
-          <div class="tabs">
-            <button class="tablink" onclick="openTab('overall')">Overall</button> 
-          </div> 
-          <div id="overall" class="tabcontent">
+          <div id="overall" class="tabcontent scrollable">
             <table id="overall-standings"></table>
           </div> 
           </div>
-        
-          <div id="home" class="tabcontent">
-            <table id="home-standings"></table>
-          </div>
-        
-          <div id="away" class="tabcontent">
-            <table id="away-standings"></table>
-          </div>
-        </div>
       </div>
       <!-- groups Info -->
       <div id="groups"></div>
@@ -416,34 +406,49 @@ if ('serviceWorker' in navigator) {
     });
   }
 
+  // Helper function to convert fractional odds to decimal odds
+function fractionalToDecimal(fractional) {
+  const [numerator, denominator] = fractional.split('/').map(Number);
+  return (numerator / denominator + 1).toFixed(2);
+}
+
+
 
 let cachedEvents = null; // Global variable to store cached events
 let tournamentIds = new Set(); // Global variable to store unique tournament IDs
 
-// Fetch and cache only scheduled events (without inverse events)
+const scheduledEventsUrl = (date, inverse = false) => 
+  `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${date}${inverse ? '/inverse' : ''}`;
 
-// Fetch and cache only scheduled events (without inverse events)
-function fetchAndCacheScheduledEvents(date) {
-  const scheduledEventsUrl = `https://api.sofascore.com/api/v1/sport/football/scheduled-events/${date}`;
+// Fetch and cache scheduled events (with optional inverse events)
+function fetchAndCacheScheduledEvents(date, includeInverse = false) {
+  const urls = [scheduledEventsUrl(date)];
+  if (includeInverse) {
+    urls.push(scheduledEventsUrl(date, true));
+  }
 
-  return fetch(scheduledEventsUrl)
-    .then(response => response.json())
-    .then(scheduledData => {
-      cachedEvents = scheduledData.events; // Cache only the scheduled events
+  return Promise.all(urls.map(url => 
+    fetch(url)
+      .then(response => response.json())
+      .then(data => data.events)
+      .catch(error => {
+        console.error('Error fetching scheduled events:', error);
+        return [];
+      })
+  ))
+  .then(results => {
+    const allEvents = results.flat();
+    cachedEvents = allEvents; // Cache all fetched events
 
-      // Extract and store tournament IDs
-      cachedEvents.forEach(event => {
-        const tournamentId = event.tournament.id;
-        const uniqueTournamentId = event.tournament.uniqueTournament.id;
-        tournamentIds[tournamentId] = uniqueTournamentId;
-      });
-
-      return cachedEvents;
-    })
-    .catch(error => {
-      console.error('Error fetching scheduled events:', error);
-      return [];
+    // Extract and store tournament IDs
+    allEvents.forEach(event => {
+      const tournamentId = event.tournament.id;
+      const uniqueTournamentId = event.tournament.uniqueTournament.id;
+      tournamentIds[tournamentId] = uniqueTournamentId;
     });
+
+    return allEvents;
+  });
 }
 
 // Fetch and display categories with scheduled events
@@ -462,6 +467,21 @@ function fetchCategories() {
         tournamentsWithEvents.add(event.tournament.uniqueTournament.id);
       });
 
+      // Check if the number of categories is less than 30
+      if (categoriesWithEvents.size < 30) {
+        return fetchAndCacheScheduledEvents(today, true)
+          .then(inverseEvents => {
+            inverseEvents.forEach(event => {
+              categoriesWithEvents.add(event.tournament.category.id);
+              tournamentsWithEvents.add(event.tournament.uniqueTournament.id);
+            });
+            return { categoriesWithEvents, tournamentsWithEvents };
+          });
+      } else {
+        return { categoriesWithEvents, tournamentsWithEvents };
+      }
+    })
+    .then(({ categoriesWithEvents, tournamentsWithEvents }) => {
       // Fetch all categories
       fetch('https://www.sofascore.com/api/v1/sport/football/categories')
         .then(response => response.json())
@@ -516,87 +536,76 @@ function fetchCategories() {
     .catch(error => console.error('Error fetching scheduled events:', error));
 }
 
-// Fetch tournaments for a selected category
-function fetchTournaments(categoryId, categoryName, tournamentsWithEvents) {
-  document.getElementById('selected-country').textContent = categoryName;
+let finishedTournamentEvents = {}; // Global variable to store finished events
 
-  fetch(`https://www.sofascore.com/api/v1/category/${categoryId}/unique-tournaments`)
-    .then(response => response.json())
-    .then(data => {
-      const tournamentsContainer = document.getElementById('tournaments');
-      tournamentsContainer.innerHTML = '';
-
-      // Ensure groups exist in data before accessing them
-      if (data.groups && data.groups.length > 0) {
-        // Create a <ul> element to hold the tournament links
-        const tournamentList = document.createElement('ul');
-        tournamentsContainer.appendChild(tournamentList);
-
-        // Filter tournaments to only include those with scheduled events
-        const filteredTournaments = data.groups.flatMap(group =>
-          group.uniqueTournaments.filter(tournament => 
-            tournamentsWithEvents.has(tournament.id)
-          ) // <- Closing parenthesis was missing
-        );
-
-        // Display the filtered tournaments
-        if (filteredTournaments.length > 0) {
-          filteredTournaments.forEach((tournament, index) => {
-            const listItem = document.createElement('li');
-            const tournamentLink = document.createElement('a');
-            tournamentLink.href = '#'; // Use a placeholder href
-            tournamentLink.textContent = tournament.name;
-            tournamentLink.onclick = (e) => {
-              e.preventDefault(); // Prevent the default link behavior
-              fetchTournamentDetails(tournament.id);
-            };
-
-            listItem.appendChild(tournamentLink);
-            tournamentList.appendChild(listItem);
-
-            // Auto-click the first tournament to load its details
-            if (index === 0) {
-              fetchTournamentDetails(tournament.id);
-            }
-          });
-        } else {
-          tournamentsContainer.textContent = 'No tournaments with events found.';
-        }
-      } else {
-        tournamentsContainer.textContent = 'No tournaments available for this category.';
-      }
-    })
-    .catch(error => console.error('Error fetching tournaments:', error));
-}
-// Fetch events for a specific tournament (no need for rounds)
-function fetchEventsForTournament(uniqueTournamentId, tournamentName) {
-  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-  // No need to check for rounds here, just fetch scheduled events directly
-  fetchScheduledEvents(uniqueTournamentId, today);
-}
-
-function fetchScheduledEvents(tournamentId, date) {
+function fetchScheduledEvents(uniqueTournamentId, date) {
   if (cachedEvents) {
     // Use cached events if available
     const filteredEvents = cachedEvents.filter(event =>
-      event.tournament.uniqueTournament.id === tournamentId
+      event.tournament.uniqueTournament.id === uniqueTournamentId
     );
-    const standings = calculateStandings(filteredEvents); // Calculate standings
-    console.log(standings);
-    displayEventsInTable(filteredEvents, tournamentId, date, standings); // Pass standings
+
+    // Extract tournamentId and seasonId from the first event in filteredEvents
+    const tournamentId = filteredEvents[0]?.tournament?.id;
+    const seasonId = filteredEvents[0]?.season?.id;
+
+    if (!tournamentId || !seasonId) {
+      console.error('Tournament ID or Season ID not found in filtered events');
+      return;
+    }
+
+    // Fetch tournament events to populate finishedTournamentEvents
+    fetchTournamentEvents(tournamentId, seasonId)
+      .then(() => { 
+        const standings = calculateStandings(finishedTournamentEvents); // Calculate standings
+        console.log('Standings:', standings);
+        displayEventsInTable(filteredEvents, uniqueTournamentId, date, standings); // Pass standings
+      })
+      .catch(error => console.error('Error fetching tournament events:', error));
   } else {
     // Fetch and cache events if not already cached
     fetchAndCacheScheduledEvents(date)
       .then(events => {
         const filteredEvents = events.filter(event =>
-          event.tournament.uniqueTournament.id === tournamentId
+          event.tournament.uniqueTournament.id === uniqueTournamentId
         );
-        const standings = calculateStandings(filteredEvents); // Calculate standings 
-        displayEventsInTable(filteredEvents, tournamentId, date, standings); // Pass standings
+
+        // Extract tournamentId and seasonId from the first event in filteredEvents
+        const tournamentId = filteredEvents[0]?.tournament?.id;
+        const seasonId = filteredEvents[0]?.season?.id;
+
+        if (!tournamentId || !seasonId) {
+          console.error('Tournament ID or Season ID not found in filtered events');
+          return;
+        }
+
+        // Fetch tournament events to populate finishedTournamentEvents
+        fetchTournamentEvents(tournamentId, seasonId)
+          .then(() => {
+            const standings = calculateStandings(finishedTournamentEvents); // Calculate standings
+            console.log('Standings:', standings);
+            displayEventsInTable(filteredEvents, uniqueTournamentId, date, standings); // Pass standings
+          })
+          .catch(error => console.error('Error fetching tournament events:', error));
       })
       .catch(error => console.error('Error fetching scheduled events:', error));
   }
 }
+
+function fetchTournamentEvents(tournamentId, seasonId) {
+  return fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/events`)
+    .then(response => response.json())
+    .then(data => {
+      finishedTournamentEvents = data.events.filter(event => event.status.type === "finished"); // Populate global variable
+      
+      return finishedTournamentEvents;
+    })
+    .catch(error => {
+      console.error('Error fetching tournament events:', error);
+      return [];
+    });
+}
+
 
 function calculateTeamStrength(results) {
   // Count the number of wins, draws, and losses in the last 10 results
@@ -709,10 +718,10 @@ function displayEventsInTable(events, tournamentId, date, teams) {
         const row = document.createElement('tr');
         row.innerHTML = `
           <td width="100">${startTime}</td>
-          <td width="120">${homeTeam}</td>
-          <td width="120">${awayTeam}</td>
-          <td width="120">${homeTeamStrength.difficultyLevel}</td>
-          <td width="120">${awayTeamStrength.difficultyLevel}</td>
+          <td width="140">${homeTeam}</td>
+          <td width="140">${awayTeam}</td>
+          <td width="100">${homeTeamStrength.difficultyLevel}</td>
+          <td width="100">${awayTeamStrength.difficultyLevel}</td>
           <td width="30">${odds1}</td>
           <td width="30">${oddsX}</td>
           <td width="30">${odds2}</td>
@@ -722,101 +731,6 @@ function displayEventsInTable(events, tournamentId, date, teams) {
       });
     })
     .catch(error => console.error('Error fetching odds:', error));
-}
-
-// Helper function to convert fractional odds to decimal odds
-function fractionalToDecimal(fractional) {
-  const [numerator, denominator] = fractional.split('/').map(Number);
-  return (numerator / denominator + 1).toFixed(2);
-}
-
-function fetchSeasonInfo(uniqueTournamentId, tournamentName, seasonId) {
-  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/info`)
-    .then(response => response.json())
-    .then(data => {
-      const seasonInfoContainer = document.getElementById('season-info');
-      
-      // Calculate total matches
-      const totalMatches = data.info.homeTeamWins + data.info.awayTeamWins + data.info.draws;
-      
-      // Calculate percentages
-      const homeWinPercentage = ((data.info.homeTeamWins / totalMatches) * 100).toFixed(0);
-      const awayWinPercentage = ((data.info.awayTeamWins / totalMatches) * 100).toFixed(0);
-      const drawPercentage = ((data.info.draws / totalMatches) * 100).toFixed(0);
-      
-      // Display the stats with percentages
-      seasonInfoContainer.innerHTML = `  
-        <div class="stats">
-          <div><strong>G:</strong> ${data.info.goals}</div>
-          <div><strong>HW:</strong> ${data.info.homeTeamWins} (${homeWinPercentage}%)</div>
-          <div><strong>AW:</strong> ${data.info.awayTeamWins} (${awayWinPercentage}%)</div>
-          <div><strong>D:</strong> ${data.info.draws} (${drawPercentage}%)</div>
-        </div>
-      `;
-
-      // Find the tournamentId for the given uniqueTournamentId
-      const tournamentId = Object.keys(tournamentIds).find(
-        key => tournamentIds[key] === uniqueTournamentId
-      );
-
-      if (tournamentId) {
-        // Fetch and display tournament events for the selected season
-        fetchTournamentEvents(tournamentId, seasonId);
-      } else {
-        console.error('Tournament ID not found for uniqueTournamentId:', uniqueTournamentId);
-      }
-    })
-    .catch(error => console.error('Error fetching season info:', error));
-}
-
-function fetchSeasons(uniqueTournamentId, tournamentName) {
-  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/seasons`)
-    .then(response => response.json())
-    .then(data => {
-      const seasonSelect = document.getElementById('season-select');
-      seasonSelect.innerHTML = ''; // Clear previous options
-
-      // Create a default "Select Season" option
-      const defaultOption = document.createElement('option');
-      defaultOption.textContent = "Season";
-      defaultOption.value = "";
-      seasonSelect.appendChild(defaultOption);
-
-      // Loop through the seasons and create an option for each one
-      data.seasons.forEach((season, index) => {
-        const option = document.createElement('option');
-        option.value = season.id;
-        option.textContent = season.year;
-        seasonSelect.appendChild(option);
-
-        // Automatically select the first season and fetch its info
-        if (index === 0) {
-          option.selected = true;
-          fetchSeasonInfo(uniqueTournamentId, tournamentName, season.id); // Fetch the first season's info
-        }
-      });
-
-      // Add event listener for changing season
-      seasonSelect.onchange = () => {
-        const selectedSeasonId = seasonSelect.value;
-        if (selectedSeasonId) {
-          fetchSeasonInfo(uniqueTournamentId, tournamentName, selectedSeasonId);
-        }
-      };
-    })
-    .catch(error => console.error('Error fetching seasons:', error));
-}
-
-// Function to fetch tournament events and calculate standings
-function fetchTournamentEvents(tournamentId, seasonId) {
-  fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/events`)
-    .then(response => response.json())
-    .then(data => {
-      const finishedEvents = data.events.filter(event => event.status.type === "finished"); 
-      const standings = calculateStandings(finishedEvents);
-      displayStandings(standings);
-    })
-    .catch(error => console.error('Error fetching tournament events:', error));
 }
 
 function calculateStandings(events) {
@@ -937,26 +851,92 @@ function generateTableHTML(standings, type) {
 }
 
 
-// Function to handle tab navigation
-function openTab(tabName) {
-  const tabcontent = document.getElementsByClassName("tabcontent");
-  for (let i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
+function fetchTournaments(categoryId, categoryName, tournamentsWithEvents) {
+  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
-  const tablinks = document.getElementsByClassName("tablink");
-  for (let i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
+  // Fetch tournaments for the category
+  fetch(`https://www.sofascore.com/api/v1/category/${categoryId}/tournaments`)
+    .then(response => response.json())
+    .then(tournamentsData => {
+      const tournamentsContainer = document.getElementById('tournaments');
+      tournamentsContainer.innerHTML = '';
 
-  document.getElementById(tabName).style.display = "block";
-  event.currentTarget.className += " active";
+      // Filter tournaments to only include those with scheduled events
+      const filteredTournaments = tournamentsData.tournaments.filter(tournament =>
+        tournamentsWithEvents.has(tournament.uniqueTournament.id)
+      );
+
+      // Create a <ul> element to hold the tournament links
+      const tournamentList = document.createElement('ul');
+      tournamentsContainer.appendChild(tournamentList);
+
+      // Loop through filtered tournaments and create <li> links
+      filteredTournaments.forEach((tournament, index) => {
+        const listItem = document.createElement('li');
+        const tournamentLink = document.createElement('a');
+        tournamentLink.href = '#'; // Use a placeholder href
+        tournamentLink.textContent = tournament.name;
+        tournamentLink.onclick = (e) => {
+          e.preventDefault(); // Prevent the default link behavior
+          const seasonId = tournament.season.id; // Get the season ID
+          fetchScheduledEvents(tournament.uniqueTournament.id, today);
+        };
+
+        listItem.appendChild(tournamentLink);
+        tournamentList.appendChild(listItem);
+
+        // Auto-click the first tournament to load its events
+        if (index === 0) {
+          const seasonId = tournament.season.id; // Get the season ID
+          fetchScheduledEvents(tournament.uniqueTournament.id, today);
+        }
+      });
+    })
+    .catch(error => console.error('Error fetching tournaments:', error));
 }
 
-// Initialize the default tab
-document.getElementById('overall').style.display = "block";
-document.getElementsByClassName('tablink')[0].className += " active";
+ 
 
+function fetchSeasonInfo(uniqueTournamentId, tournamentName, seasonId) {
+  fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/info`)
+    .then(response => response.json())
+    .then(data => {
+      const seasonInfoContainer = document.getElementById('season-info');
+      
+      // Calculate total matches
+      const totalMatches = data.info.homeTeamWins + data.info.awayTeamWins + data.info.draws;
+      
+      // Calculate percentages
+      const homeWinPercentage = ((data.info.homeTeamWins / totalMatches) * 100).toFixed(0);
+      const awayWinPercentage = ((data.info.awayTeamWins / totalMatches) * 100).toFixed(0);
+      const drawPercentage = ((data.info.draws / totalMatches) * 100).toFixed(0);
+      
+      // Display the stats with percentages
+      seasonInfoContainer.innerHTML = `  
+        <div class="stats">
+          <div><strong>G:</strong> ${data.info.goals}</div>
+          <div><strong>HW:</strong> ${data.info.homeTeamWins} (${homeWinPercentage}%)</div>
+          <div><strong>AW:</strong> ${data.info.awayTeamWins} (${awayWinPercentage}%)</div>
+          <div><strong>D:</strong> ${data.info.draws} (${drawPercentage}%)</div>
+        </div>
+      `;
+
+      // Find the tournamentId for the given uniqueTournamentId
+      const tournamentId = Object.keys(tournamentIds).find(
+        key => tournamentIds[key] === uniqueTournamentId
+      );
+
+      if (tournamentId) {
+        // Fetch and display tournament events for the selected season
+        fetchTournamentEvents(tournamentId, seasonId);
+      } else {
+        console.error('Tournament ID not found for uniqueTournamentId:', uniqueTournamentId);
+      }
+    })
+    .catch(error => console.error('Error fetching season info:', error));
+}
+
+ 
 
 function fetchTournamentDetails(uniqueTournamentId) { 
   fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}`)
