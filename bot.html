@@ -656,7 +656,6 @@ function calculateTeamStrength(results) {
     difficultyLevel: difficultyLevel,
   };
 }
-
 function displayEventsInTable(events, tournamentId, date, teams) {
   const eventsContainer = document.getElementById('tournament-events');
   eventsContainer.innerHTML = ''; // Clear previous content
@@ -676,6 +675,7 @@ function displayEventsInTable(events, tournamentId, date, teams) {
         <th>X</th>
         <th>2</th>
         <th class="score">Score</th>
+        <th class="status">S</th>
       </tr>
     </thead>
     <tbody>
@@ -728,18 +728,32 @@ function displayEventsInTable(events, tournamentId, date, teams) {
           console.warn(`No odds found for event ${eventId}`);
         }
 
+            // Determine event status (new code to display event.status.type)
+        let status = "NS"; // Default to "Not Started" shorthand
+
+        if (event.status?.type === "finished") {
+            status = "FT"; // Full Time
+        } else if (event.status?.type === "cancelled") {
+            status = "CC"; // Cancelled
+        } else if (event.status?.type === "postponed") {
+            status = "PP"; // Postponed
+        } else if (event.status?.type === "notstarted") {
+            status = "NS"; // Not Started
+        }
+
         // Create a table row with or without odds
         const row = document.createElement('tr');
         row.innerHTML = `
           <td width="100">${startTime}</td>
-          <td width="140">${homeTeam}</td>
-          <td width="140">${awayTeam}</td>
+          <td width="140" class="${event.homeTeam.id}">${homeTeam}</td>
+          <td width="140" class="${event.awayTeam.id}">${awayTeam}</td>
           <td width="10" class="diff_${homeTeamStrength.difficultyLevel}">${homeTeamStrength.difficultyLevel}</td>
           <td width="10" class="diff_${awayTeamStrength.difficultyLevel}">${awayTeamStrength.difficultyLevel}</td>
           <td width="30">${odds1}</td>
           <td width="30">${oddsX}</td>
           <td width="30">${odds2}</td>
           <td class="score" width="40">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
+          <td class="status" width="10">${status}</td> <!-- Added status here -->
         `;
         table.querySelector('tbody').appendChild(row);
       });
