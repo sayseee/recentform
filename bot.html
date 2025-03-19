@@ -6,6 +6,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
+<!-- Add this to the <head> of your HTML to include Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
   <title>Football Tournaments</title>
   <style>
     .rF-4 {
@@ -113,6 +116,9 @@ li {
     .L {
         background-color: var(--loss-color);
     } 
+    .fa-spin {
+      color: var(--draw-color)
+    }
 /* Custom scrollbar for WebKit browsers (Chrome, Safari) */
 .scrollable::-webkit-scrollbar {
     width: 5px; /* Set scrollbar width to 1px */
@@ -702,8 +708,8 @@ function displayEventsInTable(events, tournamentId, date, teams) {
         const awayTeamResults = teams[event.awayTeam.id]?.results || [];
 
         // Calculate team strength for home and away teams
-        const homeTeamStrength = calculateTeamStrength(homeTeamResults);
-        const awayTeamStrength = calculateTeamStrength(awayTeamResults);
+        const homeTeamStrength = calculateTeamStrength(homeTeamResults.slice(-10));
+        const awayTeamStrength = calculateTeamStrength(awayTeamResults.slice(-10));
 
         // Default values for odds
         let odds1 = '-';
@@ -728,19 +734,25 @@ function displayEventsInTable(events, tournamentId, date, teams) {
           console.warn(`No odds found for event ${eventId}`);
         }
 
-            // Determine event status (new code to display event.status.type)
+         // Determine event status with shorthand
         let status = "NS"; // Default to "Not Started" shorthand
-
+        let statusIcon = "";
         if (event.status?.type === "finished") {
             status = "FT"; // Full Time
+            statusIcon = "✔"; // Full Time checkmark
         } else if (event.status?.type === "cancelled") {
             status = "CC"; // Cancelled
+            statusIcon = "✘"; // Cancelled cross
         } else if (event.status?.type === "postponed") {
             status = "PP"; // Postponed
+            statusIcon = "⏸"; // Postponed pause icon
         } else if (event.status?.type === "notstarted") {
             status = "NS"; // Not Started
+            statusIcon = '<i class="fas fa-clock"></i>'; // Clock icon for Not Started
+        } else if (event.status?.type === "inprogress") {
+            status = "IP"; // In Progress
+            statusIcon = '<i class="fas fa-sync-alt fa-spin"></i>'; // Spinning sync icon for In Progress
         }
-
         // Create a table row with or without odds
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -753,7 +765,7 @@ function displayEventsInTable(events, tournamentId, date, teams) {
           <td width="30">${oddsX}</td>
           <td width="30">${odds2}</td>
           <td class="score" width="40">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
-          <td class="status" width="10">${status}</td> <!-- Added status here -->
+          <td class="status" width="10">${statusIcon}</td> <!-- Added status here -->
         `;
         table.querySelector('tbody').appendChild(row);
       });
