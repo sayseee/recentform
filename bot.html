@@ -286,10 +286,10 @@ select {
   gap: 5px;
 }
 .tEs #standings {
-  width: 35%;
+  width: 38%;
 }
 .tEs #tournament-events {
-  width: 65%;
+  width: 62%;
 }
 table {
     width: 100%;
@@ -298,13 +298,9 @@ table {
 table.events-table {
   font-size: 10.5px;
 }
-table.events-table td, table.events-table th {
-  padding: 5px;
-}
-tr.headerTitle th {
+tr.headerTitle th, #overall-standings th {
   font-size: 10px;
-  font-weight: bold;
-  text-align: left;
+  font-weight: bold; 
   color: rgb(255, 255, 255);
   border-bottom: 1px solid rgb(48, 125, 153);
   text-transform: uppercase;
@@ -316,31 +312,25 @@ table.events-table tbody tr:nth-child(even), #overall-standings tbody tr:nth-chi
 table.events-table thead th.score, table.events-table tbody td.score {
   text-align: center;
 }
-
-.tabs button {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 5px 10px;
-  transition: 0.3s;
-  color: rgb(179, 179, 179);
-  font-size: 10px;
-  font-weight: bold;
-  text-transform: uppercase;
+/* Center all columns except the first three (Time, Home, Away) */
+.events-table th, .events-table td {
+  text-align: center;
 }
 
-.tabs button:hover {
-  background-color: rgb(92, 92, 92);
+/* Exclude the first three columns (Time, Home, Away) */
+.events-table th:nth-child(1),
+.events-table th:nth-child(2),
+.events-table th:nth-child(3),
+.events-table td:nth-child(1),
+.events-table td:nth-child(2),
+.events-table td:nth-child(3) {
+  text-align: left; /* Or any other alignment you prefer */
 }
 
-.tabs button.active {
-  background-color: rgb(92, 92, 92);
+.events-table td:nth-child(4) {
+  border-right: 1px solid transparent;
 }
 
-.tabs { 
-  border-bottom: 1px solid rgb(48, 125, 153); 
-}
 .tabcontent {
   border: 1px solid rgb(74, 74, 74);
   border-top: none;
@@ -349,7 +339,7 @@ table.events-table thead th.score, table.events-table tbody td.score {
 
 #overall-standings th, #overall-standings td {
   text-align: center; /* Center all text */ 
-  padding: 3px 5px;
+  padding: 3px;
 }
 
 #overall-standings td:nth-child(2), #overall-standings th:nth-child(2) {
@@ -361,6 +351,18 @@ table.events-table thead th.score, table.events-table tbody td.score {
   justify-content: center;
   gap: 2px;
 } 
+
+table.events-table td, table.events-table th, #overall-standings tbody td  {
+  padding: 5px;
+}
+#overall-standings th {
+  padding: 5px 3px;
+}
+.diff_1{background-color:#63D100;color: #fff;}
+.diff_2{background-color:#4B9F01;color: #fff;}
+.diff_3{background-color:#FF9900;color: #fff;}
+.diff_4{background-color:#DE4E45;color: #fff;}
+.diff_5{background-color:#990134;color: #fff;}
   </style>
 </head>
 <body class="rF-4">
@@ -634,14 +636,14 @@ function calculateTeamStrength(results) {
     difficultyLevel = 1; // Very Easy
   } else if (totalScore > 15 && totalScore <= 35) {
     difficultyLevel = 2; // Easy
-  } else if (totalScore > 35 && totalScore <= 65) {
+  } else if (totalScore > 35 && totalScore <= 57) {
     difficultyLevel = 3; // Medium
-  } else if (totalScore > 65 && totalScore <= 85) {
+  } else if (totalScore > 57 && totalScore <= 79) {
     difficultyLevel = 4; // Hard
-  } else if (totalScore > 85 && totalScore <= 100) {
+  } else if (totalScore > 79 && totalScore <= 100) {
     difficultyLevel = 5; // Very Hard
   } else {
-    difficultyLevel = "Invalid"; // Handle edge cases
+    difficultyLevel = "-"; // Handle edge cases
   }
 
   // Return the results
@@ -688,8 +690,8 @@ function displayEventsInTable(events, tournamentId, date, teams) {
         const homeTeam = event.homeTeam.shortName;
         const awayTeam = event.awayTeam.shortName;
         const eventDate = new Date(event.startTimestamp * 1000);
-        const startTime = eventDate.toLocaleDateString('en-GB') + ' ' + 
-                                  eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        const startTime = eventDate.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\d{4}/, '') + ' ' + 
+                  eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
         // Calculate team strength for home and away teams
         const homeTeamStrength = calculateTeamStrength(teams[event.homeTeam.id].results);
@@ -724,8 +726,8 @@ function displayEventsInTable(events, tournamentId, date, teams) {
           <td width="100">${startTime}</td>
           <td width="140">${homeTeam}</td>
           <td width="140">${awayTeam}</td>
-          <td width="100">${homeTeamStrength.difficultyLevel}</td>
-          <td width="100">${awayTeamStrength.difficultyLevel}</td>
+          <td width="10" class="diff_${homeTeamStrength.difficultyLevel}">${homeTeamStrength.difficultyLevel}</td>
+          <td width="10" class="diff_${awayTeamStrength.difficultyLevel}">${awayTeamStrength.difficultyLevel}</td>
           <td width="30">${odds1}</td>
           <td width="30">${oddsX}</td>
           <td width="30">${odds2}</td>
