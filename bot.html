@@ -598,6 +598,11 @@ function fetchTournamentEvents(tournamentId, seasonId) {
     .then(data => {
       finishedTournamentEvents = data.events.filter(event => event.status.type === "finished"); // Populate global variable
       
+
+      const standings = calculateStandings(finishedTournamentEvents);
+      displayStandings(standings);
+      console.log('Fetched Finished Tournament Events (Excluded Same Day Events):', finishedTournamentEvents);
+      
       return finishedTournamentEvents;
     })
     .catch(error => {
