@@ -373,7 +373,7 @@ table.events-table td, table.events-table th, #overall-standings tbody td  {
       <div id="tournaments"></div>
     </div>
 
-    <div class="tournament-details scrollable"> 
+    <div class="tournament-details"> 
       <div class="tournament-data">
         <div id="tournament-details"></div>
         <!-- Season Info -->
@@ -612,8 +612,12 @@ function fetchTournamentEvents(tournamentId, seasonId) {
     });
 }
 
-
 function calculateTeamStrength(results) {
+  // If results is undefined or not an array, return default values
+  if (!Array.isArray(results)) {
+    return { totalScore: '0.00', difficultyLevel: '-' };
+  }
+
   // Count the number of wins, draws, and losses in the last 10 results
   const wins = results.filter(result => result === "W").length;
   const draws = results.filter(result => result === "D").length;
@@ -693,9 +697,13 @@ function displayEventsInTable(events, tournamentId, date, teams) {
         const startTime = eventDate.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\d{4}/, '') + ' ' + 
                   eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
+        // Check if team data exists before calculating strength
+        const homeTeamResults = teams[event.homeTeam.id]?.results || [];
+        const awayTeamResults = teams[event.awayTeam.id]?.results || [];
+
         // Calculate team strength for home and away teams
-        const homeTeamStrength = calculateTeamStrength(teams[event.homeTeam.id].results);
-        const awayTeamStrength = calculateTeamStrength(teams[event.awayTeam.id].results);
+        const homeTeamStrength = calculateTeamStrength(homeTeamResults);
+        const awayTeamStrength = calculateTeamStrength(awayTeamResults);
 
         // Default values for odds
         let odds1 = '-';
@@ -738,6 +746,7 @@ function displayEventsInTable(events, tournamentId, date, teams) {
     })
     .catch(error => console.error('Error fetching odds:', error));
 }
+
 
 function calculateStandings(events) {
   const teams = {};
