@@ -291,11 +291,8 @@ select {
   display: flex;
   gap: 5px;
 }
-.tEs #standings {
-  width: 38%;
-}
-.tEs #events-analysis {
-  width: 62%;
+.tEs #standings, .tEs #events-analysis {
+  width: 50%;
 }
 table {
     width: 100%;
@@ -386,6 +383,7 @@ table.events-table td, table.events-table th, #overall-standings tbody td  {
       <div class="tEs"> 
         <div id="events-analysis">
           <div id="tournament-events"></div>
+          <div id="event-details"></div>
           <div id="analysis-data"></div>
         </div>
         <div id="last-tournament-events" class="scrollable"></div>
@@ -404,7 +402,7 @@ if ('serviceWorker' in navigator) {
       });
     });
   }
-
+  const baseURL = 'https://api.sofascore.com/api/v1';
   // Helper function to convert fractional odds to decimal odds
 function fractionalToDecimal(fractional) {
   const [numerator, denominator] = fractional.split('/').map(Number);
@@ -721,15 +719,19 @@ function fetchLastTournamentEvents(tournamentId, seasonId) {
             const decimalOddsX = fractionalToDecimal(oddsX);
             const decimalOdds2 = fractionalToDecimal(odds2);
 
+            const probability1 = (1 / decimalOdds1 * 100).toFixed(0);
+            const probabilityX = (1 / decimalOddsX * 100).toFixed(0);
+            const probability2 = (1 / decimalOdds2 * 100).toFixed(0);
+
             // Create a table row with the event data
             const row = document.createElement('tr');
             row.innerHTML = `
               <td>${eventDate}</td>
               <td>${homeTeam}</td>
               <td>${awayTeam}</td>
-              <td>${decimalOdds1}</td>
-              <td>${decimalOddsX}</td>
-              <td>${decimalOdds2}</td>
+              <td>${decimalOdds1} - ${probability1}</td>
+              <td>${decimalOddsX} - ${probabilityX}</td>
+              <td>${decimalOdds2} - ${probability2}</td>
               <td>${score}</td>
               <td>${result}</td>
             `;
@@ -773,7 +775,7 @@ function displayEventsInTable(events, tournamentId, date) {
     .then(response => response.json())
     .then(oddsData => {
       // Loop through events and create table rows
-      events.forEach(event => {
+      events.forEach((event, index) => {
         const eventId = event.id;
         const homeTeam = event.homeTeam.shortName;
         const awayTeam = event.awayTeam.shortName;
@@ -827,22 +829,183 @@ function displayEventsInTable(events, tournamentId, date) {
             statusIcon = '<i class="fas fa-sync-alt fa-spin"></i>'; // Spinning sync icon for In Progress
         }
         // Create a table row with or without odds
+        const probability1 = (1 / odds1 * 100).toFixed(0);
+        const probabilityX = (1 / oddsX * 100).toFixed(0);
+        const probability2 = (1 / odds2 * 100).toFixed(0);
+
         const row = document.createElement('tr');
         row.innerHTML = `
           <td width="100">${startTime}</td>
           <td width="140" class="${event.homeTeam.id}">${homeTeam}</td>
           <td width="140" class="${event.awayTeam.id}">${awayTeam}</td>
-          <td width="30">${odds1}</td>
-          <td width="30">${oddsX}</td>
-          <td width="30">${odds2}</td>
+          <td width="30">${odds1} - ${probability1}</td>
+          <td width="30">${oddsX} - ${probabilityX}</td>
+          <td width="30">${odds2} - ${probability2}</td>
           <td class="score" width="40">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
           <td class="status" width="10">${statusIcon}</td> <!-- Added status here -->
         `;
+        
+        // Add an onclick event to analyze odds of the clicked event
+        row.onclick = () => {
+          fetchEventDetails(eventId);
+          const currentEventOdds = { odds1: odds1, oddsX: oddsX, odds2: odds2 };
+          console.log('Clicked event odds:', currentEventOdds);
+          analyzeHistoricalPerformance(event.tournament.id, event.season.id, currentEventOdds);
+        };
+
         table.querySelector('tbody').appendChild(row);
+
+        // Load analysis for the first event on initial load
+        if (index === 0) {
+          fetchEventDetails(eventId);
+          console.log(eventId);
+          const currentEventOdds = { odds1: decimalOdds1, oddsX: decimalOddsX, odds2: decimalOdds2 };
+          analyzeHistoricalPerformance(event.tournament.id, event.season.id, currentEventOdds);
+        }
       });
     })
     .catch(error => console.error('Error fetching odds:', error));
 }
+
+function fetchEventDetails(eventId) {
+  const eventDetailsContainer = document.getElementById('event-details');
+  eventDetailsContainer.innerHTML = '<p>Loading event details...</p>'; // Show loading text
+
+  // Fetch event details
+  fetch(`https://www.sofascore.com/api/v1/event/${eventId}`)
+    .then(response => response.json())
+    .then(eventData => {
+      if (!eventData || !eventData.event) {
+        eventDetailsContainer.innerHTML = '<p>Event details not available.</p>';
+        return;
+      }
+
+      const event = eventData.event;
+      const uniqueH2hContainer = `h2h-container-${event.id}`; // Unique ID for the event's info container
+      const homeTeam = event.homeTeam.shortName || event.homeTeam.name;
+      const awayTeam = event.awayTeam.shortName || event.awayTeam.name;
+      const eventDate = new Date(event.startTimestamp * 1000).toLocaleString();
+      const score = event.homeScore?.current !== undefined && event.awayScore?.current !== undefined
+        ? `${event.homeScore.current} - ${event.awayScore.current}`
+        : 'Not available';
+
+      // Display event details
+      eventDetailsContainer.innerHTML = `
+        <h3>Event Details</h3>
+        <p><strong>Date:</strong> ${eventDate}</p>
+        <p><strong>Home Team:</strong> ${homeTeam}</p>
+        <p><strong>Away Team:</strong> ${awayTeam}</p>
+        <p><strong>Score:</strong> ${score}</p>
+        <div id="home-odds-${event.id}">
+        <div id="away-odds-${event.id}">
+        <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>
+      `; 
+      
+      renderWinningOdds(event.id);
+      fetchHeadToHead(event.id, uniqueH2hContainer); 
+    })    
+    .catch(error => {
+      console.error('Error fetching event details:', error);
+      eventDetailsContainer.innerHTML = '<p>Error loading event details.</p>';
+    });
+}
+
+
+const fetchWinningOdds = async (eventId) => {
+    try {
+        const winningOddsResponse = await fetch(`${baseURL}/event/${eventId}/provider/1/winning-odds`);
+        if (!winningOddsResponse.ok) {
+            throw new Error(`Failed to fetch winning odds: ${winningOddsResponse.statusText}`);
+        }
+        
+        const oddsData = await winningOddsResponse.json();
+        return oddsData;
+    } catch (error) {
+        console.error("Error fetching winning odds data:", error);
+    }
+};
+
+const renderWinningOdds = async (eventId) => {
+    try {
+        const oddsData = await fetchWinningOdds(eventId);
+        if (oddsData) {
+            const { home, away } = oddsData;
+
+            const getStyledSpan = (expected, actual) => `
+                <span style="background-color: ${actual > expected ? '#e59c0350' : '#a4a9b350'};">${expected}</span>
+                <span style="background-color: ${actual > expected ? '#e59c03' : '#a4a9b3'};">${actual}</span>
+            `;
+
+            document.getElementById(`home-odds-${eventId}`).innerHTML = getStyledSpan(home.expected, home.actual);
+            document.getElementById(`away-odds-${eventId}`).innerHTML = getStyledSpan(away.expected, away.actual);
+        }
+    } catch (error) {
+        console.error(`Failed to fetch or render odds for event ${eventId}:`, error);
+    }
+};
+ 
+
+const fetchHeadToHead = async (eventId, h2hContainerId) => {
+    try {
+        const response = await fetch(`${baseURL}/event/${eventId}/h2h`);
+        if (!response.ok) throw new Error(`Failed to fetch H2H data: ${response.statusText}`);
+        
+        const h2hData = await response.json();
+        const { teamDuel, managerDuel } = h2hData;
+
+        // Render team duel data if available
+        const teamDuelHTML = teamDuel ? renderTeamDuelStats(teamDuel) : '<div></div>';
+
+        // Render manager duel data if available
+        const managerDuelHTML = managerDuel ? renderManagerDuelStats(managerDuel) : '<div></div>';
+
+        // Insert the HTML into the H2H container
+        document.getElementById(h2hContainerId).innerHTML = teamDuelHTML + managerDuelHTML;
+    } catch (error) {
+        console.error("Error fetching head-to-head data:", error);
+    }
+};
+
+const renderTeamDuelStats = (teamDuel) => {
+    const { homeWins, awayWins, draws } = teamDuel;
+    const totalGames = homeWins + awayWins + draws;
+
+    const homeWinPercentage = ((homeWins / totalGames) * 100).toFixed(0);
+    const drawPercentage = ((draws / totalGames) * 100).toFixed(0);
+    const awayWinPercentage = ((awayWins / totalGames) * 100).toFixed(0);
+
+    return `
+    <div>
+        <h4 style="text-align:center;margin-top: 10px;">Head 2 Head (${totalGames})</h4>
+        <div>
+            <p><strong>${homeWinPercentage}%</strong></p>
+            <p><strong>${drawPercentage}%</strong></p>
+            <p><strong>${awayWinPercentage}%</strong></p>
+        </div>
+    </div>
+    `;
+};
+
+const renderManagerDuelStats = (managerDuel) => { 
+    const { homeWins, awayWins, draws } = managerDuel;
+    const totalGames = homeWins + awayWins + draws;
+
+    const homeWinPercentage = ((homeWins / totalGames) * 100).toFixed(0);
+    const drawPercentage = ((draws / totalGames) * 100).toFixed(0);
+    const awayWinPercentage = ((awayWins / totalGames) * 100).toFixed(0);
+
+    return `
+    <div>
+        <span>Manager Duel (${totalGames})</span>
+        <div>
+            <p><strong>${homeWinPercentage}%</strong></p>
+            <p><strong>${drawPercentage}%</strong></p>
+            <p><strong>${awayWinPercentage}%</strong></p>
+        </div>
+    </div>
+    `; 
+};
+
 
 function fetchTournaments(categoryId, categoryName, tournamentsWithEvents) {
   const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
