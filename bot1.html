@@ -294,7 +294,7 @@ select {
 .tEs #standings {
   width: 38%;
 }
-.tEs #events-analysis {
+.tEs #tournament-events {
   width: 62%;
 }
 table {
@@ -361,9 +361,14 @@ table.events-table thead th.score, table.events-table tbody td.score {
 table.events-table td, table.events-table th, #overall-standings tbody td  {
   padding: 5px;
 }
-#last-tournament-events {
-  height: calc(100vh - 60px);
+#overall-standings th {
+  padding: 5px 3px;
 }
+.diff_1{background-color:#63D100;color: #fff;}
+.diff_2{background-color:#4B9F01;color: #fff;}
+.diff_3{background-color:#FF9900;color: #fff;}
+.diff_4{background-color:#DE4E45;color: #fff;}
+.diff_5{background-color:#990134;color: #fff;}
   </style>
 </head>
 <body class="rF-4">
@@ -383,13 +388,16 @@ table.events-table td, table.events-table th, #overall-standings tbody td  {
         <select id="season-select"></select> 
       </div>  
         
-      <div class="tEs"> 
-        <div id="events-analysis">
-          <div id="tournament-events"></div>
-          <div id="analysis-data"></div>
-        </div>
-        <div id="last-tournament-events" class="scrollable"></div>
+      <div class="tEs">
+        <div id="tournament-events"></div>
+        <div id="standings">
+          <div id="overall" class="tabcontent scrollable">
+            <table id="overall-standings"></table>
+          </div> 
+          </div>
       </div>
+      <!-- groups Info -->
+      <div id="groups"></div>
     </div>
 </div>
 
@@ -410,6 +418,8 @@ function fractionalToDecimal(fractional) {
   const [numerator, denominator] = fractional.split('/').map(Number);
   return (numerator / denominator + 1).toFixed(2);
 }
+
+
 
 let cachedEvents = null; // Global variable to store cached events
 let tournamentIds = new Set(); // Global variable to store unique tournament IDs
@@ -533,6 +543,8 @@ function fetchCategories() {
     .catch(error => console.error('Error fetching scheduled events:', error));
 }
 
+let finishedTournamentEvents = {}; // Global variable to store finished events
+
 function fetchScheduledEvents(uniqueTournamentId, date) {
   if (cachedEvents) {
     // Use cached events if available
@@ -548,11 +560,13 @@ function fetchScheduledEvents(uniqueTournamentId, date) {
       console.error('Tournament ID or Season ID not found in filtered events');
       return;
     }
-    fetchLastTournamentEvents(tournamentId, seasonId) 
-    // Fetch tournament events
+
+    // Fetch tournament events to populate finishedTournamentEvents
     fetchTournamentEvents(tournamentId, seasonId)
       .then(() => { 
-        displayEventsInTable(filteredEvents, uniqueTournamentId, date); // Display events
+        const standings = calculateStandings(finishedTournamentEvents); // Calculate standings
+        console.log('Standings:', standings);
+        displayEventsInTable(filteredEvents, uniqueTournamentId, date, standings); // Pass standings
       })
       .catch(error => console.error('Error fetching tournament events:', error));
   } else {
@@ -571,22 +585,32 @@ function fetchScheduledEvents(uniqueTournamentId, date) {
           console.error('Tournament ID or Season ID not found in filtered events');
           return;
         }
-        fetchLastTournamentEvents(tournamentId, seasonId) 
-        // Fetch tournament events
+
+        // Fetch tournament events to populate finishedTournamentEvents
         fetchTournamentEvents(tournamentId, seasonId)
           .then(() => {
-            displayEventsInTable(filteredEvents, uniqueTournamentId, date); // Display events
+            const standings = calculateStandings(finishedTournamentEvents); // Calculate standings
+            console.log('Standings:', standings);
+            displayEventsInTable(filteredEvents, uniqueTournamentId, date, standings); // Pass standings
           })
           .catch(error => console.error('Error fetching tournament events:', error));
       })
       .catch(error => console.error('Error fetching scheduled events:', error));
   }
 }
+
 function fetchTournamentEvents(tournamentId, seasonId) {
   return fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/events`)
     .then(response => response.json())
     .then(data => {
-      return data.events.filter(event => event.status.type === "finished"); // Keep only finished events
+      finishedTournamentEvents = data.events.filter(event => event.status.type === "finished"); // Populate global variable
+      
+
+      const standings = calculateStandings(finishedTournamentEvents);
+      displayStandings(standings);
+      console.log('Fetched Finished Tournament Events (Excluded Same Day Events):', finishedTournamentEvents);
+      
+      return finishedTournamentEvents;
     })
     .catch(error => {
       console.error('Error fetching tournament events:', error);
@@ -594,155 +618,51 @@ function fetchTournamentEvents(tournamentId, seasonId) {
     });
 }
 
-// Function to analyze historical performance based on odds and display results
-function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) {
-  fetchTournamentEvents(tournamentId, seasonId)
-    .then(events => {
-      const last30Events = events.slice(-30).reverse(); // Get the last 30 finished events
-      const analysisDataContainer = document.getElementById('analysis-data');
-      analysisDataContainer.innerHTML = ''; // Clear previous content
+function calculateTeamStrength(results) {
+  // If results is undefined or not an array, return default values
+  if (!Array.isArray(results)) {
+    return { totalScore: '0.00', difficultyLevel: '-' };
+  }
 
-      // Initialize counters for home, away, and draw results
-      let homeWins = 0, awayWins = 0, draws = 0;
+  // Count the number of wins, draws, and losses in the last 10 results
+  const wins = results.filter(result => result === "W").length;
+  const draws = results.filter(result => result === "D").length;
+  const losses = results.filter(result => result === "L").length;
 
-      // Loop through the last 30 events
-      last30Events.forEach(event => {
-        const eventId = event.id;
+  // Calculate the total number of games (should be 10 or less)
+  const totalGames = results.length;
 
-        // Fetch odds for the event
-        fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`)
-          .then(response => response.json())
-          .then(oddsData => {
-            if (!oddsData.markets || oddsData.markets.length === 0) {
-              console.warn(`No odds available for event ${eventId}, skipping...`);
-              return;
-            }
+  // Calculate the value of a win (W), draw (D), and loss (L)
+  const winValue = 100 / totalGames;
+  const drawValue = 0.709 * winValue;
+  const lossValue = -0.345 * winValue;
 
-            const market = oddsData.markets.find(m => m.marketName === "Full time");
-            if (!market) return;
+  // Calculate the total score
+  const totalScore = (wins * winValue) + (draws * drawValue) + (losses * lossValue);
 
-            const odds1 = market?.choices.find(c => c.name === "1")?.initialFractionalValue || '-';
-            const oddsX = market?.choices.find(c => c.name === "X")?.initialFractionalValue || '-';
-            const odds2 = market?.choices.find(c => c.name === "2")?.initialFractionalValue || '-';
+  // Map the total score to the difficulty level
+  let difficultyLevel;
+  if (totalScore >= 0 && totalScore <= 15) {
+    difficultyLevel = 1; // Very Easy
+  } else if (totalScore > 15 && totalScore <= 35) {
+    difficultyLevel = 2; // Easy
+  } else if (totalScore > 35 && totalScore <= 57) {
+    difficultyLevel = 3; // Medium
+  } else if (totalScore > 57 && totalScore <= 79) {
+    difficultyLevel = 4; // Hard
+  } else if (totalScore > 79 && totalScore <= 100) {
+    difficultyLevel = 5; // Very Hard
+  } else {
+    difficultyLevel = "-"; // Handle edge cases
+  }
 
-            // Convert fractional odds to decimal odds
-            const decimalOdds1 = fractionalToDecimal(odds1);
-            const decimalOddsX = fractionalToDecimal(oddsX);
-            const decimalOdds2 = fractionalToDecimal(odds2);
-
-            // Compare the odds with the current event odds
-            if (decimalOdds1 === currentEventOdds.odds1) {
-              if (event.homeScore.current > event.awayScore.current) homeWins++;
-              else if (event.homeScore.current < event.awayScore.current) awayWins++;
-              else draws++;
-              console.log('home odds:', currentEventOdds.odds1);
-            } else if (decimalOdds2 === currentEventOdds.odds2) {
-              if (event.homeScore.current > event.awayScore.current) homeWins++;
-              else if (event.homeScore.current < event.awayScore.current) awayWins++;
-              else draws++;
-              console.log('away odds:', currentEventOdds.odds2);
-            } else if (decimalOddsX === currentEventOdds.oddsX) {
-              if (event.homeScore.current > event.awayScore.current) homeWins++;
-              else if (event.homeScore.current < event.awayScore.current) awayWins++;
-              else draws++;
-              console.log('draw odds:', currentEventOdds.oddsX);
-            }
-
-            // Display the analysis results
-            analysisDataContainer.innerHTML = `
-              <h3>Historical Performance Analysis</h3>
-              <p>Home Wins: ${homeWins}</p>
-              <p>Away Wins: ${awayWins}</p>
-              <p>Draws: ${draws}</p>
-            `;
-          })
-          .catch(error => console.error(`Error fetching odds for event ${eventId}:`, error));
-      });
-    })
-    .catch(error => console.error('Error fetching tournament events:', error));
+  // Return the results
+  return {
+    totalScore: totalScore.toFixed(2), // Round to 2 decimal places
+    difficultyLevel: difficultyLevel,
+  };
 }
-
-// Function to fetch the last 30 finished events for a tournament and display them with odds and results
-function fetchLastTournamentEvents(tournamentId, seasonId) {
-  fetchTournamentEvents(tournamentId, seasonId)
-    .then(events => {
-      const last30Events = events.slice(-30).reverse(); // Get the last 30 finished events
-      const eventsContainer = document.getElementById('last-tournament-events');
-      eventsContainer.innerHTML = ''; // Clear previous content
-
-      // Create a table element for the event display
-      const table = document.createElement('table');
-      table.classList.add('events-table');
-      table.innerHTML = `
-        <thead>
-          <tr class="headerTitle">
-            <th>Date</th>
-            <th>Home</th>
-            <th>Away</th>
-            <th>1</th>
-            <th>X</th>
-            <th>2</th>
-            <th>Score</th>
-            <th>Result</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      `;
-      eventsContainer.appendChild(table);
-
-      last30Events.forEach(event => {
-        const eventId = event.id;
-        const homeTeam = event.homeTeam.shortName;
-        const awayTeam = event.awayTeam.shortName;
-        const eventDate = new Date(event.startTimestamp * 1000).toLocaleDateString();
-        const score = `${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''}`;
-        const result = event.homeScore.current > event.awayScore.current ? "1" : 
-                       event.homeScore.current < event.awayScore.current ? "2" : "X";
-
-        // Fetch odds for the event
-        fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`)
-          .then(response => response.json())
-          .then(oddsData => {
-            if (!oddsData.markets || oddsData.markets.length === 0) {
-              console.warn(`No odds available for event ${eventId}, skipping...`);
-              return;
-            }
-
-            const market = oddsData.markets.find(m => m.marketName === "Full time");
-            if (!market) return;
-
-            const odds1 = market?.choices.find(c => c.name === "1")?.initialFractionalValue || '-';
-            const oddsX = market?.choices.find(c => c.name === "X")?.initialFractionalValue || '-';
-            const odds2 = market?.choices.find(c => c.name === "2")?.initialFractionalValue || '-';
-
-            // Convert fractional odds to decimal odds
-            const decimalOdds1 = fractionalToDecimal(odds1);
-            const decimalOddsX = fractionalToDecimal(oddsX);
-            const decimalOdds2 = fractionalToDecimal(odds2);
-
-            // Create a table row with the event data
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${eventDate}</td>
-              <td>${homeTeam}</td>
-              <td>${awayTeam}</td>
-              <td>${decimalOdds1}</td>
-              <td>${decimalOddsX}</td>
-              <td>${decimalOdds2}</td>
-              <td>${score}</td>
-              <td>${result}</td>
-            `;
-            table.querySelector('tbody').appendChild(row);
-          })
-          .catch(error => console.error(`Error fetching odds for event ${eventId}:`, error));
-      });
-    })
-    .catch(error => console.error('Error fetching tournament events:', error));
-}
-
-// Function to display events in a table and trigger analysis
-function displayEventsInTable(events, tournamentId, date) {
+function displayEventsInTable(events, tournamentId, date, teams) {
   const eventsContainer = document.getElementById('tournament-events');
   eventsContainer.innerHTML = ''; // Clear previous content
 
@@ -755,6 +675,8 @@ function displayEventsInTable(events, tournamentId, date) {
         <th>Time</th>
         <th>Home</th>
         <th>Away</th>
+        <th>HS</th><!-- Home Strength -->
+        <th>AS</th><!-- Away Strength -->
         <th>1</th>
         <th>X</th>
         <th>2</th>
@@ -781,6 +703,14 @@ function displayEventsInTable(events, tournamentId, date) {
         const startTime = eventDate.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\d{4}/, '') + ' ' + 
                   eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
+        // Check if team data exists before calculating strength
+        const homeTeamResults = teams[event.homeTeam.id]?.results || [];
+        const awayTeamResults = teams[event.awayTeam.id]?.results || [];
+
+        // Calculate team strength for home and away teams
+        const homeTeamStrength = calculateTeamStrength(homeTeamResults.slice(-10));
+        const awayTeamStrength = calculateTeamStrength(awayTeamResults.slice(-10));
+
         // Default values for odds
         let odds1 = '-';
         let oddsX = '-';
@@ -800,9 +730,6 @@ function displayEventsInTable(events, tournamentId, date) {
           odds1 = odds1 !== '-' ? fractionalToDecimal(odds1) : '-';
           oddsX = oddsX !== '-' ? fractionalToDecimal(oddsX) : '-';
           odds2 = odds2 !== '-' ? fractionalToDecimal(odds2) : '-';
-
-          // Trigger analysis for the current event odds
-          analyzeHistoricalPerformance(event.tournament.id, event.season.id, { odds1, oddsX, odds2 });
         } else {
           console.warn(`No odds found for event ${eventId}`);
         }
@@ -832,6 +759,8 @@ function displayEventsInTable(events, tournamentId, date) {
           <td width="100">${startTime}</td>
           <td width="140" class="${event.homeTeam.id}">${homeTeam}</td>
           <td width="140" class="${event.awayTeam.id}">${awayTeam}</td>
+          <td width="10" class="diff_${homeTeamStrength.difficultyLevel}">${homeTeamStrength.difficultyLevel}</td>
+          <td width="10" class="diff_${awayTeamStrength.difficultyLevel}">${awayTeamStrength.difficultyLevel}</td>
           <td width="30">${odds1}</td>
           <td width="30">${oddsX}</td>
           <td width="30">${odds2}</td>
@@ -843,6 +772,125 @@ function displayEventsInTable(events, tournamentId, date) {
     })
     .catch(error => console.error('Error fetching odds:', error));
 }
+
+
+function calculateStandings(events) {
+  const teams = {};
+
+  events.forEach(event => {
+    const homeTeamId = event.homeTeam.id; // Use team ID instead of name
+    const awayTeamId = event.awayTeam.id; // Use team ID instead of name
+    const homeScore = event.homeScore.current;
+    const awayScore = event.awayScore.current;
+
+    if (!teams[homeTeamId]) teams[homeTeamId] = initializeTeamStats(event.homeTeam.shortName); // Pass team name for display
+    if (!teams[awayTeamId]) teams[awayTeamId] = initializeTeamStats(event.awayTeam.shortName); // Pass team name for display
+
+    updateStandings(teams, homeTeamId, awayTeamId, homeScore, awayScore);
+  });
+
+  return teams; // Return the teams object
+}
+
+
+function initializeTeamStats(teamName) {
+  return {
+    name: teamName, // Store team name for display
+    overall: { played: 0, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0 },
+    results: [] // Array to store the last 10 results
+  };
+}
+
+function updateStandings(teams, homeTeamId, awayTeamId, homeScore, awayScore) {
+  teams[homeTeamId].overall.played++;
+  teams[awayTeamId].overall.played++;
+  teams[homeTeamId].overall.goalsFor += homeScore;
+  teams[homeTeamId].overall.goalsAgainst += awayScore;
+  teams[awayTeamId].overall.goalsFor += awayScore;
+  teams[awayTeamId].overall.goalsAgainst += homeScore;
+
+  if (homeScore > awayScore) {
+    handleResult(teams, homeTeamId, awayTeamId, "W", "L");
+  } else if (homeScore < awayScore) {
+    handleResult(teams, awayTeamId, homeTeamId, "W", "L");
+  } else {
+    handleResult(teams, homeTeamId, awayTeamId, "D", "D");
+  }
+}
+
+function handleResult(teams, homeTeamId, awayTeamId, resultHome, resultAway) {
+  if (resultHome === "W") {
+    teams[homeTeamId].overall.wins++;
+    teams[homeTeamId].overall.points += 3;
+    teams[awayTeamId].overall.losses++;
+  } else if (resultHome === "L") {
+    teams[awayTeamId].overall.wins++;
+    teams[awayTeamId].overall.points += 3;
+    teams[homeTeamId].overall.losses++;
+  } else { // Draw Case
+    teams[homeTeamId].overall.draws++;
+    teams[awayTeamId].overall.draws++;
+    teams[homeTeamId].overall.points += 1;
+    teams[awayTeamId].overall.points += 1;
+  }
+
+  teams[homeTeamId].results.push(resultHome);
+  teams[awayTeamId].results.push(resultAway);
+}
+
+function displayStandings(standings) {
+  document.getElementById('overall-standings').innerHTML = generateTableHTML(standings, 'overall');
+}
+
+function generateTableHTML(standings, type) {
+  let html = `
+    <tr>
+      <th>#</th>
+      <th>Team</th>
+      <th>P</th>
+      <th>W</th>
+      <th>D</th>
+      <th>L</th>
+      <th>DIFF</th>
+      <th>Goals</th>
+      <th>Last 5</th>
+      <th>Pts</th>
+    </tr>
+  `;
+
+  const sortedTeams = Object.keys(standings).sort((a, b) => {
+    if (standings[b][type].points !== standings[a][type].points) {
+      return standings[b][type].points - standings[a][type].points;
+    }
+    return (standings[b][type].goalsFor - standings[b][type].goalsAgainst) -
+           (standings[a][type].goalsFor - standings[a][type].goalsAgainst);
+  });
+
+  sortedTeams.forEach((teamId, index) => {
+    const stats = standings[teamId][type];
+    const goalDifference = stats.goalsFor - stats.goalsAgainst;
+    const goals = `${stats.goalsFor}:${stats.goalsAgainst}`;
+    const last5Results = standings[teamId].results.slice(-5).map(result => `<span class="${result}">${result}</span>`).join("");
+
+    html += `
+      <tr>
+        <td>${index + 1}</td>
+        <td>${standings[teamId].name}</td> <!-- Use team name for display -->
+        <td>${stats.played}</td>
+        <td>${stats.wins}</td>
+        <td>${stats.draws}</td>
+        <td>${stats.losses}</td>
+        <td>${goalDifference}</td>
+        <td>${goals}</td>
+        <td class="formResult">${last5Results}</td>
+        <td>${stats.points}</td>
+      </tr>
+    `;
+  });
+
+  return html;
+}
+
 
 function fetchTournaments(categoryId, categoryName, tournamentsWithEvents) {
   const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
@@ -888,6 +936,8 @@ function fetchTournaments(categoryId, categoryName, tournamentsWithEvents) {
     .catch(error => console.error('Error fetching tournaments:', error));
 }
 
+ 
+
 function fetchSeasonInfo(uniqueTournamentId, tournamentName, seasonId) {
   fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}/season/${seasonId}/info`)
     .then(response => response.json())
@@ -926,6 +976,8 @@ function fetchSeasonInfo(uniqueTournamentId, tournamentName, seasonId) {
     })
     .catch(error => console.error('Error fetching season info:', error));
 }
+
+ 
 
 function fetchTournamentDetails(uniqueTournamentId) { 
   fetch(`https://www.sofascore.com/api/v1/unique-tournament/${uniqueTournamentId}`)
@@ -1102,7 +1154,15 @@ function fetchEventsForTournament(tournamentId, tournamentName) {
   const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
   // No need to check for rounds here, just fetch scheduled events directly
   fetchScheduledEvents(tournamentId, today);
-} 
+}
+
+
+// Helper function to convert fractional odds to decimal odds
+function fractionalToDecimal(fractional) {
+  const [numerator, denominator] = fractional.split('/').map(Number);
+  return (numerator / denominator + 1).toFixed(2);
+}
+
 // Initialize the app
 fetchCategories();
 </script>
