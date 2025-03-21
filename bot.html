@@ -361,6 +361,12 @@ table.events-table td, table.events-table th, #overall-standings tbody td  {
 #last-tournament-events {
   height: calc(100vh - 60px);
 }
+
+.diff_1{background-color:#63D100;color: #fff;}
+.diff_2{background-color:#4B9F01;color: #fff;}
+.diff_3{background-color:#FF9900;color: #fff;}
+.diff_4{background-color:#DE4E45;color: #fff;}
+.diff_5{background-color:#990134;color: #fff;}
   </style>
 </head>
 <body class="rF-4">
@@ -677,11 +683,11 @@ function fetchLastTournamentEvents(tournamentId, seasonId) {
             <th>Date</th>
             <th>Home</th>
             <th>Away</th>
-            <th>1</th>
-            <th>X</th>
-            <th>2</th>
+            <th width="50">1</th>
+            <th width="50">X</th>
+            <th width="50">2</th>
             <th>Score</th>
-            <th>Result</th>
+            <th>R</th>
           </tr>
         </thead>
         <tbody>
@@ -723,19 +729,53 @@ function fetchLastTournamentEvents(tournamentId, seasonId) {
             const probabilityX = (1 / decimalOddsX * 100).toFixed(0);
             const probability2 = (1 / decimalOdds2 * 100).toFixed(0);
 
+            // Convert probabilities to numbers
+            const prob1 = Number(probability1);
+            const prob2 = Number(probability2);
+
+            // Determine difficulty levels separately for home (prob1) and away (prob2)
+            let level1, level2;
+
+            // Home side difficulty (prob1)
+            if (prob1 <= 15) {
+              level1 = 1; // Very Easy
+            } else if (prob1 <= 35) {
+              level1 = 2; // Easy
+            } else if (prob1 <= 57) {
+              level1 = 3; // Medium
+            } else if (prob1 <= 79) {
+              level1 = 4; // Hard
+            } else {
+              level1 = 5; // Very Hard
+            }
+
+            // Away side difficulty (prob2)
+            if (prob2 <= 15) {
+              level2 = 1; // Very Easy
+            } else if (prob2 <= 35) {
+              level2 = 2; // Easy
+            } else if (prob2 <= 57) {
+              level2 = 3; // Medium
+            } else if (prob2 <= 79) {
+              level2 = 4; // Hard
+            } else {
+              level2 = 5; // Very Hard
+            }
+
             // Create a table row with the event data
             const row = document.createElement('tr');
             row.innerHTML = `
               <td>${eventDate}</td>
               <td>${homeTeam}</td>
               <td>${awayTeam}</td>
-              <td>${decimalOdds1} - ${probability1}</td>
+              <td class="diff_${level1}">${decimalOdds1} - ${probability1}</td>
               <td>${decimalOddsX} - ${probabilityX}</td>
-              <td>${decimalOdds2} - ${probability2}</td>
+              <td class="diff_${level2}">${decimalOdds2} - ${probability2}</td>
               <td>${score}</td>
               <td>${result}</td>
             `;
             table.querySelector('tbody').appendChild(row);
+
           })
           .catch(error => console.error(`Error fetching odds for event ${eventId}:`, error));
       });
@@ -757,9 +797,9 @@ function displayEventsInTable(events, tournamentId, date) {
         <th>Time</th>
         <th>Home</th>
         <th>Away</th>
-        <th>1</th>
-        <th>X</th>
-        <th>2</th>
+        <th width="60">1</th>
+        <th width="60">X</th>
+        <th width="60">2</th>
         <th class="score">Score</th>
         <th class="status">S</th>
       </tr>
@@ -833,14 +873,48 @@ function displayEventsInTable(events, tournamentId, date) {
         const probabilityX = (1 / oddsX * 100).toFixed(0);
         const probability2 = (1 / odds2 * 100).toFixed(0);
 
+        
+            // Convert probabilities to numbers
+            const prob1 = Number(probability1);
+            const prob2 = Number(probability2);
+
+            // Determine difficulty levels separately for home (prob1) and away (prob2)
+            let level1, level2;
+
+            // Home side difficulty (prob1)
+            if (prob1 <= 15) {
+              level1 = 1; // Very Easy
+            } else if (prob1 <= 35) {
+              level1 = 2; // Easy
+            } else if (prob1 <= 57) {
+              level1 = 3; // Medium
+            } else if (prob1 <= 79) {
+              level1 = 4; // Hard
+            } else {
+              level1 = 5; // Very Hard
+            }
+
+            // Away side difficulty (prob2)
+            if (prob2 <= 15) {
+              level2 = 1; // Very Easy
+            } else if (prob2 <= 35) {
+              level2 = 2; // Easy
+            } else if (prob2 <= 57) {
+              level2 = 3; // Medium
+            } else if (prob2 <= 79) {
+              level2 = 4; // Hard
+            } else {
+              level2 = 5; // Very Hard
+            }
+
         const row = document.createElement('tr');
         row.innerHTML = `
           <td width="100">${startTime}</td>
           <td width="140" class="${event.homeTeam.id}">${homeTeam}</td>
           <td width="140" class="${event.awayTeam.id}">${awayTeam}</td>
-          <td width="30">${odds1} - ${probability1}</td>
-          <td width="30">${oddsX} - ${probabilityX}</td>
-          <td width="30">${odds2} - ${probability2}</td>
+          <td class="diff_${level1}">${odds1} - ${probability1}</td>
+          <td width="50">${oddsX} - ${probabilityX}</td>
+          <td class="diff_${level2}">${odds2} - ${probability2}</td>
           <td class="score" width="40">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
           <td class="status" width="10">${statusIcon}</td> <!-- Added status here -->
         `;
