@@ -607,7 +607,6 @@ function fetchTournamentEvents(tournamentId, seasonId) {
       return [];
     });
 }
-
 // Function to analyze historical performance based on odds and display results
 function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) {
   fetchTournamentEvents(tournamentId, seasonId)
@@ -616,10 +615,15 @@ function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) 
       const analysisDataContainer = document.getElementById('analysis-data');
       analysisDataContainer.innerHTML = ''; // Clear previous content
 
-      // Initialize counters for home, away, and draw results
+      // Initialize counters for home, away, and draw results, as well as for new markets
       let homeWinsCurrent1 = 0, awayWinsCurrent1 = 0, drawsCurrent1 = 0;
       let homeWinsCurrent2 = 0, awayWinsCurrent2 = 0, drawsCurrent2 = 0;
       let homeWinsCurrentX = 0, awayWinsCurrentX = 0, drawsCurrentX = 0;
+
+      let bttsYes = 0, bttsNo = 0; // BTTS analysis
+      let over1_5 = 0, under1_5 = 0; // +1.5 and Under 1.5 analysis
+      let over2_5 = 0, under2_5 = 0; // +2.5 and Under 2.5 analysis
+      let over3_5 = 0, under3_5 = 0; // +3.5 and Under 3.5 analysis
 
       // Loop through the last 30 events
       last30Events.forEach(event => {
@@ -636,38 +640,59 @@ function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) 
             const market = oddsData.markets.find(m => m.marketName === "Full time");
             if (!market) return;
 
+            // Full time odds
             const odds1 = market?.choices.find(c => c.name === "1")?.initialFractionalValue || '-';
             const oddsX = market?.choices.find(c => c.name === "X")?.initialFractionalValue || '-';
             const odds2 = market?.choices.find(c => c.name === "2")?.initialFractionalValue || '-';
-
+ 
             // Convert fractional odds to decimal odds
             const decimalOdds1 = fractionalToDecimal(odds1);
             const decimalOddsX = fractionalToDecimal(oddsX);
             const decimalOdds2 = fractionalToDecimal(odds2);
+
+            // Debugging: Log fetched odds and event scores
+            console.log(`Event ID: ${eventId}, Odds - 1: ${decimalOdds1}, X: ${decimalOddsX}, 2: ${decimalOdds2}`);
+            console.log(`Event ID: ${eventId}, Scores - Home: ${event.homeScore.current}, Away: ${event.awayScore.current}`);
 
             // Compare the odds with the current event odds and count outcomes
             if (decimalOdds1 === currentEventOdds.odds1) {
               if (event.homeScore.current > event.awayScore.current) homeWinsCurrent1++;
               else if (event.homeScore.current < event.awayScore.current) awayWinsCurrent1++;
               else drawsCurrent1++;
+              if (event.homeScore.current > 0 && event.awayScore.current > 0) bttsYes++;
+              if ((event.homeScore.current + event.awayScore.current) > 1.5) over1_5++;
+              if ((event.homeScore.current + event.awayScore.current) > 2.5) over2_5++;
+              if ((event.homeScore.current + event.awayScore.current) > 3.5) over3_5++;
             } 
             else if (decimalOdds2 === currentEventOdds.odds2) {
               if (event.homeScore.current > event.awayScore.current) homeWinsCurrent2++;
               else if (event.homeScore.current < event.awayScore.current) awayWinsCurrent2++;
               else drawsCurrent2++;
+              if (event.homeScore.current > 0 && event.awayScore.current > 0) bttsYes++;
+              if ((event.homeScore.current + event.awayScore.current) > 1.5) over1_5++;
+              if ((event.homeScore.current + event.awayScore.current) > 2.5) over2_5++;
+              if ((event.homeScore.current + event.awayScore.current) > 3.5) over3_5++;
             } 
             else if (decimalOddsX === currentEventOdds.oddsX) {
               if (event.homeScore.current > event.awayScore.current) homeWinsCurrentX++;
               else if (event.homeScore.current < event.awayScore.current) awayWinsCurrentX++;
               else drawsCurrentX++;
+              if (event.homeScore.current > 0 && event.awayScore.current > 0) bttsYes++;
+              if ((event.homeScore.current + event.awayScore.current) > 1.5) over1_5++;
+              if ((event.homeScore.current + event.awayScore.current) > 2.5) over2_5++;
+              if ((event.homeScore.current + event.awayScore.current) > 3.5) over3_5++;
             }
 
             // Display the analysis results
             analysisDataContainer.innerHTML = `
               <h3>Historical Performance Analysis</h3>
-              <p>Home Wins: ${homeWinsCurrent1 + homeWinsCurrentX + homeWinsCurrent2}</p>
-              <p>Away Wins: ${awayWinsCurrent1 + awayWinsCurrentX + awayWinsCurrent2}</p>
-              <p>Draws: ${drawsCurrent1 + drawsCurrentX + drawsCurrent2}</p> 
+              <p>Home Wins (1): ${homeWinsCurrent1 + homeWinsCurrentX + homeWinsCurrent2}</p>
+              <p>Away Wins (2): ${awayWinsCurrent1 + awayWinsCurrentX + awayWinsCurrent2}</p>
+              <p>Draws (X): ${drawsCurrent1 + drawsCurrentX + drawsCurrent2}</p> 
+              <p>BTTS Yes: ${bttsYes}</p> 
+              <p>Over 1.5: ${over1_5}</p> 
+              <p>Over 2.5: ${over2_5}</p> 
+              <p>Over 3.5: ${over3_5}</p> 
             `;
           })
           .catch(error => console.error(`Error fetching odds for event ${eventId}:`, error));
@@ -675,7 +700,7 @@ function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) 
     })
     .catch(error => console.error('Error fetching tournament events:', error));
 }
- 
+
 // Function to fetch the last 30 finished events for a tournament and display them with odds and results
 function fetchLastTournamentEvents(tournamentId, seasonId, date) {
   fetchTournamentEvents(tournamentId, seasonId)
@@ -797,7 +822,6 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
     })
     .catch(error => console.error('Error fetching tournament events:', error));
 }
-
 function displayEventsInTable(events, tournamentId, date) {
   const eventsContainer = document.getElementById('tournament-events');
   eventsContainer.innerHTML = ''; // Clear previous content
@@ -906,10 +930,16 @@ function displayEventsInTable(events, tournamentId, date) {
             statusIcon = '<i class="fas fa-sync-alt fa-spin"></i>'; // Spinning sync icon for In Progress
         }
 
-        // Create a table row with or without odds
-        const probability1 = (1 / odds1 * 100).toFixed(0);
-        const probabilityX = (1 / oddsX * 100).toFixed(0);
-        const probability2 = (1 / odds2 * 100).toFixed(0);
+        // Calculate probabilities, or use '-' if odds are not available
+        const calculateProbability = (odds) => {
+          if (odds === '-') return '-';
+          const probability = (1 / odds * 100).toFixed(0);
+          return isNaN(probability) ? '-' : probability;
+        };
+
+        const probability1 = calculateProbability(odds1);
+        const probabilityX = calculateProbability(oddsX);
+        const probability2 = calculateProbability(odds2);
 
         // Convert probabilities to numbers
         const prob1 = Number(probability1);
@@ -927,8 +957,10 @@ function displayEventsInTable(events, tournamentId, date) {
           level1 = 3; // Medium
         } else if (prob1 <= 79) {
           level1 = 4; // Hard
-        } else {
+        } else if (prob1 > 79) {
           level1 = 5; // Very Hard
+        } else {
+          level1 = 0; // none
         }
 
         // Away side difficulty (prob2)
@@ -940,8 +972,10 @@ function displayEventsInTable(events, tournamentId, date) {
           level2 = 3; // Medium
         } else if (prob2 <= 79) {
           level2 = 4; // Hard
+        } else if (prob1 > 79) {
+          level1 = 5; // Very Hard
         } else {
-          level2 = 5; // Very Hard
+          level1 = 0; // none
         }
 
         const row = document.createElement('tr');
