@@ -686,13 +686,53 @@ function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) 
             // Display the analysis results
             analysisDataContainer.innerHTML = `
               <h3>Historical Performance Analysis</h3>
-              <p>Home Wins (1): ${homeWinsCurrent1 + homeWinsCurrentX + homeWinsCurrent2}</p>
-              <p>Away Wins (2): ${awayWinsCurrent1 + awayWinsCurrentX + awayWinsCurrent2}</p>
-              <p>Draws (X): ${drawsCurrent1 + drawsCurrentX + drawsCurrent2}</p> 
-              <p>BTTS Yes: ${bttsYes}</p> 
-              <p>Over 1.5: ${over1_5}</p> 
-              <p>Over 2.5: ${over2_5}</p> 
-              <p>Over 3.5: ${over3_5}</p> 
+              <table style="width:100%; text-align:center;">
+    <tr>
+        <th>HW (1)</th>
+        <th>DR (X)</th>
+        <th>AW (2)</th>
+        <th>BTTS Yes</th>
+        <th>Over 1.5</th>
+        <th>Over 2.5</th>
+        <th>Over 3.5</th>
+    </tr>
+    <tr>
+        <td id="homeWinsCurrent1">${homeWinsCurrent1}</td>
+        <td id="drawsCurrent1">${drawsCurrent1}</td>
+        <td id="awayWinsCurrent1">${awayWinsCurrent1}</td>
+        <td id="bttsYes1"></td>
+        <td id="over1_5_1"></td>
+        <td id="over2_5_1"></td>
+        <td id="over3_5_1"></td>
+    </tr>
+    <tr>
+        <td id="homeWinsCurrentX">${homeWinsCurrentX}</td>
+        <td id="drawsCurrentX">${drawsCurrentX}</td>
+        <td id="awayWinsCurrentX">${awayWinsCurrentX}</td>
+        <td id="bttsYes1"></td>
+        <td id="over1_5_1"></td>
+        <td id="over2_5_1"></td>
+        <td id="over3_5_1"></td>
+    </tr>
+    <tr>
+        <td id="homeWinsCurrent2">${homeWinsCurrent2}</td>
+        <td id="drawsCurrent2">${drawsCurrent1 + drawsCurrentX + drawsCurrent2}</td>
+        <td id="awayWinsCurrent2">${awayWinsCurrent2}</td>
+        <td id="bttsYes1"></td>
+        <td id="over1_5_1"></td>
+        <td id="over2_5_1"></td>
+        <td id="over3_5_1"></td>
+    </tr>
+    <tr>
+        <th id="totalHomeWins">${homeWinsCurrent1 + homeWinsCurrentX + homeWinsCurrent2}</th>
+        <th id="totalDraws">${drawsCurrent2}</th>
+        <th id="totalAwayWins">${awayWinsCurrent1 + awayWinsCurrentX + awayWinsCurrent2}</th>
+        <th id="totalBttsYes">${bttsYes}</th>
+        <th id="totalOver1_5">${over1_5}</th>
+        <th id="totalOver2_5">${over2_5}</th>
+        <th id="totalOver3_5">${over3_5}</th>
+    </tr>
+</table>
             `;
           })
           .catch(error => console.error(`Error fetching odds for event ${eventId}:`, error));
