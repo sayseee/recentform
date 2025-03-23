@@ -378,7 +378,7 @@ table.events-table td {
 .diff_2 { background-color: #DE4E45; color: #fff; } /* Red */
 .diff_3 { background-color: #FF9900; color: #fff; } /* Orange */
 .diff_4 { background-color: #4B9F01; color: #fff; } /* Green */
-.diff_5 { background-color: #1c3803; color: #fff; } /* Light Green */
+.diff_5 { background-color: #224403; color: #fff; } /* Light Green */
 
   </style>
 </head>
@@ -789,8 +789,8 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
             .replace(/(\d{2})$/, "'$1");
         
                 const score = `${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''}`;
-        const result = event.homeScore.current > event.awayScore.current ? "1" : 
-                       event.homeScore.current < event.awayScore.current ? "2" : "X";
+        const result = event.homeScore.current > event.awayScore.current ? "H" : 
+                       event.homeScore.current < event.awayScore.current ? "A" : "X";
 
         // Fetch odds for the event
         fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`)
@@ -825,20 +825,22 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
             let level1, level2;
 
             // Home side difficulty (prob1)
-            if (prob1 <= 15) {
-              level1 = 1; // Very Easy
+            if (prob1 <= 19) {
+              level1 = 1; // Very Easy 
             } else if (prob1 <= 35) {
               level1 = 2; // Easy
             } else if (prob1 <= 57) {
               level1 = 3; // Medium
             } else if (prob1 <= 79) {
               level1 = 4; // Hard
-            } else {
+            } else if (prob1 > 80) {
               level1 = 5; // Very Hard
+            } else {
+              level1 = 0; // none
             }
 
             // Away side difficulty (prob2)
-            if (prob2 <= 15) {
+            if (prob2 <= 19) {             
               level2 = 1; // Very Easy
             } else if (prob2 <= 35) {
               level2 = 2; // Easy
@@ -846,8 +848,10 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
               level2 = 3; // Medium
             } else if (prob2 <= 79) {
               level2 = 4; // Hard
-            } else {
+            } else if (prob2 > 79) {
               level2 = 5; // Very Hard
+            } else {
+              level2 = 0; // none
             }
 
             // Create a table row with the event data
@@ -996,7 +1000,7 @@ function displayEventsInTable(events, tournamentId, date) {
         let level1, level2;
 
         // Home side difficulty (prob1)
-        if (prob1 <= 15) {
+        if (prob1 <= 19) {
           level1 = 1; // Very Easy
         } else if (prob1 <= 35) {
           level1 = 2; // Easy
@@ -1011,7 +1015,7 @@ function displayEventsInTable(events, tournamentId, date) {
         }
 
         // Away side difficulty (prob2)
-        if (prob2 <= 15) {
+        if (prob2 <= 19) {
           level2 = 1; // Very Easy
         } else if (prob2 <= 35) {
           level2 = 2; // Easy
@@ -1019,10 +1023,10 @@ function displayEventsInTable(events, tournamentId, date) {
           level2 = 3; // Medium
         } else if (prob2 <= 79) {
           level2 = 4; // Hard
-        } else if (prob1 > 79) {
-          level1 = 5; // Very Hard
+        } else if (prob2 > 79) {
+          level2 = 5; // Very Hard
         } else {
-          level1 = 0; // none
+          level2 = 0; // none
         }
 
         const row = document.createElement('tr');
