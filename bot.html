@@ -365,7 +365,15 @@ table.events-table td {
   height: calc(100vh - 60px);
   width:50%
 }
+.analysis-table th { 
+  padding: 3px 5px;
+  background-color: rgb(74, 74, 74);
+}
 
+.analysis-table td {
+  border: #020202 1px solid;
+  padding: 2px 4px;
+}
 .diff_1{background-color:#63D100;color: #fff;}
 .diff_2{background-color:#4B9F01;color: #fff;}
 .diff_3{background-color:#FF9900;color: #fff;}
@@ -393,9 +401,8 @@ table.events-table td {
       <div class="tEs"> 
         <div id="events-analysis">
           <div id="tournament-events"></div>
+          <div id="analysis-data"></div> 
           <div id="event-details"></div>
-          <div id="analysis-data"></div>
-          <div id="analysis-results"></div>
         </div>
         <div id="last-tournament-events" class="scrollable"></div>
       </div>
@@ -620,10 +627,10 @@ function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) 
       let homeWinsCurrent2 = 0, awayWinsCurrent2 = 0, drawsCurrent2 = 0;
       let homeWinsCurrentX = 0, awayWinsCurrentX = 0, drawsCurrentX = 0;
 
-      let bttsYes = 0, bttsNo = 0; // BTTS analysis
-      let over1_5 = 0, under1_5 = 0; // +1.5 and Under 1.5 analysis
-      let over2_5 = 0, under2_5 = 0; // +2.5 and Under 2.5 analysis
-      let over3_5 = 0, under3_5 = 0; // +3.5 and Under 3.5 analysis
+      let bttsYes1 = 0, bttsYesX = 0, bttsYes2 = 0; // BTTS analysis
+      let over1_5_1 = 0, over1_5_X = 0, over1_5_2 = 0; // +1.5 overs for 1, X, 2
+      let over2_5_1 = 0, over2_5_X = 0, over2_5_2 = 0; // +2.5 overs for 1, X, 2
+      let over3_5_1 = 0, over3_5_X = 0, over3_5_2 = 0; // +3.5 overs for 1, X, 2
 
       // Loop through the last 30 events
       last30Events.forEach(event => {
@@ -644,7 +651,7 @@ function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) 
             const odds1 = market?.choices.find(c => c.name === "1")?.initialFractionalValue || '-';
             const oddsX = market?.choices.find(c => c.name === "X")?.initialFractionalValue || '-';
             const odds2 = market?.choices.find(c => c.name === "2")?.initialFractionalValue || '-';
- 
+
             // Convert fractional odds to decimal odds
             const decimalOdds1 = fractionalToDecimal(odds1);
             const decimalOddsX = fractionalToDecimal(oddsX);
@@ -659,40 +666,80 @@ function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) 
               if (event.homeScore.current > event.awayScore.current) homeWinsCurrent1++;
               else if (event.homeScore.current < event.awayScore.current) awayWinsCurrent1++;
               else drawsCurrent1++;
-              if (event.homeScore.current > 0 && event.awayScore.current > 0) bttsYes++;
-              if ((event.homeScore.current + event.awayScore.current) > 1.5) over1_5++;
-              if ((event.homeScore.current + event.awayScore.current) > 2.5) over2_5++;
-              if ((event.homeScore.current + event.awayScore.current) > 3.5) over3_5++;
+              if (event.homeScore.current > 0 && event.awayScore.current > 0) bttsYes1++;
+              if ((event.homeScore.current + event.awayScore.current) > 1.5) over1_5_1++;
+              if ((event.homeScore.current + event.awayScore.current) > 2.5) over2_5_1++;
+              if ((event.homeScore.current + event.awayScore.current) > 3.5) over3_5_1++;
             } 
             else if (decimalOdds2 === currentEventOdds.odds2) {
               if (event.homeScore.current > event.awayScore.current) homeWinsCurrent2++;
               else if (event.homeScore.current < event.awayScore.current) awayWinsCurrent2++;
               else drawsCurrent2++;
-              if (event.homeScore.current > 0 && event.awayScore.current > 0) bttsYes++;
-              if ((event.homeScore.current + event.awayScore.current) > 1.5) over1_5++;
-              if ((event.homeScore.current + event.awayScore.current) > 2.5) over2_5++;
-              if ((event.homeScore.current + event.awayScore.current) > 3.5) over3_5++;
+              if (event.homeScore.current > 0 && event.awayScore.current > 0) bttsYes2++;
+              if ((event.homeScore.current + event.awayScore.current) > 1.5) over1_5_2++;
+              if ((event.homeScore.current + event.awayScore.current) > 2.5) over2_5_2++;
+              if ((event.homeScore.current + event.awayScore.current) > 3.5) over3_5_2++;
             } 
             else if (decimalOddsX === currentEventOdds.oddsX) {
               if (event.homeScore.current > event.awayScore.current) homeWinsCurrentX++;
               else if (event.homeScore.current < event.awayScore.current) awayWinsCurrentX++;
               else drawsCurrentX++;
-              if (event.homeScore.current > 0 && event.awayScore.current > 0) bttsYes++;
-              if ((event.homeScore.current + event.awayScore.current) > 1.5) over1_5++;
-              if ((event.homeScore.current + event.awayScore.current) > 2.5) over2_5++;
-              if ((event.homeScore.current + event.awayScore.current) > 3.5) over3_5++;
+              if (event.homeScore.current > 0 && event.awayScore.current > 0) bttsYesX++;
+              if ((event.homeScore.current + event.awayScore.current) > 1.5) over1_5_X++;
+              if ((event.homeScore.current + event.awayScore.current) > 2.5) over2_5_X++;
+              if ((event.homeScore.current + event.awayScore.current) > 3.5) over3_5_X++;
             }
 
             // Display the analysis results
             analysisDataContainer.innerHTML = `
-              <h3>Historical Performance Analysis</h3>
-              <p>Home Wins (1): ${homeWinsCurrent1 + homeWinsCurrentX + homeWinsCurrent2}</p>
-              <p>Away Wins (2): ${awayWinsCurrent1 + awayWinsCurrentX + awayWinsCurrent2}</p>
-              <p>Draws (X): ${drawsCurrent1 + drawsCurrentX + drawsCurrent2}</p> 
-              <p>BTTS Yes: ${bttsYes}</p> 
-              <p>Over 1.5: ${over1_5}</p> 
-              <p>Over 2.5: ${over2_5}</p> 
-              <p>Over 3.5: ${over3_5}</p> 
+              <h3 style="text-align:center;">Performance Analysis</h3>
+              <table class="analysis-table" style="width:100%; text-align:center;">
+    <tr>
+        <th>HW (1)</th>
+        <th>DR (X)</th>
+        <th>AW (2)</th>
+        <th>BTTS</th>
+        <th>+1.5</th>
+        <th>+2.5</th>
+        <th>+3.5</th>
+    </tr>
+    <tr>
+        <td id="homeWinsCurrent1">${homeWinsCurrent1}</td>
+        <td id="drawsCurrent1">${drawsCurrent1}</td>
+        <td id="awayWinsCurrent1">${awayWinsCurrent1}</td>
+        <td>${bttsYes1}</td>
+        <td>${over1_5_1}</td>
+        <td>${over2_5_1}</td>
+        <td>${over3_5_1}</td>
+    </tr>
+    <tr>
+        <td id="homeWinsCurrentX">${homeWinsCurrentX}</td>
+        <td id="drawsCurrentX">${drawsCurrentX}</td>
+        <td id="awayWinsCurrentX">${awayWinsCurrentX}</td>
+        <td>${bttsYesX}</td>
+        <td>${over1_5_X}</td>
+        <td>${over2_5_X}</td>
+        <td>${over3_5_X}</td>
+    </tr>
+    <tr>
+        <td id="homeWinsCurrent2">${homeWinsCurrent2}</td>
+        <td id="drawsCurrent2">${drawsCurrent2}</td>
+        <td id="awayWinsCurrent2">${awayWinsCurrent2}</td>
+        <td>${bttsYes2}</td>
+        <td>${over1_5_2}</td>
+        <td>${over2_5_2}</td>
+        <td>${over3_5_2}</td>
+    </tr>
+    <tr>
+        <th id="totalHomeWins">${homeWinsCurrent1 + homeWinsCurrentX + homeWinsCurrent2}</th>
+        <th id="totalDraws">${drawsCurrent1 + drawsCurrentX + drawsCurrent2}</th>
+        <th id="totalAwayWins">${awayWinsCurrent1 + awayWinsCurrentX + awayWinsCurrent2}</th>
+        <th>${bttsYes1 + bttsYesX + bttsYes2}</th>
+        <th>${over1_5_1 + over1_5_X + over1_5_2}</th>
+        <th>${over2_5_1 + over2_5_X + over2_5_2}</th>
+        <th>${over3_5_1 + over3_5_X + over3_5_2}</th>
+    </tr>
+</table>
             `;
           })
           .catch(error => console.error(`Error fetching odds for event ${eventId}:`, error));
@@ -897,15 +944,14 @@ function displayEventsInTable(events, tournamentId, date) {
           const decimalOddsX = oddsX !== '-' ? oddsX : null;
           const decimalOdds2 = odds2 !== '-' ? odds2 : null;
 
-          // Trigger analysis for the current event odds
-          analyzeHistoricalPerformance(event.tournament.id, event.season.id, { odds1, oddsX, odds2 }); 
-
+          
           // Load analysis for the first event on initial load
           if (index === 0) {
             fetchEventDetails(eventId); 
             const currentEventOdds = { odds1: decimalOdds1, oddsX: decimalOddsX, odds2: decimalOdds2 };
             analyzeHistoricalPerformance(event.tournament.id, event.season.id, currentEventOdds); 
           }
+
         } else {
           console.warn(`No odds found for event ${eventId}`);
         }
@@ -998,7 +1044,8 @@ function displayEventsInTable(events, tournamentId, date) {
           analyzeHistoricalPerformance(event.tournament.id, event.season.id, currentEventOdds); 
         };
 
-        table.querySelector('tbody').appendChild(row);
+        table.querySelector('tbody').appendChild(row); 
+
       });
     })
     .catch(error => console.error('Error fetching odds:', error));
