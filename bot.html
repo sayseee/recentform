@@ -374,11 +374,12 @@ table.events-table td {
   border: #020202 1px solid;
   padding: 2px 4px;
 }
-.diff_1{background-color:#63D100;color: #fff;}
-.diff_2{background-color:#4B9F01;color: #fff;}
-.diff_3{background-color:#FF9900;color: #fff;}
-.diff_4{background-color:#DE4E45;color: #fff;}
-.diff_5{background-color:#990134;color: #fff;}
+.diff_1 { background-color: #990134; color: #fff; } /* Dark Red */
+.diff_2 { background-color: #DE4E45; color: #fff; } /* Red */
+.diff_3 { background-color: #FF9900; color: #fff; } /* Orange */
+.diff_4 { background-color: #4B9F01; color: #fff; } /* Green */
+.diff_5 { background-color: #1c3803; color: #fff; } /* Light Green */
+
   </style>
 </head>
 <body class="rF-4">
@@ -618,7 +619,7 @@ function fetchTournamentEvents(tournamentId, seasonId) {
 function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) {
   fetchTournamentEvents(tournamentId, seasonId)
     .then(events => {
-      const last30Events = events.slice(-50).reverse(); // Get the last 30 finished events
+      const last30Events = events.slice(-40).reverse(); // Get the last 30 finished events
       const analysisDataContainer = document.getElementById('analysis-data');
       analysisDataContainer.innerHTML = ''; // Clear previous content
 
@@ -754,7 +755,7 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
     .then(events => {
       const last30Events = events
       .filter(event => event.startTimestamp !== date)
-      .slice(-50).reverse(); // Get the last 30 finished events
+      .slice(-40).reverse(); // Get the last 30 finished events
       const eventsContainer = document.getElementById('last-tournament-events');
       eventsContainer.innerHTML = ''; // Clear previous content
 
