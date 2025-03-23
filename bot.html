@@ -618,7 +618,7 @@ function fetchTournamentEvents(tournamentId, seasonId) {
 function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) {
   fetchTournamentEvents(tournamentId, seasonId)
     .then(events => {
-      const last30Events = events.slice(-30).reverse(); // Get the last 30 finished events
+      const last30Events = events.slice(-50).reverse(); // Get the last 30 finished events
       const analysisDataContainer = document.getElementById('analysis-data');
       analysisDataContainer.innerHTML = ''; // Clear previous content
 
@@ -754,7 +754,7 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
     .then(events => {
       const last30Events = events
       .filter(event => event.startTimestamp !== date)
-      .slice(-30).reverse(); // Get the last 30 finished events
+      .slice(-50).reverse(); // Get the last 30 finished events
       const eventsContainer = document.getElementById('last-tournament-events');
       eventsContainer.innerHTML = ''; // Clear previous content
 
