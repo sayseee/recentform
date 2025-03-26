@@ -292,7 +292,7 @@ select {
   gap: 5px;
 }
 .tEs #standings, .tEs #events-analysis {
-  width: 50%;
+  width: 100%;
 }
 table {
     width: 100%;
@@ -365,9 +365,6 @@ table.events-table td {
   height: calc(100vh - 60px);
   width:50%
 }
-.analysis {
-  height: calc(100vh - 200px);
-}
 .analysis-table th { 
   padding: 3px 5px;
   background-color: rgb(74, 74, 74);
@@ -405,12 +402,11 @@ table.events-table td {
       <div class="tEs"> 
         <div id="events-analysis">
           <div id="tournament-events"></div>
-          <div class="analysis scrollable">
-            <div id="analysis-data"></div> 
-            <div id="event-details"></div>
-          </div>
+          <div id="analysis-data"></div> 
+          <div id="event-details"></div>
         </div>
-        <div id="last-tournament-events" class="scrollable"></div>
+         
+          <div id="last-tournament-events" style="display: none;"></div>
       </div>
     </div>
 </div>
@@ -754,13 +750,53 @@ function analyzeHistoricalPerformance(tournamentId, seasonId, currentEventOdds) 
     .catch(error => console.error('Error fetching tournament events:', error));
 }
 
+function determineDifficultyLevel(probability) {
+  if (probability <= 19) {
+    return 1; // Very Easy
+  } else if (probability <= 35) {
+    return 2; // Easy
+  } else if (probability <= 57) {
+    return 3; // Medium
+  } else if (probability <= 79) {
+    return 4; // Hard
+  } else if (probability > 79) {
+    return 5; // Very Hard
+  } else {
+    return 0; // none
+  }
+}
+
+function getEventStatus(event) {
+  let status = "NS"; // Default to "Not Started"
+  let statusIcon = "";
+
+  if (event.status?.type === "finished") {
+    status = "FT"; // Full Time
+    statusIcon = "✔"; // Full Time checkmark
+  } else if (event.status?.type === "cancelled") {
+    status = "CC"; // Cancelled
+    statusIcon = "✘"; // Cancelled cross
+  } else if (event.status?.type === "postponed") {
+    status = "PP"; // Postponed
+    statusIcon = "⏸"; // Postponed pause icon
+  } else if (event.status?.type === "notstarted") {
+    status = "NS"; // Not Started
+    statusIcon = '<i class="fas fa-clock"></i>'; // Clock icon for Not Started
+  } else if (event.status?.type === "inprogress") {
+    status = "IP"; // In Progress
+    statusIcon = '<i class="fas fa-sync-alt fa-spin"></i>'; // Spinning sync icon for In Progress
+  }
+
+  return { status, statusIcon };
+}
+
 // Function to fetch the last 30 finished events for a tournament and display them with odds and results
 function fetchLastTournamentEvents(tournamentId, seasonId, date) {
   fetchTournamentEvents(tournamentId, seasonId)
     .then(events => {
       const last30Events = events
-      .filter(event => event.startTimestamp !== date)
-      .slice(-40).reverse(); // Get the last 30 finished events
+        .filter(event => event.startTimestamp !== date)
+        .slice(-40).reverse(); // Get the last 30 finished events
       const eventsContainer = document.getElementById('last-tournament-events');
       eventsContainer.innerHTML = ''; // Clear previous content
 
@@ -793,7 +829,7 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
         const formattedDate = eventDate.toLocaleDateString('en-GB', { year: '2-digit', month: '2-digit', day: '2-digit' })
             .replace(/(\d{2})$/, "'$1");
         
-                const score = `${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''}`;
+        const score = `${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''}`;
         const result = event.homeScore.current > event.awayScore.current ? "H" : 
                        event.homeScore.current < event.awayScore.current ? "A" : "X";
 
@@ -802,7 +838,7 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
           .then(response => response.json())
           .then(oddsData => {
             if (!oddsData.markets || oddsData.markets.length === 0) {
-              //console.warn(`No odds available for event ${eventId}, skipping...`);
+              //console.warn(`No odds available for event ${eventId}, skipping...`); 
               return;
             }
 
@@ -826,38 +862,9 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
             const prob1 = Number(probability1);
             const prob2 = Number(probability2);
 
-            // Determine difficulty levels separately for home (prob1) and away (prob2)
-            let level1, level2;
-
-            // Home side difficulty (prob1)
-            if (prob1 <= 19) {
-              level1 = 1; // Very Easy 
-            } else if (prob1 <= 35) {
-              level1 = 2; // Easy
-            } else if (prob1 <= 57) {
-              level1 = 3; // Medium
-            } else if (prob1 <= 79) {
-              level1 = 4; // Hard
-            } else if (prob1 > 80) {
-              level1 = 5; // Very Hard
-            } else {
-              level1 = 0; // none
-            }
-
-            // Away side difficulty (prob2)
-            if (prob2 <= 19) {             
-              level2 = 1; // Very Easy
-            } else if (prob2 <= 35) {
-              level2 = 2; // Easy
-            } else if (prob2 <= 57) {
-              level2 = 3; // Medium
-            } else if (prob2 <= 79) {
-              level2 = 4; // Hard
-            } else if (prob2 > 79) {
-              level2 = 5; // Very Hard
-            } else {
-              level2 = 0; // none
-            }
+            // Use the refactored `determineDifficultyLevel` function to get difficulty levels for home and away teams
+            const level1 = determineDifficultyLevel(prob1);  // Home team difficulty
+            const level2 = determineDifficultyLevel(prob2);  // Away team difficulty
 
             // Create a table row with the event data
             const row = document.createElement('tr');
@@ -879,10 +886,11 @@ function fetchLastTournamentEvents(tournamentId, seasonId, date) {
     })
     .catch(error => console.error('Error fetching tournament events:', error));
 }
+
 function displayEventsInTable(events, tournamentId, date) {
   const eventsContainer = document.getElementById('tournament-events');
   eventsContainer.innerHTML = ''; // Clear previous content
-
+ 
   // Sort the events by startTimestamp in ascending order (earliest first)
   events.sort((a, b) => a.startTimestamp - b.startTimestamp);
 
@@ -892,14 +900,39 @@ function displayEventsInTable(events, tournamentId, date) {
   table.innerHTML = `
     <thead>
       <tr class="headerTitle">
-        <th>Time</th>
-        <th>Home</th>
-        <th>Away</th>
-        <th width="60">1</th>
-        <th width="60">X</th>
-        <th width="60">2</th>
-        <th class="score">Score</th>
-        <th class="status">S</th>
+        <th rowspan="2">Time</th>
+        <th rowspan="2">Home</th>
+        <th rowspan="2">Away</th>
+        <th rowspan="2" width="60">1</th>
+        <th rowspan="2" width="60">X</th>
+        <th rowspan="2" width="60">2</th>
+        <th rowspan="2" class="score">Score</th>
+        <th rowspan="2" class="status">S</th>
+        <th colspan="2">O/U 1.5</th>
+        <th colspan="2">O/U 2.5</th>
+        <th colspan="2">O/U 3.5</th>
+        <th colspan="2">BTTS</th>
+        <th colspan="3">First Half</th>
+        <th colspan="3">DC</th>
+        <th colspan="2">DNB</th>
+      </tr>
+      <tr class="headerTitle">
+        <th>O</th>
+        <th>U</th>
+        <th>O</th>
+        <th>U</th>
+        <th>O</th>
+        <th>U</th>
+        <th>Yes</th>
+        <th>No</th>
+        <th>1</th>
+        <th>X</th>
+        <th>2</th>
+        <th>1X</th>
+        <th>X2</th>
+        <th>12</th>
+        <th>1</th>
+        <th>2</th>
       </tr>
     </thead>
     <tbody>
@@ -907,84 +940,46 @@ function displayEventsInTable(events, tournamentId, date) {
   `;
   eventsContainer.appendChild(table);
 
-  // Fetch odds for the events (if needed)
-  const oddsUrl = `https://www.sofascore.com/api/v1/sport/football/odds/1/${date}`;
-  fetch(oddsUrl)
-    .then(response => response.json())
-    .then(oddsData => {
-      // Loop through events and create table rows
-      events.forEach((event, index) => {
-        const eventId = event.id;
-        const homeTeam = event.homeTeam.shortName;
-        const awayTeam = event.awayTeam.shortName;
-        const eventDate = new Date(event.startTimestamp * 1000);
-        const startTime = eventDate.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\d{4}/, '') + ' ' + 
-                          eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  // Loop through events and create table rows
+  events.forEach((event, index) => {
+    const eventId = event.id;
+    const homeTeam = event.homeTeam.shortName;
+    const awayTeam = event.awayTeam.shortName;
+    const eventDate = new Date(event.startTimestamp * 1000);
+    const startTime = eventDate.toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\d{4}/, '') + ' ' + 
+                      eventDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
+    // Fetch odds for this event
+    const oddsUrl = `https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`;
+    fetch(oddsUrl)
+      .then(response => response.json())
+      .then(oddsData => {
+        // Extract odds for the event
+        const eventOdds = oddsData;
 
         // Default values for odds
         let odds1 = '-';
         let oddsX = '-';
         let odds2 = '-';
 
-        // Find the odds for this event (if available) by checking if the eventId exists in the odds data
-        const eventOdds = oddsData.odds[eventId];
-        if (eventOdds) {
-          const choices = eventOdds.choices || []; 
-
-          // Find the odds for '1', 'X', and '2'  
-          odds1 = choices.find(choice => choice.name === '1')?.event?.status?.type === 'inprogress'
-            ? choices.find(choice => choice.name === '1')?.initialFractionalValue
-            : choices.find(choice => choice.name === '1')?.fractionalValue || '-';
-
-          oddsX = choices.find(choice => choice.name === 'X')?.event?.status?.type === 'inprogress'
-            ? choices.find(choice => choice.name === 'X')?.initialFractionalValue
-            : choices.find(choice => choice.name === 'X')?.fractionalValue || '-';
-
-          odds2 = choices.find(choice => choice.name === '2')?.event?.status?.type === 'inprogress'
-            ? choices.find(choice => choice.name === '2')?.initialFractionalValue
-            : choices.find(choice => choice.name === '2')?.fractionalValue || '-'; 
-
-          // Convert fractional odds to decimal odds
-          odds1 = odds1 !== '-' ? fractionalToDecimal(odds1) : '-';
-          oddsX = oddsX !== '-' ? fractionalToDecimal(oddsX) : '-';
-          odds2 = odds2 !== '-' ? fractionalToDecimal(odds2) : '-';
-
-          // Define decimal odds for analysis
-          const decimalOdds1 = odds1 !== '-' ? odds1 : null;
-          const decimalOddsX = oddsX !== '-' ? oddsX : null;
-          const decimalOdds2 = odds2 !== '-' ? odds2 : null;
-
-          
-          // Load analysis for the first event on initial load
-          if (index === 0) {
-            fetchEventDetails(eventId); 
-            const currentEventOdds = { odds1: decimalOdds1, oddsX: decimalOddsX, odds2: decimalOdds2 };
-            analyzeHistoricalPerformance(event.tournament.id, event.season.id, currentEventOdds); 
-          }
-
-        } else {
-          console.warn(`No odds found for event ${eventId}`);
+        // Find the odds for '1', 'X', and '2'
+        const fullTimeMarket = eventOdds.markets.find(market => market.marketGroup === '1X2' && market.marketPeriod === 'Full time');
+        if (fullTimeMarket) {
+          odds1 = event.status?.type === 'inprogress'
+            ? fullTimeMarket.choices.find(choice => choice.name === '1')?.initialFractionalValue
+            : fullTimeMarket.choices.find(choice => choice.name === '1')?.fractionalValue || '-';
+          oddsX = event.status?.type === 'inprogress'
+            ? fullTimeMarket.choices.find(choice => choice.name === 'X')?.initialFractionalValue
+            : fullTimeMarket.choices.find(choice => choice.name === 'X')?.fractionalValue || '-';
+          odds2 = event.status?.type === 'inprogress'
+            ? fullTimeMarket.choices.find(choice => choice.name === '2')?.initialFractionalValue
+            : fullTimeMarket.choices.find(choice => choice.name === '2')?.fractionalValue || '-';
         }
 
-        // Determine event status with shorthand
-        let status = "NS"; // Default to "Not Started" shorthand
-        let statusIcon = "";
-        if (event.status?.type === "finished") {
-            status = "FT"; // Full Time
-            statusIcon = "✔"; // Full Time checkmark
-        } else if (event.status?.type === "cancelled") {
-            status = "CC"; // Cancelled
-            statusIcon = "✘"; // Cancelled cross
-        } else if (event.status?.type === "postponed") {
-            status = "PP"; // Postponed
-            statusIcon = "⏸"; // Postponed pause icon
-        } else if (event.status?.type === "notstarted") {
-            status = "NS"; // Not Started
-            statusIcon = '<i class="fas fa-clock"></i>'; // Clock icon for Not Started
-        } else if (event.status?.type === "inprogress") {
-            status = "IP"; // In Progress
-            statusIcon = '<i class="fas fa-sync-alt fa-spin"></i>'; // Spinning sync icon for In Progress
-        }
+        // Convert fractional odds to decimal odds
+        odds1 = odds1 !== '-' ? fractionalToDecimal(odds1) : '-';
+        oddsX = oddsX !== '-' ? fractionalToDecimal(oddsX) : '-';
+        odds2 = odds2 !== '-' ? fractionalToDecimal(odds2) : '-';
 
         // Calculate probabilities, or use '-' if odds are not available
         const calculateProbability = (odds) => {
@@ -1002,39 +997,30 @@ function displayEventsInTable(events, tournamentId, date) {
         const prob2 = Number(probability2);
 
         // Determine difficulty levels separately for home (prob1) and away (prob2)
-        let level1, level2;
+        const level1 = determineDifficultyLevel(prob1);
+        const level2 = determineDifficultyLevel(prob2);
 
-        // Home side difficulty (prob1)
-        if (prob1 <= 19) {
-          level1 = 1; // Very Easy
-        } else if (prob1 <= 35) {
-          level1 = 2; // Easy
-        } else if (prob1 <= 57) {
-          level1 = 3; // Medium
-        } else if (prob1 <= 79) {
-          level1 = 4; // Hard
-        } else if (prob1 > 79) {
-          level1 = 5; // Very Hard
-        } else {
-          level1 = 0; // none
+        // Extract additional market data
+        const overUnder1_5 = extractMarketData(eventOdds, 'Match goals', '1.5', null, event.status);
+        const overUnder2_5 = extractMarketData(eventOdds, 'Match goals', '2.5', null, event.status);
+        const overUnder3_5 = extractMarketData(eventOdds, 'Match goals', '3.5', null, event.status);
+        const btts = extractMarketData(eventOdds, 'Both teams to score', null, null, event.status);
+        const firstHalfResult = extractMarketData(eventOdds, '1X2', null, '1st half', event.status);
+        const doubleChance = extractMarketData(eventOdds, 'Double chance', null, null, event.status);
+        const drawNoBet = extractMarketData(eventOdds, 'Draw no bet', null, null, event.status);     
+        
+        // Load analysis for the first event on initial load
+        if (index === 0) {
+          fetchEventDetails(eventId); 
+          const currentEventOdds = { odds1: odds1, oddsX: oddsX, odds2: odds2 };
+          analyzeHistoricalPerformance(event.tournament.id, event.season.id, currentEventOdds); 
         }
-
-        // Away side difficulty (prob2)
-        if (prob2 <= 19) {
-          level2 = 1; // Very Easy
-        } else if (prob2 <= 35) {
-          level2 = 2; // Easy
-        } else if (prob2 <= 57) {
-          level2 = 3; // Medium
-        } else if (prob2 <= 79) {
-          level2 = 4; // Hard
-        } else if (prob2 > 79) {
-          level2 = 5; // Very Hard
-        } else {
-          level2 = 0; // none
-        }
-
+          
         const row = document.createElement('tr');
+
+        // Add event.id as a data attribute to the row
+        row.setAttribute('data-event-id', event.id);
+
         row.innerHTML = `
           <td width="100">${startTime}</td>
           <td width="140" class="${event.homeTeam.id}">${homeTeam}</td>
@@ -1042,8 +1028,24 @@ function displayEventsInTable(events, tournamentId, date) {
           <td class="diff_${level1}">${odds1} - ${probability1}</td>
           <td width="50">${oddsX} - ${probabilityX}</td>
           <td class="diff_${level2}">${odds2} - ${probability2}</td>
-          <td class="score" width="40">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''} </td>
-          <td class="status" width="10">${statusIcon}</td> <!-- Added status here -->
+          <td class="score" width="40">${event.homeScore?.current ?? ''} - ${event.awayScore?.current ?? ''}</td>
+          <td class="status" width="10">${getEventStatus(event).statusIcon}</td>
+          <td>${overUnder1_5.over}</td>
+          <td>${overUnder1_5.under}</td>
+          <td>${overUnder2_5.over}</td>
+          <td>${overUnder2_5.under}</td>
+          <td>${overUnder3_5.over}</td>
+          <td>${overUnder3_5.under}</td>
+          <td>${btts.yes}</td>
+          <td>${btts.no}</td>
+          <td>${firstHalfResult['1']}</td>
+          <td>${firstHalfResult.X}</td>
+          <td>${firstHalfResult['2']}</td>
+          <td>${doubleChance['1X']}</td>
+          <td>${doubleChance['X2']}</td>
+          <td>${doubleChance['12']}</td>
+          <td>${drawNoBet['1']}</td>
+          <td>${drawNoBet['2']}</td>
         `;
 
         // Add an onclick event to analyze odds of the clicked event
@@ -1056,21 +1058,77 @@ function displayEventsInTable(events, tournamentId, date) {
 
         table.querySelector('tbody').appendChild(row); 
 
-      });
-    })
-    .catch(error => console.error('Error fetching odds:', error));
+        
+      })
+      .catch(error => console.error(`Error fetching odds for event ${eventId}:`, error));
+  });
 }
+function extractMarketData(eventOdds, marketGroup, choiceGroup = null, marketPeriod = null, eventStatus = null) {
+  if (!eventOdds || !eventOdds.markets) return {};
 
-// Global variables to store fetched data
-let currentEventData = null;
-let currentTournamentData = null;
-let currentOddsData = null;
-let currentStats = null;
+  // Find the market based on marketGroup, choiceGroup, and marketPeriod
+  const market = eventOdds.markets.find(m => 
+    m.marketGroup === marketGroup && 
+    (!choiceGroup || m.choiceGroup === choiceGroup) &&
+    (!marketPeriod || m.marketPeriod === marketPeriod)
+  );
 
-// Modified fetchEventDetails to include market stats
+  if (!market || !market.choices) return {};
+
+  // Map choices to their fractional values, considering the event status
+  const result = {};
+  market.choices.forEach(choice => {
+    const fractionalValue = eventStatus?.type === 'inprogress'
+      ? choice.initialFractionalValue || choice.fractionalValue
+      : choice.fractionalValue;
+
+    // Convert fractional odds to decimal odds, or return '-' if undefined
+    const decimalValue = fractionalValue !== undefined && fractionalValue !== null
+      ? fractionalToDecimal(fractionalValue)
+      : '-';
+
+    // Map choice names to consistent keys based on market type
+    if (marketGroup === '1X2') {
+      if (choice.name === '1') result['1'] = decimalValue;
+      if (choice.name === 'X') result.X = decimalValue;
+      if (choice.name === '2') result['2'] = decimalValue;
+    } else if (marketGroup === 'Double chance') {
+      if (choice.name === '1X') result['1X'] = decimalValue;
+      if (choice.name === 'X2') result.X2 = decimalValue;
+      if (choice.name === '12') result['12'] = decimalValue;
+    } else if (marketGroup === 'Draw no bet') {
+      if (choice.name === '1') result['1'] = decimalValue;
+      if (choice.name === '2') result['2'] = decimalValue;
+    } else if (marketGroup === 'Both teams to score') {
+      if (choice.name === 'Yes') result.yes = decimalValue;
+      if (choice.name === 'No') result.no = decimalValue;
+    } else if (marketGroup === 'Match goals') {
+      if (choice.name === 'Over') result.over = decimalValue;
+      if (choice.name === 'Under') result.under = decimalValue;
+    } else if (marketGroup === 'Asian Handicap') {
+      // Handle Asian Handicap choices (e.g., team-specific handicaps)
+      result[choice.name] = decimalValue;
+    } else if (marketGroup === 'Corners 2-Way') {
+      if (choice.name === 'Over') result.over = decimalValue;
+      if (choice.name === 'Under') result.under = decimalValue;
+    } else if (marketGroup === 'First team to score') {
+      // Handle First Team to Score choices (e.g., team names or 'No goal')
+      result[choice.name] = decimalValue;
+    }
+  });
+
+  // Ensure all expected keys are present, defaulting to '-' if missing
+  const defaultResult = {
+    '1': '-', X: '-', '2': '-', '1X': '-', X2: '-', '12': '-',
+    yes: '-', no: '-', over: '-', under: '-'
+  };
+
+  // Merge the result with the default values
+  return { ...defaultResult, ...result };
+}
 function fetchEventDetails(eventId) {
   const eventDetailsContainer = document.getElementById('event-details');
-  eventDetailsContainer.innerHTML = '<p>Loading event details...</p>';
+  eventDetailsContainer.innerHTML = '<p>Loading event details...</p>'; // Show loading text
 
   // Fetch event details
   fetch(`https://www.sofascore.com/api/v1/event/${eventId}`)
@@ -1081,12 +1139,13 @@ function fetchEventDetails(eventId) {
         return;
       }
 
-      currentEventData = eventData.event;
-      const homeTeam = currentEventData.homeTeam.shortName || currentEventData.homeTeam.name;
-      const awayTeam = currentEventData.awayTeam.shortName || currentEventData.awayTeam.name;
-      const eventDate = new Date(currentEventData.startTimestamp * 1000).toLocaleString();
-      const score = currentEventData.homeScore?.current !== undefined && currentEventData.awayScore?.current !== undefined
-        ? `${currentEventData.homeScore.current} - ${currentEventData.awayScore.current}`
+      const event = eventData.event;
+      const uniqueH2hContainer = `h2h-container-${event.id}`; // Unique ID for the event's info container
+      const homeTeam = event.homeTeam.shortName || event.homeTeam.name;
+      const awayTeam = event.awayTeam.shortName || event.awayTeam.name;
+      const eventDate = new Date(event.startTimestamp * 1000).toLocaleString();
+      const score = event.homeScore?.current !== undefined && event.awayScore?.current !== undefined
+        ? `${event.homeScore.current} - ${event.awayScore.current}`
         : 'Not available';
 
       // Display event details
@@ -1095,442 +1154,15 @@ function fetchEventDetails(eventId) {
         <p><strong>Date:</strong> ${eventDate}</p>
         <p><strong>Home Team:</strong> ${homeTeam}</p>
         <p><strong>Away Team:</strong> ${awayTeam}</p>
-        <p><strong>Score:</strong> ${score}</p>
-        <div id="period-filters">
-          <button class="period-filter active" data-period="all">All Season</button>
-          <button class="period-filter" data-period="5">Last 5</button>
-          <button class="period-filter" data-period="6">Last 6</button>
-          <button class="period-filter" data-period="8">Last 8</button>
-          <button class="period-filter" data-period="10">Last 10</button>
-        </div>
-        <div id="market-stats-container"></div>
-      `;
-
-      // Now fetch the additional data needed for market stats
-      calculateMarketStats(currentEventData);
+        <p><strong>Score:</strong> ${score}</p>  
+      `; 
+        
     })    
     .catch(error => {
       console.error('Error fetching event details:', error);
       eventDetailsContainer.innerHTML = '<p>Error loading event details.</p>';
     });
 }
-
-// Modified calculateMarketStats to use already fetched event data
-async function calculateMarketStats(eventData) {
-  try {
-    const homeTeamId = eventData.homeTeam.id;
-    const awayTeamId = eventData.awayTeam.id;
-    const tournamentId = eventData.tournament.id;
-    const seasonId = eventData.season.id;
-    
-    // Fetch tournament events and odds in parallel
-    const [tournamentResponse, oddsResponse] = await Promise.all([
-      fetch(`https://api.sofascore.com/api/v1/tournament/${tournamentId}/season/${seasonId}/events`),
-      fetch(`https://www.sofascore.com/api/v1/event/${eventData.id}/odds/1/all`)
-    ]);
-    
-    currentTournamentData = await tournamentResponse.json();
-    currentOddsData = await oddsResponse.json();
-    
-    if (!currentTournamentData || !currentTournamentData.events) {
-      throw new Error('Tournament data not available');
-    }
-    
-    if (!currentOddsData || !currentOddsData.markets) {
-      throw new Error('Odds data not available');
-    }
-    
-    // Calculate and display stats for all matches by default
-    currentStats = calculateStatsForPeriod('all');
-    displayMarketStats(currentStats);
-    
-    // Set up period filter event listeners
-    document.querySelectorAll('.period-filter').forEach(button => {
-      button.addEventListener('click', () => {
-        document.querySelectorAll('.period-filter').forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        
-        const period = button.dataset.period;
-        currentStats = calculateStatsForPeriod(period);
-        updateMarketStats(currentStats);
-      });
-    });
-    
-  } catch (error) {
-    console.error('Error calculating market stats:', error);
-    document.getElementById('market-stats-container').innerHTML = '<p>Error loading market statistics.</p>';
-  }
-}
-
-function calculateStatsForPeriod(period) {
-  // Filter events for our teams and finished matches
-  let teamEvents = currentTournamentData.events.filter(e => 
-    (e.homeTeam.id === currentEventData.homeTeam.id || e.homeTeam.id === currentEventData.awayTeam.id || 
-     e.awayTeam.id === currentEventData.homeTeam.id || e.awayTeam.id === currentEventData.awayTeam.id) &&
-    e.status.code === 100
-  );
-  
-  // Apply period filter if not 'all'
-  if (period !== 'all') {
-    const count = parseInt(period);
-    teamEvents = teamEvents.slice(0, count);
-  }
-  
-  // Calculate stats
-  const stats = {
-    homeTeam: { matches: 0, goalsScored: 0, goalsConceded: 0, bttsYes: 0, firstHalfResults: [] },
-    awayTeam: { matches: 0, goalsScored: 0, goalsConceded: 0, bttsYes: 0, firstHalfResults: [] },
-    combined: { matches: 0, over15: 0, over25: 0, over35: 0 }
-  };
-  
-  teamEvents.forEach(e => {
-    const isHomeTeamInvolved = e.homeTeam.id === currentEventData.homeTeam.id || e.awayTeam.id === currentEventData.homeTeam.id;
-    const isAwayTeamInvolved = e.homeTeam.id === currentEventData.awayTeam.id || e.awayTeam.id === currentEventData.awayTeam.id;
-    
-    // For combined stats (matches between these two teams)
-    if ((e.homeTeam.id === currentEventData.homeTeam.id && e.awayTeam.id === currentEventData.awayTeam.id) || 
-        (e.homeTeam.id === currentEventData.awayTeam.id && e.awayTeam.id === currentEventData.homeTeam.id)) {
-      const totalGoals = e.homeScore.current + e.awayScore.current;
-      stats.combined.matches++;
-      if (totalGoals > 1.5) stats.combined.over15++;
-      if (totalGoals > 2.5) stats.combined.over25++;
-      if (totalGoals > 3.5) stats.combined.over35++;
-    }
-    
-    // Home team stats
-    if (isHomeTeamInvolved) {
-      const isHome = e.homeTeam.id === currentEventData.homeTeam.id;
-      const goalsFor = isHome ? e.homeScore.current : e.awayScore.current;
-      const goalsAgainst = isHome ? e.awayScore.current : e.homeScore.current;
-      const firstHalfResult = getFirstHalfResult(e);
-      
-      stats.homeTeam.matches++;
-      stats.homeTeam.goalsScored += goalsFor;
-      stats.homeTeam.goalsConceded += goalsAgainst;
-      if (goalsFor > 0 && goalsAgainst > 0) stats.homeTeam.bttsYes++;
-      stats.homeTeam.firstHalfResults.push(firstHalfResult);
-    }
-    
-    // Away team stats
-    if (isAwayTeamInvolved) {
-      const isAway = e.awayTeam.id === currentEventData.awayTeam.id;
-      const goalsFor = isAway ? e.awayScore.current : e.homeScore.current;
-      const goalsAgainst = isAway ? e.homeScore.current : e.awayScore.current;
-      const firstHalfResult = getFirstHalfResult(e);
-      
-      stats.awayTeam.matches++;
-      stats.awayTeam.goalsScored += goalsFor;
-      stats.awayTeam.goalsConceded += goalsAgainst;
-      if (goalsFor > 0 && goalsAgainst > 0) stats.awayTeam.bttsYes++;
-      stats.awayTeam.firstHalfResults.push(firstHalfResult);
-    }
-  });
-  
-  // Process odds data to create market stats
-  const result = {
-    eventId: currentEventData.id,
-    homeTeam: currentEventData.homeTeam.name,
-    awayTeam: currentEventData.awayTeam.name,
-    markets: {}
-  };
-  
-  // Process each market from the odds data
-  currentOddsData.markets.forEach(market => {
-    switch (market.marketName) {
-      case 'Match goals':
-        processGoalsMarket(market, result, stats);
-        break;
-      case 'Both teams to score':
-        processBTTSMarket(market, result, stats);
-        break;
-      case '1st half':
-        processFirstHalfMarket(market, result, stats);
-        break;
-      case 'Double chance':
-        processDoubleChanceMarket(market, result, stats);
-        break;
-      case 'Draw no bet':
-        processDrawNoBetMarket(market, result, stats);
-        break;
-    }
-  });
-  
-  return result;
-}
-
- 
- 
-
-// Helper function to format percentages
-function formatPercentage(value) {
-  if (isNaN(value) || value === undefined) return '-';
-  return Math.round(value) + '%';
-}
-
-// Update the calculateResultPercentages function
-function calculateResultPercentages(results) {
-  const stats = {
-    homeWin: 0,
-    awayWin: 0,
-    draw: 0
-  };
-  
-  results.forEach(result => {
-    if (result === '1') stats.homeWin++;
-    else if (result === '2') stats.awayWin++;
-    else stats.draw++;
-  });
-  
-  const total = results.length || 1; // Avoid division by zero
-  
-  return {
-    homeWin: stats.homeWin / total * 100,
-    awayWin: stats.awayWin / total * 100,
-    draw: stats.draw / total * 100,
-    awayLoss: stats.homeWin / total * 100, // For away team's loss percentage (home team's win)
-    homeLoss: stats.awayWin / total * 100  // For home team's loss percentage (away team's win)
-  };
-}
-
-// Update the processFirstHalfMarket function
-function processFirstHalfMarket(market, result, stats) {
-  const homeChoice = market.choices.find(c => c.name === '1');
-  const drawChoice = market.choices.find(c => c.name === 'X');
-  const awayChoice = market.choices.find(c => c.name === '2');
-  
-  if (!homeChoice || !drawChoice || !awayChoice) return;
-  
-  const homeOdd = fractionalToDecimal(homeChoice.fractionalValue);
-  const drawOdd = fractionalToDecimal(drawChoice.fractionalValue);
-  const awayOdd = fractionalToDecimal(awayChoice.fractionalValue);
-  
-  // Calculate first half result percentages
-  const homeFirstHalfStats = calculateResultPercentages(stats.homeTeam.firstHalfResults);
-  const awayFirstHalfStats = calculateResultPercentages(stats.awayTeam.firstHalfResults);
-  
-  result.markets['First Half Result (1)'] = { 
-    odd: homeOdd, 
-    homeStat: formatPercentage(homeFirstHalfStats.homeWin),
-    awayStat: formatPercentage(awayFirstHalfStats.awayLoss)
-  };
-  result.markets['First Half Result (X)'] = { 
-    odd: drawOdd, 
-    homeStat: formatPercentage(homeFirstHalfStats.draw),
-    awayStat: formatPercentage(awayFirstHalfStats.draw)
-  };
-  result.markets['First Half Result (2)'] = { 
-    odd: awayOdd, 
-    homeStat: formatPercentage(homeFirstHalfStats.awayWin),
-    awayStat: formatPercentage(awayFirstHalfStats.homeWin)
-  };
-}
-
-// Update the processDoubleChanceMarket function
-function processDoubleChanceMarket(market, result, stats) {
-  const homeDrawChoice = market.choices.find(c => c.name === '1X');
-  const drawAwayChoice = market.choices.find(c => c.name === 'X2');
-  const homeAwayChoice = market.choices.find(c => c.name === '12');
-  
-  if (!homeDrawChoice || !drawAwayChoice || !homeAwayChoice) return;
-  
-  const homeDrawOdd = fractionalToDecimal(homeDrawChoice.fractionalValue);
-  const drawAwayOdd = fractionalToDecimal(drawAwayChoice.fractionalValue);
-  const homeAwayOdd = fractionalToDecimal(homeAwayChoice.fractionalValue);
-  
-  // Calculate double chance stats based on full match results
-  const homeResults = calculateResultPercentages(stats.homeTeam.firstHalfResults);
-  const awayResults = calculateResultPercentages(stats.awayTeam.firstHalfResults);
-  
-  result.markets['Double Chance (1X)'] = { 
-    odd: homeDrawOdd,
-    homeStat: formatPercentage(homeResults.homeWin + homeResults.draw),
-    awayStat: formatPercentage(awayResults.awayLoss + awayResults.draw)
-  };
-  result.markets['Double Chance (X2)'] = { 
-    odd: drawAwayOdd,
-    homeStat: formatPercentage(homeResults.awayWin + homeResults.draw),
-    awayStat: formatPercentage(awayResults.homeWin + awayResults.draw)
-  };
-  result.markets['Double Chance (12)'] = { 
-    odd: homeAwayOdd,
-    homeStat: formatPercentage(homeResults.homeWin + homeResults.awayWin),
-    awayStat: formatPercentage(awayResults.homeWin + awayResults.awayLoss)
-  };
-}
-
-// Update the processDrawNoBetMarket function
-function processDrawNoBetMarket(market, result, stats) {
-  const homeChoice = market.choices.find(c => c.name === '1');
-  const awayChoice = market.choices.find(c => c.name === '2');
-  
-  if (!homeChoice || !awayChoice) return;
-  
-  const homeOdd = fractionalToDecimal(homeChoice.fractionalValue);
-  const awayOdd = fractionalToDecimal(awayChoice.fractionalValue);
-  
-  // For DNB, we look at win percentages excluding draws
-  const homeResults = calculateResultPercentages(stats.homeTeam.firstHalfResults);
-  const awayResults = calculateResultPercentages(stats.awayTeam.firstHalfResults);
-  
-  const homeWinPercentage = stats.homeTeam.matches > 0 
-    ? (homeResults.homeWin / (homeResults.homeWin + homeResults.awayWin) * 100)
-    : NaN;
-  const awayWinPercentage = stats.awayTeam.matches > 0 
-    ? (awayResults.homeWin / (awayResults.homeWin + awayResults.awayLoss) * 100)
-    : NaN;
-  
-  result.markets['Draw No Bet (1)'] = { odd: homeOdd, stat: formatPercentage(homeWinPercentage) };
-  result.markets['Draw No Bet (2)'] = { odd: awayOdd, stat: formatPercentage(awayWinPercentage) };
-}
-
-// Update the processGoalsMarket and processBTTSMarket functions similarly:
-function processGoalsMarket(market, result, stats) {
-  const choiceGroup = market.choiceGroup;
-  if (!choiceGroup) return;
-  
-  const overChoice = market.choices.find(c => c.name === 'Over');
-  const underChoice = market.choices.find(c => c.name === 'Under');
-  
-  if (!overChoice || !underChoice) return;
-  
-  const overOdd = fractionalToDecimal(overChoice.fractionalValue);
-  const underOdd = fractionalToDecimal(underChoice.fractionalValue);
-  
-  let statPercentage;
-  switch (choiceGroup) {
-    case '1.5':
-      statPercentage = stats.combined.matches > 0 
-        ? formatPercentage(stats.combined.over15 / stats.combined.matches * 100)
-        : '-';
-      result.markets['Over 1.5'] = { odd: overOdd, stat: statPercentage };
-      result.markets['Under 1.5'] = { odd: underOdd, stat: statPercentage };
-      break;
-    case '2.5':
-      statPercentage = stats.combined.matches > 0 
-        ? formatPercentage(stats.combined.over25 / stats.combined.matches * 100)
-        : '-';
-      result.markets['Over 2.5'] = { odd: overOdd, stat: statPercentage };
-      result.markets['Under 2.5'] = { odd: underOdd, stat: statPercentage };
-      break;
-    case '3.5':
-      statPercentage = stats.combined.matches > 0 
-        ? formatPercentage(stats.combined.over35 / stats.combined.matches * 100)
-        : '-';
-      result.markets['Over 3.5'] = { odd: overOdd, stat: statPercentage };
-      result.markets['Under 3.5'] = { odd: underOdd, stat: statPercentage };
-      break;
-  }
-}
-
-function processBTTSMarket(market, result, stats) {
-  const yesChoice = market.choices.find(c => c.name === 'Yes');
-  const noChoice = market.choices.find(c => c.name === 'No');
-  
-  if (!yesChoice || !noChoice) return;
-  
-  const yesOdd = fractionalToDecimal(yesChoice.fractionalValue);
-  const noOdd = fractionalToDecimal(noChoice.fractionalValue);
-  
-  const homeBTTSPercentage = stats.homeTeam.matches > 0 
-    ? formatPercentage(stats.homeTeam.bttsYes / stats.homeTeam.matches * 100)
-    : '-';
-  const awayBTTSPercentage = stats.awayTeam.matches > 0 
-    ? formatPercentage(stats.awayTeam.bttsYes / stats.awayTeam.matches * 100)
-    : '-';
-  
-  result.markets['BTTS (Yes)'] = { odd: yesOdd, homeStat: homeBTTSPercentage, awayStat: awayBTTSPercentage };
-  result.markets['BTTS (No)'] = { odd: noOdd, homeStat: homeBTTSPercentage, awayStat: awayBTTSPercentage };
-}
-
-// Update the displayMarketStats function to ensure proper rendering
-function displayMarketStats(stats) {
-  const container = document.getElementById('market-stats-container');
-  if (!container) return;
-  
-  let html = `<h4>Market Statistics</h4>
-              <div class="market-stats-grid">`;
-  
-  const marketOrder = [
-    'Over 1.5', 'Under 1.5',
-    'Over 2.5', 'Under 2.5',
-    'Over 3.5', 'Under 3.5',
-    'BTTS (Yes)', 'BTTS (No)',
-    'First Half Result (1)', 'First Half Result (X)', 'First Half Result (2)',
-    'Double Chance (1X)', 'Double Chance (X2)', 'Double Chance (12)',
-    'Draw No Bet (1)', 'Draw No Bet (2)'
-  ];
-  
-  marketOrder.forEach(market => {
-    const data = stats.markets[market];
-    if (!data) return;
-    
-    html += `<div class="market-card" data-market="${market}">
-      <div class="market-header">
-        <strong>${market}</strong>
-        <span class="market-odd">Odd: ${data.odd}</span>
-      </div>
-      <div class="market-stats">`;
-    
-    if (data.stat) {
-      html += `<span>Stat: ${data.stat}</span>`;
-    }
-    if (data.homeStat && data.awayStat) {
-      html += `<span>Home: ${data.homeStat}</span>
-               <span>Away: ${data.awayStat}</span>`;
-    }
-    
-    html += `</div></div>`;
-  });
-  
-  html += `</div>`;
-  container.innerHTML = html;
-}
-
-// Ensure the navigation works by properly updating stats
-function updateMarketStats(stats) {
-  // Update all stats, not just odds
-  for (const [market, data] of Object.entries(stats.markets)) {
-    const card = document.querySelector(`.market-card[data-market="${market}"]`);
-    if (card) {
-      // Update odd
-      const oddElement = card.querySelector('.market-odd');
-      if (oddElement) {
-        oddElement.textContent = `Odd: ${data.odd}`;
-      }
-      
-      // Update stats
-      const statsContainer = card.querySelector('.market-stats');
-      if (statsContainer) {
-        let statsHtml = '';
-        if (data.stat) {
-          statsHtml += `<span>Stat: ${data.stat}</span>`;
-        }
-        if (data.homeStat && data.awayStat) {
-          statsHtml += `<span>Home: ${data.homeStat}</span>
-                       <span>Away: ${data.awayStat}</span>`;
-        }
-        statsContainer.innerHTML = statsHtml;
-      }
-    }
-  }
-}
- 
-// Helper functions
-function getFirstHalfResult(event) {
-  if (event.homeScore.period1 > event.awayScore.period1) return '1';
-  if (event.homeScore.period1 < event.awayScore.period1) return '2';
-  return 'X';
-}
-
-function fractionalToDecimal(fractional) {
-  if (!fractional) return 'N/A';
-  const parts = fractional.split('/');
-  if (parts.length === 2) {
-    return (parseInt(parts[0]) / parseInt(parts[1]) + 1).toFixed(2);
-  }
-  return parseFloat(fractional).toFixed(2);
-}
-
  
 
 function fetchTournaments(categoryId, categoryName, tournamentsWithEvents) {
