@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Football Events Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+
+:root {
+        --color-w_1 : #eff9ff;
+        --color-w_2 : #8eb1c5;
+        --color-gr_1 : #727175; 
+        --color-gr_2 : #3c3c3c; 
+        --color-gr_3 : #1e1c1d;
+        --color-g_1 : #4e9e7b;
+        --color-g_2 : #003c01;
+        --color-g_3 : #274454;
+        --color-g_4 : #002e00;
+        --color-g_5 : #120915;
+        --color-r_1 : #b37488;
+        --color-r_2 : #d17092;
+        --color-r_3 : #e11539;
+        --color-r_4 : #710015;
+        --color-r_5 : #550216;
+        --color-y_1 : #FFA028;
+        --color-o_1 : #c24316;
+      }
+      .rfr {
+        font-family: "Roboto Flex", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-variation-settings:
+          "slnt" 0,
+          "wdth" 100,
+          "GRAD" 0,
+          "XOPQ" 96,
+          "XTRA" 468,
+          "YOPQ" 79,
+          "YTAS" 750,
+          "YTDE" -203,
+          "YTFI" 738,
+          "YTLC" 514,
+          "YTUC" 712;
+      }
+      
+      .rr {
+        font-family: "Roboto", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        font-variation-settings:
+          "wdth" 100;
+      }
+      
+    .rcr {
+      font-family: "Roboto Condensed", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
+    }
+  
+    body.closure {
+      background-color: #020001; 
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif; 
+      color: var(--color-w_1);
+      display: grid;
+      grid-template-columns: 200px 250px 1fr;
+      height: 100vh;
+      overflow: hidden;
+      font-size: 12px;
+      gap: 4px;
+    }
+    ::-webkit-scrollbar {
+        width: 2px;
+        height: 3px;
+    } 
+
+    ::-webkit-scrollbar-track {
+        background: #181818; 
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #3d3d3d;  
+    }
+        .column {
+          padding: 15px;
+        }
+        
+        #categories {
+      background-color: var(--bg-column-1);
+      overflow-y: auto;
+      height: 100vh;
+    }
+    
+    #events-column {
+      background-color: var(--color-gr_3);
+      overflow-y: auto;
+      height: 100vh;
+    }
+    
+    #details-column {
+      background-color: var(--bg-column-3);
+      overflow-y: auto;
+      height: 100vh;
+    }
+    
+    .region-header {
+      color: var(--region-color);
+      font-weight: bold;
+      margin: 15px 0 5px 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--region-color);
+    }
+    
+    .category-item, .event-item {
+      padding: 10px;
+      margin: 5px 0;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    
+    .category-item:hover {
+      background-color: rgba(78, 158, 123, 0.3);
+    }
+    
+    .event-item:hover {
+      background-color: rgba(78, 158, 123, 0.3);
+    }
+    
+    .event-item.active {
+      background-color: rgba(78, 158, 123, 0.5);
+    }
+    
+    h2 {
+      color: var(--accent-color);
+      margin-top: 0;
+    }
+    
+
+    .category-header {
+    cursor: pointer;
+    padding: 5px;
+    background-color: #1e1c1d;
+    border: 1px solid #202020;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.category-header img {
+    margin-right: 10px;
+}
+
+.category-header .event-count, .category-tournaments .event-count, .topTourn .event-count {
+    margin-left: auto;
+    font-weight: bold;
+    color: var(--color-w_2);
+}
+
+ul.topTourn, ul.category-tournaments, ul.tournament-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul.topTourn li, ul.category-tournaments li, ul.tournament-list li {
+    padding: 5px;
+    border-bottom: 1px solid #202020;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+ul.topTourn li img, ul.category-tournaments li img, ul.tournament-list li img {
+    margin-right: 10px;
+}
+
+.category-tournaments, .tournament-list {
+    display: none;
+}
+
+.expanded {
+    background-color: #202020;
+}
+.top-right {
+    overflow-x: auto;
+}
+.event-details {
+    border-top: 1px solid #212121;
+    padding: 10px;  
+}
+.col-middle {
+    width: 100%;
+    display: block; 
+}
+ul.tournamentEvents {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul.tournamentEvents li {
+    display: flex; 
+    min-width: 250px;
+    cursor: pointer;
+}
+
+
+.info-wrapper {
+            display: flex;
+            flex: 1;
+            align-items: stretch;
+        }
+        .date {
+            display: flex;
+            flex-direction: column; 
+            padding-right: 8px;
+            text-align: center;
+            flex: 0 0 35px;
+            -webkit-box-flex: 0;
+            color: #555;
+            border-right: 1px solid var();
+            justify-content: center;
+        }
+        .team-info {            
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: calc(100% - 35px); 
+        }
+        .teams-info { 
+            display: flex;
+            flex-direction: column;
+            overflow-x: clip; 
+            gap: 3px;
+            justify-content: center;
+            padding: 5px 0;
+            flex: 1 1 190px;
+        }
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            line-height: 1.51429;
+        }
+        .match-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 8px;
+            flex: 0 0 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-tabs-secondary-fill-base);
+            justify-content: space-around; 
+        }
+  </style>
+</head>
+<body class="closure">
+  <div id="categories" class="categories"></div>
+  <div id="events-column" class="top-right"></div>
+  <div id="details-column" class="event-details"></div>
+
+  <script>
+    const baseURL = 'https://api.sofascore.com/api/v1';
+    const staticImageUrl = 'https://www.sofascore.com/static/images';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+
+        Promise.all([
+            fetch(`${baseURL}/sport/football/categories`).then(response => response.json()),
+            fetch(`${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
+            fetch(`${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json())
+        ])
+        .then(([categoriesData, topTournamentsData, scheduledEventsData]) => {
+            const categories = categoriesData.categories.sort((a, b) => a.name.localeCompare(b.name));
+            const startOfDay = new Date(formattedDate).setHours(0, 30, 0, 0) / 1000;
+            const endOfDay = startOfDay + 36 * 60 * 60;
+            const topTournaments = topTournamentsData.uniqueTournaments;
+
+            const events = scheduledEventsData.events.filter(event => event.startTimestamp >= startOfDay && event.startTimestamp <= endOfDay);
+
+            const uniqueEvents = events.filter((event, index, self) => index === self.findIndex(e => e.id === event.id));
+
+            const categoryEventCounts = {};
+            const tournamentEventCounts = {};
+
+            uniqueEvents.forEach(event => {
+                const categoryId = event.tournament.category.id;
+                const tournamentId = event.tournament.uniqueTournament.id;
+
+                categoryEventCounts[categoryId] = (categoryEventCounts[categoryId] || 0) + 1;
+                tournamentEventCounts[tournamentId] = (tournamentEventCounts[tournamentId] || 0) + 1;
+            });
+
+            const leftCol = document.querySelector('.categories');
+            const topRightList = document.querySelector('.tournament-list');
+            const bottomRightDetails = document.querySelector('.event-details');
+            const middleCol = document.querySelector('.col-middle');
+
+            const promises = [];
+
+            let topTournamentsHtml = '<h2>Top leagues</h2><ul class="topTourn">';
+            topTournaments.forEach(tournament => {
+                if (tournamentEventCounts[tournament.id]) {
+                    const category = tournament.category;
+                    const imageUrl = category.alpha2
+                        ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
+                        : `${staticImageUrl}/flags/${category.flag}.png`;
+                    const eventCount = tournamentEventCounts[tournament.id];
+                    topTournamentsHtml += `<li data-tournament-id="${tournament.id}"><img src="${imageUrl}" alt="${category.name} flag" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${tournament.name}<span class="event-count">${eventCount}</span></li>`;
+                }
+            });
+            topTournamentsHtml += '</ul> <h2>All Leagues </h2>';
+
+            categories.forEach((category) => {
+                if (categoryEventCounts[category.id]) {
+                    const categoryId = category.id;
+                    const promise = fetch(`${baseURL}/category/${categoryId}/unique-tournaments`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const uniqueTournaments = data.groups[0].uniqueTournaments;
+                            const imageUrl = category.alpha2
+                                ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
+                                : `${staticImageUrl}/flags/${category.flag}.png`;
+
+                            const categoryEventCount = categoryEventCounts[category.id];
+                            let categoryHtml = `<div class="category-header"><img src="${imageUrl}" alt="${category.name} flag"  width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${category.name}<span class="event-count">${categoryEventCount}</span></div><ul class="category-tournaments">`;
+                            uniqueTournaments.forEach((tournament) => {
+                                if (tournamentEventCounts[tournament.id]) {
+                                    const tournamentEventCount = tournamentEventCounts[tournament.id];
+                                    categoryHtml += `<li data-tournament-id="${tournament.id}"><img src="${baseURL}/unique-tournament/${tournament.id}/image" alt="${tournament.name}" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;"> ${tournament.name}<span class="event-count">${tournamentEventCount}</span></li>`;
+                                }
+                            });
+                            categoryHtml += `</ul>`;
+                            return categoryHtml;
+                        });
+                    promises.push(promise);
+                }
+            });
+
+            Promise.all(promises).then(results => {
+                leftCol.innerHTML = topTournamentsHtml + results.join('');
+
+                const categoryHeaders = leftCol.querySelectorAll('.category-header');
+                categoryHeaders.forEach((header) => {
+                    header.addEventListener('click', () => {
+                        const ul = header.nextElementSibling;
+                        if (ul.style.display === 'none' || ul.style.display === '') {
+                            ul.style.display = 'block'; // Show the list
+                            header.classList.add('expanded'); // Add expanded class for styling
+                        } else {
+                            ul.style.display = 'none'; // Hide the list
+                            header.classList.remove('expanded'); // Remove expanded class for styling
+                        }
+
+                        // Close other categories if one is opened
+                        const otherHeaders = leftCol.querySelectorAll('.category-header');
+                        otherHeaders.forEach((otherHeader) => {
+                            if (otherHeader !== header) {
+                                const otherUl = otherHeader.nextElementSibling;
+                                otherUl.style.display = 'none';
+                                otherHeader.classList.remove('expanded');
+                            }
+                        });
+                    });
+                });
+
+
+                const tournamentItems = document.querySelectorAll('ul.topTourn li, .category-tournaments li');
+                tournamentItems.forEach(item => {
+                    item.addEventListener('click', async () => {
+                        const tournamentId = parseInt(item.dataset.tournamentId);
+                        try {
+                            const tournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === tournamentId);
+                            displayScheduledEvents(tournamentEvents);
+                        } catch (error) {
+                            console.error('Error fetching data:', error);
+                        }
+                    });
+                });
+
+                if (uniqueEvents.length > 0) {
+                    const firstTournamentId = uniqueEvents[0].tournament.uniqueTournament.id;
+                    const firstTournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === firstTournamentId);
+                    displayScheduledEvents(firstTournamentEvents);
+                }
+            }).catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        });
+    });
+
+    function displayScheduledEvents(events) {
+        const topRightList = document.querySelector('.top-right');
+        const bottomRightDetails = document.querySelector('.event-details');
+
+        if (!topRightList) {
+            console.error('Top right list element not found');
+            return;
+        }
+
+        if (!bottomRightDetails) {
+            console.error('Bottom right details element not found');
+            return;
+        }
+
+        let tournamentEventsHtml = '<ul class="tournamentEvents">';
+        events.forEach(event => {
+            const homeScore = event.homeScore?.current ?? '';
+            const awayScore = event.awayScore?.current ?? '';
+            const status = event.status.type;
+            const eventTime = new Date(event.startTimestamp * 1000).toLocaleString([], {
+                hour: '2-digit', minute: '2-digit', hour12: false
+            });
+
+            tournamentEventsHtml += `<li class="match-list ${status}" data-event-id="${event.id}" data-custom-id="${event.customId}" data-tournament-id="${event.tournament.id}" data-unique-tournament-id="${event.tournament.uniqueTournament.id}" data-season-id="${event.season.id}" data-home-team-id="${event.homeTeam.id}" data-away-team-id="${event.awayTeam.id}">
+                <div class="info-wrapper">
+                    <div class="date"><span>${eventTime}</span></div>
+                    <div class="team-info">
+                        <div class="teams-info">
+                            <div class="team"><img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">${event.homeTeam.shortName}</div>
+                            <div class="team"><img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">${event.awayTeam.shortName}</div>
+                        </div>
+                        <div class="match-score">
+                            <span class="score" id="homeScore-${event.id}">${homeScore}</span>
+                            <span class="score" id="awayScore-${event.id}">${awayScore}</span>
+                        </div>
+                    </div>
+                </div>
+            </li>`;
+        });
+        tournamentEventsHtml += '</ul>';
+        topRightList.innerHTML = tournamentEventsHtml;
+
+        const eventItems = topRightList.querySelectorAll('.match-list');
+        eventItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const eventId = item.getAttribute('data-event-id');
+                const selectedEvent = events.find(event => event.id == eventId);
+                displayEventDetails(selectedEvent);
+            });
+        });
+
+        if (events.length > 0) {
+            const firstEvent = events[0];
+            displayEventDetails(firstEvent);
+        } else {
+            bottomRightDetails.innerHTML = '<p>No events available.</p>';
+        }
+    }
+
+    function displayEventDetails(event) {
+        const bottomRightDetails = document.querySelector('.event-details');
+
+        if (!bottomRightDetails) {
+            console.error('Bottom right details element not found');
+            return;
+        }
+
+        const homeScore = event.homeScore?.current ?? '';
+        const awayScore = event.awayScore?.current ?? '';
+        const eventTime = new Date(event.startTimestamp * 1000).toLocaleString();
+        const eventDetailsHtml = `
+            <h2>Event Details ${event.id}</h2>
+            <p><strong>Event Name:</strong> ${event.homeTeam.name} vs ${event.awayTeam.name}</p>
+            <p><strong>Start Time:</strong> ${eventTime}</p>
+            <p><strong>Status:</strong> ${event.status.type}</p>
+            <p><strong>Score:</strong> ${homeScore} - ${awayScore}</p>
+        `;
+        bottomRightDetails.innerHTML = eventDetailsHtml;
+    }
+</script>
+</body>
+</html>
