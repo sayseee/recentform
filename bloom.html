@@ -25,7 +25,7 @@
         --color-r_4 : #710015;
         --color-r_5 : #550216;
         --color-y_1 : #FFA028;
-        --color-o_1 : #f8951f;
+        --color-o_1 : #e49d18;
       }
       .rfr {
         font-family: "Roboto Flex", sans-serif;
@@ -63,18 +63,35 @@
     }
   
     body.closure {
-      background-color: #121212; 
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif; 
-      color: var(--color-w_1);
-      display: grid;
-      grid-template-columns: 200px 250px 1fr 300px;
-      height: 100vh;
-      overflow: hidden;
-      font-size: 12px;
-      gap: 2px;
-    }
+    background-color: #121212; 
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif; 
+    color: var(--color-w_1);
+    display: grid;
+    grid-template-rows: 50px auto; /* Top row 50px, second row takes remaining space */
+    height: 100vh;
+    overflow: hidden;
+    font-size: 12px;
+    gap: 2px;
+}
+
+.header {
+    background-color: #1f222b; /* Adjust color as needed */
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 235px 265px 1fr 400px;
+    gap: 2px;
+}
+
     ::-webkit-scrollbar {
         width: 3px;
         height: 3px;
@@ -103,9 +120,11 @@
     }
     
     #details-column {
-      background-color: var(--color-gr_4);
+      background-color: var(--color-gr_4); 
+    }
+    .container-events { 
       overflow-y: auto;
-      height: 100vh;
+      height: calc(100vh - 250px);
     }
     
     .region-header {
@@ -198,6 +217,119 @@
 .L, .loss, .neg {
     background-color: var(--color-r_1);
 }
+
+
+.calendarCont {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    position: relative;
+}
+
+.calendar {
+    display: flex; 
+    gap: 5px;
+    position: relative;
+    background: rgb(6, 12, 26);
+    border-radius: 3px;
+}
+
+.calendar__navigation {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.calendar__datepicker svg {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+}
+
+.calendar__datepicker {
+    align-items: center;
+    background-color: initial;
+    border: initial;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    font-family: inherit;
+    font-weight: 600;
+    grid-area: datepicker;
+    height: 100%;
+    justify-content: space-between;
+    letter-spacing: .4px;
+    padding: 4px;
+    text-transform: uppercase;
+    flex: 1;
+    width: 100px;
+    gap: 10px;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.calendar__days {
+    width: 100%;
+    color: #fff;
+    display: none;
+    position: absolute;
+    border: 0; 
+    list-style: none;
+    padding: 0;
+    margin-top: 5px;
+    box-shadow: 2 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    top: 30px;
+    left: 0;
+    font-family: inherit;
+    background-size: 100% 100%;
+    background-image: linear-gradient(rgba(12, 22, 20, .1), transparent 20px), 
+                        radial-gradient(122% 370px at center -220px, #009969 0, transparent 100%), 
+                        linear-gradient(to right bottom, #215349, #084436);
+}
+
+.calendar__days[aria-expanded="true"] {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px; 
+}
+
+.calendar__listItem {
+    display: flex;
+    justify-content: center;
+    width: inherit; 
+}
+
+.calendar__day {
+    background: none;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer; 
+    color: inherit;
+    font-family: inherit;
+    width: inherit; 
+}
+
+.calendar__day:hover {
+    color: #fff;
+        background-size: 100% 100%;
+        background-image: linear-gradient(rgba(12, 22, 20, .1), transparent 20px), 
+                            radial-gradient(122% 370px at center -220px, #009969 0, transparent 100%), 
+                            linear-gradient(to right bottom, #0c1614, #084436);
+}
+
+.calendar__day--active {
+    background-color: #007bff;
+    color: #fff;
+}
+.calendar__navigation svg {
+    width: 24px;
+    height: 24px;
+    fill: #fff;
+}
+
     .category-header {
     cursor: pointer;
     padding: 5px;
@@ -248,7 +380,6 @@ ul.topTourn li img, ul.category-tournaments li img, ul.tournament-list li img {
 }
 .event-details {
     border-top: 1px solid #212121;
-    padding: 10px;  
 }
 .col-middle {
     width: 100%;
@@ -402,9 +533,9 @@ ul.tournamentEvents li:last-child {
 
 .tab-menu {
     display: flex;
-    justify-content: space-around;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #2C2C2C;
     color: var(--color-w_2);
+    gap: 3px;
 }
 
 .tab-button {
@@ -416,12 +547,12 @@ ul.tournamentEvents li:last-child {
     transition: all 0.3s ease;
     position: relative;
     color: var(--color-w_2);
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 12px;
+    background-color: #303440;
 }
 
-.tab-button.active {
-    border-bottom: 2px solid #007bff;
-    color: var(--color-w_2);
-} 
 .tab-content.active {
     display: block;
 } 
@@ -429,7 +560,7 @@ ul.tournamentEvents li:last-child {
     width: 45%; 
 }
  
-.event-row {padding:2px 5px; border-top: 1px solid #E6E9F695;}
+.event-row {padding:2px 0; border-top: 1px solid #E6E9F695;}
 .event-row:first-child {padding:4px; border-top: 0;}
 
 .event-row:not(:first-child) {
@@ -445,7 +576,6 @@ ul.tournamentEvents li:last-child {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 10px;
 }
 .homeParticipant, .awayParticipant {
     flex: 1;
@@ -488,6 +618,33 @@ ul.tournamentEvents li:last-child {
     width: 20px;
 }
 
+.filters__group {
+    list-style: none;
+    display: flex;
+    gap: 23px;
+    padding: 0;
+    margin: 0;
+}
+
+.filters__group li {
+    min-width: 50px;
+}
+
+.filters__group li a.active, .filters__group li a:hover {
+    color: var(--color-o_1); 
+}
+.filters__group li a {
+    text-decoration: none;
+    color: #ccc;
+    padding: 5px 10px;
+    width: 100%;
+    display: block;
+    text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 700;
+}
 .blink {
     animation: blink 1s infinite;
 }
@@ -515,16 +672,13 @@ ul.tournamentEvents li:last-child {
   transition: transform 0.3s ease;
 }
         
-.tab-button.active {
-    color: #333;
-}
-
 .tab-button.active:after {
     transform: scaleX(1);
 }
 
 .tab-content { 
     display: none;
+    padding: 10px;  
 }
         
 .tab-content.active {
@@ -532,23 +686,99 @@ ul.tournamentEvents li:last-child {
     animation: fadeIn 0.5s ease;
 }
 
+.tab-button.active {
+    border-bottom: 2px solid #007bff;
+    color: var(--color-w_2);
+} 
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
   </style>
 </head>
-<body class="closure">
-  <div id="categories" class="categories"></div>
-  <div id="events-column" class="top-right"></div>
-  <div id="details-column" class="event-details"></div>
-  <div id="data-column" class="event-data"></div>
+<body class="closure"> 
+    <div class="header">
+        <h2><img src="icons/SOCCER1.png" height="35"></h2> 
+        <nav class="filters nav">
+            <ul class="filters__group">
+                <li>
+                    <a href="#all-games" data-status="all" class="active">
+                        <i class="fas fa-landmark" aria-hidden="true"></i> <!-- Stadium icon -->
+                        All Games
+                    </a>
+                </li>
+                <li>
+                    <a href="#live-games" data-status="live">
+                        <i class="fas fa-broadcast-tower" aria-hidden="true"></i> <!-- Live icon -->
+                        In-Play
+                    </a>
+                </li>
+                <li>
+                    <a href="#finished-games" data-status="finished">
+                        <i class="fas fa-flag-checkered" aria-hidden="true"></i> <!-- Finished (Results) icon -->
+                        Finished
+                    </a>
+                </li>
+                <li>
+                    <a href="#scheduled-games" data-status="scheduled">
+                        <i class="fas fa-clock" aria-hidden="true"></i> <!-- Clock icon for Upcoming -->
+                        Upcoming
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="calendar">
+            <!-- Previous Day Button -->
+            <button class="calendar__navigation calendar__navigation--yesterday" title="Previous day">
+                <svg><use xlink:href="#arrow-left"></use></svg>
+            </button>
+        
+            <!-- Date Picker Button -->
+            <button id="calendarMenu" aria-expanded="false" class="calendar__datepicker">
+                <svg class="calendar__icon"><use xlink:href="#calendar"></use></svg>
+                <span id="selectedDate"></span>
+            </button>
+        
+            <!-- Calendar Days List -->
+            <ul aria-labelledby="calendarMenu" class="calendar__days">
+                <!-- Days will be dynamically populated here -->
+            </ul>
+        
+            <!-- Next Day Button -->
+            <button class="calendar__navigation calendar__navigation--tomorrow" title="Next day">
+                <svg><use xlink:href="#arrow-right"></use></svg>
+            </button>
+        </div>
+        
+        <!-- SVG Icons (for arrows and calendar) -->
+        <svg style="display: none;">
+            <symbol id="arrow-left" viewBox="0 0 24 24">
+                <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+            </symbol>
+            
+            <!-- Right Arrow (Next Day) -->
+            <symbol id="arrow-right" viewBox="0 0 24 24">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </symbol>
+        
+            <!-- Calendar Icon -->
+            <symbol id="calendar" viewBox="0 0 24 24">
+                <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/>
+            </symbol>
+        </svg>
+    </div>
+    <div class="main-content">
+        <div id="categories" class="categories"></div>
+        <div id="events-column" class="top-right"></div>
+        <div id="details-column" class="event-details"></div>
+        <div id="data-column" class="event-data"></div>
+    </div>
 
-  <script>
-    const baseURL = 'https://api.sofascore.com/api/v1';
-    const staticImageUrl = 'https://www.sofascore.com/static/images';
-
-    const fetchJson = async (url) => {
+    <script>
+        const baseURL = 'https://api.sofascore.com/api/v1';
+        const staticImageUrl = 'https://www.sofascore.com/static/images';
+    
+        const fetchJson = async (url) => {
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
@@ -561,137 +791,327 @@ ul.tournamentEvents li:last-child {
                 return null;
             }
         };
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const formattedDate = `${year}-${month}-${day}`;
-
-        Promise.all([
-            fetch(`${baseURL}/sport/football/categories`).then(response => response.json()),
-            fetch(`${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
-            fetch(`${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json())
-        ])
-        .then(([categoriesData, topTournamentsData, scheduledEventsData]) => {
-            const categories = categoriesData.categories.sort((a, b) => a.name.localeCompare(b.name));
-            const startOfDay = new Date(formattedDate).setHours(0, 30, 0, 0) / 1000;
-            const endOfDay = startOfDay + 36 * 60 * 60;
-            const topTournaments = topTournamentsData.uniqueTournaments;
-
-            const events = scheduledEventsData.events.filter(event => event.startTimestamp >= startOfDay && event.startTimestamp <= endOfDay);
-
-            const uniqueEvents = events.filter((event, index, self) => index === self.findIndex(e => e.id === event.id));
-
-            const categoryEventCounts = {};
-            const tournamentEventCounts = {};
-
-            uniqueEvents.forEach(event => {
-                const categoryId = event.tournament.category.id;
-                const tournamentId = event.tournament.uniqueTournament.id;
-
-                categoryEventCounts[categoryId] = (categoryEventCounts[categoryId] || 0) + 1;
-                tournamentEventCounts[tournamentId] = (tournamentEventCounts[tournamentId] || 0) + 1;
-            });
-
-            const leftCol = document.querySelector('.categories');
-            const topRightList = document.querySelector('.tournament-list');
-            const bottomRightDetails = document.querySelector('.event-details');
-            const middleCol = document.querySelector('.col-middle');
-
-            const promises = [];
-
-            let topTournamentsHtml = '<h2>Top leagues</h2><ul class="topTourn">';
-            topTournaments.forEach(tournament => {
-                if (tournamentEventCounts[tournament.id]) {
-                    const category = tournament.category;
-                    const imageUrl = category.alpha2
-                        ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
-                        : `${staticImageUrl}/flags/${category.flag}.png`;
-                    const eventCount = tournamentEventCounts[tournament.id];
-                    topTournamentsHtml += `<li data-tournament-id="${tournament.id}"><img src="${imageUrl}" alt="${category.name} flag" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${tournament.name}<span class="event-count rcr">${eventCount}</span></li>`;
+    
+        // Function to format date as "DD/MM Day"
+        const formatDate = (date) => {
+            const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+            const day = days[date.getDay()];
+            return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')} ${day}`;
+        };
+    
+        // Function to format date as "YYYY-MM-DD" for API requests
+        const formatDateForApi = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+    
+        // Function to fetch and display events for a specific date and status
+        const fetchAndDisplayEvents = async (date, status = 'all') => {
+            const formattedDate = formatDateForApi(date);
+            
+            try {
+                const [categoriesData, topTournamentsData, scheduledEventsData] = await Promise.all([
+                    fetch(`${baseURL}/sport/football/categories`).then(response => response.json()),
+                    fetch(`${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
+                    fetch(`${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json())
+                ]);
+    
+                const categories = categoriesData.categories.sort((a, b) => a.name.localeCompare(b.name));
+                const startOfDay = new Date(formattedDate).setHours(0, 30, 0, 0) / 1000;
+                const endOfDay = startOfDay + 36 * 60 * 60;
+                const topTournaments = topTournamentsData.uniqueTournaments;
+    
+                let events = scheduledEventsData.events.filter(event => event.startTimestamp >= startOfDay && event.startTimestamp <= endOfDay);
+                let uniqueEvents = events.filter((event, index, self) => index === self.findIndex(e => e.id === event.id));
+    
+                // Apply event status filter
+                if (status !== 'all') {
+                    uniqueEvents = uniqueEvents.filter(event => {
+                        switch (status) {
+                            case 'live':
+                                return event.status?.type === 'inprogress';
+                            case 'finished':
+                                return event.status?.type === 'finished';
+                            case 'scheduled':
+                                return event.status?.type === 'notstarted';
+                            default:
+                                return true;
+                        }
+                    });
                 }
-            });
-            topTournamentsHtml += '</ul> <h2>All Leagues </h2>';
-
-            categories.forEach((category) => {
-                if (categoryEventCounts[category.id]) {
-                    const categoryId = category.id;
-                    const promise = fetch(`${baseURL}/category/${categoryId}/unique-tournaments`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const uniqueTournaments = data.groups[0].uniqueTournaments;
-                            const imageUrl = category.alpha2
-                                ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
-                                : `${staticImageUrl}/flags/${category.flag}.png`;
-
-                            const categoryEventCount = categoryEventCounts[category.id];
-                            let categoryHtml = `<div class="category-header"><img src="${imageUrl}" alt="${category.name} flag"  width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${category.name}<span class="event-count rcr">${categoryEventCount}</span></div><ul class="category-tournaments">`;
-                            uniqueTournaments.forEach((tournament) => {
-                                if (tournamentEventCounts[tournament.id]) {
-                                    const tournamentEventCount = tournamentEventCounts[tournament.id];
-                                    categoryHtml += `<li data-tournament-id="${tournament.id}"><img src="${baseURL}/unique-tournament/${tournament.id}/image" alt="${tournament.name}" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;"> ${tournament.name}<span class="event-count rcr">${tournamentEventCount}</span></li>`;
+    
+                const categoryEventCounts = {};
+                const tournamentEventCounts = {};
+    
+                uniqueEvents.forEach(event => {
+                    const categoryId = event.tournament.category.id;
+                    const tournamentId = event.tournament.uniqueTournament.id;
+    
+                    categoryEventCounts[categoryId] = (categoryEventCounts[categoryId] || 0) + 1;
+                    tournamentEventCounts[tournamentId] = (tournamentEventCounts[tournamentId] || 0) + 1;
+                });
+    
+                const leftCol = document.querySelector('.categories');
+                const topRightList = document.querySelector('.tournament-list');
+                const bottomRightDetails = document.querySelector('.event-details');
+                const middleCol = document.querySelector('.col-middle');
+    
+                const promises = [];
+    
+                let topTournamentsHtml = '<h2>Top leagues</h2><ul class="topTourn">';
+                topTournaments.forEach(tournament => {
+                    if (tournamentEventCounts[tournament.id]) {
+                        const category = tournament.category;
+                        const imageUrl = category.alpha2
+                            ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
+                            : `${staticImageUrl}/flags/${category.flag}.png`;
+                        const eventCount = tournamentEventCounts[tournament.id];
+                        topTournamentsHtml += `<li data-tournament-id="${tournament.id}"><img src="${imageUrl}" alt="${category.name} flag" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${tournament.name}<span class="event-count rcr">${eventCount}</span></li>`;
+                    }
+                });
+                topTournamentsHtml += '</ul> <h2>All Leagues </h2>';
+    
+                categories.forEach((category) => {
+                    if (categoryEventCounts[category.id]) {
+                        const categoryId = category.id;
+                        const promise = fetch(`${baseURL}/category/${categoryId}/unique-tournaments`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const uniqueTournaments = data.groups[0].uniqueTournaments;
+                                const imageUrl = category.alpha2
+                                    ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
+                                    : `${staticImageUrl}/flags/${category.flag}.png`;
+    
+                                const categoryEventCount = categoryEventCounts[category.id];
+                                let categoryHtml = `<div class="category-header"><img src="${imageUrl}" alt="${category.name} flag"  width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${category.name}<span class="event-count rcr">${categoryEventCount}</span></div><ul class="category-tournaments">`;
+                                uniqueTournaments.forEach((tournament) => {
+                                    if (tournamentEventCounts[tournament.id]) {
+                                        const tournamentEventCount = tournamentEventCounts[tournament.id];
+                                        categoryHtml += `<li data-tournament-id="${tournament.id}"><img src="${baseURL}/unique-tournament/${tournament.id}/image" alt="${tournament.name}" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;"> ${tournament.name}<span class="event-count rcr">${tournamentEventCount}</span></li>`;
+                                    }
+                                });
+                                categoryHtml += `</ul>`;
+                                return categoryHtml;
+                            });
+                        promises.push(promise);
+                    }
+                });
+    
+                Promise.all(promises).then(results => {
+                    leftCol.innerHTML = topTournamentsHtml + results.join('');
+    
+                    const categoryHeaders = leftCol.querySelectorAll('.category-header');
+                    categoryHeaders.forEach((header) => {
+                        header.addEventListener('click', () => {
+                            const ul = header.nextElementSibling;
+                            if (ul.style.display === 'none' || ul.style.display === '') {
+                                ul.style.display = 'block';
+                                header.classList.add('expanded');
+                            } else {
+                                ul.style.display = 'none';
+                                header.classList.remove('expanded');
+                            }
+    
+                            const otherHeaders = leftCol.querySelectorAll('.category-header');
+                            otherHeaders.forEach((otherHeader) => {
+                                if (otherHeader !== header) {
+                                    const otherUl = otherHeader.nextElementSibling;
+                                    otherUl.style.display = 'none';
+                                    otherHeader.classList.remove('expanded');
                                 }
                             });
-                            categoryHtml += `</ul>`;
-                            return categoryHtml;
                         });
-                    promises.push(promise);
-                }
-            });
-
-            Promise.all(promises).then(results => {
-                leftCol.innerHTML = topTournamentsHtml + results.join('');
-
-                const categoryHeaders = leftCol.querySelectorAll('.category-header');
-                categoryHeaders.forEach((header) => {
-                    header.addEventListener('click', () => {
-                        const ul = header.nextElementSibling;
-                        if (ul.style.display === 'none' || ul.style.display === '') {
-                            ul.style.display = 'block'; // Show the list
-                            header.classList.add('expanded'); // Add expanded class for styling
-                        } else {
-                            ul.style.display = 'none'; // Hide the list
-                            header.classList.remove('expanded'); // Remove expanded class for styling
-                        }
-
-                        // Close other categories if one is opened
-                        const otherHeaders = leftCol.querySelectorAll('.category-header');
-                        otherHeaders.forEach((otherHeader) => {
-                            if (otherHeader !== header) {
-                                const otherUl = otherHeader.nextElementSibling;
-                                otherUl.style.display = 'none';
-                                otherHeader.classList.remove('expanded');
+                    });
+    
+                    const tournamentItems = document.querySelectorAll('ul.topTourn li, .category-tournaments li');
+                    tournamentItems.forEach(item => {
+                        item.addEventListener('click', async () => {
+                            const tournamentId = parseInt(item.dataset.tournamentId);
+                            try {
+                                const tournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === tournamentId);
+                                displayScheduledEvents(tournamentEvents);
+                            } catch (error) {
+                                console.error('Error fetching data:', error);
                             }
                         });
                     });
+    
+                    if (uniqueEvents.length > 0) {
+                        const firstTournamentId = uniqueEvents[0].tournament.uniqueTournament.id;
+                        const firstTournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === firstTournamentId);
+                        displayScheduledEvents(firstTournamentEvents);
+                    } else {
+                        // Display a message when no events are found
+                        middleCol.innerHTML = '<div class="no-events">No events found for the selected date and filter.</div>';
+                    }
+                }).catch(error => {
+                    console.error('Error fetching data:', error);
                 });
-
-
-                const tournamentItems = document.querySelectorAll('ul.topTourn li, .category-tournaments li');
-                tournamentItems.forEach(item => {
-                    item.addEventListener('click', async () => {
-                        const tournamentId = parseInt(item.dataset.tournamentId);
-                        try {
-                            const tournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === tournamentId);
-                            displayScheduledEvents(tournamentEvents);
-                        } catch (error) {
-                            console.error('Error fetching data:', error);
-                        }
+            } catch (error) {
+                console.error('Error fetching events:', error);
+            }
+        };
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize calendar
+            const calendarMenu = document.getElementById('calendarMenu');
+            const calendarDays = document.querySelector('.calendar__days');
+            const selectedDateElement = document.getElementById('selectedDate');
+            const yesterdayButton = document.querySelector('.calendar__navigation--yesterday');
+            const tomorrowButton = document.querySelector('.calendar__navigation--tomorrow');
+            
+            // Initialize status filter
+            const filterButtons = document.querySelectorAll('.filters__group a');
+            let currentStatus = 'all';
+            let currentDate = new Date();
+    
+            // Function to update the calendar days
+            const updateCalendarDays = () => {
+                calendarDays.innerHTML = '';
+                for (let i = -7; i <= 7; i++) {
+                    const date = new Date(currentDate);
+                    date.setDate(currentDate.getDate() + i);
+    
+                    const li = document.createElement('li');
+                    li.className = 'calendar__listItem';
+    
+                    const button = document.createElement('button');
+                    button.className = 'calendar__day';
+                    button.textContent = formatDate(date);
+    
+                    if (i === 0) {
+                        button.classList.add('calendar__day--active');
+                    }
+    
+                    button.addEventListener('click', () => {
+                        currentDate = date;
+                        selectedDateElement.textContent = formatDate(date);
+                        fetchAndDisplayEvents(date, currentStatus);
+                        calendarMenu.setAttribute('aria-expanded', 'false');
+                        calendarDays.style.display = 'none';
                     });
-                });
-
-                if (uniqueEvents.length > 0) {
-                    const firstTournamentId = uniqueEvents[0].tournament.uniqueTournament.id;
-                    const firstTournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === firstTournamentId);
-                    displayScheduledEvents(firstTournamentEvents);
+    
+                    li.appendChild(button);
+                    calendarDays.appendChild(li);
                 }
-            }).catch(error => {
-                console.error('Error fetching data:', error);
+            };
+    
+            // Initialize status filter buttons
+            filterButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Update active state
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Update current status and fetch events
+                    currentStatus = button.dataset.status;
+                    fetchAndDisplayEvents(currentDate, currentStatus);
+                });
+            });
+    
+            // Initialize calendar and fetch today's events
+            selectedDateElement.textContent = formatDate(currentDate);
+            updateCalendarDays();
+            fetchAndDisplayEvents(currentDate, currentStatus);
+    
+            // Toggle calendar days visibility
+            calendarMenu.addEventListener('click', () => {
+                const isExpanded = calendarMenu.getAttribute('aria-expanded') === 'true';
+                calendarMenu.setAttribute('aria-expanded', !isExpanded);
+                calendarDays.style.display = isExpanded ? 'none' : 'grid';
+            });
+    
+            // Navigate to previous day
+            yesterdayButton.addEventListener('click', () => {
+                currentDate.setDate(currentDate.getDate() - 1);
+                selectedDateElement.textContent = formatDate(currentDate);
+                fetchAndDisplayEvents(currentDate, currentStatus);
+                updateCalendarDays();
+            });
+    
+            // Navigate to next day
+            tomorrowButton.addEventListener('click', () => {
+                currentDate.setDate(currentDate.getDate() + 1);
+                selectedDateElement.textContent = formatDate(currentDate);
+                fetchAndDisplayEvents(currentDate, currentStatus);
+                updateCalendarDays();
             });
         });
-    });
+     
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize calendar
+            const calendarMenu = document.getElementById('calendarMenu');
+            const calendarDays = document.querySelector('.calendar__days');
+            const selectedDateElement = document.getElementById('selectedDate');
+            const yesterdayButton = document.querySelector('.calendar__navigation--yesterday');
+            const tomorrowButton = document.querySelector('.calendar__navigation--tomorrow');
+    
+            let currentDate = new Date();
+    
+            // Function to update the calendar days
+            const updateCalendarDays = () => {
+                calendarDays.innerHTML = '';
+                for (let i = -7; i <= 7; i++) {
+                    const date = new Date(currentDate);
+                    date.setDate(currentDate.getDate() + i);
+    
+                    const li = document.createElement('li');
+                    li.className = 'calendar__listItem';
+    
+                    const button = document.createElement('button');
+                    button.className = 'calendar__day';
+                    button.textContent = formatDate(date);
+    
+                    if (i === 0) {
+                        button.classList.add('calendar__day--active');
+                    }
+    
+                    button.addEventListener('click', () => {
+                        currentDate = date;
+                        selectedDateElement.textContent = formatDate(date);
+                        fetchAndDisplayEvents(date);
+                        calendarMenu.setAttribute('aria-expanded', 'false');
+                        calendarDays.style.display = 'none';
+                    });
+    
+                    li.appendChild(button);
+                    calendarDays.appendChild(li);
+                }
+            };
+    
+            // Initialize calendar and fetch today's events
+            selectedDateElement.textContent = formatDate(currentDate);
+            updateCalendarDays();
+            fetchAndDisplayEvents(currentDate);
+    
+            // Toggle calendar days visibility
+            calendarMenu.addEventListener('click', () => {
+                const isExpanded = calendarMenu.getAttribute('aria-expanded') === 'true';
+                calendarMenu.setAttribute('aria-expanded', !isExpanded);
+                calendarDays.style.display = isExpanded ? 'none' : 'grid';
+            });
+    
+            // Navigate to previous day
+            yesterdayButton.addEventListener('click', () => {
+                currentDate.setDate(currentDate.getDate() - 1);
+                selectedDateElement.textContent = formatDate(currentDate);
+                fetchAndDisplayEvents(currentDate);
+                updateCalendarDays();
+            });
+    
+            // Navigate to next day
+            tomorrowButton.addEventListener('click', () => {
+                currentDate.setDate(currentDate.getDate() + 1);
+                selectedDateElement.textContent = formatDate(currentDate);
+                fetchAndDisplayEvents(currentDate);
+                updateCalendarDays();
+            });
+        });
+     
   // Function to convert fractional odds to decimal odds
   function fractionalToDecimal(fractionalOdds) {
   if (fractionalOdds === '-') return 0;
@@ -1164,8 +1584,8 @@ function displayScheduledEvents(events) {
             <div id="match-odds" class="flex _F_r _F_jc">  
             </div> 
             <div class="tab-menu">
-    <button class="tab-button active" data-tab="overall-events">Overall</button>
-    <button class="tab-button" data-tab="home-vs-away-events">Home vs Away</button>
+    <button class="tab-button active rcr" data-tab="overall-events">Overall</button>
+    <button class="tab-button rcr" data-tab="home-vs-away-events">Home vs Away</button>
 </div>
 <div class="container-events">
     <div class="tab-content active" id="overall-events">
