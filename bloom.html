@@ -88,7 +88,7 @@
 
 .main-content {
     display: grid;
-    grid-template-columns: 235px 265px 1fr 400px;
+    grid-template-columns: 235px 265px 1fr 300px;
     gap: 2px;
 }
 
@@ -557,33 +557,21 @@ ul.tournamentEvents li:last-child {
     display: block;
 } 
 .home-form, .away-form, .atHome-form, .atAway-form {
-    width: 45%; 
-}
- 
-.event-row {padding:2px 0; border-top: 1px solid #E6E9F695;}
-.event-row:first-child {padding:4px; border-top: 0;}
-
-.event-row:not(:first-child) {
-    border-top: var(--color-support-3) 1px solid;   
+    width: 45%;
+    margin-top: 20px;
 } 
 .event__row .tourn {
     width: 22px;
 }
 .time {
     margin: 0;
-    width: 55px;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
+    width: 55px; 
+} 
+.event__row .score {
+    width: 25px;
 }
-.time span {
-    margin: 0;
-    width: 55px;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
+.event__row .teamNames  {
+    width: 75px;
 }
 .homeParticipant, .awayParticipant {
     flex: 1;
@@ -596,7 +584,7 @@ ul.tournamentEvents li:last-child {
     width: 16px;
     text-align: center;
 }
-.event-row .odds {
+.event__row .odds {
     display: flex;
     flex-direction: column;
     font-size: 10px;
@@ -608,11 +596,11 @@ ul.tournamentEvents li:last-child {
     font-weight: 500;
 }
 
-.event-row .odds-info {
+.event__row .odds-info {
     display: flex;    
     flex: 0 0 100px;
 }
-.event-row .odds-info span {
+.event__row .odds-info span {
     flex: 1;
 }
 .form-result {
@@ -695,7 +683,6 @@ ul.tournamentEvents li:last-child {
 }
 
 .tab-button.active {
-    border-bottom: 2px solid #007bff;
     color: var(--color-w_2);
 } 
         @keyframes fadeIn {
@@ -707,11 +694,18 @@ ul.tournamentEvents li:last-child {
     font-weight: 700;
     font-size: 10px;
 }
-.stats-row span {
+.stats-row div {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: 1;
+    padding: 5px;
+}
+.stats-row {
+    gap: 3px;
+}
+.stats-row:first-child {
+    background-color: #1f222b;
 }
   </style>
 </head>
@@ -1345,21 +1339,21 @@ const displayTeamStats = (teamStats, containerId) => {
 
     statsElem.innerHTML = `
         <div class="stats-row flex _F_r _F_jc">
-            <span>${teamStats.totalGoalsScored + teamStats.totalGoalsConceded}</span>
-            <span>${teamStats.totalGoalsScored}</span>
-            <span>${teamStats.totalGoalsConceded}</span>
-            <span>${averageGoals}</span>
-            <span>${averageGoalsScored}</span>
-            <span>${averageGoalsConceded}</span>
-            <span>${winsPercent}</span>
-            <span>${drawsPercent}</span>
-            <span>${lossesPercent}</span>
-            <span>${cleanSheetsPercent}</span>
-            <span>${failedToScorePercent}</span>
-            <span>${bttsPercent}</span>
-            <span>${over1_5Percent}</span>
-            <span>${over2_5Percent}</span>
-            <span>${over3_5Percent}</span> 
+            <div>${teamStats.totalGoalsScored + teamStats.totalGoalsConceded}</div>
+            <div>${teamStats.totalGoalsScored}</div>
+            <div>${teamStats.totalGoalsConceded}</div>
+            <div>${averageGoals}</div>
+            <div>${averageGoalsScored}</div>
+            <div>${averageGoalsConceded}</div>
+            <div>${winsPercent}</div>
+            <div>${drawsPercent}</div>
+            <div>${lossesPercent}</div>
+            <div>${cleanSheetsPercent}</div>
+            <div>${failedToScorePercent}</div>
+            <div>${bttsPercent}</div>
+            <div>${over1_5Percent}</div>
+            <div>${over2_5Percent}</div>
+            <div>${over3_5Percent}</div>
         </div>
     `;
 
@@ -1398,37 +1392,35 @@ const displayLast5Events = async (teamStats, containerId) => {
             oddsDisplay = '<span>-</span><span>-</span><span>-</span>';
         }
 
-        const eventElem = document.createElement('div');
-        eventElem.className = 'event-row'; 
-        eventElem.innerHTML = `  
+        const eventContent = `  
             <div class="event__row flex _F_r gT10 _F_ac" data-id="${event.eventId}">
-                <span class="event-date time">
-                    <span>${new Date(event.timeStamp * 1000).toLocaleDateString('en-GB', { 
+                <div class="event-date time">${new Date(event.timeStamp * 1000).toLocaleDateString('en-GB', { 
                         day: '2-digit', month: '2-digit', year: '2-digit' 
-                    }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
-                </span>
-                <span class="form-result ${event.result}">${event.result}</span>
-                <span class="tourn">
+                    }).replace(',', '.').replace('/', '.').replace('/', '.')}</div>
+                <div class="form-result ${event.result}">${event.result}</div>
+                <div class="tourn">
                     <img src="${baseURL}/unique-tournament/${event.uniqueTournamentId}/image" alt="${event.uniqueTournamentName}"
                         width="20" 
                         height="20" 
                         loading="lazy"
                         onerror="this.onerror=null;this.src='https://www.sofascore.com/static/images/placeholders/tournament.svg';">
-                </span>
-                <span class="teamNames flex _F_c _F1">
+                </div>
+                <div class="teamNames flex _F_c _F1">
                     <span class="team-name homeParticipant">${homeTeamName}</span>
                     <span class="team-name awayParticipant">${awayTeamName}</span> 
-                </span> 
-                <span class="score flex _F_c">
+                </div> 
+                <div class="score flex _F_c">
                     <span><span>${homeTeamPeriod1Score}</span><span>${homeTeamScore}</span></span>
                     <span><span>${awayTeamPeriod1Score}</span><span>${awayTeamScore}</span></span>
-                </span>
-                <span class="odds">
+                </div>
+                <div class="odds">
                     ${oddsDisplay}
-                </span>
+                </div>
             </div> 
         `;
-        container.appendChild(eventElem);
+
+        container.insertAdjacentHTML('beforeend', eventContent);
+
     }
 };
 
@@ -1483,22 +1475,22 @@ const displayLast5Events = async (teamStats, containerId) => {
             <div class="container-events">
                 <div class="tab-content active" id="overall-events">
                     <div class="form-container">
-                        <div class="stats-row flex _F_r _F_jc">
-                            <span>TG</span>
-                            <span>TAG</span>
-                            <span>TS</span>
-                            <span>TC</span>
-                            <span>AGS</span>
-                            <span>AGC</span>
-                            <span>W %</span>
-                            <span>D %</span>
-                            <span>L %</span>
-                            <span>CS %</span>
-                            <span>FTS %</span>
-                            <span>BTTS %</span>
-                            <span>+1.5 %</span>
-                            <span>+2.5 %</span>
-                            <span>+3.5 %</span>
+                        <div class="stats-row flex _F_r _F_jc title rcr">
+                            <div>TG</div>
+                            <div>TAG</div>
+                            <div>TS</div>
+                            <div>TC</div>
+                            <div>AGS</div>
+                            <div>AGC</div>
+                            <div>W%</div>
+                            <div>D%</div>
+                            <div>L%</div>
+                            <div>CS%</div>
+                            <div>FTS%</div>
+                            <div>BTS%</div>
+                            <div>+1.5 %</div>
+                            <div>+2.5 %</div>
+                            <div>+3.5 %</div>
                         </div>
                         <div id="home-team-stats"></div>
                         <div id="away-team-stats"></div>
@@ -1514,22 +1506,22 @@ const displayLast5Events = async (teamStats, containerId) => {
                 </div>
                 <div class="tab-content" id="home-vs-away-events">
                     <div class="form-container">
-                        <div class="stats-row flex _F_r _F_jc">
-                            <span>TG</span>
-                            <span>TAG</span>
-                            <span>TS</span>
-                            <span>TC</span>
-                            <span>AGS</span>
-                            <span>AGC</span>
-                            <span>W</span>
-                            <span>D</span>
-                            <span>L</span>
-                            <span>CS</span>
-                            <span>FTS</span>
-                            <span>BTTS:</span>
-                            <span>+1.5</span>
-                            <span>+2.5</span>
-                            <span>+3.5</span>
+                        <div class="stats-row flex _F_r _F_jc title rcr">
+                            <div>TG</div>
+                            <div>TAG</div>
+                            <div>TS</div>
+                            <div>TC</div>
+                            <div>AGS</div>
+                            <div>AGC</div>
+                            <div>W%</div>
+                            <div>D%</div>
+                            <div>L%</div>
+                            <div>CS%</div>
+                            <div>FTS%</div>
+                            <div>BTS%</div>
+                            <div>+1.5 %</div>
+                            <div>+2.5 %</div>
+                            <div>+3.5 %</div>
                         </div>
                         <div id="at-home-stats"></div>
                         <div id="at-away-stats"></div>
