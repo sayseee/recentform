@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <title>Football Events Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <style>
 
 :root {
@@ -65,8 +68,7 @@
     body.closure {
     background-color: #121212; 
     margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif; 
+    padding: 0; 
     color: var(--color-w_1);
     display: grid;
     grid-template-rows: 50px auto; /* Top row 50px, second row takes remaining space */
@@ -533,24 +535,24 @@ ul.tournamentEvents li:last-child {
 
 .tab-menu {
     display: flex;
-    border-bottom: 1px solid #2C2C2C;
+    border-bottom: 1px solid #1f222b;
     color: var(--color-w_2);
     gap: 3px;
+    padding: 0 10px;
 }
 
 .tab-button {
     background-color: transparent;
     border: none;
-    padding: 5px 15px;
-    font-size: 14px;
+    padding: 7px 16px;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
     color: var(--color-w_2);
     text-transform: uppercase;
     font-weight: 700;
-    font-size: 10px;
-    background-color: #303440;
+    font-size: 12px;
+    background-color: #1f222b;
 }
 
 .tab-content.active {
@@ -687,6 +689,7 @@ ul.tournamentEvents li:last-child {
 
 .tab-button.active {
     color: var(--color-w_2);
+    background-color: #303440;
 } 
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -694,23 +697,26 @@ ul.tournamentEvents li:last-child {
         }
 .stats-row.title {
     text-transform: uppercase;
-    font-weight: 700;
-    font-size: 10px;
-    background-color: #1f222b;
+    font-weight: 700; 
 }
 .stats-row div {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: 1;
-    padding: 5px;
+    padding: 8px 5px;
+    background-color: rgba(6, 12, 26, 0.6);
 }
 .stats-row {
-    gap: 3px;
+    gap: 2px;
+    margin-bottom: 2px;
 } 
+.stats-row.title div { 
+    background-color: #1f222b;
+}
   </style>
 </head>
-<body class="closure"> 
+<body class="closure rfr"> 
     <div class="header">
         <h2><img src="icons/SOCCER1.png" height="35"></h2> 
         <nav class="filters nav">
