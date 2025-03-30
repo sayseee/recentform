@@ -541,8 +541,8 @@ ul.tournamentEvents li:last-child {
 .tab-button {
     background-color: transparent;
     border: none;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 8px 15px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -574,7 +574,15 @@ ul.tournamentEvents li:last-child {
     width: 55px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
+    align-items: center;
+}
+.time span {
+    margin: 0;
+    width: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
     align-items: center;
 }
 .homeParticipant, .awayParticipant {
@@ -694,6 +702,12 @@ ul.tournamentEvents li:last-child {
             from { opacity: 0; }
             to { opacity: 1; }
         }
+.stats-row span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
   </style>
 </head>
 <body class="closure"> 
@@ -1299,16 +1313,14 @@ const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimes
     };
 };
 
-
-
-const displayLast5Events = async (teamStats, containerId) => {
+// Function to display team stats
+const displayTeamStats = (teamStats, containerId) => {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear the container before appending
 
     // Calculate the averages
     const totalEvents = teamStats.results.length;
-      // Calculate the percentages for each stat
-      const winsPercent = totalEvents > 0 ? ((teamStats.wins / totalEvents) * 100).toFixed(0) : 0;
+    const winsPercent = totalEvents > 0 ? ((teamStats.wins / totalEvents) * 100).toFixed(0) : 0;
     const drawsPercent = totalEvents > 0 ? ((teamStats.draws / totalEvents) * 100).toFixed(0) : 0;
     const lossesPercent = totalEvents > 0 ? ((teamStats.losses / totalEvents) * 100).toFixed(0) : 0;
     const cleanSheetsPercent = totalEvents > 0 ? ((teamStats.cleanSheets / totalEvents) * 100).toFixed(0) : 0;
@@ -1322,35 +1334,41 @@ const displayLast5Events = async (teamStats, containerId) => {
     const averageGoalsConceded = totalEvents > 0 ? (teamStats.totalGoalsConceded / totalEvents).toFixed(2) : 0;
     const averageGoals = totalEvents > 0 ? ((teamStats.totalGoalsConceded + teamStats.totalGoalsScored) / totalEvents).toFixed(2) : 0;
 
-    // Display the team stats including averages
+    // Display stats in three rows
     const statsElem = document.createElement('div');
-    statsElem.className = 'team-stats-summary'; // You can create a new class for the stats summary
+    statsElem.className = 'team-stats-summary';
 
     statsElem.innerHTML = `
-        <div class="stats-overview">
-            <p><strong>Wins:</strong> ${winsPercent}%</p>
-            <p><strong>Draws:</strong> ${drawsPercent}%</p>
-            <p><strong>Losses:</strong> ${lossesPercent}%</p>
-            <p><strong>Clean Sheets:</strong> ${cleanSheetsPercent}%</p>
-            <p><strong>Failed to Score:</strong> ${failedToScorePercent}%</p>
-            <p><strong>BTTS:</strong> ${bttsPercent}%</p>
-            <p><strong>Over 1.5 Goals:</strong> ${over1_5Percent}%</p>
-            <p><strong>Over 2.5 Goals:</strong> ${over2_5Percent}%</p>
-            <p><strong>Over 3.5 Goals:</strong> ${over3_5Percent}%</p>
-            <p><strong>Total Goals:</strong> ${teamStats.totalGoalsScored + teamStats.totalGoalsConceded}</p>
-            <p><strong>Total Goals Scored:</strong> ${teamStats.totalGoalsScored}</p>
-            <p><strong>Total Goals Conceded:</strong> ${teamStats.totalGoalsConceded}</p>
-            <p><strong>Average Goals:</strong> ${averageGoals}</p>
-            <p><strong>Average Goals Scored:</strong> ${averageGoalsScored}</p>
-            <p><strong>Average Goals Conceded:</strong> ${averageGoalsConceded}</p>
+        <div class="stats-row flex _F_r _F_jc">
+            <span>${teamStats.totalGoalsScored + teamStats.totalGoalsConceded}</span>
+            <span>${teamStats.totalGoalsScored}</span>
+            <span>${teamStats.totalGoalsConceded}</span>
+            <span>${averageGoals}</span>
+            <span>${averageGoalsScored}</span>
+            <span>${averageGoalsConceded}</span>
+            <span>${winsPercent}</span>
+            <span>${drawsPercent}</span>
+            <span>${lossesPercent}</span>
+            <span>${cleanSheetsPercent}</span>
+            <span>${failedToScorePercent}</span>
+            <span>${bttsPercent}</span>
+            <span>${over1_5Percent}</span>
+            <span>${over2_5Percent}</span>
+            <span>${over3_5Percent}</span> 
         </div>
     `;
 
-    // Append the stats to the container
     container.appendChild(statsElem);
+};
+
+// Function to display last 5 events
+const displayLast5Events = async (teamStats, containerId) => {
+    const container = document.getElementById(containerId);
+    container.innerHTML = ''; // Clear the container before appending
 
     const events = teamStats.results.slice(0, 5); // Get the last 5 events
-    for (const event of events) { 
+
+    for (const event of events) {
         const homeScore = event.homeScore ?? 0;
         const awayScore = event.awayScore ?? 0;
 
@@ -1376,11 +1394,11 @@ const displayLast5Events = async (teamStats, containerId) => {
         }
 
         const eventElem = document.createElement('div');
-        eventElem.className = 'event-row'; // Updated class name to match HTML/CSS
+        eventElem.className = 'event-row'; 
         eventElem.innerHTML = `  
             <div class="event__row flex _F_r gT10 _F_ac" data-id="${event.eventId}">
                 <span class="event-date time">
-                    <span>    ${new Date(event.timeStamp * 1000).toLocaleDateString('en-GB', { 
+                    <span>${new Date(event.timeStamp * 1000).toLocaleDateString('en-GB', { 
                         day: '2-digit', month: '2-digit', year: '2-digit' 
                     }).replace(',', '.').replace('/', '.').replace('/', '.')}</span>
                 </span>
@@ -1408,7 +1426,6 @@ const displayLast5Events = async (teamStats, containerId) => {
         container.appendChild(eventElem);
     }
 };
-
 
     async function displayEventDetails(event) {
     const bottomRightDetails = document.querySelector('.event-details');
@@ -1455,41 +1472,78 @@ const displayLast5Events = async (teamStats, containerId) => {
             <div id="match-odds" class="flex _F_r _F_jc">  
             </div> 
             <div class="tab-menu">
-    <button class="tab-button active rcr" data-tab="overall-events">Overall</button>
-    <button class="tab-button rcr" data-tab="home-vs-away-events">Home vs Away</button>
-</div>
-<div class="container-events">
-    <div class="tab-content active" id="overall-events">
-        <div class="form-container">
-            <h3>Last matches</h3>
-            <div class="flex _F_r _F_jc gT20">
-                <div class="home-form">
-                    <div id="home-team-form"></div>
+                <button class="tab-button active rcr" data-tab="overall-events">Overall</button>
+                <button class="tab-button rcr" data-tab="home-vs-away-events">Home vs Away</button>
+            </div>
+            <div class="container-events">
+                <div class="tab-content active" id="overall-events">
+                    <div class="form-container">
+                        <div class="stats-row flex _F_r _F_jc">
+                            <span>TG</span>
+                            <span>TAG</span>
+                            <span>TS</span>
+                            <span>TC</span>
+                            <span>AGS</span>
+                            <span>AGC</span>
+                            <span>W %</span>
+                            <span>D %</span>
+                            <span>L %</span>
+                            <span>CS %</span>
+                            <span>FTS %</span>
+                            <span>BTTS %</span>
+                            <span>+1.5 %</span>
+                            <span>+2.5 %</span>
+                            <span>+3.5 %</span>
+                        </div>
+                        <div id="home-team-stats"></div>
+                        <div id="away-team-stats"></div>
+                        <div class="flex _F_r _F_jc gT20">
+                            <div class="home-form">
+                                <div id="home-team-form"></div>
+                            </div>
+                            <div class="away-form"> 
+                                <div id="away-team-form"></div>
+                            </div>
+                        </div>
+                    </div>  
                 </div>
-                <div class="away-form"> 
-                    <div id="away-team-form"></div>
+                <div class="tab-content" id="home-vs-away-events">
+                    <div class="form-container">
+                        <div class="stats-row flex _F_r _F_jc">
+                            <span>TG</span>
+                            <span>TAG</span>
+                            <span>TS</span>
+                            <span>TC</span>
+                            <span>AGS</span>
+                            <span>AGC</span>
+                            <span>W</span>
+                            <span>D</span>
+                            <span>L</span>
+                            <span>CS</span>
+                            <span>FTS</span>
+                            <span>BTTS:</span>
+                            <span>+1.5</span>
+                            <span>+2.5</span>
+                            <span>+3.5</span>
+                        </div>
+                        <div id="at-home-stats"></div>
+                        <div id="at-away-stats"></div>
+                        <div id="away-team-stats"></div>
+                        <div class="flex _F_r _F_jc gT20">
+                            <div class="atHome-form"> 
+                                <div id="at-home-form"></div>
+                            </div>
+                            <div class="atAway-form"> 
+                                <div id="at-away-form"></div>
+                            </div>
+                        </div>
+                    </div>    
                 </div>
             </div>
         </div>  
-    </div>
-    <div class="tab-content" id="home-vs-away-events">
-        <div class="form-container">
-            <h3>Last matches</h3>
-            <div class="flex _F_r _F_jc gT20">
-                <div class="atHome-form"> 
-                    <div id="at-home-form"></div>
-                </div>
-                <div class="atAway-form"> 
-                    <div id="at-away-form"></div>
-                </div>
-            </div>
-        </div>    
-    </div>
-</div>
-</div>  
-`;
+    `;
 
-bottomRightDetails.innerHTML = eventDetailsHtml; 
+    bottomRightDetails.innerHTML = eventDetailsHtml; 
 
     // Add event listeners for events tabs
     document.querySelectorAll('#events-tabs .tab-button').forEach(button => {
@@ -1503,7 +1557,8 @@ bottomRightDetails.innerHTML = eventDetailsHtml;
             document.getElementById(tab).classList.add('active');
         });
     }); 
-const homeTeamId = event.homeTeam.id;
+
+    const homeTeamId = event.homeTeam.id;
     const awayTeamId = event.awayTeam.id;
     const currentMatchId = event.id;
     const currentMatchTimestamp = event.startTimestamp;
@@ -1519,57 +1574,63 @@ const homeTeamId = event.homeTeam.id;
     // Fetch and display home team stats
     const homeTeamStats = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp);
     const homeTeamFormContainer = document.getElementById('home-team-form');
-    if (homeTeamFormContainer) {
+    const homeTeamStatsContainer = document.getElementById('home-team-stats');
+    if (homeTeamFormContainer && homeTeamStatsContainer) {
+        displayTeamStats(homeTeamStats.overall, 'home-team-stats');
         displayLast5Events(homeTeamStats.overall, 'home-team-form');
     } else {
-        console.error('Home team form container not found');
+        console.error('Home team form or stats container not found');
     }
 
     const atHomeFormContainer = document.getElementById('at-home-form');
-    if (atHomeFormContainer) {
+    const atHomeStatsContainer = document.getElementById('at-home-stats');
+    if (atHomeFormContainer && atHomeStatsContainer) {
+        displayTeamStats(homeTeamStats.home, 'at-home-stats');
         displayLast5Events(homeTeamStats.home, 'at-home-form');
     } else {
-        console.error('At home form container not found');
+        console.error('At home form or stats container not found');
     }
 
     // Fetch and display away team stats
     const awayTeamStats = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp);
     const awayTeamFormContainer = document.getElementById('away-team-form');
-    if (awayTeamFormContainer) {
+    const awayTeamStatsContainer = document.getElementById('away-team-stats');
+    if (awayTeamFormContainer && awayTeamStatsContainer) {
+        displayTeamStats(awayTeamStats.overall, 'away-team-stats');
         displayLast5Events(awayTeamStats.overall, 'away-team-form');
     } else {
-        console.error('Away team form container not found');
+        console.error('Away team form or stats container not found');
     }
 
     const atAwayFormContainer = document.getElementById('at-away-form');
-    if (atAwayFormContainer) {
+    const atAwayStatsContainer = document.getElementById('at-away-stats');
+    if (atAwayFormContainer && atAwayStatsContainer) {
+        displayTeamStats(awayTeamStats.away, 'at-away-stats');
         displayLast5Events(awayTeamStats.away, 'at-away-form');
     } else {
-        console.error('At away form container not found');
+        console.error('At away form or stats container not found');
     }
 
-
-// Start the live timer if the match is in progress
-if (event.status.type === 'inprogress') {
-    startLiveTimer(event);
-} else if (event.status.description === 'Ended') {
-    const timerElement = document.getElementById(`live-timer-${event.id}`);
-    if (timerElement) {
-        timerElement.innerHTML = 'Ended';
-    } else {
-        console.error(`Element with ID live-timer-${event.id} not found`);
+    // Start the live timer if the match is in progress
+    if (event.status.type === 'inprogress') {
+        startLiveTimer(event);
+    } else if (event.status.description === 'Ended') {
+        const timerElement = document.getElementById(`live-timer-${event.id}`);
+        if (timerElement) {
+            timerElement.innerHTML = 'Ended';
+        } else {
+            console.error(`Element with ID live-timer-${event.id} not found`);
+        }
     }
+
+    // Refresh scores every 5 seconds 
+    const scoreUpdateInterval = setInterval(() => refreshScores(event.id), 5000);
+
+    // Clear interval when navigating away from the event details
+    const clearUpdateInterval = () => {
+        clearInterval(scoreUpdateInterval);
+    };
 }
-
-// Refresh scores every 5 seconds 
-const scoreUpdateInterval = setInterval(() => refreshScores(event.id), 5000);
-
-// Clear interval when navigating away from the event details
-const clearUpdateInterval = () => {
-    clearInterval(scoreUpdateInterval);
-};
-} 
-
 
 function displayScheduledEvents(events) {
         const topRightList = document.querySelector('.top-right');
