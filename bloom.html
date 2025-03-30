@@ -1042,76 +1042,6 @@ ul.tournamentEvents li:last-child {
             });
         });
      
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize calendar
-            const calendarMenu = document.getElementById('calendarMenu');
-            const calendarDays = document.querySelector('.calendar__days');
-            const selectedDateElement = document.getElementById('selectedDate');
-            const yesterdayButton = document.querySelector('.calendar__navigation--yesterday');
-            const tomorrowButton = document.querySelector('.calendar__navigation--tomorrow');
-    
-            let currentDate = new Date();
-    
-            // Function to update the calendar days
-            const updateCalendarDays = () => {
-                calendarDays.innerHTML = '';
-                for (let i = -7; i <= 7; i++) {
-                    const date = new Date(currentDate);
-                    date.setDate(currentDate.getDate() + i);
-    
-                    const li = document.createElement('li');
-                    li.className = 'calendar__listItem';
-    
-                    const button = document.createElement('button');
-                    button.className = 'calendar__day';
-                    button.textContent = formatDate(date);
-    
-                    if (i === 0) {
-                        button.classList.add('calendar__day--active');
-                    }
-    
-                    button.addEventListener('click', () => {
-                        currentDate = date;
-                        selectedDateElement.textContent = formatDate(date);
-                        fetchAndDisplayEvents(date);
-                        calendarMenu.setAttribute('aria-expanded', 'false');
-                        calendarDays.style.display = 'none';
-                    });
-    
-                    li.appendChild(button);
-                    calendarDays.appendChild(li);
-                }
-            };
-    
-            // Initialize calendar and fetch today's events
-            selectedDateElement.textContent = formatDate(currentDate);
-            updateCalendarDays();
-            fetchAndDisplayEvents(currentDate);
-    
-            // Toggle calendar days visibility
-            calendarMenu.addEventListener('click', () => {
-                const isExpanded = calendarMenu.getAttribute('aria-expanded') === 'true';
-                calendarMenu.setAttribute('aria-expanded', !isExpanded);
-                calendarDays.style.display = isExpanded ? 'none' : 'grid';
-            });
-    
-            // Navigate to previous day
-            yesterdayButton.addEventListener('click', () => {
-                currentDate.setDate(currentDate.getDate() - 1);
-                selectedDateElement.textContent = formatDate(currentDate);
-                fetchAndDisplayEvents(currentDate);
-                updateCalendarDays();
-            });
-    
-            // Navigate to next day
-            tomorrowButton.addEventListener('click', () => {
-                currentDate.setDate(currentDate.getDate() + 1);
-                selectedDateElement.textContent = formatDate(currentDate);
-                fetchAndDisplayEvents(currentDate);
-                updateCalendarDays();
-            });
-        });
-     
   // Function to convert fractional odds to decimal odds
   function fractionalToDecimal(fractionalOdds) {
   if (fractionalOdds === '-') return 0;
@@ -1276,11 +1206,11 @@ const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimes
     );
 
     // Get the last 5 events, reversing to get them in chronological order
-    const overallEvents = teamEvents;
+    const overallEvents = teamEvents.slice(0, 5);
 
     // Filter and slice home and away events separately
-    const homeEvents = teamEvents.filter(event => event.homeTeam.id === teamId);
-    const awayEvents = teamEvents.filter(event => event.awayTeam.id === teamId);
+    const homeEvents = teamEvents.filter(event => event.homeTeam.id === teamId).slice(0, 5);
+    const awayEvents = teamEvents.filter(event => event.awayTeam.id === teamId).slice(0, 5);
 
     // Function to calculate stats from the events
     const calculateStats = (events) => {
@@ -1303,7 +1233,7 @@ const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimes
             totalGoalsPeriod2Conceded: 0, 
         };
 
-        events.slice(0, 5).forEach(event => {
+        events.forEach(event => {
             if (event.status.type === 'finished' && event.id !== currentMatchId) {
                 const isHome = event.homeTeam.id === teamId;
                 const teamScore = isHome ? event.homeScore.current : event.awayScore.current;
@@ -1376,7 +1306,7 @@ const displayLast5Events = async (teamStats, containerId) => {
     container.innerHTML = ''; // Clear the container before appending
 
     // Calculate the averages
-    const totalEvents = teamStats.results.slice(0, 5).length;
+    const totalEvents = teamStats.results.length;
       // Calculate the percentages for each stat
       const winsPercent = totalEvents > 0 ? ((teamStats.wins / totalEvents) * 100).toFixed(0) : 0;
     const drawsPercent = totalEvents > 0 ? ((teamStats.draws / totalEvents) * 100).toFixed(0) : 0;
@@ -1479,65 +1409,6 @@ const displayLast5Events = async (teamStats, containerId) => {
     }
 };
 
-
-function displayScheduledEvents(events) {
-        const topRightList = document.querySelector('.top-right');
-        const bottomRightDetails = document.querySelector('.event-details');
-
-        if (!topRightList) {
-            console.error('Top right list element not found');
-            return;
-        }
-
-        if (!bottomRightDetails) {
-            console.error('Bottom right details element not found');
-            return;
-        }
-
-        let tournamentEventsHtml = '<ul class="tournamentEvents">';
-        events.forEach(event => {
-            const homeScore = event.homeScore?.current ?? '';
-            const awayScore = event.awayScore?.current ?? '';
-            const status = event.status.type;
-            const eventTime = new Date(event.startTimestamp * 1000).toLocaleString([], {
-                hour: '2-digit', minute: '2-digit', hour12: false
-            });
-
-            tournamentEventsHtml += `<li class="match-list ${status}" data-event-id="${event.id}" data-custom-id="${event.customId}" data-tournament-id="${event.tournament.id}" data-unique-tournament-id="${event.tournament.uniqueTournament.id}" data-season-id="${event.season.id}" data-home-team-id="${event.homeTeam.id}" data-away-team-id="${event.awayTeam.id}">
-                <div class="info-wrapper">
-                    <div class="date"><span>${eventTime}</span></div>
-                    <div class="team-info">
-                        <div class="teams-info">
-                            <div class="team"><img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">${event.homeTeam.shortName}</div>
-                            <div class="team"><img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">${event.awayTeam.shortName}</div>
-                        </div>
-                        <div class="match-score rcr">
-                            <div class="score" id="homeScore-${event.id}">${homeScore}</div>
-                            <div class="score" id="awayScore-${event.id}">${awayScore}</div>
-                        </div>
-                    </div>
-                </div>
-            </li>`;
-        });
-        tournamentEventsHtml += '</ul>';
-        topRightList.innerHTML = tournamentEventsHtml;
-
-        const eventItems = topRightList.querySelectorAll('.match-list');
-        eventItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const eventId = item.getAttribute('data-event-id');
-                const selectedEvent = events.find(event => event.id == eventId);
-                displayEventDetails(selectedEvent);
-            });
-        });
-
-        if (events.length > 0) {
-            const firstEvent = events[0];
-            displayEventDetails(firstEvent);
-        } else {
-            bottomRightDetails.innerHTML = '<p>No events available.</p>';
-        }
-    }
 
     async function displayEventDetails(event) {
     const bottomRightDetails = document.querySelector('.event-details');
@@ -1643,6 +1514,7 @@ const homeTeamId = event.homeTeam.id;
 
     // Fetch events data
     const eventsForTeam = await fetchEventsData(tournamentId, seasonId, currentMatchId);
+    console.log(eventsForTeam);
 
     // Fetch and display home team stats
     const homeTeamStats = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp);
@@ -1697,6 +1569,66 @@ const clearUpdateInterval = () => {
     clearInterval(scoreUpdateInterval);
 };
 } 
+
+
+function displayScheduledEvents(events) {
+        const topRightList = document.querySelector('.top-right');
+        const bottomRightDetails = document.querySelector('.event-details');
+
+        if (!topRightList) {
+            console.error('Top right list element not found');
+            return;
+        }
+
+        if (!bottomRightDetails) {
+            console.error('Bottom right details element not found');
+            return;
+        }
+
+        let tournamentEventsHtml = '<ul class="tournamentEvents">';
+        events.forEach(event => {
+            const homeScore = event.homeScore?.current ?? '';
+            const awayScore = event.awayScore?.current ?? '';
+            const status = event.status.type;
+            const eventTime = new Date(event.startTimestamp * 1000).toLocaleString([], {
+                hour: '2-digit', minute: '2-digit', hour12: false
+            });
+
+            tournamentEventsHtml += `<li class="match-list ${status}" data-event-id="${event.id}" data-custom-id="${event.customId}" data-tournament-id="${event.tournament.id}" data-unique-tournament-id="${event.tournament.uniqueTournament.id}" data-season-id="${event.season.id}" data-home-team-id="${event.homeTeam.id}" data-away-team-id="${event.awayTeam.id}">
+                <div class="info-wrapper">
+                    <div class="date"><span>${eventTime}</span></div>
+                    <div class="team-info">
+                        <div class="teams-info">
+                            <div class="team"><img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">${event.homeTeam.shortName}</div>
+                            <div class="team"><img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">${event.awayTeam.shortName}</div>
+                        </div>
+                        <div class="match-score rcr">
+                            <div class="score" id="homeScore-${event.id}">${homeScore}</div>
+                            <div class="score" id="awayScore-${event.id}">${awayScore}</div>
+                        </div>
+                    </div>
+                </div>
+            </li>`;
+        });
+        tournamentEventsHtml += '</ul>';
+        topRightList.innerHTML = tournamentEventsHtml;
+
+        const eventItems = topRightList.querySelectorAll('.match-list');
+        eventItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const eventId = item.getAttribute('data-event-id');
+                const selectedEvent = events.find(event => event.id == eventId);
+                displayEventDetails(selectedEvent);
+            });
+        });
+
+        if (events.length > 0) {
+            const firstEvent = events[0];
+            displayEventDetails(firstEvent);
+        } else {
+            bottomRightDetails.innerHTML = '<p>No events available.</p>';
+        }
+    }
 
 </script>
 </body>
