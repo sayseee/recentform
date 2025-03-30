@@ -481,7 +481,7 @@ ul.tournamentEvents li:last-child {
         "home score away" max-content
         ". . . " 5px / var(--width, minmax(110px, 250px)) var(--width, minmax(80px, 180px)) var(--width, minmax(110px, 250px));
     justify-content: center;
-    padding: 0 10px; 
+    padding: 10px; 
     text-align: center; 
 }
 .duelParticipant__home { 
@@ -1444,7 +1444,7 @@ const displayLast5Events = async (teamStats, containerId) => {
     const eventTime = new Date(event.startTimestamp * 1000).toLocaleString();
 
     const eventDetailsHtml = `
-        <h2>Event Details ${event.id}</h2> 
+        <!-- <h2>Event Details ${event.id}</h2> -->
         <div class="duelParticipant"> 
             <div class="match-time">
                 <span>${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace(',', ' ').replace('/', ' ')}</span>
