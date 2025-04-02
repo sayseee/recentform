@@ -592,8 +592,7 @@ ul.tournamentEvents li:last-child {
 }
 .event__row .odds {
     display: flex;
-    flex-direction: row; 
-    align-items: center;
+    flex-direction: row;
     gap: 1px;
 }
 .event__row .odds div {
@@ -601,16 +600,19 @@ ul.tournamentEvents li:last-child {
     flex-direction: column;
     font-size: 10px;
     flex: 0 0 30px;
-    align-items: center;
-    justify-content: center;
     gap: 1px;
 }
 
 .event__row .odds span { 
     font-size: 10px;
-    width: 30px; 
-   text-align: center;
-   padding: 2px 0;
+    width: 30px;
+    text-align: center;
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-gr_2);
+}
 }
 .odds {
     margin: 0 4px;
@@ -715,16 +717,53 @@ ul.tournamentEvents li:last-child {
     text-transform: uppercase;
     font-weight: 700; 
 }
+.stats-row.title div {
+    background-color: #1f222b;
+    color: #ffffff90;
+}
 .stats-row div {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: 1;
     padding: 5px;
-}
+    background-color: rgba(6, 12, 26, 0.6);
+} 
 .stats-row {
     gap: 3px;
 } 
+
+#expected-actual {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left: auto;
+    gap: 20px;
+}
+#expected-actual p {
+    margin: 0;
+}
+.actual-home, .actual-away {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 5px;
+}
+.exWin, .default {
+    color: #ffffff;
+    font-weight: 600;
+    padding: 4px 8px;
+}
+.exWin {
+    background-color: #e59c03a8;
+}
+.diff_1 { border-left: 3px solid #990134; color: #fff; } /* Dark Red */
+.diff_2 { border-left: 3px solid #DE4E45; color: #fff; } /* Red */
+.diff_3 { border-left: 3px solid #FF9900; color: #fff; } /* Orange */
+.diff_4 { border-left: 3px solid #4B9F01; color: #fff; } /* Green */
+.diff_5 { border-left: 3px solid #224403; color: #fff; } /* Light Green */
   </style>
 </head>
 <body class="closure rfr"> 
@@ -1560,7 +1599,7 @@ const displayLast5Events = async (teamStats, containerId) => {
               level1 = 3; // Medium
             } else if (prob1 <= 79) {
               level1 = 4; // Hard
-            } else if (prob1 > 80) {
+            } else if (prob1 >= 80) {
               level1 = 5; // Very Hard
             } else {
               level1 = 0; // none
@@ -1575,7 +1614,7 @@ const displayLast5Events = async (teamStats, containerId) => {
               level2 = 3; // Medium
             } else if (prob2 <= 79) {
               level2 = 4; // Hard
-            } else if (prob2 > 79) {
+            } else if (prob2 >= 80) {
               level2 = 5; // Very Hard
             } else {
               level2 = 0; // none
@@ -1591,7 +1630,7 @@ const displayLast5Events = async (teamStats, containerId) => {
               level3 = 3; // Medium
             } else if (prob3 <= 79) {
               level3 = 4; // Hard
-            } else if (prob3 > 79) {
+            } else if (prob3 >= 80) {
               level3 = 5; // Very Hard
             } else {
               level3 = 0; // none
