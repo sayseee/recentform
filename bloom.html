@@ -1819,55 +1819,11 @@ const plotPerformanceGraph = (performanceData, canvasId) => {
             <div id="match-odds" class="flex _F_r _F_jc">  
             </div> 
             <div class="tab-menu">
-                <button class="tab-button rcr" data-tab="overall-events">Overall</button>
                 <button class="tab-button active rcr" data-tab="home-vs-away-events">Home vs Away</button>
+                <button class="tab-button rcr" data-tab="overall-events">Overall</button>
                 <div id="expected-actual"></div>
             </div>
             <div class="container-events">
-                <div class="tab-content" id="overall-events">
-                    <div class="form-container">
-                        <div class="stats-row flex _F_r _F_jc title">
-                            <div>TG</div>
-                            <div>TS</div>
-                            <div>TC</div>
-                            <div>GD</div>
-                            <div>TAG</div>
-                            <div>AGS</div>
-                            <div>AGC</div>
-                            <div>W</div>
-                            <div>D</div>
-                            <div>L</div>
-                            <div>CS</div>
-                            <div>FTS</div>
-                            <div>BTS</div>
-                            <div>+1.5</div>
-                            <div>+2.5</div>
-                            <div>+3.5</div>
-                        </div>
-                        <div id="home-team-stats"></div>
-                        <div id="away-team-stats"></div>
-                        <div class="flex _F_r _F_jc">
-                            <div class="home-form">
-                                <div id="home-graph-overall">
-                                    <canvas id="homeGraphCanvas"></canvas>
-                                </div>
-                            </div>
-                            <div class="away-form"> 
-                                <div id="away-graph-overall">
-                                    <canvas id="awayGraphCanvas"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex _F_r _F_jc">
-                            <div class="home-form">
-                                <div id="home-team-form"></div>
-                            </div>
-                            <div class="away-form"> 
-                                <div id="away-team-form"></div>
-                            </div>
-                        </div>
-                    </div>  
-                </div>
                 <div class="tab-content active" id="home-vs-away-events">
                     <div class="form-container">
                         <div class="stats-row flex _F_r _F_jc title">
@@ -1912,6 +1868,51 @@ const plotPerformanceGraph = (performanceData, canvasId) => {
                         </div>
                     </div>    
                 </div>
+                <div class="tab-content" id="overall-events">
+                    <div class="form-container">
+                        <div class="stats-row flex _F_r _F_jc title">
+                            <div>TG</div>
+                            <div>TS</div>
+                            <div>TC</div>
+                            <div>GD</div>
+                            <div>TAG</div>
+                            <div>AGS</div>
+                            <div>AGC</div>
+                            <div>W</div>
+                            <div>D</div>
+                            <div>L</div>
+                            <div>CS</div>
+                            <div>FTS</div>
+                            <div>BTS</div>
+                            <div>+1.5</div>
+                            <div>+2.5</div>
+                            <div>+3.5</div>
+                        </div>
+                        <div id="home-team-stats"></div>
+                        <div id="away-team-stats"></div>
+                        <div class="flex _F_r _F_jc">
+                            <div class="home-form">
+                                <div id="home-graph-overall">
+                                    <canvas id="homeGraphCanvas"></canvas>
+                                </div>
+                            </div>
+                            <div class="away-form"> 
+                                <div id="away-graph-overall">
+                                    <canvas id="awayGraphCanvas"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex _F_r _F_jc">
+                            <div class="home-form">
+                                <div id="home-team-form"></div>
+                            </div>
+                            <div class="away-form"> 
+                                <div id="away-team-form"></div>
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+                
             </div>
         </div>  
     `;
