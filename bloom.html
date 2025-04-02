@@ -1706,9 +1706,13 @@ const calculatePerformance = (stats) => {
     // Reverse the performance array to have the most recent data on the right
     return performance;
 };
-// Function to plot the performance graph using Chart.js
 const plotPerformanceGraph = (performanceData, canvasId) => {
-    const ctx = document.getElementById(canvasId).getContext('2d');
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas dimensions dynamically
+    canvas.width = 800;  // Set width to 800px
+    canvas.height = 400; // Set height to 400px
 
     const timestamps = performanceData.map(item => {
         const date = new Date(item.timestamp * 1000);
@@ -1724,7 +1728,6 @@ const plotPerformanceGraph = (performanceData, canvasId) => {
         data: {
             labels: timestamps,
             datasets: [{
-                // Removed label from here to hide it in the legend
                 data: performance,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 2,
@@ -1769,7 +1772,6 @@ const plotPerformanceGraph = (performanceData, canvasId) => {
         }
     });
 };
-
 
 
     async function displayEventDetails(event) {
