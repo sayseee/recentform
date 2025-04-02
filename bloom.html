@@ -721,56 +721,10 @@ ul.tournamentEvents li:last-child {
     justify-content: center;
     flex: 1;
     padding: 5px;
-    background-color: rgba(6, 12, 26, 0.6);
 }
 .stats-row {
-    gap: 2px;
-    margin-bottom: 2px;
+    gap: 3px;
 } 
-.stats-row.title div { 
-    background-color: #1f222b;
-    color: #ffffff90;
-}
-
-#expected-actual { 
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-left: auto;
-    gap: 20px; 
-}
-
-#expected-actual p { 
-    margin: 0; 
-}
-
-
-.actual-home, .actual-away {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 5px;
-}
-.exWin {
-    background-color: #e59c03a8;
-}
-
-.default {
-        background-color: rgb(75,83,106); 
-    }
-.exWin, .default {
-    color: #ffffff;
-    font-weight: 600;
-    padding: 4px 8px;
-}
-
-.diff_1 { background-color: #990134; color: #fff; } /* Dark Red */
-.diff_2 { background-color: #DE4E45; color: #fff; } /* Red */
-.diff_3 { background-color: #FF9900; color: #fff; } /* Orange */
-.diff_4 { background-color: #4B9F01; color: #fff; } /* Green */
-.diff_5 { background-color: #224403; color: #fff; } /* Light Green */
   </style>
 </head>
 <body class="closure rfr"> 
@@ -1335,6 +1289,69 @@ const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
 
     return finishedEvents;
 };
+
+
+async function fetchAndDisplayWinningOdds(matchId) {
+    try {
+        const response = await fetch(`https://api.sofascore.com/api/v1/event/${matchId}/provider/1/winning-odds`);
+        const winningOddsData = await response.json();
+
+        if (winningOddsData) {
+            const { home, away } = winningOddsData;
+            const expectedActualDiv = document.getElementById('expected-actual');
+
+            if (expectedActualDiv) {
+                // Clear previous content
+                expectedActualDiv.innerHTML = '';
+
+                // Check and display home odds data if available
+                if (home) {
+                    const expectedHomeOdds = home.expected;
+                    const actualHomeOdds = home.actual;
+                    const fractionalHomeOdds = fractionalToDecimal(home.fractionalValue);
+                    const homeWinClass = actualHomeOdds > expectedHomeOdds ? 'exWin' : 'default';
+
+                    const homeDiv = document.createElement('div');
+                    homeDiv.className = 'actual-home';
+                    homeDiv.innerHTML = `
+                        <p>HEW: ${expectedHomeOdds}%</p>
+                        <p class="${homeWinClass}">W: ${actualHomeOdds}%</p>
+                        <p>${fractionalHomeOdds}</p>
+                    `;
+                    expectedActualDiv.appendChild(homeDiv);
+                } else {
+                    console.error('Home odds data is missing.');
+                }
+
+                // Check and display away odds data if available
+                if (away) {
+                    const expectedAwayOdds = away.expected;
+                    const actualAwayOdds = away.actual;
+                    const fractionalAwayOdds = fractionalToDecimal(away.fractionalValue);
+                    const awayWinClass = actualAwayOdds > expectedAwayOdds ? 'exWin' : 'default';
+
+                    const awayDiv = document.createElement('div');
+                    awayDiv.className = 'actual-away';
+                    awayDiv.innerHTML = `
+                        <p>AEW: ${expectedAwayOdds}%</p>
+                        <p class="${awayWinClass}">W: ${actualAwayOdds}%</p>
+                        <p>${fractionalAwayOdds}</p>
+                    `;
+                    expectedActualDiv.appendChild(awayDiv);
+                } else {
+                    console.error('Away odds data is missing.');
+                }
+            } else {
+                console.error('expected-actual div is not found.');
+            }
+        } else {
+            console.error('Invalid winning odds data:', winningOddsData);
+        }
+    } catch (error) {
+        console.error('Error fetching winning odds:', error);
+    }
+}
+
 
 
 const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimestamp, sliceCount = 5) => { 
