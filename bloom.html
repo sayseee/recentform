@@ -756,6 +756,9 @@ ul.tournamentEvents li:last-child {
     font-weight: 600;
     padding: 4px 8px;
 }
+.default {
+    background-color: rgb(75, 83, 106);
+}
 .exWin {
     background-color: #e59c03a8;
 }
@@ -931,6 +934,7 @@ ul.tournamentEvents li:last-child {
                 const promises = [];
     
                 let topTournamentsHtml = '<h2>Top leagues</h2><ul class="topTourn">';
+                    
                 topTournaments.forEach(tournament => {
                     if (tournamentEventCounts[tournament.id]) {
                         const category = tournament.category;
@@ -1726,7 +1730,7 @@ const plotPerformanceGraph = (performanceData, canvasId) => {
                 borderWidth: 2,
                 fill: false,
                 pointRadius: 0,
-                tension: 0.4 // Optional: add slight curve to the line (set to 0 for a straight line)
+                tension: 0 // Optional: add slight curve to the line (set to 0 for a straight line)
             }]
         },
         options: {
