@@ -1819,12 +1819,12 @@ const plotPerformanceGraph = (performanceData, canvasId) => {
             <div id="match-odds" class="flex _F_r _F_jc">  
             </div> 
             <div class="tab-menu">
-                <button class="tab-button active rcr" data-tab="overall-events">Overall</button>
-                <button class="tab-button rcr" data-tab="home-vs-away-events">Home vs Away</button>
+                <button class="tab-button rcr" data-tab="overall-events">Overall</button>
+                <button class="tab-button active rcr" data-tab="home-vs-away-events">Home vs Away</button>
                 <div id="expected-actual"></div>
             </div>
             <div class="container-events">
-                <div class="tab-content active" id="overall-events">
+                <div class="tab-content" id="overall-events">
                     <div class="form-container">
                         <div class="stats-row flex _F_r _F_jc title">
                             <div>TG</div>
@@ -1868,7 +1868,7 @@ const plotPerformanceGraph = (performanceData, canvasId) => {
                         </div>
                     </div>  
                 </div>
-                <div class="tab-content" id="home-vs-away-events">
+                <div class="tab-content active" id="home-vs-away-events">
                     <div class="form-container">
                         <div class="stats-row flex _F_r _F_jc title">
                             <div>TG</div>
