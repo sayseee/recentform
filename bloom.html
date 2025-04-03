@@ -2480,10 +2480,10 @@ if (oddsData && oddsData.odds) {
   const drawArrowSymbol = drawChange > 0 ? '' : drawChange < 0 ? '' : '';
 
   oddsDisplay = `<div>
-                  <span class="diff_${level1} ${homeTeamChangeClass}">${homeTeamPercentage}% ${homeTeamArrowSymbol}</span>
-                  <span class="diff_${level2} ${awayTeamChangeClass}">${awayTeamPercentage}% ${awayTeamArrowSymbol}</span>
+                  <span class="diff_${level1}">${homeTeamOdds}</span>
+                  <span class="diff_${level2}">${awayTeamOdds}</span>
                 </div>
-                <span class="diff_${level3} ${drawChangeClass}">${drawPercentage}% ${drawArrowSymbol}</span>`;
+                <span class="diff_${level3}">${drawOdds}</span>`;
 } else {
   oddsDisplay = `<div>
                   <span>-</span>
