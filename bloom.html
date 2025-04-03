@@ -1951,7 +1951,7 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
  async function analyzeTravelImpact(events, homeTeamId, awayTeamId) {
   // Get coordinates for both teams with fallbacks
   const homeCoords = await getTeamCoordinates(homeTeamId);
-  const awayCoords = await getTeamCoordinates(awayTeamId);
+  const awayCoords = await getTeamCoordinates(awayTeamId); 
   
   if (!homeCoords || !awayCoords) {
     console.warn('Cannot analyze travel impact - missing team coordinates');
@@ -2724,8 +2724,7 @@ function updateMostChangedOdds(oddsData) {
         console.error('Odds container not found');
         return;
     }
-
-    console.log(oddsData);
+ 
     // Clear the existing odds data (if any)
     oddsContainer.innerHTML = '';
 
