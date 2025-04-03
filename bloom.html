@@ -1811,19 +1811,7 @@ async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, co
     }
 }
 
-
-// ========================
-// 5. Main Analysis Function
-// ========================
-
-/**
- * Main function to analyze home advantage
- * @param {string} tournamentId - Tournament ID
- * @param {string} seasonId - Season ID
- * @param {string} currentMatchId - Current match ID
- * @param {Object} homeTeam - Home team details
- * @param {Object} awayTeam - Away team details
- */
+ 
  async function fetchHomeH2HEvents(customId, teamId, tournamentId, currentMatchId) {
   const url = `${baseURL}/event/${customId}/h2h/events`;
   const data = await fetchJson(url);
@@ -2230,7 +2218,7 @@ function concludeHomeAdvantage(tournamentStats, h2hStats, travelStats) {
   }
 
   if (travelImpact && travelImpact > 60) {
-    conclusion += `${travelImpact}% in local derbies.`;
+    conclusion += ``;
   }
 
   return conclusion;
