@@ -734,9 +734,23 @@ ul.tournamentEvents li:last-child {
     background-color: rgba(6, 12, 26, 0.6);
 } 
 .stats-row {
-    gap: 3px;
+    gap: 1px;
 } 
-
+#at-home-stats {
+    margin-bottom: 1px;
+}
+.stats-row.title div:first-child {
+    border-top-left-radius: 4px;
+}
+.stats-row.title div:last-child {
+    border-top-right-radius: 4px;
+}
+#at-away-stats .stats-row div:first-child {
+    border-bottom-left-radius: 4px;
+}
+#at-away-stats .stats-row div:last-child {
+    border-bottom-right-radius: 4px;
+}
 #expected-actual {
     display: flex;
     align-items: center;
@@ -1061,7 +1075,7 @@ ul.tournamentEvents li:last-child {
     gap: 2px;
 }
 .stats-box {
-    border-radius: 6px;
+    border-radius: 4px;
     text-align: center;
     min-width: 50px;
     flex: 1;
@@ -2384,27 +2398,48 @@ const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimes
     };
 };
 
+// Function to apply color coding based on thresholds
+const getColor = (value, type) => {
+    switch (type) {
+        case 'good': 
+            return value >= 64 ? 'color: #21b083; font-weight: bold;' : ''; // Good stats (Wins, BTTS, Overs) above 64%
+        case 'bad': 
+            return value >= 49 ? 'color: #d84010; font-weight: bold;' : ''; // Bad stats (Losses) above 49%
+        case 'inverse-good': 
+            return value === 0 ? 'color: #21b083; font-weight: bold;' : ''; // 0% Failed to Score is excellent
+        case 'inverse-bad': 
+            return value >= 33 ? 'color: #d84010; font-weight: bold;' : ''; // 33% or more Failed to Score is bad
+        case 'cleansheet-good': 
+            return value >= 33 ? 'color: #21b083; font-weight: bold;' : ''; // 33%+ Clean Sheets is good
+        case 'cleansheet-bad': 
+            return value === 0 ? 'color: #d84010; font-weight: bold;' : ''; // 0% Clean Sheets is bad
+        default:
+            return ''; // Default style
+    }
+};
 
 // Function to display team stats
 const displayTeamStats = (teamStats, containerId) => {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear the container before appending
 
-    // Calculate the averages
+    // Calculate percentages
     const totalEvents = teamStats.results.length;
-    const winsPercent = totalEvents > 0 ? ((teamStats.wins / totalEvents) * 100).toFixed(0) : 0;
-    const drawsPercent = totalEvents > 0 ? ((teamStats.draws / totalEvents) * 100).toFixed(0) : 0;
-    const lossesPercent = totalEvents > 0 ? ((teamStats.losses / totalEvents) * 100).toFixed(0) : 0;
-    const cleanSheetsPercent = totalEvents > 0 ? ((teamStats.cleanSheets / totalEvents) * 100).toFixed(0) : 0;
-    const failedToScorePercent = totalEvents > 0 ? ((teamStats.failedToScore / totalEvents) * 100).toFixed(0) : 0;
-    const bttsPercent = totalEvents > 0 ? ((teamStats.btts / totalEvents) * 100).toFixed(0) : 0;
-    const over1_5Percent = totalEvents > 0 ? ((teamStats.over1_5 / totalEvents) * 100).toFixed(0) : 0;
-    const over2_5Percent = totalEvents > 0 ? ((teamStats.over2_5 / totalEvents) * 100).toFixed(0) : 0;
-    const over3_5Percent = totalEvents > 0 ? ((teamStats.over3_5 / totalEvents) * 100).toFixed(0) : 0;
+    const getPercent = (stat) => (totalEvents > 0 ? ((stat / totalEvents) * 100).toFixed(0) : 0);
+
+    const winsPercent = getPercent(teamStats.wins);
+    const drawsPercent = getPercent(teamStats.draws);
+    const lossesPercent = getPercent(teamStats.losses);
+    const cleanSheetsPercent = getPercent(teamStats.cleanSheets);
+    const failedToScorePercent = getPercent(teamStats.failedToScore);
+    const bttsPercent = getPercent(teamStats.btts);
+    const over1_5Percent = getPercent(teamStats.over1_5);
+    const over2_5Percent = getPercent(teamStats.over2_5);
+    const over3_5Percent = getPercent(teamStats.over3_5);
 
     const averageGoalsScored = totalEvents > 0 ? (teamStats.totalGoalsScored / totalEvents).toFixed(2) : 0;
     const averageGoalsConceded = totalEvents > 0 ? (teamStats.totalGoalsConceded / totalEvents).toFixed(2) : 0;
-    const averageGoals = totalEvents > 0 ? ((teamStats.totalGoalsConceded + teamStats.totalGoalsScored) / totalEvents).toFixed(2) : 0;
+    const averageGoals = totalEvents > 0 ? ((teamStats.totalGoalsScored + teamStats.totalGoalsConceded) / totalEvents).toFixed(2) : 0;
 
     // Display stats in three rows
     const statsElem = document.createElement('div');
@@ -2419,20 +2454,25 @@ const displayTeamStats = (teamStats, containerId) => {
             <div>${averageGoals}</div>
             <div>${averageGoalsScored}</div>
             <div>${averageGoalsConceded}</div>
-            <div>${winsPercent}</div>
-            <div>${drawsPercent}</div>
-            <div>${lossesPercent}</div>
-            <div>${cleanSheetsPercent}</div>
-            <div>${failedToScorePercent}</div>
-            <div>${bttsPercent}</div>
-            <div>${over1_5Percent}</div>
-            <div>${over2_5Percent}</div>
-            <div>${over3_5Percent}</div>
+            <div style="${getColor(winsPercent, 'good')}">${winsPercent}%</div>
+            <div>${drawsPercent}%</div>
+            <div style="${getColor(lossesPercent, 'bad')}">${lossesPercent}%</div>
+            <div style="${getColor(cleanSheetsPercent, 'cleansheet-good') || getColor(cleanSheetsPercent, 'cleansheet-bad')}">
+                ${cleanSheetsPercent}%
+            </div>
+            <div style="${getColor(failedToScorePercent, 'inverse-good') || getColor(failedToScorePercent, 'inverse-bad')}">
+                ${failedToScorePercent}%
+            </div>
+            <div style="${getColor(bttsPercent, 'good')}">${bttsPercent}%</div>
+            <div style="${getColor(over1_5Percent, 'good')}">${over1_5Percent}%</div>
+            <div style="${getColor(over2_5Percent, 'good')}">${over2_5Percent}%</div>
+            <div style="${getColor(over3_5Percent, 'good')}">${over3_5Percent}%</div>
         </div>
     `;
 
     container.appendChild(statsElem);
 };
+
 
 // Function to display last 5 events
 const displayLast5Events = async (teamStats, containerId) => {
