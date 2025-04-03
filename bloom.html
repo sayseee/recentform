@@ -741,7 +741,6 @@ ul.tournamentEvents li:last-child {
     align-items: center;
     flex-direction: row;
     justify-content: space-between;
-    margin-left: auto;
     gap: 20px;
 }
 #expected-actual p {
@@ -754,10 +753,15 @@ ul.tournamentEvents li:last-child {
     align-items: center;
     gap: 5px;
 }
-.exWin, .default {
+.exWin, .default, #conclusion-div {
     color: #ffffff;
     font-weight: 700;
     padding: 4px 8px;
+}
+#conclusion-div {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.8125rem;
 }
 .default {
     background-color: rgb(75, 83, 106);
@@ -1856,7 +1860,7 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
     displayTravelImpact(travelStats, 'travel-impact-container');
 
     const conclusion = concludeHomeAdvantage(tournamentStats, h2hStats, travelStats);
-    console.log(conclusion);
+    document.getElementById('conclusion-div').innerHTML = conclusion;
     
     // Return combined data for further processing
     return {
@@ -2218,15 +2222,15 @@ function concludeHomeAdvantage(tournamentStats, h2hStats, travelStats) {
   let conclusion = '';
 
   if (homeWinPercentageDiff > 10) {
-    conclusion += `There is a significant home advantage in head-to-head matches, with a ${homeWinPercentageDiff}% higher win rate for the home team. `;
+    conclusion += `${homeWinPercentageDiff}%`;
   } else if (homeWinPercentageDiff > 0) {
-    conclusion += `There is a moderate home advantage in head-to-head matches, with a ${homeWinPercentageDiff}% higher win rate for the home team. `;
+    conclusion += `${homeWinPercentageDiff}%`;
   } else {
-    conclusion += 'There is no significant home advantage in head-to-head matches. ';
+    conclusion += '';
   }
 
   if (travelImpact && travelImpact > 60) {
-    conclusion += `Additionally, the home team has a high win rate (${travelImpact}%) in local derbies, suggesting that travel distance may not be a significant factor.`;
+    conclusion += `${travelImpact}% in local derbies.`;
   }
 
   return conclusion;
@@ -3166,6 +3170,7 @@ if (odds && odds.odds) {
             <div class="tab-menu">
                 <button class="tab-button active rcr" data-tab="home-vs-away-events">Home vs Away</button>
                 <button class="tab-button rcr" data-tab="overall-events">Overall</button>
+                <div id="conclusion-div"></div>
                 <div id="expected-actual"></div>
             </div>
             <div class="container-events">
