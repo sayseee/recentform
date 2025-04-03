@@ -1978,6 +1978,7 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
     
     const distance = calculateDistance(homeCoords, awayTeamCoords);
     
+    console.log(homeCoords); 
     // Find the appropriate category
     const category = Object.keys(distanceCategories).find(
       key => distance <= distanceCategories[key].maxDistance
@@ -2037,34 +2038,87 @@ function calculateDistance(coords1, coords2) {
 }
 
 /**
+ * Detects and corrects if latitude and longitude are swapped.
+ * @param {Object} coords - Coordinates object containing latitude and longitude
+ * @returns {Object} - Corrected coordinates with latitude and longitude in correct order
+ */
+ function detectAndFixSwappedCoordinates(coords) {
+  const { latitude, longitude } = coords;
+
+  // Check if the latitude is within the valid range (-90 to +90)
+  const isLatitudeValid = latitude >= -90 && latitude <= 90;
+
+  // Check if the longitude is within the valid range (-180 to +180)
+  const isLongitudeValid = longitude >= -180 && longitude <= 180;
+
+  // If latitude is out of range but longitude is valid, then we likely have swapped coordinates
+  if (!isLatitudeValid && isLongitudeValid) {
+    console.warn('Coordinates appear to be swapped. Swapping latitude and longitude.');
+    // Swap latitude and longitude
+    return {
+      latitude: longitude,
+      longitude: latitude
+    };
+  }
+
+  // If longitude is out of range but latitude is valid, it's also likely swapped
+  if (isLatitudeValid && !isLongitudeValid) {
+    console.warn('Coordinates appear to be swapped. Swapping latitude and longitude.');
+    // Swap latitude and longitude
+    return {
+      latitude: longitude,
+      longitude: latitude
+    };
+  }
+
+  // If both latitude and longitude are within valid ranges, return the original coords
+  return coords;
+}
+
+/**
  * Extracts team coordinates from team data with better error handling
  * @param {string} teamId - Team ID
  * @returns {Promise<Object|null>} - {latitude, longitude} or null if not available
  */
- async function getTeamCoordinates(teamId) {
+async function getTeamCoordinates(teamId) {
   try {
     const teamData = await fetchTeamDetails(teamId);
     
     // Check for various possible locations of coordinates in the response
     if (teamData?.team?.venue?.venueCoordinates) {
-      return {
+      let coords = {
         latitude: teamData.team.venue.venueCoordinates.latitude,
         longitude: teamData.team.venue.venueCoordinates.longitude
       };
+      
+      // Detect and fix swapped coordinates
+      coords = detectAndFixSwappedCoordinates(coords);
+      
+      return coords;
     }
     
     if (teamData?.team?.venue?.city?.coordinates) {
-      return {
+      let coords = {
         latitude: teamData.team.venue.city.coordinates.latitude,
         longitude: teamData.team.venue.city.coordinates.longitude
       };
+      
+      // Detect and fix swapped coordinates
+      coords = detectAndFixSwappedCoordinates(coords);
+      
+      return coords;
     }
     
     if (teamData?.team?.venue?.stadium?.coordinates) {
-      return {
+      let coords = {
         latitude: teamData.team.venue.stadium.coordinates.latitude,
         longitude: teamData.team.venue.stadium.coordinates.longitude
       };
+      
+      // Detect and fix swapped coordinates
+      coords = detectAndFixSwappedCoordinates(coords);
+      
+      return coords;
     }
     
     console.warn(`No coordinates found for team ${teamId}`);
@@ -2074,6 +2128,7 @@ function calculateDistance(coords1, coords2) {
     return null;
   }
 }
+
 
 
 // ========================
