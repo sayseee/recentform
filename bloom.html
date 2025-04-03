@@ -1688,13 +1688,23 @@ async function fetchAndDisplayWinningOdds(matchId) {
     }
 }
 
-
 // Function to fetch odds for an event 
 const fetchOddsForEvent = async (eventId) => {
   const url = `${baseURL}/event/${eventId}/odds/1/all`;
   try {
     const response = await fetch(url);
+
+    // Check if response is a 404
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.warn(`Odds not found for event ${eventId} (404). Skipping...`);
+        return null; // Gracefully handle 404
+      }
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
     const data = await response.json();
+
     if (data && data.markets) {
       const fullTimeMarket = data.markets.find(market => market.marketName === 'Full time');
       if (fullTimeMarket && fullTimeMarket.choices) {
@@ -1707,12 +1717,14 @@ const fetchOddsForEvent = async (eventId) => {
         };
       }
     }
+
     return null; // Return null if no odds found
   } catch (error) {
-    console.error('Error fetching odds:', error.message);
-    return null;
+    console.error(`Error fetching odds for event ${eventId}:`, error.message);
+    return null; // Continue execution without breaking the app
   }
 };
+
 
 async function fetchAndDisplayWinningOdds(matchId) {
     try {
@@ -3199,10 +3211,12 @@ function displayH2HEvents(events, containerId) {
 const odds = await fetchOddsForEvent(event.id);
 let oddsDisplay = '';
 
-// Convert decimal odds to percentage
-const homeTeamOdds = odds.odds[0]?.odds;
-const awayTeamOdds = odds.odds[2]?.odds;
-const drawOdds = odds.odds[1]?.odds;
+
+if (odds && odds.odds) {
+  // Convert decimal odds to percentage
+  const homeTeamOdds = odds.odds[0]?.odds;
+  const awayTeamOdds = odds.odds[2]?.odds;
+  const drawOdds = odds.odds[1]?.odds;
 const homeTeamPercentage = homeTeamOdds ? Math.round((1 / homeTeamOdds) * 100) : '-';
 const awayTeamPercentage = awayTeamOdds ? Math.round((1 / awayTeamOdds) * 100) : '-';
 const drawPercentage = drawOdds ? Math.round((1 / drawOdds) * 100) : '-';
@@ -3244,7 +3258,9 @@ if (odds && odds.odds) {
 } else {
     oddsDisplay = '<span>-</span><span>-</span><span>-</span>';
 }
-
+} else {
+  console.warn(`No odds available for event ${event.id}`);
+}
 
     const eventDetailsHtml = `
         <!-- <h2>Event Details ${event.id}</h2> -->
