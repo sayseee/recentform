@@ -787,6 +787,51 @@ ul.tournamentEvents li:last-child {
 }
  
         
+.stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card h3 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 10px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .stat-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .stat-value {
+            font-weight: 700;
+        }
+        
         .goals-stat .stat-value {
             color: var(--primary-color);
         }
