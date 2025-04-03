@@ -2760,7 +2760,7 @@ function updateMostChangedOdds(oddsData) {
             // Determine which choice had the maximum change
             if (Math.abs(choice1Change) === maxChoiceChange) {
                 mostChangedOdd = {
-                    choice: '1',
+                    choice: 'Home',
                     change: choice1Change,
                     time: timeDecimal,
                     previous: previousOdds.choice1,
@@ -2768,7 +2768,7 @@ function updateMostChangedOdds(oddsData) {
                 };
             } else if (Math.abs(choice2Change) === maxChoiceChange) {
                 mostChangedOdd = {
-                    choice: 'X',
+                    choice: 'Draw',
                     change: choice2Change,
                     time: timeDecimal,
                     previous: previousOdds.choice2,
@@ -2776,7 +2776,7 @@ function updateMostChangedOdds(oddsData) {
                 };
             } else if (Math.abs(choice3Change) === maxChoiceChange) {
                 mostChangedOdd = {
-                    choice: '2',
+                    choice: 'Away',
                     change: choice3Change,
                     time: timeDecimal,
                     previous: previousOdds.choice3,
@@ -2802,7 +2802,7 @@ function updateMostChangedOdds(oddsData) {
         const oddsHtml = `
             <div class="odds-change-card">
                 <div class="odds-header">
-                    <div class="choice-badge">Choice ${mostChangedOdd.choice}</div>
+                    <div class="choice-badge">${mostChangedOdd.choice}</div>
                     <h3>Odds Change</h3>
                 </div>
                 
