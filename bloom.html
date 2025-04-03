@@ -1825,8 +1825,7 @@ async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, co
     event.homeTeam.id === teamId &&
     event.tournament.id === tournamentId &&
     event.status.type === 'finished' &&
-    event.id !== currentMatchId &&
-    new Date(event.startTimestamp * 1000) >= fourYearsAgo
+    event.id !== currentMatchId
   );
 }
 
