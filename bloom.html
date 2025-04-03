@@ -434,7 +434,7 @@ ul.tournamentEvents li:last-child {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: calc(100% - 35px); 
+    width: calc(100% - 60px); 
 }
 .teams-info { 
     display: flex;
@@ -1854,6 +1854,9 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
     // Display results
     displayHomeAdvantageStats(tournamentStats, h2hStats, 'th-stats-container');
     displayTravelImpact(travelStats, 'travel-impact-container');
+
+    const conclusion = concludeHomeAdvantage(tournamentStats, h2hStats, travelStats);
+    console.log(conclusion);
     
     // Return combined data for further processing
     return {
@@ -2201,6 +2204,33 @@ function calculateDistance(coords1, coords2) {
   return names[category] || category;
 }
 
+/**
+ * Concludes home advantage based on statistics
+ * @param {Object} tournamentStats - Tournament statistics
+ * @param {Object} h2hStats - Head-to-head statistics
+ * @param {Object} travelStats - Travel statistics
+ * @returns {string} - Conclusion about home advantage
+ */
+function concludeHomeAdvantage(tournamentStats, h2hStats, travelStats) {
+  const homeWinPercentageDiff = h2hStats.homeWinPercentage - tournamentStats.homeWinPercentage;
+  const travelImpact = travelStats?.categories?.local?.homeWinRate;
+
+  let conclusion = '';
+
+  if (homeWinPercentageDiff > 10) {
+    conclusion += `There is a significant home advantage in head-to-head matches, with a ${homeWinPercentageDiff}% higher win rate for the home team. `;
+  } else if (homeWinPercentageDiff > 0) {
+    conclusion += `There is a moderate home advantage in head-to-head matches, with a ${homeWinPercentageDiff}% higher win rate for the home team. `;
+  } else {
+    conclusion += 'There is no significant home advantage in head-to-head matches. ';
+  }
+
+  if (travelImpact && travelImpact > 60) {
+    conclusion += `Additionally, the home team has a high win rate (${travelImpact}%) in local derbies, suggesting that travel distance may not be a significant factor.`;
+  }
+
+  return conclusion;
+}
 
 const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimestamp, sliceCount = 5) => { 
     if (!eventsForTeam) return {}; 
