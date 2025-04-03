@@ -1701,7 +1701,7 @@ const fetchOddsForEvent = async (eventId) => {
         return {
           odds: fullTimeMarket.choices.map(choice => ({
             name: choice.name,
-            odds: fractionalToDecimal(choice.fractionalValue)
+            odds: fractionalToDecimal(choice.initialFractionalValue)
           })),
           choices: fullTimeMarket.choices
         };
