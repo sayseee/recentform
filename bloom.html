@@ -784,11 +784,11 @@ ul.tournamentEvents li:last-child {
 .exWin {
     background-color: #e59c03a8;
 }
-.diff_1 { border-left: 3px solid #990134; color: #fff; } /* Dark Red */
-.diff_2 { border-left: 3px solid #DE4E45; color: #fff; } /* Red */
-.diff_3 { border-left: 3px solid #FF9900; color: #fff; } /* Orange */
-.diff_4 { border-left: 3px solid #4B9F01; color: #fff; } /* Green */
-.diff_5 { border-left: 3px solid #224403; color: #fff; } /* Light Green */
+.diff_1 { border-bottom: 3px solid #990134; color: #fff; } /* Dark Red */
+.diff_2 { border-bottom: 3px solid #DE4E45; color: #fff; } /* Red */
+.diff_3 { border-bottom: 3px solid #FF9900; color: #fff; } /* Orange */
+.diff_4 { border-bottom: 3px solid #4B9F01; color: #fff; } /* Green */
+.diff_5 { border-bottom: 3px solid #224403; color: #fff; } /* Light Green */
 #odds-graph-canvas {
     height: 400px;
     width: 100%;
@@ -803,6 +803,8 @@ ul.tournamentEvents li:last-child {
 #match-odds span {
     padding: 4px 8px;
     background-color: rgb(75, 83, 106);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
 }    
 
 .stats-grid {
@@ -2404,15 +2406,15 @@ const getColor = (value, type) => {
         case 'good': 
             return value >= 64 ? 'color: #21b083; font-weight: bold;' : ''; // Good stats (Wins, BTTS, Overs) above 64%
         case 'bad': 
-            return value >= 49 ? 'color: #d84010; font-weight: bold;' : ''; // Bad stats (Losses) above 49%
+            return value >= 49 ? 'color: #e59c03a8; font-weight: bold;' : ''; // Bad stats (Losses) above 49%
         case 'inverse-good': 
             return value === 0 ? 'color: #21b083; font-weight: bold;' : ''; // 0% Failed to Score is excellent
         case 'inverse-bad': 
-            return value >= 33 ? 'color: #d84010; font-weight: bold;' : ''; // 33% or more Failed to Score is bad
+            return value >= 33 ? 'color: #e59c03a8; font-weight: bold;' : ''; // 33% or more Failed to Score is bad
         case 'cleansheet-good': 
             return value >= 33 ? 'color: #21b083; font-weight: bold;' : ''; // 33%+ Clean Sheets is good
         case 'cleansheet-bad': 
-            return value === 0 ? 'color: #d84010; font-weight: bold;' : ''; // 0% Clean Sheets is bad
+            return value === 0 ? 'color: #e59c03a8; font-weight: bold;' : ''; // 0% Clean Sheets is bad
         default:
             return ''; // Default style
     }
@@ -3201,18 +3203,54 @@ function displayH2HEvents(events, containerId) {
     const awayScore = event.awayScore?.current ?? '';
     const eventTime = new Date(event.startTimestamp * 1000).toLocaleString();
 
-    // Fetch odds for this event
+   // Fetch odds for this event
 const odds = await fetchOddsForEvent(event.id);
 let oddsDisplay = '';
+
+// Convert decimal odds to percentage
+const homeTeamOdds = odds.odds[0]?.odds;
+const awayTeamOdds = odds.odds[2]?.odds;
+const drawOdds = odds.odds[1]?.odds;
+const homeTeamPercentage = homeTeamOdds ? Math.round((1 / homeTeamOdds) * 100) : '-';
+const awayTeamPercentage = awayTeamOdds ? Math.round((1 / awayTeamOdds) * 100) : '-';
+const drawPercentage = drawOdds ? Math.round((1 / drawOdds) * 100) : '-';
+
+// Convert probabilities to numbers
+const prob1 = Number(homeTeamPercentage);
+const prob2 = Number(awayTeamPercentage);
+const prob3 = Number(drawPercentage);
+
+// Function to determine difficulty level
+const getDifficultyLevel = (probability) => {
+    if (probability <= 19) return 1; // Very Easy
+    if (probability <= 35) return 2; // Easy
+    if (probability <= 57) return 3; // Medium
+    if (probability <= 79) return 4; // Hard
+    if (probability >= 80) return 5; // Very Hard
+    return 0; // None
+};
+
+// Assign levels for home, away, and draw
+const level1 = getDifficultyLevel(prob1); // Home
+const level2 = getDifficultyLevel(prob2); // Away
+const level3 = getDifficultyLevel(prob3); // Draw
+
 if (odds && odds.odds) {
-  oddsDisplay = odds.odds.map((odd, index) => {
-    const change = odds.choices[index].change;
-    const changeClass = change > 0 ? 'negative' : change < 0 ? 'positive' : 'neutral';
-    const arrowSymbol = change > 0 ? '↑' : change < 0 ? '↓' : '';
-    return `<span class="${changeClass}">${odd.odds} ${arrowSymbol}</span>`;
-  }).join('');
+    oddsDisplay = odds.odds.map((odd, index) => {
+        const change = odds.choices[index].change;
+        const changeClass = change > 0 ? 'negative' : change < 0 ? 'positive' : 'neutral';
+        const arrowSymbol = change > 0 ? '↑' : change < 0 ? '↓' : '';
+        
+        // Assign correct diff level
+        let diffClass = '';
+        if (index === 0) diffClass = `diff_${level1}`; // Home
+        if (index === 2) diffClass = `diff_${level2}`; // Away
+        if (index === 1) diffClass = `diff_${level3}`; // Draw
+
+        return `<span class="${changeClass} ${diffClass}">${odd.odds} ${arrowSymbol}</span>`;
+    }).join('');
 } else {
-  oddsDisplay = '<span>-</span><span>-</span><span>-</span>';
+    oddsDisplay = '<span>-</span><span>-</span><span>-</span>';
 }
 
 
