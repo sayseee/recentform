@@ -6,11 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
 
 :root {
+        --color-w_0 : white;
         --color-w_1 : #cdcdcd;
         --color-w_2 : #8eb1c5;
         --color-gr_1 : #727175; 
@@ -41,37 +42,23 @@
             --warning-color: #f39c12;
       }
       .rfr {
-        font-family: "Roboto Flex", sans-serif;
+        font-family: "Inter", sans-serif;
         font-optical-sizing: auto;
         font-weight: 400;
         font-style: normal;
-        font-variation-settings:
-          "slnt" 0,
-          "wdth" 100,
-          "GRAD" 0,
-          "XOPQ" 96,
-          "XTRA" 468,
-          "YOPQ" 79,
-          "YTAS" 750,
-          "YTDE" -203,
-          "YTFI" 738,
-          "YTLC" 514,
-          "YTUC" 712;
       }
       
       .rr {
-        font-family: "Roboto", sans-serif;
+        font-family: "Inter", sans-serif;
         font-optical-sizing: auto;
-        font-weight: 400;
+        font-weight: 500;
         font-style: normal;
-        font-variation-settings:
-          "wdth" 100;
       }
       
     .rcr {
-      font-family: "Roboto Condensed", sans-serif;
+        font-family: "Inter", sans-serif;
       font-optical-sizing: auto;
-      font-weight: 400;
+      font-weight: 700;
       font-style: normal;
     }
   
@@ -81,10 +68,12 @@
     padding: 0; 
     color: var(--color-w_1);
     display: grid;
-    grid-template-rows: 50px auto; /* Top row 50px, second row takes remaining space */
+    grid-template-rows: 50px auto; /* Top row 50px, second row takes remaining space */    
     height: 100vh;
+    min-height: 100vh;
+    min-width: 100vw;
     overflow: hidden;
-    font-size: 12px;
+    font-size: 0.6875rem;
     gap: 2px;
 }
 
@@ -100,7 +89,7 @@
 
 .main-content {
     display: grid;
-    grid-template-columns: 235px 265px 1fr 300px;
+    grid-template-columns: 225px 235px 1fr 300px;
     gap: 2px;
 }
 
@@ -130,18 +119,18 @@
       overflow-y: auto;
       height: 100vh;
     }
-    #data-column {
+    #other-data-container {
       overflow-y: auto;
-      height: calc(100vh - 70px);
-      padding: 15px;
+      height: calc(100vh - 120px);
+      padding: 10px;
     }
     
     #details-column {
       background-color: var(--color-gr_4); 
     }
-    #events-tabs { 
+    .container-events { 
       overflow-y: auto;
-      height: calc(100vh - 180px);
+      height: calc(100vh - 250px);
     }
     
     .region-header {
@@ -273,7 +262,7 @@
     cursor: pointer;
     display: flex;
     font-family: inherit;
-    font-weight: 600;
+    font-weight: 700;
     grid-area: datepicker;
     height: 100%;
     justify-content: space-between;
@@ -283,7 +272,7 @@
     flex: 1;
     width: 100px;
     gap: 10px;
-    font-size: 13px;
+    font-size: 0.75rem;
     margin-top: 4px;
 }
 
@@ -467,8 +456,8 @@ ul.tournamentEvents li:last-child {
     flex-direction: column;
     align-items: center; 
     flex: 0 0 20px;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     justify-content: space-around; 
     color: var(--color-gr_1);
 }
@@ -496,7 +485,7 @@ ul.tournamentEvents li:last-child {
         "home score away" max-content
         ". . . " 5px / var(--width, minmax(110px, 250px)) var(--width, minmax(80px, 180px)) var(--width, minmax(110px, 250px));
     justify-content: center;
-    padding: 10px; 
+    padding: 10px 0 0; 
     text-align: center; 
 }
 .duelParticipant__home { 
@@ -506,7 +495,7 @@ ul.tournamentEvents li:last-child {
     font-weight: 700;
     text-align: center;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 .duelParticipant__away { 
     display: flex;
@@ -515,11 +504,11 @@ ul.tournamentEvents li:last-child {
     font-weight: 700;
     text-align: center;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 .duelParticipant__home img, .duelParticipant__away img { 
-    height: 58px;
-    width: 58px;
+    height: 38px;
+    width: 38px;
 }
 .duelParticipant__score { 
     display: grid;
@@ -529,7 +518,7 @@ ul.tournamentEvents li:last-child {
 } 
 .detailScore__wrapper{
     font-size: 40px;
-    font-weight: 600;
+    font-weight: 700;
 }
 .duelParticipant .match-time { 
     display: grid;
@@ -541,11 +530,11 @@ ul.tournamentEvents li:last-child {
 .detailScore__matchInfo.inprogress [id^="live-timer-"] { 
     color: #d9534f;   
     transition: background-color 0.3s ease;
-    font-weight: 600;
+    font-weight: 700;
 }
 .tab-contentContainer {
     width: 100%;
-    margin: 20px auto;
+    margin: 10px auto;
 }
 
 .tab-menu {
@@ -565,8 +554,8 @@ ul.tournamentEvents li:last-child {
     position: relative;
     color: var(--color-w_2);
     text-transform: uppercase;
-    font-weight: 600;
-    font-size: 13px;
+    font-weight: 700;
+    font-size: 0.6875rem;
     background-color: #1f222b;
 }
 
@@ -767,7 +756,7 @@ ul.tournamentEvents li:last-child {
 }
 .exWin, .default {
     color: #ffffff;
-    font-weight: 600;
+    font-weight: 700;
     padding: 4px 8px;
 }
 .default {
@@ -786,7 +775,16 @@ ul.tournamentEvents li:last-child {
     width: 100%;
 }
  
-    
+#match-odds {
+    justify-content: center;
+    gap: 5px;    
+    font-weight: 700;
+    margin-bottom: 15px;
+}    
+#match-odds span {
+    padding: 4px 8px;
+    background-color: rgb(75, 83, 106);
+}    
 
 .stats-grid {
             display: grid;
@@ -801,12 +799,10 @@ ul.tournamentEvents li:last-child {
          
         .stat-card h3 { 
             margin-bottom: 15px;
-            color: var(--color-w_2);
-            text-transform: uppercase;
-            font-weight: 600;
-            font-size: 13px;
-            padding-bottom: 10px;
-            font-family: "Roboto Condensed", sans-serif;
+            color: var(--color-w_0);
+            text-transform: uppercase; 
+            font-size: 0.6875rem;
+            padding-bottom: 10px; 
             font-optical-sizing: auto; 
             font-style: normal;
         }
@@ -822,7 +818,7 @@ ul.tournamentEvents li:last-child {
         }
         
         .stat-value {
-            font-weight: 600;
+            font-weight: 700;
         }
         
         .goals-stat .stat-value {
@@ -868,7 +864,6 @@ ul.tournamentEvents li:last-child {
             transition: transform 0.3s ease;
         } 
         .odds-header {
-            background: var(--dark-color);
             color: white;
             padding: 10px;
             text-align: left;
@@ -896,43 +891,35 @@ ul.tournamentEvents li:last-child {
         }
         
         .odd-label {
-            color: #7f8c8d;
-            font-size: 0.9rem;
+            color: #7f8c8d; 
         }
         
         .odd-value {
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-weight: 700; 
         }
         
-        .current-odd {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--dark-color);
+        .current-odd { 
+            font-weight: 700; 
         }
         
         .change-percentage {
             display: inline-flex;
             align-items: center;
             padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
+            border-radius: 4px; 
+            font-weight: 700; 
         }
         
         .positive {
-            background-color: rgba(46, 204, 113, 0.1);
+            background-color: rgba(46, 204, 113, 0.1) !important;
             color: var(--positive-color);
         }
         
         .negative {
-            background-color: rgba(231, 76, 60, 0.1);
+            background-color: rgba(231, 76, 60, 0.1) !important;
             color: var(--negative-color);
         }
-        
-        .neutral {
-            background-color: rgba(243, 156, 18, 0.1);
-            color: var(--neutral-color);
-        }
+         
         
         .change-arrow {
             margin-right: 4px;
@@ -941,10 +928,7 @@ ul.tournamentEvents li:last-child {
         
         .time-stamp {
             text-align: center;
-            padding: 12px;
-            color: #7f8c8d;
-            font-size: 0.8rem;
-            border-bottom: 1px solid #3c3c3c;
+            padding: 12px;   
         } 
         .odds-comparison {
             display: flex;
@@ -969,14 +953,13 @@ ul.tournamentEvents li:last-child {
             padding: 8px;
         }
         
-        .odd-comparison-label {
-            font-size: 0.8rem;
+        .odd-comparison-label { 
             color: #95a5a6;
             margin-bottom: 4px;
         }
         
         .odd-comparison-value {
-            font-weight: 600;
+            font-weight: 700;
         }
 
  
@@ -1034,6 +1017,14 @@ ul.tournamentEvents li:last-child {
   margin-bottom: 10px;
 }
 
+.stat-row span {
+    padding: 4px 8px;
+}
+
+.stat-row span:first-child {
+  background-color: #1f222b;
+}
+
 .value {
   font-weight: bold;
   margin-left: 10px;
@@ -1042,19 +1033,52 @@ ul.tournamentEvents li:last-child {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
+} 
+.card-container {
+    display: flex;
+    gap: 10px;
 }
-
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+.stats-card-container {
+    border: 1px solid #1f1f1f;
+    border-radius: 8px;
+    text-align: center;
+    color: white;
+    margin-top: 15px;
+    flex: 1;
 }
-
-.value {
-  font-weight: bold;
-  margin-left: 10px;
+.stats-header {
+    padding: 6px;
+    color: white;
+    font-weight: 700;
 }
-
+.stats-grid-card {
+    display: flex;
+    gap: 2px;
+}
+.stats-box {
+    border-radius: 6px;
+    text-align: center;
+    min-width: 50px;
+    flex: 1;
+    background-color: #333; 
+}
+.stats-box:first-child { 
+    border-top-left-radius: 0;
+}
+.stats-box:last-child { 
+    border-top-right-radius: 0; 
+}
+.stats-box div {
+    display: block; 
+    opacity: 0.7;
+    padding: 4px 0;
+}
+.stats-box div:first-child {
+    background-color: #1f1f1f; 
+}
+.stats-box div:last-child {
+    font-weight: 700;
+}
 .travel-impact-grid {
   display: flex;
   flex-direction: row;
@@ -1065,6 +1089,7 @@ ul.tournamentEvents li:last-child {
   padding: 20px; 
   display: flex;
   flex-direction: row;
+  gap: 5px;
 }
 
 .travel-impact-cell .stat-row {
@@ -1079,14 +1104,24 @@ ul.tournamentEvents li:last-child {
 }
 
 #tournament-stats-container,
-#h2h-stats-container,
-#travel-impact-container {
+#h2h-stats-container {
   display: flex;
     flex-direction: row;
     justify-content: center;
     margin: 20px 0;
 }
-        
+
+#travel-impact-container {
+  display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 0 10px;
+    align-items: center;
+}
+   
+#th-stats-container {
+    margin-bottom: 10px;
+}
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -1169,12 +1204,15 @@ ul.tournamentEvents li:last-child {
         <div id="categories" class="categories"></div>
         <div id="events-column" class="top-right"></div>
         <div id="details-column" class="event-details"></div>
-        <div id="data-column" class="event-data">
-            <div id="h2h-events" class="h2h-events"></div>
-            <div id="stats-container" class="stats-container"></div>
-            <div id="changing-odds" class="changing-odds"></div>
-            <div id="odds-graph-change">
-                <canvas id="odds-graph-canvas" style="height: 200px; width: 100%;"></canvas>
+        <div id="data-column" class="event-data">                
+            <div id="travel-impact-container"></div>
+            <div id="other-data-container">
+                <div id="odds-graph-change">
+                    <canvas id="odds-graph-canvas" style="height: 200px; width: 100%;"></canvas>
+                </div>
+                <div id="h2h-events" class="h2h-events"></div>
+                <div id="stats-container" class="stats-container"></div>
+                <div id="changing-odds" class="changing-odds"></div>
             </div>
         </div>
     </div>
@@ -1628,26 +1666,29 @@ async function fetchAndDisplayWinningOdds(matchId) {
 }
 
 
-// Function to fetch odds for an event
+// Function to fetch odds for an event 
 const fetchOddsForEvent = async (eventId) => {
-    const url = `${baseURL}/event/${eventId}/odds/1/all`;
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data && data.markets) {
-            const fullTimeMarket = data.markets.find(market => market.marketName === 'Full time');
-            if (fullTimeMarket && fullTimeMarket.choices) {
-                return fullTimeMarket.choices.map(choice => ({
-                    name: choice.name,
-                    odds: fractionalToDecimal(choice.fractionalValue)
-                }));
-            }
-        }
-        return null; // Return null if no odds found
-    } catch (error) {
-        console.error('Error fetching odds:', error.message);
-        return null;
+  const url = `${baseURL}/event/${eventId}/odds/1/all`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data && data.markets) {
+      const fullTimeMarket = data.markets.find(market => market.marketName === 'Full time');
+      if (fullTimeMarket && fullTimeMarket.choices) {
+        return {
+          odds: fullTimeMarket.choices.map(choice => ({
+            name: choice.name,
+            odds: fractionalToDecimal(choice.fractionalValue)
+          })),
+          choices: fullTimeMarket.choices
+        };
+      }
     }
+    return null; // Return null if no odds found
+  } catch (error) {
+    console.error('Error fetching odds:', error.message);
+    return null;
+  }
 };
 
 async function fetchAndDisplayWinningOdds(matchId) {
@@ -1779,19 +1820,20 @@ async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, co
  * @param {Object} homeTeam - Home team details
  * @param {Object} awayTeam - Away team details
  */
- async function fetchHomeH2HEvents(customId, teamId, tournamentId) {
+ async function fetchHomeH2HEvents(customId, teamId, tournamentId, currentMatchId) {
   const url = `${baseURL}/event/${customId}/h2h/events`;
   const data = await fetchJson(url);
   
   if (!data?.events) return [];
   
   const fourYearsAgo = new Date();
-  fourYearsAgo.setFullYear(fourYearsAgo.getFullYear() - 4);
+  fourYearsAgo.setFullYear(fourYearsAgo.getFullYear() - 6);
   
   return data.events.filter(event => 
     event.homeTeam.id === teamId &&
     event.tournament.id === tournamentId &&
     event.status.type === 'finished' &&
+    event.id !== currentMatchId &&
     new Date(event.startTimestamp * 1000) >= fourYearsAgo
   );
 }
@@ -1801,7 +1843,7 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
     // Fetch both tournament and H2H events
     const [tournamentEvents, h2hEvents] = await Promise.all([
       fetchEventsData(tournamentId, seasonId, currentMatchId),
-      fetchHomeH2HEvents(customId, homeTeamId, tournamentId)
+      fetchHomeH2HEvents(customId, homeTeamId, tournamentId, currentMatchId)
     ]);
     
     // Calculate statistics
@@ -2053,6 +2095,11 @@ function calculateDistance(coords1, coords2) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
+  // Helper function to display percentage or "-"
+  const displayPercentage = (percentage) => {
+    return isNaN(percentage) ? '-' : `${percentage}%`;
+  };
+
   container.innerHTML = `
     <table style="width:100%; text-align:center;">
       <thead>
@@ -2071,27 +2118,27 @@ function calculateDistance(coords1, coords2) {
       <tbody>
         <!-- Tournament Stats -->
         <tr>
-          <td>${tournamentStats.homeWinPercentage}%</td> 
-          <td>${tournamentStats.drawPercentage}%</td> 
-          <td>${tournamentStats.awayWinPercentage}%</td> 
+          <td>${displayPercentage(tournamentStats.homeWinPercentage)}</td> 
+          <td>${displayPercentage(tournamentStats.drawPercentage)}</td> 
+          <td>${displayPercentage(tournamentStats.awayWinPercentage)}</td> 
           <td>${tournamentStats.avgHomeGoals}</td> 
           <td>${tournamentStats.avgAwayGoals}</td> 
           <td>${tournamentStats.goalDifference}</td>  
-          <td>${tournamentStats.homeCleanSheetPercentage}%</td> 
-          <td>${tournamentStats.awayCleanSheetPercentage}%</td> 
-          <td>${tournamentStats.homeFailedToScorePercentage}%</td>
+          <td>${displayPercentage(tournamentStats.homeCleanSheetPercentage)}</td> 
+          <td>${displayPercentage(tournamentStats.awayCleanSheetPercentage)}</td> 
+          <td>${displayPercentage(tournamentStats.homeFailedToScorePercentage)}</td>
         </tr>
         <!-- H2H Stats -->
         <tr>
-          <td>${h2hStats.homeWinPercentage}%</td> 
-          <td>${h2hStats.drawPercentage}%</td> 
-          <td>${h2hStats.awayWinPercentage}%</td> 
+          <td>${displayPercentage(h2hStats.homeWinPercentage)}</td> 
+          <td>${displayPercentage(h2hStats.drawPercentage)}</td> 
+          <td>${displayPercentage(h2hStats.awayWinPercentage)}</td> 
           <td>${h2hStats.avgHomeGoals}</td> 
           <td>${h2hStats.avgAwayGoals}</td> 
           <td>${h2hStats.goalDifference}</td>  
-          <td>${h2hStats.homeCleanSheetPercentage}%</td> 
-          <td>${h2hStats.awayCleanSheetPercentage}%</td> 
-          <td>${h2hStats.homeFailedToScorePercentage}%</td>
+          <td>${displayPercentage(h2hStats.homeCleanSheetPercentage)}</td> 
+          <td>${displayPercentage(h2hStats.awayCleanSheetPercentage)}</td> 
+          <td>${displayPercentage(h2hStats.homeFailedToScorePercentage)}</td>
         </tr>
       </tbody>
     </table>
@@ -2113,37 +2160,30 @@ function calculateDistance(coords1, coords2) {
     return;
   }
   
-  let html = `
-    <h3>Travel Impact Stats</h3><div class="travel-impact-grid">
-  `;
-  
-  // Add base distance
-  html += `
-    <div class="travel-impact-cell"> 
-      <span class="value">${travelStats.baseDistance}</span> 
-  `;
-  
+  let html = ``; 
   // Add category breakdown
   for (const [category, data] of Object.entries(travelStats.categories)) {
-    html += ` 
+    html += `
+    <p>Travel Impact Stats</p>
+      <span class="value">${travelStats.baseDistance}</span> 
         <span>${getCategoryName(category)} (${data.matches} matches)</span>
+    <!-- <div class="travel-impact-grid"> 
         <div class="stat-row">
-          <span>Home Win Rate:</span>
+          <span>HW</span>
           <span class="value">${data.homeWinRate}%</span>
         </div>
         <div class="stat-row">
-          <span>Draw Rate:</span>
+          <span>DR</span>
           <span class="value">${data.drawRate}%</span>
         </div>
         <div class="stat-row">
-          <span>Loss Rate:</span>
+          <span>AW</span>
           <span class="value">${data.lossRate}%</span>
         </div>
-      </div>
+      </div>-->
     `;
   }
-  
-  html += `</div>`;
+   
   
   container.innerHTML = html;
 }
@@ -2339,86 +2379,96 @@ const displayLast5Events = async (teamStats, containerId) => {
         const awayTeamPeriod1Score = isAwayTeamWinner ? `<strong>${event.awayPeriod1Score}</strong>` : event.awayPeriod1Score;
 
         // Fetch odds for this event
-        const odds = await fetchOddsForEvent(event.eventId);
-        let oddsDisplay = '';
+const oddsData = await fetchOddsForEvent(event.eventId);
+let oddsDisplay = '';
 
-        if (odds) {
-            // Convert decimal odds to percentage
-            const homeTeamOdds = odds[0]?.odds;
-            const awayTeamOdds = odds[2]?.odds;
-            const drawOdds = odds[1]?.odds;
-            const homeTeamPercentage = homeTeamOdds ? Math.round((1 / homeTeamOdds) * 100) : '-';
-            const awayTeamPercentage = awayTeamOdds ? Math.round((1 / awayTeamOdds) * 100) : '-';
-            const drawPercentage = drawOdds ? Math.round((1 / drawOdds) * 100) : '-';
+if (oddsData && oddsData.odds) {
+  // Convert decimal odds to percentage
+  const homeTeamOdds = oddsData.odds[0]?.odds;
+  const awayTeamOdds = oddsData.odds[2]?.odds;
+  const drawOdds = oddsData.odds[1]?.odds;
+  const homeTeamPercentage = homeTeamOdds ? Math.round((1 / homeTeamOdds) * 100) : '-';
+  const awayTeamPercentage = awayTeamOdds ? Math.round((1 / awayTeamOdds) * 100) : '-';
+  const drawPercentage = drawOdds ? Math.round((1 / drawOdds) * 100) : '-';
 
-            // Convert probabilities to numbers
-            const prob1 = Number(homeTeamPercentage);
-            const prob2 = Number(awayTeamPercentage);
-            const prob3 = Number(drawPercentage);
+  // Convert probabilities to numbers
+  const prob1 = Number(homeTeamPercentage);
+  const prob2 = Number(awayTeamPercentage);
+  const prob3 = Number(drawPercentage);
 
-            // Determine difficulty levels separately for home (prob1) and away (prob2)
-            let level1, level2, level3;
+  // Determine difficulty levels separately for home (prob1) and away (prob2)
+  let level1, level2, level3;
 
-            // Home side difficulty (prob1)
-            if (prob1 <= 19) {
-              level1 = 1; // Very Easy 
-            } else if (prob1 <= 35) {
-              level1 = 2; // Easy
-            } else if (prob1 <= 57) {
-              level1 = 3; // Medium
-            } else if (prob1 <= 79) {
-              level1 = 4; // Hard
-            } else if (prob1 >= 80) {
-              level1 = 5; // Very Hard
-            } else {
-              level1 = 0; // none
-            }
+  // Home side difficulty (prob1)
+  if (prob1 <= 19) {
+    level1 = 1; // Very Easy 
+  } else if (prob1 <= 35) {
+    level1 = 2; // Easy
+  } else if (prob1 <= 57) {
+    level1 = 3; // Medium
+  } else if (prob1 <= 79) {
+    level1 = 4; // Hard
+  } else if (prob1 >= 80) {
+    level1 = 5; // Very Hard
+  } else {
+    level1 = 0; // none
+  }
 
-            // Away side difficulty (prob2)
-            if (prob2 <= 19) {             
-              level2 = 1; // Very Easy
-            } else if (prob2 <= 35) {
-              level2 = 2; // Easy
-            } else if (prob2 <= 57) {
-              level2 = 3; // Medium
-            } else if (prob2 <= 79) {
-              level2 = 4; // Hard
-            } else if (prob2 >= 80) {
-              level2 = 5; // Very Hard
-            } else {
-              level2 = 0; // none
-            }
+  // Away side difficulty (prob2)
+  if (prob2 <= 19) {             
+    level2 = 1; // Very Easy
+  } else if (prob2 <= 35) {
+    level2 = 2; // Easy
+  } else if (prob2 <= 57) {
+    level2 = 3; // Medium
+  } else if (prob2 <= 79) {
+    level2 = 4; // Hard
+  } else if (prob2 >= 80) {
+    level2 = 5; // Very Hard
+  } else {
+    level2 = 0; // none
+  }
 
+  // draw side difficulty (prob3)
+  if (prob3 <= 19) {             
+    level3 = 1; // Very Easy
+  } else if (prob3 <= 35) {
+    level3 = 2; // Easy
+  } else if (prob3 <= 57) {
+    level3 = 3; // Medium
+  } else if (prob3 <= 79) {
+    level3 = 4; // Hard
+  } else if (prob3 >= 80) {
+    level3 = 5; // Very Hard
+  } else {
+    level3 = 0; // none
+  }
 
-            // draw side difficulty (prob2)
-            if (prob3 <= 19) {             
-              level3 = 1; // Very Easy
-            } else if (prob3 <= 35) {
-              level3 = 2; // Easy
-            } else if (prob3 <= 57) {
-              level3 = 3; // Medium
-            } else if (prob3 <= 79) {
-              level3 = 4; // Hard
-            } else if (prob3 >= 80) {
-              level3 = 5; // Very Hard
-            } else {
-              level3 = 0; // none
-            }
+  // Get changes for each odd
+  const homeTeamChange = oddsData.choices[0]?.change;
+  const awayTeamChange = oddsData.choices[2]?.change;
+  const drawChange = oddsData.choices[1]?.change;
 
+  // Determine change class and arrow symbol for each odd
+  const homeTeamChangeClass = homeTeamChange > 0 ? 'negative' : homeTeamChange < 0 ? 'positive' : 'neutral';
+  const homeTeamArrowSymbol = homeTeamChange > 0 ? '' : homeTeamChange < 0 ? '' : '';
+  const awayTeamChangeClass = awayTeamChange > 0 ? 'negative' : awayTeamChange < 0 ? 'positive' : 'neutral';
+  const awayTeamArrowSymbol = awayTeamChange > 0 ? '' : awayTeamChange < 0 ? '' : '';
+  const drawChangeClass = drawChange > 0 ? 'negative' : drawChange < 0 ? 'positive' : 'neutral';
+  const drawArrowSymbol = drawChange > 0 ? '' : drawChange < 0 ? '' : '';
 
-            oddsDisplay = `<div>
-                                <span class="diff_${level1} ${homeTeamOdds}">${homeTeamPercentage}</span>
-                                <span class="diff_${level2} ${awayTeamOdds}">${awayTeamPercentage}</span>
-                           </div>
-                                <span class="diff_${level3} ${drawOdds}">${drawPercentage}</span>`;
-        } else {
-            oddsDisplay = `<div>
-                                <span>-</span>
-                                <span>-</span>
-                           </div>
-                            <span>-</span>`; // No odds available
-        }
-
+  oddsDisplay = `<div>
+                  <span class="diff_${level1} ${homeTeamChangeClass}">${homeTeamPercentage}% ${homeTeamArrowSymbol}</span>
+                  <span class="diff_${level2} ${awayTeamChangeClass}">${awayTeamPercentage}% ${awayTeamArrowSymbol}</span>
+                </div>
+                <span class="diff_${level3} ${drawChangeClass}">${drawPercentage}% ${drawArrowSymbol}</span>`;
+} else {
+  oddsDisplay = `<div>
+                  <span>-</span>
+                  <span>-</span>
+                </div>
+                <span>-</span>`; // No odds available
+}
 
         const eventContent = `  
             <div class="event__row flex _F_r gT10 _F_ac" data-id="${event.eventId}">
@@ -2908,88 +2958,62 @@ function displayStats(stats) {
                         <span class="stat-label">Avg Goals (Away)</span>
                         <span class="stat-value">${stats.averageGoalsAway}</span>
                     </div>
-                </div>
+                </div> 
+                <div class="card-container">
+                    <div class="stats-card-container">
+                        <div class="stats-header">1 X 2</div>
+                        <div class="stats-grid-card">
+                            <div class="stats-box">
+                                <div>Home</div>
+                                <div>${stats.winPercentage}%</div>
+                            </div>
+                            <div class="stats-box">
+                                <div>Draw</div>
+                                <div>${stats.drawPercentage}%</div>
+                            </div>
+                            <div class="stats-box">
+                                <div>Away</div>
+                                <div>${stats.lossPercentage}%</div>
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="stats-card-container">
+                        <div class="stats-header">Defensive</div>
+                        <div class="stats-grid-card"> 
+                            <div class="stats-box">
+                                <div>CS</div>
+                                <div>${stats.cleanSheetPercentage}%</div>
+                            </div>
+                            <div class="stats-box">
+                                <div>FTS</div>
+                                <div>${stats.failedToScorePercentage}%</div>
+                            </div>
+                        </div>
+                    </div> 
+                </div> 
+
                 
-                <div class="stat-card outcome-stat">
-                    <h3>Match Outcomes</h3>
-                    <div class="stat-item win-stat">
-                        <span class="stat-label">Win Percentage</span>
-                        <span class="stat-value">${stats.winPercentage}%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${stats.winPercentage}%; background: var(--secondary-color);"></div>
-                    </div>
-                    
-                    <div class="stat-item draw-stat">
-                        <span class="stat-label">Draw Percentage</span>
-                        <span class="stat-value">${stats.drawPercentage}%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${stats.drawPercentage}%; background: var(--warning-color);"></div>
-                    </div>
-                    
-                    <div class="stat-item loss-stat">
-                        <span class="stat-label">Loss Percentage</span>
-                        <span class="stat-value">${stats.lossPercentage}%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${stats.lossPercentage}%; background: var(--danger-color);"></div>
-                    </div>
-                </div>
-                
-                <div class="stat-card defensive-stat">
-                    <h3>Defensive Statistics</h3>
-                    <div class="stat-item">
-                        <span class="stat-label">Clean Sheets</span>
-                        <span class="stat-value">${stats.cleanSheetPercentage}%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${stats.cleanSheetPercentage}%"></div>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <span class="stat-label">Failed to Score</span>
-                        <span class="stat-value">${stats.failedToScorePercentage}%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${stats.failedToScorePercentage}%"></div>
-                    </div>
-                </div>
-                
-                <div class="stat-card goals-market-stat">
-                    <h3>Goals Markets</h3>
-                    <div class="stat-item">
-                        <span class="stat-label">Both Teams Scored</span>
-                        <span class="stat-value">${stats.bothTeamsScorePercentage}%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${stats.bothTeamsScorePercentage}%"></div>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <span class="stat-label">Over 1.5 Goals</span>
-                        <span class="stat-value">${stats.totalGoalsOver1_5Percentage}%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${stats.totalGoalsOver1_5Percentage}%"></div>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <span class="stat-label">Over 2.5 Goals</span>
-                        <span class="stat-value">${stats.totalGoalsOver2_5Percentage}%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${stats.totalGoalsOver2_5Percentage}%"></div>
-                    </div>
-                    
-                    <div class="stat-item">
-                        <span class="stat-label">Over 3.5 Goals</span>
-                        <span class="stat-value">${stats.totalGoalsOver3_5Percentage}%</span>
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: ${stats.totalGoalsOver3_5Percentage}%"></div>
-                    </div>
-                </div>
+                    <div class="stats-card-container">
+                        <div class="stats-header">Goals Markets</div>
+                        <div class="stats-grid-card"> 
+                            <div class="stats-box">
+                                <div>BTTS</div>
+                                <div>${stats.bothTeamsScorePercentage}%</div>
+                            </div>
+                            <div class="stats-box">
+                                <div>+1.5</div>
+                                <div>${stats.totalGoalsOver1_5Percentage}%</div>
+                            </div>
+                            <div class="stats-box">
+                                <div>+2.5</div>
+                                <div>${stats.totalGoalsOver2_5Percentage}%</div>
+                            </div>
+                            <div class="stats-box">
+                                <div>+3.5</div>
+                                <div>${stats.totalGoalsOver3_5Percentage}%</div>
+                            </div> 
+                        </div>
+                    </div>  
     `;
 }
 
@@ -3059,6 +3083,21 @@ function displayH2HEvents(events, containerId) {
     const awayScore = event.awayScore?.current ?? '';
     const eventTime = new Date(event.startTimestamp * 1000).toLocaleString();
 
+    // Fetch odds for this event
+const odds = await fetchOddsForEvent(event.id);
+let oddsDisplay = '';
+if (odds && odds.odds) {
+  oddsDisplay = odds.odds.map((odd, index) => {
+    const change = odds.choices[index].change;
+    const changeClass = change > 0 ? 'negative' : change < 0 ? 'positive' : 'neutral';
+    const arrowSymbol = change > 0 ? '↑' : change < 0 ? '↓' : '';
+    return `<span class="${changeClass}">${odd.odds} ${arrowSymbol}</span>`;
+  }).join('');
+} else {
+  oddsDisplay = '<span>-</span><span>-</span><span>-</span>';
+}
+
+
     const eventDetailsHtml = `
         <!-- <h2>Event Details ${event.id}</h2> -->
         <div class="duelParticipant"> 
@@ -3088,13 +3127,12 @@ function displayH2HEvents(events, containerId) {
             </div>
         </div> 
 
+            <div id="match-odds" class="flex _F_r">
+                ${oddsDisplay}  
+            </div> 
         <!-- Tabs Navigation -->
-        <div id="events-tabs" class="tab-contentContainer">
-            <div id="match-odds" class="flex _F_r _F_jc">  
-            </div>  
-        <div id="th-stats-container"></div>  
-                
-        <div id="travel-impact-container"></div>
+        <div id="events-tabs" class="tab-contentContainer"> 
+        <div id="th-stats-container"></div>
             <div class="tab-menu">
                 <button class="tab-button active rcr" data-tab="home-vs-away-events">Home vs Away</button>
                 <button class="tab-button rcr" data-tab="overall-events">Overall</button>
@@ -3207,6 +3245,7 @@ function displayH2HEvents(events, containerId) {
             document.getElementById(tab).classList.add('active');
         });
     }); 
+    
 
      // Fetch odds changes data
      const oddsData = await fetchOddsChanges(event.id);
