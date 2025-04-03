@@ -1996,8 +1996,7 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
     if (!awayTeamCoords) continue;
     
     const distance = calculateDistance(homeCoords, awayTeamCoords);
-    
-    console.log(homeCoords); 
+     
     // Find the appropriate category
     const category = Object.keys(distanceCategories).find(
       key => distance <= distanceCategories[key].maxDistance
