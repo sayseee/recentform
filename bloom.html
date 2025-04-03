@@ -3256,10 +3256,33 @@ if (odds && odds.odds) {
 
     const eventDetailsHtml = `
         <!-- <h2>Event Details ${event.id}</h2> -->
-        <div class="duelParticipant"> 
+        <div class="duelParticipant">  
             <div class="match-time">
-                <span>${new Date(event.startTimestamp * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).replace(',', ' ').replace('/', ' ')}</span>
-            </div>
+                <span>
+                    ${
+                        (() => {
+                            const eventDate = new Date(event.startTimestamp * 1000);
+                            const today = new Date();
+                            const tomorrow = new Date();
+                            tomorrow.setDate(today.getDate() + 1); // Get tomorrow's date
+
+                            if (eventDate.toDateString() === today.toDateString()) {
+                                return "Today";
+                            } else if (eventDate.toDateString() === tomorrow.toDateString()) {
+                                return "Tomorrow";
+                            } else {
+                                return eventDate.toLocaleDateString('en-GB', { 
+                                    day: 'numeric', month: 'short', year: 'numeric' 
+                                }).replace(',', ' ').replace('/', ' ');
+                            }
+                        })()
+                    } 
+                    ${new Date(event.startTimestamp * 1000)
+                        .toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })}
+                </span>
+            </div> 
+
+
             <div class="team duelParticipant__home">
                 <img src="${baseURL}/team/${event.homeTeam.id}/image" width="16" height="16" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
                 <div class="team-name">${event.homeTeam.shortName}</div>
