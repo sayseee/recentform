@@ -2061,37 +2061,30 @@ function calculateDistance(coords1, coords2) {
  * @returns {Object} - Corrected coordinates with latitude and longitude in correct order
  */
  function detectAndFixSwappedCoordinates(coords) {
-  const { latitude, longitude } = coords;
+  let { latitude, longitude } = coords;
 
-  // Check if the latitude is within the valid range (-90 to +90)
+  // Check if the values are within valid Earth ranges
   const isLatitudeValid = latitude >= -90 && latitude <= 90;
-
-  // Check if the longitude is within the valid range (-180 to +180)
   const isLongitudeValid = longitude >= -180 && longitude <= 180;
 
-  // If latitude is out of range but longitude is valid, then we likely have swapped coordinates
+  // If one of them is invalid, we assume they're swapped
   if (!isLatitudeValid && isLongitudeValid) {
-    console.warn('Coordinates appear to be swapped. Swapping latitude and longitude.');
-    // Swap latitude and longitude
-    return {
-      latitude: longitude,
-      longitude: latitude
-    };
+    console.warn("Coordinates appear to be swapped. Swapping latitude and longitude.");
+    return { latitude: longitude, longitude: latitude };
   }
 
-  // If longitude is out of range but latitude is valid, it's also likely swapped
-  if (isLatitudeValid && !isLongitudeValid) {
-    console.warn('Coordinates appear to be swapped. Swapping latitude and longitude.');
-    // Swap latitude and longitude
-    return {
-      latitude: longitude,
-      longitude: latitude
-    };
+  // General heuristic: In most cases, latitude should be larger than longitude in Europe
+  const isLatitudeUnusuallySmall = latitude > -25 && latitude < 45; // Likely a longitude
+  const isLongitudeUnusuallyLarge = longitude > 35 && longitude < 90; // Likely a latitude
+
+  if (isLatitudeUnusuallySmall && isLongitudeUnusuallyLarge) {
+    console.warn("Coordinates appear swapped based on heuristics. Swapping latitude and longitude.");
+    return { latitude: longitude, longitude: latitude };
   }
 
-  // If both latitude and longitude are within valid ranges, return the original coords
   return coords;
 }
+
 
 /**
  * Extracts team coordinates from team data with better error handling
