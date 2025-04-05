@@ -130,7 +130,7 @@
     }
     .container-events { 
       overflow-y: auto;
-      height: calc(100vh - 250px);
+      height: calc(100vh - 400px);
     }
     
     .region-header {
@@ -412,6 +412,10 @@ ul.tournamentEvents li:not(:first-child) {
 
 ul.tournamentEvents li:last-child {
   border-bottom: #000 1px solid;
+}
+hr {
+  border: none;
+  border-bottom: 1px solid #3d3d3d;
 }
 
 
@@ -889,10 +893,12 @@ ul.tournamentEvents li:last-child {
             padding: 10px;
             text-align: left;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         
-        .choice-badge {
-            position: absolute;
+        .choice-badge { 
             top: 16px;
             right: 16px;
             background: var(--color-o_1);
@@ -1134,12 +1140,10 @@ ul.tournamentEvents li:last-child {
 
 #travel-impact-container {
   display: flex;
-    flex-direction: column;
+    flex-direction: column; 
     justify-content: center;
-    margin: 0 0 10px;
+    margin: 0;
     align-items: center;
-    border-bottom: 1px solid #3d3d3d;
-    padding-bottom: 15px;
 }
    
 #th-stats-container {
@@ -1150,6 +1154,96 @@ ul.tournamentEvents li:last-child {
                 grid-template-columns: 1fr;
             }
         }
+#data-container {
+    gap: 5px;
+    padding: 0 10px;
+}
+        .data-card {
+    background-color: #3b3b3d;
+    color: var(--color-w_1); 
+    text-align: center; 
+    min-width: 100px;
+    flex: 1;
+}
+
+.top-section {
+    padding-top: 5px;
+}  
+.main-number { 
+    font-weight: bold;
+    color: var(--positive-color);
+    font-size: 0.9rem;
+}
+
+.label { 
+    text-transform: uppercase; 
+    font-weight: bold;
+    margin: 5px 0; 
+}
+
+.bottom-section {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #68686a;
+    padding: 2px 5px; 
+}
+
+.stat {
+    text-align: center;
+    padding: 5px 15px;
+}
+.stat:first-child {
+    text-align: center;
+    padding: 5px 15px;
+    border-right: 1px solid #68686a;
+}
+
+.number { 
+    font-weight: bold;
+}
+.data-card-grid {
+  display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 5px;
+    padding: 10px;
+}
+
+.data-cards {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  padding: 5px 0; 
+  text-align: center; 
+}
+
+.data-card-title { 
+  color: #ccc;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.data-card-value { 
+  font-weight: bold;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+}
+
+.data-card-league { 
+  color: #888;
+}
+
+.data-card-value.positive {
+  color: #00ff66;
+}
+
+.data-card-value.negative {
+  color: #ff4444;
+}
+
+.data-card-value.neutral {
+  color: #aaa;
+}
+
   </style>
 </head>
 <body class="closure rfr"> 
@@ -1230,12 +1324,12 @@ ul.tournamentEvents li:last-child {
         <div id="data-column" class="event-data">                
             <div id="travel-impact-container"></div>
             <div id="other-data-container">
+                <div id="changing-odds" class="changing-odds"></div>
                 <div id="odds-graph-change">
                     <canvas id="odds-graph-canvas" style="height: 200px; width: 100%;"></canvas>
                 </div>
-                <div id="h2h-events" class="h2h-events"></div>
                 <div id="stats-container" class="stats-container"></div>
-                <div id="changing-odds" class="changing-odds"></div>
+                <div id="h2h-events" class="h2h-events"></div>
             </div>
         </div>
     </div>
@@ -1873,6 +1967,8 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
     const h2hStats = calculateHomeAdvantageStats(h2hEvents);
     const travelStats = await analyzeTravelImpact(h2hEvents, homeTeamId, awayTeamId);
     
+    console.log('tournamentstats', tournamentStats);
+    console.log('h2hStats', h2hStats);
     // Display results
     displayHomeAdvantageStats(tournamentStats, h2hStats, 'th-stats-container');
     displayTravelImpact(travelStats, 'travel-impact-container');
@@ -2167,55 +2263,64 @@ async function getTeamCoordinates(teamId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // Helper function to display percentage or "-"
-  const displayPercentage = (percentage) => {
-    return isNaN(percentage) ? '-' : `${percentage}%`;
+  const displayValue = (val) => (val === null || val === undefined || isNaN(val) ? '-' : val);
+  const displayPercentage = (val) => isNaN(val) ? '-' : `${val}`;
+
+  const getChangeSymbol = (h2h, league, reverse = false) => {
+    if (isNaN(h2h) || isNaN(league)) return { symbol: '', className: 'neutral' };
+    const change = h2h - league;
+    
+    let className, symbol;
+    if (change === 0) {
+      className = 'neutral';
+      symbol = '';
+    } else {
+      const isPositive = reverse ? change < 0 : change > 0;
+      className = isPositive ? 'positive' : 'negative';
+      symbol = isPositive ? '↑' : '↓';
+    }
+
+    return { symbol, className };
   };
 
-  container.innerHTML = `
-    <table style="width:100%; text-align:center;">
-      <thead>
-        <tr>
-          <th>HW:</th>
-          <th>DR:</th>
-          <th>AW:</th>
-          <th>AvHG:</th>
-          <th>AvAG:</th>
-          <th>GD</th>
-          <th>HCS</th>
-          <th>ACS</th>
-          <th>HFTS</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Tournament Stats -->
-        <tr>
-          <td>${displayPercentage(tournamentStats.homeWinPercentage)}</td> 
-          <td>${displayPercentage(tournamentStats.drawPercentage)}</td> 
-          <td>${displayPercentage(tournamentStats.awayWinPercentage)}</td> 
-          <td>${tournamentStats.avgHomeGoals}</td> 
-          <td>${tournamentStats.avgAwayGoals}</td> 
-          <td>${tournamentStats.goalDifference}</td>  
-          <td>${displayPercentage(tournamentStats.homeCleanSheetPercentage)}</td> 
-          <td>${displayPercentage(tournamentStats.awayCleanSheetPercentage)}</td> 
-          <td>${displayPercentage(tournamentStats.homeFailedToScorePercentage)}</td>
-        </tr>
-        <!-- H2H Stats -->
-        <tr>
-          <td>${displayPercentage(h2hStats.homeWinPercentage)}</td> 
-          <td>${displayPercentage(h2hStats.drawPercentage)}</td> 
-          <td>${displayPercentage(h2hStats.awayWinPercentage)}</td> 
-          <td>${h2hStats.avgHomeGoals}</td> 
-          <td>${h2hStats.avgAwayGoals}</td> 
-          <td>${h2hStats.goalDifference}</td>  
-          <td>${displayPercentage(h2hStats.homeCleanSheetPercentage)}</td> 
-          <td>${displayPercentage(h2hStats.awayCleanSheetPercentage)}</td> 
-          <td>${displayPercentage(h2hStats.homeFailedToScorePercentage)}</td>
-        </tr>
-      </tbody>
-    </table>
-  `;
+  const calculateChangePercentage = (h2h, league) => {
+    if (isNaN(h2h) || isNaN(league) || league === 0) return '-';
+    const change = ((h2h - league) / league) * 100;
+    const rounded = Math.round(Math.abs(change));
+    return `${change > 0 ? '+' : '-'}${rounded}%`;
+  };
+
+  const metrics = [
+    { title: "Home Win %", h2h: h2hStats.homeWinPercentage, league: tournamentStats.homeWinPercentage, isPercentage: true },
+    { title: "Draw %", h2h: h2hStats.drawPercentage, league: tournamentStats.drawPercentage, isPercentage: true },
+    { title: "Away Win %", h2h: h2hStats.awayWinPercentage, league: tournamentStats.awayWinPercentage, isPercentage: true },
+    { title: "Av.g Home", h2h: h2hStats.avgHomeGoals, league: tournamentStats.avgHomeGoals },
+    { title: "Av.g Away", h2h: h2hStats.avgAwayGoals, league: tournamentStats.avgAwayGoals }, 
+    { title: "Home CS", h2h: h2hStats.homeCleanSheetPercentage, league: tournamentStats.homeCleanSheetPercentage, isPercentage: true },
+    { title: "Away CS", h2h: h2hStats.awayCleanSheetPercentage, league: tournamentStats.awayCleanSheetPercentage, isPercentage: true },
+    { title: "Home FTS", h2h: h2hStats.homeFailedToScorePercentage, league: tournamentStats.homeFailedToScorePercentage, isPercentage: true, reverse: true },
+    { title: "Away FTS", h2h: h2hStats.awayFailedToScorePercentage, league: tournamentStats.awayFailedToScorePercentage, isPercentage: true, reverse: true },
+  ];
+
+  let cardsHTML = metrics.map(metric => {
+    const { symbol, className } = getChangeSymbol(metric.h2h, metric.league, metric.reverse);
+    const h2hVal = metric.isPercentage ? displayPercentage(metric.h2h) : displayValue(metric.h2h);
+    const leagueVal = metric.isPercentage ? displayPercentage(metric.league) : displayValue(metric.league);
+    const percentChange = calculateChangePercentage(metric.h2h, metric.league);
+
+    return `
+      <div class="data-cards">
+        <div class="data-card-title">${metric.title}</div>
+        <div class="data-card-value ${className}">${symbol} ${h2hVal}<!-- / ${percentChange}--></div>
+        <div class="data-card-league">League | ${leagueVal}</div>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = `<div class="data-card-grid">${cardsHTML}</div>`;
 }
+
+
 // ========================
 // 3. Enhanced Visualization
 // ========================
@@ -2228,7 +2333,8 @@ async function getTeamCoordinates(teamId) {
  function displayTravelImpact(travelStats, containerId) {
   const container = document.getElementById(containerId);
   if (!container || !travelStats) {
-    container.innerHTML = '<div class="no-data">Travel impact data not available</div>';
+    container.innerHTML = `<div class="no-data">Travel impact data not available</div>
+        <hr style="width:100%;" />`;
     return;
   }
   
@@ -2239,20 +2345,7 @@ async function getTeamCoordinates(teamId) {
     <p>Travel Impact Stats</p>
       <span class="value">${travelStats.baseDistance}</span> 
         <span>${getCategoryName(category)} (${data.matches} matches)</span>
-    <!-- <div class="travel-impact-grid"> 
-        <div class="stat-row">
-          <span>HW</span>
-          <span class="value">${data.homeWinRate}%</span>
-        </div>
-        <div class="stat-row">
-          <span>DR</span>
-          <span class="value">${data.drawRate}%</span>
-        </div>
-        <div class="stat-row">
-          <span>AW</span>
-          <span class="value">${data.lossRate}%</span>
-        </div>
-      </div>-->
+        <hr style="width:100%;" />
     `;
   }
    
@@ -2423,8 +2516,7 @@ const getColor = (value, type) => {
             return ''; // Default style
     }
 };
-
-// Function to display team stats
+// Function to display team stats (unchanged)
 const displayTeamStats = (teamStats, containerId) => {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear the container before appending
@@ -2468,18 +2560,171 @@ const displayTeamStats = (teamStats, containerId) => {
             </div>
             <div style="${getColor(failedToScorePercent, 'inverse-good') || getColor(failedToScorePercent, 'inverse-bad')}">
                 ${failedToScorePercent}%
-            </div>
-            <div style="${getColor(bttsPercent, 'good')}">${bttsPercent}%</div>
-            <div style="${getColor(over1_5Percent, 'good')}">${over1_5Percent}%</div>
-            <div style="${getColor(over2_5Percent, 'good')}">${over2_5Percent}%</div>
-            <div style="${getColor(over3_5Percent, 'good')}">${over3_5Percent}%</div>
+            </div> 
         </div>
     `;
 
     container.appendChild(statsElem);
 };
 
+ 
 
+function combineStats(homeStats, awayStats) {
+    const totalHome = homeStats.results.length || 1;
+    const totalAway = awayStats.results.length || 1;
+
+    const avg = (home, away) => ((home / totalHome) + (away / totalAway)) / 2;
+
+    return {
+        totalMatches: totalHome + totalAway,
+
+        average: {
+            btts: avg(homeStats.btts, awayStats.btts),
+            over_1_5: avg(homeStats.over1_5, awayStats.over1_5),
+            over_2_5: avg(homeStats.over2_5, awayStats.over2_5),
+            over_3_5: avg(homeStats.over3_5, awayStats.over3_5),
+            goalsScored: avg(homeStats.totalGoalsScored, awayStats.totalGoalsScored),
+            goalsConceded: avg(homeStats.totalGoalsConceded, awayStats.totalGoalsConceded),
+        },
+
+        home: {
+            btts: homeStats.btts / totalHome,
+            over_1_5: homeStats.over1_5 / totalHome,
+            over_2_5: homeStats.over2_5 / totalHome,
+            over_3_5: homeStats.over3_5 / totalHome,
+            goalsScored: homeStats.totalGoalsScored / totalHome,
+            goalsConceded: homeStats.totalGoalsConceded / totalHome,
+        },
+
+        away: {
+            btts: awayStats.btts / totalAway,
+            over_1_5: awayStats.over1_5 / totalAway,
+            over_2_5: awayStats.over2_5 / totalAway,
+            over_3_5: awayStats.over3_5 / totalAway,
+            goalsScored: awayStats.totalGoalsScored / totalAway,
+            goalsConceded: awayStats.totalGoalsConceded / totalAway,
+        }
+    };
+}
+
+function generateDataCard(stats) {
+    const formatPercent = val => `${(val * 100).toFixed(0)}%`;
+    const formatFloat = val => val.toFixed(2);
+
+    const avg = stats.average;
+    const home = stats.home;
+    const away = stats.away;
+
+    return `
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatFloat(avg.goalsScored)}</span>
+        </div>
+        <p class="label">Scored</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatFloat(home.goalsScored)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatFloat(away.goalsScored)}</span> 
+            </div>
+        </div>
+    </div>
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatFloat(avg.goalsConceded)}</span>
+        </div>
+        <p class="label">Conceded</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatFloat(home.goalsConceded)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatFloat(away.goalsConceded)}</span> 
+            </div>
+        </div>
+    </div>
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatPercent(avg.btts)}</span>
+        </div>
+        <p class="label">BTTS</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatPercent(home.btts)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatPercent(away.btts)}</span> 
+            </div>
+        </div>
+    </div>
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatPercent(avg.over_1_5)}</span>
+        </div>
+        <p class="label">Over 1.5</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatPercent(home.over_1_5)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatPercent(away.over_1_5)}</span> 
+            </div>
+        </div>
+    </div>
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatPercent(avg.over_2_5)}</span>
+        </div>
+        <p class="label">Over 2.5</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatPercent(home.over_2_5)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatPercent(away.over_2_5)}</span> 
+            </div>
+        </div>
+    </div>
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatPercent(avg.over_3_5)}</span>
+        </div>
+        <p class="label">Over 3.5</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatPercent(home.over_3_5)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatPercent(away.over_3_5)}</span> 
+            </div>
+        </div>
+    </div>
+    `;
+}
+ 
+
+// Improved showDataCard function
+function showDataCard(homeStats, awayStats) { 
+    const stats = combineStats(homeStats, awayStats);    
+  const html = generateDataCard(stats);
+  // Create or clear container
+  let container = document.getElementById('data-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'data-container';
+    document.body.appendChild(container);
+  }
+  container.innerHTML = html;
+
+}
+
+ 
 // Function to display last 5 events
 const displayLast5Events = async (teamStats, containerId) => {
     const container = document.getElementById(containerId);
@@ -2904,36 +3149,15 @@ function updateMostChangedOdds(oddsData) {
         const oddsHtml = `
             <div class="odds-change-card">
                 <div class="odds-header">
-                    <div class="choice-badge">${mostChangedOdd.choice}</div>
-                    <h3>Odds Change</h3>
-                </div>
-                
-                <div class="odds-details">
-                    <div class="odds-comparison">
-                        <div class="odd-comparison-box">
-                            <div class="odd-comparison-label">Previous Odd</div>
-                            <div class="odd-comparison-value"> ${fractionalToDecimal(mostChangedOdd.previous || '-')}</div>
-                        </div>
-                        <div class="odd-comparison-box">
-                            <div class="odd-comparison-label">Current Odd</div>
-                            <div class="odd-comparison-value current-odd"> ${fractionalToDecimal(mostChangedOdd.current || '-')}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="odd-row">
-                        <span class="odd-label">Change</span>
+                    <span class="headTilt">Odds Change</span>
                         <span class="odd-value">
                             <span class="change-percentage ${changeClass}">
                                 <span class="change-arrow">${arrowSymbol}</span>
                                 ${Math.abs(mostChangedOdd.change).toFixed(2)}%
                             </span>
                         </span>
-                    </div>
-                </div>
-                
-                <div class="time-stamp">
-                    Updated: ${mostChangedOdd.time}
-                </div>
+                    <div class="choice-badge">${mostChangedOdd.choice}</div>
+                </div>  
             </div>
         `;
         oddsContainer.innerHTML += oddsHtml;
@@ -3317,6 +3541,8 @@ if (odds && odds.odds) {
             <div id="match-odds" class="flex _F_r">
                 ${oddsDisplay}  
             </div> 
+             
+            <div id="data-container" class="flex"></div>
         <!-- Tabs Navigation -->
         <div id="events-tabs" class="tab-contentContainer"> 
         <div id="th-stats-container"></div>
@@ -3341,11 +3567,7 @@ if (odds && odds.odds) {
                             <div>D</div>
                             <div>L</div>
                             <div>CS</div>
-                            <div>FTS</div>
-                            <div>BTS</div>
-                            <div>+1.5</div>
-                            <div>+2.5</div>
-                            <div>+3.5</div>
+                            <div>FTS</div> 
                         </div>
                         <div id="at-home-stats"></div>
                         <div id="at-away-stats"></div>
@@ -3385,11 +3607,7 @@ if (odds && odds.odds) {
                             <div>D</div>
                             <div>L</div>
                             <div>CS</div>
-                            <div>FTS</div>
-                            <div>BTS</div>
-                            <div>+1.5</div>
-                            <div>+2.5</div>
-                            <div>+3.5</div>
+                            <div>FTS</div> 
                         </div>
                         <div id="home-team-stats"></div>
                         <div id="away-team-stats"></div>
@@ -3510,9 +3728,9 @@ if (odds && odds.odds) {
         plotPerformanceGraph(calculatePerformance(awayTeamStatsAll.away), 'aTawayGraphCanvas');
     } else {
         console.error('At away form or stats container not found');
-    }
+    } 
 
-
+    showDataCard(homeTeamStats.home, awayTeamStats.away);
     // Start the live timer if the match is in progress
     if (event.status.type === 'inprogress') {
         startLiveTimer(event);
