@@ -1963,15 +1963,15 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
     ]);
     
     // Calculate statistics
+    const travelStats = await analyzeTravelImpact(h2hEvents, homeTeamId, awayTeamId);
     const tournamentStats = calculateHomeAdvantageStats(tournamentEvents);
     const h2hStats = calculateHomeAdvantageStats(h2hEvents);
-    const travelStats = await analyzeTravelImpact(h2hEvents, homeTeamId, awayTeamId);
     
-    console.log('tournamentstats', tournamentStats);
-    console.log('h2hStats', h2hStats);
+    //console.log('tournamentstats', tournamentStats);
+    //console.log('h2hStats', h2hStats);
     // Display results
-    displayHomeAdvantageStats(tournamentStats, h2hStats, 'th-stats-container');
     displayTravelImpact(travelStats, 'travel-impact-container');
+    displayHomeAdvantageStats(tournamentStats, h2hStats, 'th-stats-container');
 
     const conclusion = concludeHomeAdvantage(tournamentStats, h2hStats, travelStats);
     document.getElementById('conclusion-div').innerHTML = conclusion;
@@ -1979,8 +1979,8 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
     // Return combined data for further processing
     return {
       tournamentStats,
-      h2hStats,
-      travelStats
+      travelStats,
+      h2hStats
     };
     
   } catch (error) {
@@ -3652,6 +3652,16 @@ if (odds && odds.odds) {
         });
     }); 
     
+    const homeTeamId = event.homeTeam.id;
+    const awayTeamId = event.awayTeam.id;
+    const currentMatchId = event.id;
+    const currentMatchTimestamp = event.startTimestamp;
+
+    const tournamentId = event.tournament.id;
+    const uniqueTournamentId = event.tournament.uniqueTournament.id;
+    const seasonId = event.season.id;
+
+    analyzeHomeAdvantage(event.customId, tournamentId, seasonId, currentMatchId, homeTeamId, awayTeamId)
 
      // Fetch odds changes data
      const oddsData = await fetchOddsChanges(event.id);
@@ -3662,73 +3672,20 @@ if (odds && odds.odds) {
         console.error('No odds data available');
     }
 
-    const homeTeamId = event.homeTeam.id;
-    const awayTeamId = event.awayTeam.id;
-    const currentMatchId = event.id;
-    const currentMatchTimestamp = event.startTimestamp;
-
-    const tournamentId = event.tournament.id;
-    const uniqueTournamentId = event.tournament.uniqueTournament.id;
-    const seasonId = event.season.id;
 
     fetchAndDisplayWinningOdds(currentMatchId)
 
-    fetchH2HEvents(event.customId, homeTeamId, tournamentId, currentMatchId, 'h2h-events')
   
-    analyzeHomeAdvantage(event.customId, tournamentId, seasonId, currentMatchId, homeTeamId, awayTeamId)
     // Fetch events data
     const eventsForTeam = await fetchEventsData(tournamentId, seasonId, currentMatchId);
      
+    // Fetch and display away team stats 
+    const awayTeamStats = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 6);
+    const awayTeamStatsAll = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 15);
 
     // Fetch and display home team stats
     const homeTeamStats = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp, 6);
     const homeTeamStatsAll = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp, 15);
-    const homeTeamFormContainer = document.getElementById('home-team-form');
-    const homeTeamStatsContainer = document.getElementById('home-team-stats');
-    const homeTeamGraphContainer = document.getElementById('home-graph-overall');
-    if (homeTeamFormContainer && homeTeamStatsContainer) {
-        displayTeamStats(homeTeamStats.overall, 'home-team-stats');
-        displayLast5Events(homeTeamStats.overall, 'home-team-form'); 
-        plotPerformanceGraph(calculatePerformance(homeTeamStatsAll.overall), 'homeGraphCanvas');
-    } else {
-        console.error('Home team form or stats container not found');
-    }
-
-    const atHomeFormContainer = document.getElementById('at-home-form');
-    const atHomeStatsContainer = document.getElementById('at-home-stats');
-    const atHomeGraphContainer = document.getElementById('at-home-graph');
-    if (atHomeFormContainer && atHomeStatsContainer) {
-        displayTeamStats(homeTeamStats.home, 'at-home-stats');
-        displayLast5Events(homeTeamStats.home, 'at-home-form'); 
-        plotPerformanceGraph(calculatePerformance(homeTeamStatsAll.home), 'aThomeGraphCanvas');
-    } else {
-        console.error('At home form or stats container not found');
-    }
-
-    // Fetch and display away team stats 
-    const awayTeamStats = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 6);
-    const awayTeamStatsAll = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 15);
-    const awayTeamFormContainer = document.getElementById('away-team-form');
-    const awayTeamStatsContainer = document.getElementById('away-team-stats');
-    const awayTeamGraphContainer = document.getElementById('away-graph-overall');
-    if (awayTeamFormContainer && awayTeamStatsContainer) {
-        displayTeamStats(awayTeamStats.overall, 'away-team-stats');
-        displayLast5Events(awayTeamStats.overall, 'away-team-form'); 
-        plotPerformanceGraph(calculatePerformance(awayTeamStatsAll.overall), 'awayGraphCanvas');
-    } else {
-        console.error('Away team form or stats container not found');
-    }
-
-    const atAwayFormContainer = document.getElementById('at-away-form');
-    const atAwayStatsContainer = document.getElementById('at-away-stats');
-    const atAwayGraphContainer = document.getElementById('at-away-graph');
-    if (atAwayFormContainer && atAwayStatsContainer) {
-        displayTeamStats(awayTeamStats.away, 'at-away-stats');
-        displayLast5Events(awayTeamStats.away, 'at-away-form');
-        plotPerformanceGraph(calculatePerformance(awayTeamStatsAll.away), 'aTawayGraphCanvas');
-    } else {
-        console.error('At away form or stats container not found');
-    } 
 
     showDataCard(homeTeamStats.home, awayTeamStats.away);
     // Start the live timer if the match is in progress
@@ -3743,6 +3700,53 @@ if (odds && odds.odds) {
         }
     }
 
+
+    const homeTeamFormContainer = document.getElementById('home-team-form');
+    const homeTeamStatsContainer = document.getElementById('home-team-stats');
+    const homeTeamGraphContainer = document.getElementById('home-graph-overall');
+    if (homeTeamFormContainer && homeTeamStatsContainer) {
+        plotPerformanceGraph(calculatePerformance(homeTeamStatsAll.overall), 'homeGraphCanvas');
+        displayTeamStats(homeTeamStats.overall, 'home-team-stats');
+        displayLast5Events(homeTeamStats.overall, 'home-team-form'); 
+    } else {
+        console.error('Home team form or stats container not found');
+    }
+
+    const atHomeFormContainer = document.getElementById('at-home-form');
+    const atHomeStatsContainer = document.getElementById('at-home-stats');
+    const atHomeGraphContainer = document.getElementById('at-home-graph');
+    if (atHomeFormContainer && atHomeStatsContainer) {
+        plotPerformanceGraph(calculatePerformance(homeTeamStatsAll.home), 'aThomeGraphCanvas');
+        displayTeamStats(homeTeamStats.home, 'at-home-stats');
+        displayLast5Events(homeTeamStats.home, 'at-home-form'); 
+    } else {
+        console.error('At home form or stats container not found');
+    }
+
+    const awayTeamFormContainer = document.getElementById('away-team-form');
+    const awayTeamStatsContainer = document.getElementById('away-team-stats');
+    const awayTeamGraphContainer = document.getElementById('away-graph-overall');
+    if (awayTeamFormContainer && awayTeamStatsContainer) {
+        plotPerformanceGraph(calculatePerformance(awayTeamStatsAll.overall), 'awayGraphCanvas');
+        displayTeamStats(awayTeamStats.overall, 'away-team-stats');
+        displayLast5Events(awayTeamStats.overall, 'away-team-form'); 
+    } else {
+        console.error('Away team form or stats container not found');
+    }
+
+    const atAwayFormContainer = document.getElementById('at-away-form');
+    const atAwayStatsContainer = document.getElementById('at-away-stats');
+    const atAwayGraphContainer = document.getElementById('at-away-graph');
+    if (atAwayFormContainer && atAwayStatsContainer) {
+        plotPerformanceGraph(calculatePerformance(awayTeamStatsAll.away), 'aTawayGraphCanvas');
+        displayTeamStats(awayTeamStats.away, 'at-away-stats');
+        displayLast5Events(awayTeamStats.away, 'at-away-form');
+    } else {
+        console.error('At away form or stats container not found');
+    } 
+
+   
+    fetchH2HEvents(event.customId, homeTeamId, tournamentId, currentMatchId, 'h2h-events')
     // Refresh scores every 5 seconds 
     const scoreUpdateInterval = setInterval(() => refreshScores(event.id), 5000);
 
