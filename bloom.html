@@ -9,38 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-
-:root {
-        --color-w_0 : white;
-        --color-w_1 : #cdcdcd;
-        --color-w_2 : #8eb1c5;
-        --color-gr_1 : #727175; 
-        --color-gr_2 : #3c3c3c; 
-        --color-gr_4 : #191a1f80;
-        --color-gr_3 : #191a1f;
-        --color-gr_5 : #1e1c1d;
-        --color-g_1 : #4e9e7b;
-        --color-g_2 : #003c01;
-        --color-g_3 : #274454;
-        --color-g_4 : #002e00;
-        --color-g_5 : #120915;
-        --color-r_1 : #b37488;
-        --color-r_2 : #d17092;
-        --color-r_3 : #e11539;
-        --color-r_4 : #710015;
-        --color-r_5 : #550216;
-        --color-y_1 : #FFA028;
-        --color-o_1 : #e49d18;
-            --primary-color: #3498db;
-            --positive-color: #2ecc71;
-            --negative-color: #e74c3c;
-            --neutral-color: #f39c12;
-            --dark-color: #2c3e50;
-            --light-color: #ecf0f1;
-            --secondary-color: #2ecc71; 
-            --danger-color: #e74c3c;
-            --warning-color: #f39c12;
-      }
+ 
       .rfr {
         font-family: "Inter", sans-serif;
         font-optical-sizing: auto;
@@ -62,13 +31,93 @@
       font-style: normal;
     }
   
-    body.closure {
-    background-color: #121212; 
+/* Default dark theme */
+:root {
+    --color-b_0: #121212;
+    --color-w_0: white;
+    --color-w_1: #cdcdcd;
+    --color-w_2: #8eb1c5;
+    --color-gr_1: #727175;
+    --color-gr_2: #3c3c3c;
+    --color-gr_4: #191a1f80;
+    --color-gr_3: #191a1f;
+    --color-gr_5: #1e1c1d;
+    --color-gr_6: #181818;
+    --color-gr_7: #202020;
+    --color-g_1: #4e9e7b;
+    --color-g_2: #003c01;
+    --color-g_3: #274454;
+    --color-g_4: #002e00;
+    --color-g_5: #120915;
+    --color-r_1: #b37488;
+    --color-r_2: #d17092;
+    --color-r_3: #e11539;
+    --color-r_4: #710015;
+    --color-r_5: #550216;
+    --color-y_1: #FFA028;
+    --color-o_1: #e49d18;
+    --primary-color: #3498db;
+    --positive-color: #2ecc71;
+    --negative-color: #e74c3c;
+    --neutral-color: #f39c12;
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+    --secondary-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --bg-dark-1: #3b3b3d;
+    --bg-dark-2: #1e1e1e;
+    --border-default: 1px solid #333;
+    --border-bottom: 1px solid #1f222b;
+    --light-color: #1f222b;
+    --dark-color: #303440;
+    --bg-overlay: rgba(6, 12, 26, 0.6);
+    --border-top: #000 1px solid;
+}
+
+/* Light theme overrides */
+body.light-theme {
+    --color-b_0: #f9f9f9;
+    --color-w_0: #121212;
+    --color-w_1: #333;
+    --color-w_2: #44606e;
+    --color-gr_1: #a0a0a0;
+    --color-gr_2: #e0e0e0;
+    --color-gr_3: #ffffff;
+    --color-gr_4: #dddddd80;
+    --color-gr_5: #f0f0f0;
+    --color-g_1: #4e9e7b;
+    --color-g_2: #e6fff0;
+    --color-g_3: #cce6ff;
+    --color-g_4: #d9ffd9;
+    --color-g_5: #f5e6f7;
+    --color-r_1: #e6a1b0;
+    --color-r_2: #f5a3b5;
+    --color-r_3: #ff3366;
+    --color-r_4: #cc3355;
+    --color-r_5: #992244;
+    --color-y_1: #ffb84d;
+    --color-o_1: #ffc966;
+    --color-gr_6: #f0f0f0;
+    --color-gr_7: #e6e6e6;
+    --bg-dark-1: #e4e4e6;
+    --bg-dark-2: #f5f5f5;
+    --bg-panel: #f0f2f5;
+    --bg-overlay: rgba(255, 255, 255, 0.6);
+    --border-default: 1px solid #ccc;
+    --border-bottom: 1px solid #ddd;
+    --border-top: 1px solid #bbb;
+    --dark-color: #34495e;
+    --light-color: #ddd;
+}
+
+body.closure {
+    background-color: var(--color-b_0);
     margin: 0;
-    padding: 0; 
+    padding: 0;
     color: var(--color-w_1);
     display: grid;
-    grid-template-rows: 50px auto; /* Top row 50px, second row takes remaining space */    
+    grid-template-rows: 50px auto;
     height: 100vh;
     min-height: 100vh;
     min-width: 100vw;
@@ -78,7 +127,7 @@
 }
 
 .header {
-    background-color: #1f222b; /* Adjust color as needed */
+    background-color: var(--light-color); /* Adjust color as needed */
     width: 100%;
     height: 50px;
     display: flex;
@@ -340,8 +389,8 @@
     .category-header {
     cursor: pointer;
     padding: 5px;
-    background-color: #181818;
-    border: 1px solid #202020;
+    background-color: var(--color-gr_6);
+    border: 1px solid var(--color-gr_7);
     margin-bottom: 5px;
     display: flex;
     align-items: center;
@@ -365,7 +414,7 @@ ul.topTourn, ul.category-tournaments, ul.tournament-list {
 
 ul.topTourn li, ul.category-tournaments li, ul.tournament-list li {
     padding: 5px;
-    border-bottom: 1px solid #202020;
+    border-bottom: 1px solid var(--color-gr_7);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -380,7 +429,7 @@ ul.topTourn li img, ul.category-tournaments li img, ul.tournament-list li img {
 }
 
 .expanded {
-    background-color: #202020;
+    background-color: var(--color-gr_7);
 }
 .top-right {
     overflow-x: auto;
@@ -544,8 +593,8 @@ hr {
 
 .tab-menu {
     display: flex;
-    border-bottom: 1px solid #1f222b;
-    color: var(--color-w_2);
+    border-bottom: 1px solid var(--border-bottom); /* Replace with a variable */
+    color: var(--color-w_2); /* Replace with a variable */
     gap: 3px;
     padding: 0 10px;
 }
@@ -557,11 +606,11 @@ hr {
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    color: var(--color-w_2);
+    color: var(--color-w_2); /* Replace with a variable */
     text-transform: uppercase;
     font-weight: 700;
     font-size: 0.6875rem;
-    background-color: #1f222b;
+    background-color: var(--light-color); /* Replace with a variable */
 }
 
 .tab-content.active {
@@ -714,9 +763,9 @@ hr {
 }
 
 .tab-button.active {
-    color: var(--color-w_2);
-    background-color: #303440;
-} 
+    color: var(--color-w_2); /* Replace with a variable */
+    background-color: var(--dark-color); /* Replace with a variable */
+}
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -725,9 +774,11 @@ hr {
     text-transform: uppercase;
     font-weight: 700; 
 }
+
+
 .stats-row.title div {
-    background-color: #1f222b;
-    color: #ffffff90;
+    background-color: var(--light-color); /* Replace with a variable */
+    color: var(--color-w_1); /* Replace with a variable */
 }
 .stats-row div {
     display: inline-flex;
@@ -735,8 +786,8 @@ hr {
     justify-content: center;
     flex: 1;
     padding: 5px;
-    background-color: rgba(6, 12, 26, 0.6);
-} 
+    background-color: var(--color-gr_4); /* Replace with a variable */
+}
 .stats-row {
     gap: 1px;
 } 
@@ -761,6 +812,7 @@ hr {
     flex-direction: row;
     justify-content: space-between;
     gap: 20px;
+    margin-left: auto;
 }
 #expected-actual p {
     margin: 0;
@@ -771,28 +823,50 @@ hr {
     justify-content: space-between;
     align-items: center;
     gap: 5px;
-}
-.exWin, .default {
-    color: #ffffff;
-    font-weight: 700;
-    padding: 4px 8px;
-}
+} 
 #conclusion-div { 
     font-size: 0.8125rem; 
        margin: 0 auto 15px;
        text-align: center;
    }
+.exWin, .default {
+    color: var(--color-w_0); /* Replace with a variable */
+    font-weight: 700;
+    padding: 4px 8px;
+}
+
 .default {
-    background-color: rgb(75, 83, 106);
+    background-color: var(--color-gr_1); /* Replace with a variable */
 }
+
 .exWin {
-    background-color: #e59c03a8;
+    background-color: var(--color-o_1); /* Replace with a variable */
 }
-.diff_1 { border-bottom: 2px solid #990134; color: #fff; } /* Dark Red */
-.diff_2 { border-bottom: 2px solid #DE4E45; color: #fff; } /* Red */
-.diff_3 { border-bottom: 2px solid #FF9900; color: #fff; } /* Orange */
-.diff_4 { border-bottom: 2px solid #4B9F01; color: #fff; } /* Green */
-.diff_5 { border-bottom: 2px solid #224403; color: #fff; } /* Light Green */
+
+.diff_1 { 
+    border-bottom: 2px solid var(--danger-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
+
+.diff_2 { 
+    border-bottom: 2px solid var(--danger-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
+
+.diff_3 { 
+    border-bottom: 2px solid var(--warning-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
+
+.diff_4 { 
+    border-bottom: 2px solid var(--positive-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
+
+.diff_5 { 
+    border-bottom: 2px solid var(--positive-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
 #odds-graph-canvas {
     height: 400px;
     width: 100%;
@@ -806,10 +880,10 @@ hr {
 }    
 #match-odds span {
     padding: 4px 8px;
-    background-color: rgb(75, 83, 106);
+    background-color: var(--color-gr_5); /* Replace with a variable */
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
-}    
+}
 
 .stats-grid {
             display: grid;
@@ -855,20 +929,20 @@ hr {
         }
         
         .win-stat .stat-value {
-            color: var(--secondary-color);
-        }
-        
-        .draw-stat .stat-value {
-            color: var(--warning-color);
-        }
-        
-        .loss-stat .stat-value {
-            color: var(--danger-color);
-        }
-        
-        .percentage-stat .stat-value {
-            font-weight: 800;
-        }
+    color: var(--secondary-color);
+}
+
+.draw-stat .stat-value {
+    color: var(--warning-color);
+}
+
+.loss-stat .stat-value {
+    color: var(--danger-color);
+}
+
+.percentage-stat .stat-value {
+    font-weight: 800;
+}
         
         .progress-container {
             height: 6px;
@@ -898,17 +972,16 @@ hr {
             justify-content: space-between;
         }
         
-        .choice-badge { 
-            top: 16px;
-            right: 16px;
-            background: var(--color-o_1);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 0px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-        }
+        .choice-badge {
+    top: 16px;
+    right: 16px;
+    background: var(--primary-color);
+    color: var(--color-w_1); /* White color */
+    padding: 4px 8px;
+    border-radius: 0px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
         
         .odd-row {
             display: flex;
@@ -918,8 +991,9 @@ hr {
         }
         
         .odd-label {
-            color: #7f8c8d; 
-        }
+    color: var(--color-gr_3); /* Replace with a variable */
+}
+
         
         .odd-value {
             font-weight: 700; 
@@ -938,15 +1012,14 @@ hr {
         }
         
         .positive {
-            background-color: rgba(46, 204, 113, 0.1) !important;
-            color: var(--positive-color);
-        }
-        
-        .negative {
-            background-color: rgba(231, 76, 60, 0.1) !important;
-            color: var(--negative-color);
-        }
-         
+    background-color: rgba(46, 204, 113, 0.1) !important;
+    color: var(--positive-color);
+}
+
+.negative {
+    background-color: rgba(231, 76, 60, 0.1) !important;
+    color: var(--negative-color);
+}
         
         .change-arrow {
             margin-right: 4px;
@@ -965,14 +1038,14 @@ hr {
         }
         
         .odds-comparison::before {
-            content: "";
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background: #eee;
-        }
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--color-gr_4); /* Replace with a variable */
+}
         
         .odd-comparison-box {
             flex: 1;
@@ -980,10 +1053,12 @@ hr {
             padding: 8px;
         }
         
-        .odd-comparison-label { 
-            color: #95a5a6;
-            margin-bottom: 4px;
-        }
+
+
+.odd-comparison-label {
+    color: var(--color-gr_2); /* Replace with a variable */
+    margin-bottom: 4px;
+}
         
         .odd-comparison, .distance-value {
             font-weight: 700;
@@ -1000,25 +1075,25 @@ hr {
   .category-card {
     padding: 15px;
     border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
+    background: var(--color-w_1); /* White background */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
   
   .category-card.local {
-    border-left: 4px solid #2ecc71;
-  }
-  
-  .category-card.regional {
-    border-left: 4px solid #3498db;
-  }
-  
-  .category-card.national {
-    border-left: 4px solid #9b59b6;
-  }
-  
-  .category-card.continental {
-    border-left: 4px solid #e74c3c;
-  }
+    border-left: 4px solid var(--positive-color); /* Replace with a variable */
+}
+
+.category-card.regional {
+    border-left: 4px solid var(--info-color); /* Replace with a variable */
+}
+
+.category-card.national {
+    border-left: 4px solid var(--secondary-color); /* Replace with a variable */
+}
+
+.category-card.continental {
+    border-left: 4px solid var(--danger-color); /* Replace with a variable */
+}
   
   .no-data {
     padding: 15px; 
@@ -1031,11 +1106,10 @@ hr {
 }
 
 .stats-card {
-  background-color: #f7f7f7;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-light-1); /* Replace with a variable */
+    padding: 20px;
+    border: 1px solid var(--color-gr_6); /* Replace with a variable */
+    border-radius: 10px;
 }
 
 .stat-row {
@@ -1048,8 +1122,9 @@ hr {
     padding: 4px 8px;
 }
 
+
 .stat-row span:first-child {
-  background-color: #1f222b;
+    background-color: var(--light-color); /* Replace with a variable */
 }
 
 .value {
@@ -1066,16 +1141,17 @@ hr {
     gap: 10px;
 }
 .stats-card-container {
-    border: 1px solid #1f1f1f;
+    border: 1px solid var(--color-gr_7); /* Replace with a variable */
     border-radius: 8px;
     text-align: center;
-    color: white;
+    color: var(--color-w_1); /* White color */
     margin-top: 15px;
     flex: 1;
 }
+
 .stats-header {
     padding: 6px;
-    color: white;
+    color: var(--color-w_1); /* White color */
     font-weight: 700;
 }
 .stats-grid-card {
@@ -1087,8 +1163,9 @@ hr {
     text-align: center;
     min-width: 50px;
     flex: 1;
-    background-color: #333; 
+    background-color: var(--bg-dark-1); /* Replace with a variable */
 }
+
 .stats-box:first-child { 
     border-top-left-radius: 0;
 }
@@ -1100,8 +1177,9 @@ hr {
     opacity: 0.7;
     padding: 4px 0;
 }
+
 .stats-box div:first-child {
-    background-color: #1f1f1f; 
+    background-color: var(--bg-dark-2); /* Replace with a variable */
 }
 .stats-box div:last-child {
     font-weight: 700;
@@ -1154,10 +1232,10 @@ hr {
     gap: 5px;
     padding: 0 10px;
 }
-        .data-card {
-    background-color: #3b3b3d;
-    color: var(--color-w_1); 
-    text-align: center; 
+.data-card {
+    background-color: var(--bg-dark-1); /* Replace with a variable */
+    color: var(--color-w_1); /* White color */
+    text-align: center;
     min-width: 100px;
     flex: 1;
 }
@@ -1180,8 +1258,8 @@ hr {
 .bottom-section {
     display: flex;
     justify-content: space-around;
-    border-top: 1px solid #68686a;
-    padding: 2px 5px; 
+    border-top: 1px solid var(--color-gr_1); /* Replace with a variable */
+    padding: 2px 5px;
 }
 
 .stat {
@@ -1191,7 +1269,7 @@ hr {
 .stat:first-child {
     text-align: center;
     padding: 5px 15px;
-    border-right: 1px solid #68686a;
+    border-right: 1px solid var(--color-gr_1); /* Replace with a variable */
 }
 
 .number { 
@@ -1205,14 +1283,15 @@ hr {
 }
 
 .data-cards {
-  background-color: #1e1e1e;
-  border: 1px solid #333;
-  padding: 5px 0; 
-  text-align: center; 
+    background-color: var(--bg-dark-4); /* Replace with a variable */
+    border: 1px solid var(--bg-dark-1); /* Replace with a variable */
+    padding: 5px 0;
+    text-align: center;
+    color: var(--color-w_1);
 }
 
+
 .data-card-title { 
-  color: #ccc;
     text-transform: uppercase;
     margin-bottom: 4px;
     font-weight: 700;
@@ -1223,43 +1302,38 @@ hr {
   margin-bottom: 6px;
   padding: 4px 8px;
 }
+  
 
-.data-card-league { 
-  color: #888;
+.data-card-league {
+    color: var(--color-gr_1); /* Replace with a variable */
 }
 
 .data-card-value.positive {
-  color: #00ff66;
+    color: var(--positive-color);
 }
 
 .data-card-value.negative {
-  color: #ff4444;
+    color: var(--negative-color);
 }
 
 .data-card-value.neutral {
-  color: #aaa;
+    color: var(--color-gr_4); /* Replace with a variable */
 }
 .conclusion-container {
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-  color: #333;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--color-gr_2); /* Replace with a variable */
 }
 
 .conclusion-section {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 5px;
 }
 
 .section-title {
-  font-weight: bold;
-  font-size: 1.1em;
-  margin-bottom: 10px;
-  color: #2c3e50;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 5px;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
 }
 
 .comparison-list, .travel-list {
@@ -1272,46 +1346,246 @@ hr {
 }
 
 .strong-advantage {
-  color: #27ae60;
+    color: var(--positive-color);
 }
 
 .significant-advantage {
-  color: #2ecc71;
+    color: var(--info-color); /* Replace with a variable */
 }
 
 .moderate-advantage {
-  color: #f39c12;
+    color: var(--warning-color);
 }
 
 .low-advantage {
-  color: #e74c3c;
+    color: var(--danger-color);
 }
 
 .neutral-advantage {
-  color: #3498db;
+    color: var(--primary-color); /* Replace with a variable */
 }
 
 .home-advantage {
-  color: #16a085;
+    color: var(--positive-color);
 }
 
 .away-advantage {
-  color: #c0392b;
+    color: var(--negative-color); /* Replace with a variable */
 }
+
+.no-advantage {
+    padding: 15px;
+    background: var(--color-w_2); /* Replace with a variable */
+    border-radius: 8px;
+    text-align: center;
+    font-style: italic;
+    color: var(--color-gr_2); /* Replace with a variable */
+}
+
+.stats-panel {
+      max-width: 400px;
+      background-color: #111;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section {
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #ccc;
+    }
+
+    .highlight {
+      color: #ff4d4d;
+      font-weight: bold;
+    }
+
+    .subtext {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 8px; 
+    }
+
+    .good {
+      color: #4cd964;
+    }
+
+    .bad {
+      color: #ff4d4d;
+    }
+
+    .bullet {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+
+    .emphasis {
+      font-weight: bold;
+    }
 
 .goal-diff {
   display: inline-block;
   margin-top: 8px;
   font-style: italic;
 }
+ 
 
-.no-advantage {
-  padding: 15px;
-  background: #f9f9f9;
-  border-radius: 8px;
+/* Comparison Card Container */
+.comparison-card {
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+ 
+
+/* Card Title */
+.comparison-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-gr_2); /* Replace with a variable */
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+}
+
+.comparison-title:before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--info-color); /* Replace with a variable */
+    margin-right: 8px;
+}
+
+/* Values Container */
+.comparison-values { 
+  align-items: center; 
+  margin-bottom: 8px; 
+}
+
+/* Individual Value Styles */
+.home-value, .away-value {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 8px;
+    margin: 0 2px;
+    border-radius: 6px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.home-value {
+    background: rgba(74, 144, 226, 0.1);
+    color: var(--info-color); /* Replace with a variable */
+}
+
+.away-value {
+    background: rgba(234, 67, 53, 0.1);
+    color: var(--negative-color); /* Replace with a variable */
+}
+
+/* VS Separator */
+.vs {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-gr_3); /* Replace with a variable */
+    padding: 0 8px;
+    text-transform: uppercase;
+}
+
+/* Advantage Indicator */
+.advantage {
+  font-size: 14px;
+  font-weight: 600;
   text-align: center;
-  font-style: italic;
-  color: #7f8c8d;
+  padding: 6px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.advantage.positive {
+    background: rgba(52, 168, 83, 0.1);
+    color: var(--positive-color);
+}
+
+.advantage.negative {
+    background: rgba(234, 67, 53, 0.1);
+    color: var(--negative-color);
+}
+
+.advantage.neutral {
+    background: rgba(66, 133, 244, 0.1);
+    color: var(--info-color);
+}
+
+/* Header for Comparison Section */ 
+.comparison-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-gr_4); /* Replace with a variable */
+}
+
+.team-name.home {
+    background: rgba(74, 144, 226, 0.1);
+    color: var(--info-color); /* Replace with a variable */
+}
+
+.team-name.away {
+    background: rgba(234, 67, 53, 0.1);
+    color: var(--negative-color); /* Replace with a variable */
+}
+
+/* Grid Layout for Multiple Cards */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .comparison-values {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .vs {
+    padding: 8px 0;
+  }
 }
   </style>
 </head>
@@ -1394,6 +1668,7 @@ hr {
             <div id="travel-impact-container"></div>
             <div id="conclusion-div"></div>
             <div id="other-data-container">
+            <div id="team-comparison-container"></div>
                 <div id="changing-odds" class="changing-odds"></div>
                 <div id="odds-graph-change">
                     <canvas id="odds-graph-canvas" style="height: 200px; width: 100%;"></canvas>
@@ -2213,21 +2488,21 @@ function displayTeamComparison(homeOverall, homeOnlyHome, awayOverall, awayOnlyA
 
   const metrics = [
     {
-      title: "Win Rate Advantage",
+      title: "Win Rate:",
       home: homeOnlyHome.winRate,
       away: awayOnlyAway.winRate,
       diff: homeVsAwayAdvantage.winRateGap,
       format: v => `${v}%`
     },
     {
-      title: "Goal Difference Advantage",
+      title: "Goal Diff:",
       home: homeOnlyHome.goalDiff,
       away: awayOnlyAway.goalDiff,
       diff: homeVsAwayAdvantage.goalDiffGap,
       format: v => v > 0 ? `+${v}` : v
     },
     {
-      title: "Goals Scored Advantage",
+      title: "Goals:",
       home: homeOnlyHome.avgGoalsFor,
       away: awayOnlyAway.avgGoalsFor,
       diff: homeVsAwayAdvantage.avgGoalsForGap,
@@ -2240,25 +2515,15 @@ function displayTeamComparison(homeOverall, homeOnlyHome, awayOverall, awayOnlyA
     const awayClass = metric.diff < 0 ? 'positive' : '';
     
     return `
-      <div class="comparison-card">
-        <div class="comparison-title">${metric.title}</div>
+      <div class="comparison-card"> 
         <div class="comparison-values">
-          <div class="home-value ${homeClass}">${metric.format(metric.home)}</div>
-          <div class="vs">vs</div>
-          <div class="away-value ${awayClass}">${metric.format(metric.away)}</div>
-        </div>
-        <div class="advantage">
-          ${metric.diff > 0 ? 'Home +' + metric.diff : 'Away +' + Math.abs(metric.diff)}
-        </div>
+          ${metric.title} : <span class="home-value ${homeClass}">${metric.format(metric.home)} </span> <span class="away-value ${awayClass}"> ${metric.format(metric.away)}</span> ${metric.diff > 0 ? 'Home +' + metric.diff : 'Away +' + Math.abs(metric.diff)}
+        </div> 
       </div>
     `;
   }).join('');
 
-  container.innerHTML = `
-    <div class="comparison-header">
-      <div>Home Team at Home</div>
-      <div>Away Team Away</div>
-    </div>
+  container.innerHTML = ` 
     <div class="comparison-grid">${cardsHTML}</div>
   `;
 }
@@ -2603,37 +2868,36 @@ async function getTeamCoordinates(teamId) {
  */
  function concludeHomeAdvantage(tournamentStats, h2hStats, travelStats, homeVsAwayAdvantage) {
   let sections = [];
-  
+
   // 1. Tournament home advantage section
   if (tournamentStats) {
     const tournamentHomeWinRate = tournamentStats.homeWinPercentage;
     const tournamentAvgHomeGoals = parseFloat(tournamentStats.avgHomeGoals);
     const tournamentAvgAwayGoals = parseFloat(tournamentStats.avgAwayGoals);
     const goalDiff = tournamentAvgHomeGoals - tournamentAvgAwayGoals;
-    
+
     let tournamentText = '';
     if (tournamentHomeWinRate > 55) {
       if (tournamentHomeWinRate > 65) {
-        tournamentText = `<strong class="strong-advantage">STRONG home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+        tournamentText = `<div class="highlight">STRONG home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
       } else if (tournamentHomeWinRate > 60) {
-        tournamentText = `<strong class="significant-advantage">SIGNIFICANT home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+        tournamentText = `<div class="highlight">SIGNIFICANT home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
       } else {
-        tournamentText = `<strong class="moderate-advantage">MODERATE home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+        tournamentText = `<div class="highlight">MODERATE home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
       }
     } else if (tournamentHomeWinRate < 45) {
-      tournamentText = `<strong class="low-advantage">UNUSUALLY LOW home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+      tournamentText = `<div class="highlight">UNUSUALLY LOW home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
     } else {
-      tournamentText = `<strong class="neutral-advantage">TYPICAL home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+      tournamentText = `<div class="highlight">TYPICAL home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
     }
-    
+
     if (goalDiff > 0.3) {
-      tournamentText += `<br><span class="goal-diff">Home teams score <strong>${goalDiff.toFixed(1)}</strong> more goals on average</span>`;
+      tournamentText += `<div class="subtext">Home teams score <strong>${goalDiff.toFixed(1)}</strong> more goals on average</div>`;
     }
-    
+
     sections.push(`
-      <div class="conclusion-section tournament-section">
-        <div class="section-title">Tournament Overview</div>
-        <div class="section-content">${tournamentText}</div>
+      <div class="section">
+        ${tournamentText}
       </div>
     `);
   }
@@ -2641,76 +2905,78 @@ async function getTeamCoordinates(teamId) {
   // 2. Team comparison section
   if (homeVsAwayAdvantage) {
     let teamComparisonItems = [];
-    
+
     if (Math.abs(homeVsAwayAdvantage.winRateGap) > 5) {
-      const comparisonClass = homeVsAwayAdvantage.winRateGap > 0 ? 'home-advantage' : 'away-advantage';
-      const teamText = homeVsAwayAdvantage.winRateGap > 0 ? 
-        `Home team has <strong>${homeVsAwayAdvantage.winRateGap}%</strong> better win rate` :
-        `Away team has <strong>${Math.abs(homeVsAwayAdvantage.winRateGap)}%</strong> better performance`;
-      teamComparisonItems.push(`<li class="${comparisonClass}">${teamText}</li>`);
+      const winClass = homeVsAwayAdvantage.winRateGap > 0 ? 'good' : 'bad';
+      const winText = homeVsAwayAdvantage.winRateGap > 0 ?
+        `✔ Home team has <span class="emphasis">${homeVsAwayAdvantage.winRateGap}%</span> better win rate` :
+        `✖ Away team has <span class="emphasis">${Math.abs(homeVsAwayAdvantage.winRateGap)}%</span> better win rate`;
+      teamComparisonItems.push(`<li class="${winClass}"><span class="bullet">${winText.charAt(0)}</span> ${winText.slice(2)}</li>`);
     }
-    
+
     if (Math.abs(homeVsAwayAdvantage.avgGoalsForGap) > 0.3) {
-      const comparisonClass = homeVsAwayAdvantage.avgGoalsForGap > 0 ? 'home-advantage' : 'away-advantage';
+      const goalClass = homeVsAwayAdvantage.avgGoalsForGap > 0 ? 'good' : 'bad';
       const goalText = homeVsAwayAdvantage.avgGoalsForGap > 0 ?
-        `Home team scores <strong>${homeVsAwayAdvantage.avgGoalsForGap}</strong> more goals on average` :
-        `Away team concedes <strong>${Math.abs(homeVsAwayAdvantage.avgGoalsForGap)}</strong> fewer goals`;
-      teamComparisonItems.push(`<li class="${comparisonClass}">${goalText}</li>`);
+        `✔ Home team scores <span class="emphasis">${homeVsAwayAdvantage.avgGoalsForGap}</span> more goals on average` :
+        `✖ Away team concedes <span class="emphasis">${Math.abs(homeVsAwayAdvantage.avgGoalsForGap)}</span> fewer goals`;
+      teamComparisonItems.push(`<li class="${goalClass}"><span class="bullet">${goalText.charAt(0)}</span> ${goalText.slice(2)}</li>`);
     }
-    
+
     if (teamComparisonItems.length > 0) {
       sections.push(`
-        <div class="conclusion-section team-comparison-section">
+        <div class="section">
           <div class="section-title">Team Comparison</div>
-          <ul class="comparison-list">${teamComparisonItems.join('')}</ul>
+          <ul>${teamComparisonItems.join('')}</ul>
         </div>
       `);
     }
   }
 
   // 3. Head-to-head section
-  if (h2hStats) {
+  if (h2hStats && tournamentStats) {
     const h2hHomeWinDiff = h2hStats.homeWinPercentage - tournamentStats.homeWinPercentage;
     if (Math.abs(h2hHomeWinDiff) > 10) {
-      const h2hClass = h2hHomeWinDiff > 0 ? 'home-advantage' : 'away-advantage';
+      const h2hClass = h2hHomeWinDiff > 0 ? 'good' : 'bad';
       const h2hText = h2hHomeWinDiff > 0 ?
-        `Historically strong against this opponent (<strong>+${h2hHomeWinDiff}%</strong> above tournament average)` :
-        `Historically weak against this opponent (<strong>${h2hHomeWinDiff}%</strong> below tournament average)`;
-      
+        `Historically strong against this opponent <div class="subtext">(+${h2hHomeWinDiff}% above tournament average)</div>` :
+        `Historically weak against this opponent <div class="subtext">(${h2hHomeWinDiff}% below tournament average)</div>`;
+
       sections.push(`
-        <div class="conclusion-section h2h-section">
+        <div class="section">
           <div class="section-title">Head-to-Head</div>
-          <div class="section-content ${h2hClass}">${h2hText}</div>
+          <div class="${h2hClass}">${h2hText}</div>
         </div>
       `);
     }
   }
-  
+
   // 4. Travel impact section
   if (travelStats?.categories) {
     let travelItems = [];
-    
+
     if (travelStats.categories.local?.homeWinRate > 65) {
-      travelItems.push(`<li class="home-advantage">Performs well in local derbies (<strong>${travelStats.categories.local.homeWinRate}%</strong> win rate)</li>`);
+      travelItems.push(`<li class="good"><span class="bullet">✔</span> Performs well in local derbies (<span class="emphasis">${travelStats.categories.local.homeWinRate}%</span> win rate)</li>`);
     }
+
     if (travelStats.categories.continental?.homeWinRate < 40) {
-      travelItems.push(`<li class="away-advantage">Struggles in long-distance matches (<strong>${travelStats.categories.continental.homeWinRate}%</strong> win rate)</li>`);
+      travelItems.push(`<li class="bad"><span class="bullet">✖</span> Struggles in long-distance matches (<span class="emphasis">${travelStats.categories.continental.homeWinRate}%</span> win rate)</li>`);
     }
-    
+
     if (travelItems.length > 0) {
       sections.push(`
-        <div class="conclusion-section travel-section">
+        <div class="section">
           <div class="section-title">Travel Impact</div>
-          <ul class="travel-list">${travelItems.join('')}</ul>
+          <ul>${travelItems.join('')}</ul>
         </div>
       `);
     }
   }
-  
-  // Combine all sections or show default message
+
+  // Final Output
   if (sections.length > 0) {
-    return `<div class="conclusion-container">${sections.join('')}</div>`;
+    return `<div class="stats-panel">${sections.join('')}</div>`;
   }
+
   return `<div class="no-advantage">No significant advantage detected based on available data.</div>`;
 }
 
