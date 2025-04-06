@@ -772,16 +772,16 @@ hr {
     align-items: center;
     gap: 5px;
 }
-.exWin, .default, #conclusion-div {
+.exWin, .default {
     color: #ffffff;
     font-weight: 700;
     padding: 4px 8px;
 }
-#conclusion-div {
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 0.8125rem;
-}
+#conclusion-div { 
+    font-size: 0.8125rem; 
+       margin: 0 auto 15px;
+       text-align: center;
+   }
 .default {
     background-color: rgb(75, 83, 106);
 }
@@ -985,7 +985,7 @@ hr {
             margin-bottom: 4px;
         }
         
-        .odd-comparison-value {
+        .odd-comparison, .distance-value {
             font-weight: 700;
         }
 
@@ -1145,10 +1145,6 @@ hr {
     margin: 0;
     align-items: center;
 }
-   
-#th-stats-container {
-    margin-bottom: 10px;
-}
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
@@ -1243,7 +1239,80 @@ hr {
 .data-card-value.neutral {
   color: #aaa;
 }
+.conclusion-container {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
 
+.conclusion-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.comparison-list, .travel-list {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.comparison-list li, .travel-list li {
+  margin-bottom: 8px;
+}
+
+.strong-advantage {
+  color: #27ae60;
+}
+
+.significant-advantage {
+  color: #2ecc71;
+}
+
+.moderate-advantage {
+  color: #f39c12;
+}
+
+.low-advantage {
+  color: #e74c3c;
+}
+
+.neutral-advantage {
+  color: #3498db;
+}
+
+.home-advantage {
+  color: #16a085;
+}
+
+.away-advantage {
+  color: #c0392b;
+}
+
+.goal-diff {
+  display: inline-block;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+.no-advantage {
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  text-align: center;
+  font-style: italic;
+  color: #7f8c8d;
+}
   </style>
 </head>
 <body class="closure rfr"> 
@@ -1323,6 +1392,7 @@ hr {
         <div id="details-column" class="event-details"></div>
         <div id="data-column" class="event-data">                
             <div id="travel-impact-container"></div>
+            <div id="conclusion-div"></div>
             <div id="other-data-container">
                 <div id="changing-odds" class="changing-odds"></div>
                 <div id="odds-graph-change">
@@ -1882,21 +1952,6 @@ async function fetchAndDisplayWinningOdds(matchId) {
 }
 
 
-// Utility function to fetch events data and filter for finished events excluding the current match
-const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
-    const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
-    const eventsData = await fetchJson(eventsUrl);
-
-    // Check if eventsData exists and contains events
-    if (!eventsData || !eventsData.events) return [];
-
-    // Filter only finished events and exclude the current match
-    const finishedEvents = eventsData.events.reverse().filter(event => 
-        event.status.type === 'finished' && event.id !== currentMatchId
-    );
-
-    return finishedEvents;
-};
 
 // Function to calculate and display home team statistics
 async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, containerId) {
@@ -1936,6 +1991,38 @@ async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, co
     }
 }
 
+// Utility function to fetch events data and filter for finished events excluding the current match
+const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
+    const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
+    const eventsData = await fetchJson(eventsUrl);
+
+    // Check if eventsData exists and contains events
+    if (!eventsData || !eventsData.events) return [];
+
+    // Filter only finished events and exclude the current match
+    const finishedEvents = eventsData.events.reverse().filter(event => 
+        event.status.type === 'finished' && event.id !== currentMatchId
+    );
+
+    return finishedEvents;
+};
+
+async function fetchTeamMatches(tournamentId, seasonId, teamId, currentMatchId) {
+  const events = await fetchEventsData(tournamentId, seasonId, currentMatchId);
+
+  // Filter matches where the team is involved and exclude the current match
+  const teamMatches = events.filter(event =>
+    (event.homeTeam.id === teamId || event.awayTeam.id === teamId) &&
+    event.id !== currentMatchId
+  );
+
+  // Sort by date descending (latest matches first)
+  teamMatches.sort((a, b) => new Date(b.startTimestamp * 1000) - new Date(a.startTimestamp * 1000));
+
+  // Return only the last 5 matches
+  return teamMatches.slice(0, 6);
+}
+
  
  async function fetchHomeH2HEvents(customId, teamId, tournamentId, currentMatchId) {
   const url = `${baseURL}/event/${customId}/h2h/events`;
@@ -1954,40 +2041,97 @@ async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, co
   );
 }
 
+function calculateTeamPerformance(events, teamId) {
+  let total = 0, goalsFor = 0, goalsAgainst = 0, wins = 0, draws = 0;
+  let isHome;
+
+  events.forEach(event => {
+    isHome = event.homeTeam.id === teamId;
+    const gf = isHome ? event.homeScore.current : event.awayScore.current;
+    const ga = isHome ? event.awayScore.current : event.homeScore.current;
+
+    goalsFor += gf;
+    goalsAgainst += ga;
+    total++;
+
+    if (gf > ga) wins++;
+    else if (gf === ga) draws++;
+  });
+
+  return {
+    total,
+    goalsFor,
+    goalsAgainst,
+    goalDiff: goalsFor - goalsAgainst,
+    winRate: ((wins / total) * 100).toFixed(1),
+    drawRate: ((draws / total) * 100).toFixed(1),
+    lossRate: ((100 - (wins / total * 100) - (draws / total * 100)).toFixed(1)),
+    avgGoalsFor: (goalsFor / total).toFixed(2),
+    avgGoalsAgainst: (goalsAgainst / total).toFixed(2)
+  };
+}
+
+function calculateRelativeAdvantage(overallStats, specificStats) {
+  return {
+    goalDiffChange: (specificStats.goalDiff - overallStats.goalDiff).toFixed(2),
+    winRateChange: (specificStats.winRate - overallStats.winRate).toFixed(2),
+    avgGoalsForChange: (specificStats.avgGoalsFor - overallStats.avgGoalsFor).toFixed(2),
+    avgGoalsAgainstChange: (specificStats.avgGoalsAgainst - overallStats.avgGoalsAgainst).toFixed(2)
+  };
+}
+
 async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMatchId, homeTeamId, awayTeamId) {
   try {
-    // Fetch both tournament and H2H events
-    const [tournamentEvents, h2hEvents] = await Promise.all([
+    // Fetch all data in parallel
+    const [tournamentEvents, h2hEvents, homeAllMatches, awayAllMatches] = await Promise.all([
       fetchEventsData(tournamentId, seasonId, currentMatchId),
-      fetchHomeH2HEvents(customId, homeTeamId, tournamentId, currentMatchId)
+      fetchHomeH2HEvents(customId, homeTeamId, tournamentId, currentMatchId),
+      fetchTeamMatches(tournamentId, seasonId, homeTeamId, currentMatchId),
+      fetchTeamMatches(tournamentId, seasonId, awayTeamId, currentMatchId)
     ]);
-    
-    // Calculate statistics
-    const travelStats = await analyzeTravelImpact(h2hEvents, homeTeamId, awayTeamId);
-    const tournamentStats = calculateHomeAdvantageStats(tournamentEvents);
-    const h2hStats = calculateHomeAdvantageStats(h2hEvents);
-    
-    //console.log('tournamentstats', tournamentStats);
-    //console.log('h2hStats', h2hStats);
-    // Display results
+
+    // Calculate all statistics
+    const [tournamentStats, h2hStats, travelStats, homeOverall, homeOnlyHome, awayOverall, awayOnlyAway] = await Promise.all([
+      calculateHomeAdvantageStats(tournamentEvents),
+      calculateHomeAdvantageStats(h2hEvents),
+      analyzeTravelImpact(h2hEvents, homeTeamId, awayTeamId),
+      calculateTeamPerformance(homeAllMatches, homeTeamId),
+      calculateTeamPerformance(homeAllMatches.filter(e => e.homeTeam.id === homeTeamId), homeTeamId),
+      calculateTeamPerformance(awayAllMatches, awayTeamId),
+      calculateTeamPerformance(awayAllMatches.filter(e => e.awayTeam.id === awayTeamId), awayTeamId)
+    ]);
+
+    // Relative advantages
+    const homeAdvantage = calculateRelativeAdvantage(homeOverall, homeOnlyHome);
+    const awayAdvantage = calculateRelativeAdvantage(awayOverall, awayOnlyAway);
+    const homeVsAwayAdvantage = {
+      goalDiffGap: (homeOnlyHome.goalDiff - awayOnlyAway.goalDiff).toFixed(2),
+      winRateGap: (homeOnlyHome.winRate - awayOnlyAway.winRate).toFixed(2),
+      avgGoalsForGap: (homeOnlyHome.avgGoalsFor - awayOnlyAway.avgGoalsFor).toFixed(2)
+    };
+
+    // Display all results
     displayTravelImpact(travelStats, 'travel-impact-container');
     displayHomeAdvantageStats(tournamentStats, h2hStats, 'th-stats-container');
+    displayTeamComparison(homeOverall, homeOnlyHome, awayOverall, awayOnlyAway, homeVsAwayAdvantage, 'team-comparison-container');
 
-    const conclusion = concludeHomeAdvantage(tournamentStats, h2hStats, travelStats);
+    const conclusion = concludeHomeAdvantage(tournamentStats, h2hStats, travelStats, homeVsAwayAdvantage);
     document.getElementById('conclusion-div').innerHTML = conclusion;
     
-    // Return combined data for further processing
     return {
       tournamentStats,
       travelStats,
-      h2hStats
+      h2hStats,
+      homeTeamHomeStats: homeOnlyHome,
+      awayTeamAwayStats: awayOnlyAway,
+      homeVsAwayAdvantage
     };
     
   } catch (error) {
     console.error('Error in home advantage analysis:', error);
     return null;
   }
-} 
+}
 
 /**
  * Fetches team details including location data
@@ -2063,6 +2207,62 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
   };
 }
 
+function displayTeamComparison(homeOverall, homeOnlyHome, awayOverall, awayOnlyAway, homeVsAwayAdvantage, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const metrics = [
+    {
+      title: "Win Rate Advantage",
+      home: homeOnlyHome.winRate,
+      away: awayOnlyAway.winRate,
+      diff: homeVsAwayAdvantage.winRateGap,
+      format: v => `${v}%`
+    },
+    {
+      title: "Goal Difference Advantage",
+      home: homeOnlyHome.goalDiff,
+      away: awayOnlyAway.goalDiff,
+      diff: homeVsAwayAdvantage.goalDiffGap,
+      format: v => v > 0 ? `+${v}` : v
+    },
+    {
+      title: "Goals Scored Advantage",
+      home: homeOnlyHome.avgGoalsFor,
+      away: awayOnlyAway.avgGoalsFor,
+      diff: homeVsAwayAdvantage.avgGoalsForGap,
+      format: v => v > 0 ? `+${v}` : v
+    }
+  ];
+
+  const cardsHTML = metrics.map(metric => {
+    const homeClass = metric.diff > 0 ? 'positive' : '';
+    const awayClass = metric.diff < 0 ? 'positive' : '';
+    
+    return `
+      <div class="comparison-card">
+        <div class="comparison-title">${metric.title}</div>
+        <div class="comparison-values">
+          <div class="home-value ${homeClass}">${metric.format(metric.home)}</div>
+          <div class="vs">vs</div>
+          <div class="away-value ${awayClass}">${metric.format(metric.away)}</div>
+        </div>
+        <div class="advantage">
+          ${metric.diff > 0 ? 'Home +' + metric.diff : 'Away +' + Math.abs(metric.diff)}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="comparison-header">
+      <div>Home Team at Home</div>
+      <div>Away Team Away</div>
+    </div>
+    <div class="comparison-grid">${cardsHTML}</div>
+  `;
+}
+
 // ========================
 // 2. Enhanced Travel Impact Analysis
 // ========================
@@ -2081,13 +2281,24 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
   
   if (!homeCoords || !awayCoords) {
     console.warn('Cannot analyze travel impact - missing team coordinates');
-    return null;
+    return {
+      baseDistance: "Travel impact data not available",
+      categories: null,
+      homeTeamLocation: null,
+      awayTeamLocation: null
+    };
   }
   
   const baseDistance = calculateDistance(homeCoords, awayCoords);
-  if (baseDistance === 0) {
-    console.warn('Teams appear to have the same coordinates');
-    return null;
+  
+  // If no events, just return the basic distance info
+  if (!events || events.length === 0) {
+    return {
+      baseDistance: `${baseDistance.toFixed(1)} km`,
+      categories: null,
+      homeTeamLocation: homeCoords,
+      awayTeamLocation: awayCoords
+    };
   }
   
   // Enhanced distance categorization
@@ -2135,7 +2346,7 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
   
   return {
     baseDistance: `${baseDistance.toFixed(1)} km`,
-    categories: results,
+    categories: Object.keys(results).length > 0 ? results : null,
     homeTeamLocation: homeCoords,
     awayTeamLocation: awayCoords
   };
@@ -2332,26 +2543,43 @@ async function getTeamCoordinates(teamId) {
  */
  function displayTravelImpact(travelStats, containerId) {
   const container = document.getElementById(containerId);
-  if (!container || !travelStats) {
-    container.innerHTML = `<div class="no-data">Travel impact data not available</div>
-        <hr style="width:100%;" />`;
+  if (!container) return;
+  
+  if (!travelStats) {
+    container.innerHTML = `<div class="no-data">Travel impact data not available
+</div>`;
     return;
   }
   
-  let html = ``; 
-  // Add category breakdown
-  for (const [category, data] of Object.entries(travelStats.categories)) {
-    html += `
-    <p>Travel Impact Stats</p>
-      <span class="value">${travelStats.baseDistance}</span> 
-        <span>${getCategoryName(category)} (${data.matches} matches)</span>
-        <hr style="width:100%;" />
-    `;
-  }
-   
+  let html = `<div class="travel-impact-container">`;
   
+  // Always show the base distance
+  html += `<div class="distance-info"> 
+    <span class="distance-value">${travelStats.baseDistance}</span>
+  </div>`;
+  
+  // Show travel impact stats if available
+  if (travelStats.categories) {
+    html += `<div class="travel-impact-stats">`;
+    html += `<p class="travel-impact-title">Travel Impact Stats</p>`;
+    
+    for (const [category, data] of Object.entries(travelStats.categories)) {
+      html += `
+        <div class="travel-category">
+          <span class="category-name">${getCategoryName(category)}</span>
+          <span class="category-matches">(${data.matches} matches)</span> 
+        </div>
+      `;
+    }
+    
+    html += `</div>`;
+  }
+  
+  html += `</div>`;
   container.innerHTML = html;
 }
+
+
 
 /**
  * Helper function to get display name for distance categories
@@ -2373,26 +2601,119 @@ async function getTeamCoordinates(teamId) {
  * @param {Object} travelStats - Travel statistics
  * @returns {string} - Conclusion about home advantage
  */
-function concludeHomeAdvantage(tournamentStats, h2hStats, travelStats) {
-  const homeWinPercentageDiff = h2hStats.homeWinPercentage - tournamentStats.homeWinPercentage;
-  const travelImpact = travelStats?.categories?.local?.homeWinRate;
-
-  let conclusion = '';
-
-  if (homeWinPercentageDiff > 10) {
-    conclusion += `${homeWinPercentageDiff}%`;
-  } else if (homeWinPercentageDiff > 0) {
-    conclusion += `${homeWinPercentageDiff}%`;
-  } else {
-    conclusion += '';
+ function concludeHomeAdvantage(tournamentStats, h2hStats, travelStats, homeVsAwayAdvantage) {
+  let sections = [];
+  
+  // 1. Tournament home advantage section
+  if (tournamentStats) {
+    const tournamentHomeWinRate = tournamentStats.homeWinPercentage;
+    const tournamentAvgHomeGoals = parseFloat(tournamentStats.avgHomeGoals);
+    const tournamentAvgAwayGoals = parseFloat(tournamentStats.avgAwayGoals);
+    const goalDiff = tournamentAvgHomeGoals - tournamentAvgAwayGoals;
+    
+    let tournamentText = '';
+    if (tournamentHomeWinRate > 55) {
+      if (tournamentHomeWinRate > 65) {
+        tournamentText = `<strong class="strong-advantage">STRONG home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+      } else if (tournamentHomeWinRate > 60) {
+        tournamentText = `<strong class="significant-advantage">SIGNIFICANT home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+      } else {
+        tournamentText = `<strong class="moderate-advantage">MODERATE home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+      }
+    } else if (tournamentHomeWinRate < 45) {
+      tournamentText = `<strong class="low-advantage">UNUSUALLY LOW home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+    } else {
+      tournamentText = `<strong class="neutral-advantage">TYPICAL home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
+    }
+    
+    if (goalDiff > 0.3) {
+      tournamentText += `<br><span class="goal-diff">Home teams score <strong>${goalDiff.toFixed(1)}</strong> more goals on average</span>`;
+    }
+    
+    sections.push(`
+      <div class="conclusion-section tournament-section">
+        <div class="section-title">Tournament Overview</div>
+        <div class="section-content">${tournamentText}</div>
+      </div>
+    `);
   }
 
-  if (travelImpact && travelImpact > 60) {
-    conclusion += ``;
+  // 2. Team comparison section
+  if (homeVsAwayAdvantage) {
+    let teamComparisonItems = [];
+    
+    if (Math.abs(homeVsAwayAdvantage.winRateGap) > 5) {
+      const comparisonClass = homeVsAwayAdvantage.winRateGap > 0 ? 'home-advantage' : 'away-advantage';
+      const teamText = homeVsAwayAdvantage.winRateGap > 0 ? 
+        `Home team has <strong>${homeVsAwayAdvantage.winRateGap}%</strong> better win rate` :
+        `Away team has <strong>${Math.abs(homeVsAwayAdvantage.winRateGap)}%</strong> better performance`;
+      teamComparisonItems.push(`<li class="${comparisonClass}">${teamText}</li>`);
+    }
+    
+    if (Math.abs(homeVsAwayAdvantage.avgGoalsForGap) > 0.3) {
+      const comparisonClass = homeVsAwayAdvantage.avgGoalsForGap > 0 ? 'home-advantage' : 'away-advantage';
+      const goalText = homeVsAwayAdvantage.avgGoalsForGap > 0 ?
+        `Home team scores <strong>${homeVsAwayAdvantage.avgGoalsForGap}</strong> more goals on average` :
+        `Away team concedes <strong>${Math.abs(homeVsAwayAdvantage.avgGoalsForGap)}</strong> fewer goals`;
+      teamComparisonItems.push(`<li class="${comparisonClass}">${goalText}</li>`);
+    }
+    
+    if (teamComparisonItems.length > 0) {
+      sections.push(`
+        <div class="conclusion-section team-comparison-section">
+          <div class="section-title">Team Comparison</div>
+          <ul class="comparison-list">${teamComparisonItems.join('')}</ul>
+        </div>
+      `);
+    }
   }
 
-  return conclusion;
+  // 3. Head-to-head section
+  if (h2hStats) {
+    const h2hHomeWinDiff = h2hStats.homeWinPercentage - tournamentStats.homeWinPercentage;
+    if (Math.abs(h2hHomeWinDiff) > 10) {
+      const h2hClass = h2hHomeWinDiff > 0 ? 'home-advantage' : 'away-advantage';
+      const h2hText = h2hHomeWinDiff > 0 ?
+        `Historically strong against this opponent (<strong>+${h2hHomeWinDiff}%</strong> above tournament average)` :
+        `Historically weak against this opponent (<strong>${h2hHomeWinDiff}%</strong> below tournament average)`;
+      
+      sections.push(`
+        <div class="conclusion-section h2h-section">
+          <div class="section-title">Head-to-Head</div>
+          <div class="section-content ${h2hClass}">${h2hText}</div>
+        </div>
+      `);
+    }
+  }
+  
+  // 4. Travel impact section
+  if (travelStats?.categories) {
+    let travelItems = [];
+    
+    if (travelStats.categories.local?.homeWinRate > 65) {
+      travelItems.push(`<li class="home-advantage">Performs well in local derbies (<strong>${travelStats.categories.local.homeWinRate}%</strong> win rate)</li>`);
+    }
+    if (travelStats.categories.continental?.homeWinRate < 40) {
+      travelItems.push(`<li class="away-advantage">Struggles in long-distance matches (<strong>${travelStats.categories.continental.homeWinRate}%</strong> win rate)</li>`);
+    }
+    
+    if (travelItems.length > 0) {
+      sections.push(`
+        <div class="conclusion-section travel-section">
+          <div class="section-title">Travel Impact</div>
+          <ul class="travel-list">${travelItems.join('')}</ul>
+        </div>
+      `);
+    }
+  }
+  
+  // Combine all sections or show default message
+  if (sections.length > 0) {
+    return `<div class="conclusion-container">${sections.join('')}</div>`;
+  }
+  return `<div class="no-advantage">No significant advantage detected based on available data.</div>`;
 }
+
 
 const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimestamp, sliceCount = 5) => { 
     if (!eventsForTeam) return {}; 
@@ -2877,7 +3198,7 @@ const calculatePerformance = (stats) => {
         } else if (result.result === 'L') {
             performanceChange = -3; // Fixed performance for losses
         } else {
-            performanceChange = 0; // No performance change for draws
+            performanceChange = 1; // No performance change for draws
         }
 
         // Push the performance change and calculate the cumulative performance
@@ -2917,10 +3238,10 @@ const plotPerformanceGraph = (performanceData, canvasId) => {
             datasets: [{
                 data: performance,
                 borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 2,
+                borderWidth: 1,
                 fill: false,
                 pointRadius: 1,
-                tension: 0 // Optional: add slight curve to the line (set to 0 for a straight line)
+                tension: 0.3 // Optional: add slight curve to the line (set to 0 for a straight line)
             }]
         },
         options: {
@@ -3548,8 +3869,7 @@ if (odds && odds.odds) {
         <div id="th-stats-container"></div>
             <div class="tab-menu">
                 <button class="tab-button active rcr" data-tab="home-vs-away-events">Home vs Away</button>
-                <button class="tab-button rcr" data-tab="overall-events">Overall</button>
-                <div id="conclusion-div"></div>
+                <button class="tab-button rcr" data-tab="overall-events">Overall</button> 
                 <div id="expected-actual"></div>
             </div>
             <div class="container-events">
@@ -3681,11 +4001,11 @@ if (odds && odds.odds) {
      
     // Fetch and display away team stats 
     const awayTeamStats = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 6);
-    const awayTeamStatsAll = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 15);
+    const awayTeamStatsAll = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 6);
 
     // Fetch and display home team stats
     const homeTeamStats = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp, 6);
-    const homeTeamStatsAll = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp, 15);
+    const homeTeamStatsAll = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp, 6);
 
     showDataCard(homeTeamStats.home, awayTeamStats.away);
     // Start the live timer if the match is in progress
