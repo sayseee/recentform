@@ -1456,6 +1456,137 @@ hr {
 .star-icon.active {
     color: gold;
 }
+
+.conclusion-container {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+.good {
+    color: #4cd964;
+}
+.bad {
+    color: #ff4d4d;
+}
+li {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.section-title {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  color: #2c3e50;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+.comparison-list, .travel-list {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.comparison-list li, .travel-list li {
+  margin-bottom: 8px;
+}
+
+.strong-advantage {
+  color: #27ae60;
+}
+
+.significant-advantage {
+  color: #2ecc71;
+}
+
+.moderate-advantage {
+  color: #f39c12;
+}
+
+.low-advantage {
+  color: #e74c3c;
+}
+
+.neutral-advantage {
+  color: #3498db;
+}
+
+.home-advantage {
+  color: #16a085;
+}
+
+.away-advantage {
+  color: #c0392b;
+}
+
+.goal-diff {
+  display: inline-block;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+.no-advantage {
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  text-align: center;
+  font-style: italic;
+  color: #7f8c8d;
+}
+
+.stats-panel {
+    max-width: 400px;
+    background-color: #111;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.section {
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.comparison-grid {
+    display: grid
+;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.comparison-card {
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.comparison-values {
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.home-value {
+    background: rgba(74, 144, 226, 0.1);
+    color: var(--info-color);
+}
+
+.away-value {
+    background: rgba(234, 67, 53, 0.1);
+    color: var(--negative-color);
+}
+
+.home-value, .away-value {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 8px;
+    margin: 0 2px;
+    border-radius: 6px;
+    min-width: 50px;
+    text-align: center;
+}
+
   </style>
 </head>
 <body class="closure rfr"> 
@@ -2772,25 +2903,26 @@ async function getTeamCoordinates(teamId) {
     let tournamentText = '';
     if (tournamentHomeWinRate > 55) {
       if (tournamentHomeWinRate > 65) {
-        tournamentText = `<div class="highlight">STRONG home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+        tournamentText = `<strong class="strong-advantage">STRONG home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
       } else if (tournamentHomeWinRate > 60) {
-        tournamentText = `<div class="highlight">SIGNIFICANT home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+        tournamentText = `<strong class="significant-advantage">SIGNIFICANT home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
       } else {
-        tournamentText = `<div class="highlight">MODERATE home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+        tournamentText = `<strong class="moderate-advantage">MODERATE home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
       }
     } else if (tournamentHomeWinRate < 45) {
-      tournamentText = `<div class="highlight">UNUSUALLY LOW home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+      tournamentText = `<strong class="low-advantage">UNUSUALLY LOW home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
     } else {
-      tournamentText = `<div class="highlight">TYPICAL home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+      tournamentText = `<strong class="neutral-advantage">TYPICAL home advantage</strong> (${tournamentHomeWinRate}% home win rate)`;
     }
-
+    
     if (goalDiff > 0.3) {
-      tournamentText += `<div class="subtext">Home teams score <strong>${goalDiff.toFixed(1)}</strong> more goals on average</div>`;
+      tournamentText += `<br><span class="goal-diff">Home teams score <strong>${goalDiff.toFixed(1)}</strong> more goals on average</span>`;
     }
-
+    
     sections.push(`
-      <div class="section">
-        ${tournamentText}
+      <div class="conclusion-section tournament-section">
+        <div class="section-title">Tournament Overview</div>
+        <div class="section-content">${tournamentText}</div>
       </div>
     `);
   }
