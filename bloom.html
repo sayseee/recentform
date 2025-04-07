@@ -9,38 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-
-:root {
-        --color-w_0 : white;
-        --color-w_1 : #cdcdcd;
-        --color-w_2 : #8eb1c5;
-        --color-gr_1 : #727175; 
-        --color-gr_2 : #3c3c3c; 
-        --color-gr_4 : #191a1f80;
-        --color-gr_3 : #191a1f;
-        --color-gr_5 : #1e1c1d;
-        --color-g_1 : #4e9e7b;
-        --color-g_2 : #003c01;
-        --color-g_3 : #274454;
-        --color-g_4 : #002e00;
-        --color-g_5 : #120915;
-        --color-r_1 : #b37488;
-        --color-r_2 : #d17092;
-        --color-r_3 : #e11539;
-        --color-r_4 : #710015;
-        --color-r_5 : #550216;
-        --color-y_1 : #FFA028;
-        --color-o_1 : #e49d18;
-            --primary-color: #3498db;
-            --positive-color: #2ecc71;
-            --negative-color: #e74c3c;
-            --neutral-color: #f39c12;
-            --dark-color: #2c3e50;
-            --light-color: #ecf0f1;
-            --secondary-color: #2ecc71; 
-            --danger-color: #e74c3c;
-            --warning-color: #f39c12;
-      }
+ 
       .rfr {
         font-family: "Inter", sans-serif;
         font-optical-sizing: auto;
@@ -62,13 +31,93 @@
       font-style: normal;
     }
   
-    body.closure {
-    background-color: #121212; 
+/* Default dark theme */
+:root {
+    --color-b_0: #121212;
+    --color-w_0: white;
+    --color-w_1: #cdcdcd;
+    --color-w_2: #8eb1c5;
+    --color-gr_1: #727175;
+    --color-gr_2: #3c3c3c;
+    --color-gr_4: #191a1f80;
+    --color-gr_3: #191a1f;
+    --color-gr_5: #1e1c1d;
+    --color-gr_6: #181818;
+    --color-gr_7: #202020;
+    --color-g_1: #4e9e7b;
+    --color-g_2: #003c01;
+    --color-g_3: #274454;
+    --color-g_4: #002e00;
+    --color-g_5: #120915;
+    --color-r_1: #b37488;
+    --color-r_2: #d17092;
+    --color-r_3: #e11539;
+    --color-r_4: #710015;
+    --color-r_5: #550216;
+    --color-y_1: #FFA028;
+    --color-o_1: #e49d18;
+    --primary-color: #3498db;
+    --positive-color: #2ecc71;
+    --negative-color: #e74c3c;
+    --neutral-color: #f39c12;
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+    --secondary-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --bg-dark-1: #3b3b3d;
+    --bg-dark-2: #1e1e1e;
+    --border-default: 1px solid #333;
+    --border-bottom: 1px solid #1f222b;
+    --light-color: #1f222b;
+    --dark-color: #303440;
+    --bg-overlay: rgba(6, 12, 26, 0.6);
+    --border-top: #000 1px solid;
+}
+
+/* Light theme overrides */
+body.light-theme {
+    --color-b_0: #f9f9f9;
+    --color-w_0: #121212;
+    --color-w_1: #333;
+    --color-w_2: #44606e;
+    --color-gr_1: #a0a0a0;
+    --color-gr_2: #e0e0e0;
+    --color-gr_3: #ffffff;
+    --color-gr_4: #dddddd80;
+    --color-gr_5: #f0f0f0;
+    --color-g_1: #4e9e7b;
+    --color-g_2: #e6fff0;
+    --color-g_3: #cce6ff;
+    --color-g_4: #d9ffd9;
+    --color-g_5: #f5e6f7;
+    --color-r_1: #e6a1b0;
+    --color-r_2: #f5a3b5;
+    --color-r_3: #ff3366;
+    --color-r_4: #cc3355;
+    --color-r_5: #992244;
+    --color-y_1: #ffb84d;
+    --color-o_1: #ffc966;
+    --color-gr_6: #f0f0f0;
+    --color-gr_7: #e6e6e6;
+    --bg-dark-1: #e4e4e6;
+    --bg-dark-2: #f5f5f5;
+    --bg-panel: #f0f2f5;
+    --bg-overlay: rgba(255, 255, 255, 0.6);
+    --border-default: 1px solid #ccc;
+    --border-bottom: 1px solid #ddd;
+    --border-top: 1px solid #bbb;
+    --dark-color: #34495e;
+    --light-color: #ddd;
+}
+
+body.closure {
+    background-color: var(--color-b_0);
     margin: 0;
-    padding: 0; 
+    padding: 0;
     color: var(--color-w_1);
     display: grid;
-    grid-template-rows: 50px auto; /* Top row 50px, second row takes remaining space */    
+    grid-template-rows: 50px auto;
     height: 100vh;
     min-height: 100vh;
     min-width: 100vw;
@@ -78,7 +127,7 @@
 }
 
 .header {
-    background-color: #1f222b; /* Adjust color as needed */
+    background-color: var(--light-color); /* Adjust color as needed */
     width: 100%;
     height: 50px;
     display: flex;
@@ -130,7 +179,7 @@
     }
     .container-events { 
       overflow-y: auto;
-      height: calc(100vh - 250px);
+      height: calc(100vh - 400px);
     }
     
     .region-header {
@@ -340,8 +389,8 @@
     .category-header {
     cursor: pointer;
     padding: 5px;
-    background-color: #181818;
-    border: 1px solid #202020;
+    background-color: var(--color-gr_6);
+    border: 1px solid var(--color-gr_7);
     margin-bottom: 5px;
     display: flex;
     align-items: center;
@@ -365,7 +414,7 @@ ul.topTourn, ul.category-tournaments, ul.tournament-list {
 
 ul.topTourn li, ul.category-tournaments li, ul.tournament-list li {
     padding: 5px;
-    border-bottom: 1px solid #202020;
+    border-bottom: 1px solid var(--color-gr_7);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -380,7 +429,7 @@ ul.topTourn li img, ul.category-tournaments li img, ul.tournament-list li img {
 }
 
 .expanded {
-    background-color: #202020;
+    background-color: var(--color-gr_7);
 }
 .top-right {
     overflow-x: auto;
@@ -413,6 +462,10 @@ ul.tournamentEvents li:not(:first-child) {
 ul.tournamentEvents li:last-child {
   border-bottom: #000 1px solid;
 }
+hr {
+  border: none;
+  border-bottom: 1px solid #3d3d3d;
+}
 
 
 .info-wrapper {
@@ -435,7 +488,7 @@ ul.tournamentEvents li:last-child {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: calc(100% - 60px); 
+    width: calc(100% - 80px); 
 }
 .teams-info { 
     display: flex;
@@ -444,7 +497,7 @@ ul.tournamentEvents li:last-child {
     gap: 3px;
     justify-content: center;
     padding: 5px 0;
-    flex: 1 1 190px;
+    flex: 1 1 130px;
 }
 .team {
     display: flex;
@@ -540,8 +593,8 @@ ul.tournamentEvents li:last-child {
 
 .tab-menu {
     display: flex;
-    border-bottom: 1px solid #1f222b;
-    color: var(--color-w_2);
+    border-bottom: 1px solid var(--border-bottom); /* Replace with a variable */
+    color: var(--color-w_2); /* Replace with a variable */
     gap: 3px;
     padding: 0 10px;
 }
@@ -553,11 +606,11 @@ ul.tournamentEvents li:last-child {
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
-    color: var(--color-w_2);
+    color: var(--color-w_2); /* Replace with a variable */
     text-transform: uppercase;
     font-weight: 700;
     font-size: 0.6875rem;
-    background-color: #1f222b;
+    background-color: var(--light-color); /* Replace with a variable */
 }
 
 .tab-content.active {
@@ -710,9 +763,9 @@ ul.tournamentEvents li:last-child {
 }
 
 .tab-button.active {
-    color: var(--color-w_2);
-    background-color: #303440;
-} 
+    color: var(--color-w_2); /* Replace with a variable */
+    background-color: var(--dark-color); /* Replace with a variable */
+}
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -721,9 +774,11 @@ ul.tournamentEvents li:last-child {
     text-transform: uppercase;
     font-weight: 700; 
 }
+
+
 .stats-row.title div {
-    background-color: #1f222b;
-    color: #ffffff90;
+    background-color: var(--light-color); /* Replace with a variable */
+    color: var(--color-w_1); /* Replace with a variable */
 }
 .stats-row div {
     display: inline-flex;
@@ -731,8 +786,8 @@ ul.tournamentEvents li:last-child {
     justify-content: center;
     flex: 1;
     padding: 5px;
-    background-color: rgba(6, 12, 26, 0.6);
-} 
+    background-color: var(--color-gr_4); /* Replace with a variable */
+}
 .stats-row {
     gap: 1px;
 } 
@@ -757,6 +812,7 @@ ul.tournamentEvents li:last-child {
     flex-direction: row;
     justify-content: space-between;
     gap: 20px;
+    margin-left: auto;
 }
 #expected-actual p {
     margin: 0;
@@ -767,28 +823,50 @@ ul.tournamentEvents li:last-child {
     justify-content: space-between;
     align-items: center;
     gap: 5px;
-}
-.exWin, .default, #conclusion-div {
-    color: #ffffff;
+} 
+#conclusion-div { 
+    font-size: 0.8125rem; 
+       margin: 0 auto 15px;
+       text-align: center;
+   }
+.exWin, .default {
+    color: var(--color-w_0); /* Replace with a variable */
     font-weight: 700;
     padding: 4px 8px;
 }
-#conclusion-div {
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 0.8125rem;
-}
+
 .default {
-    background-color: rgb(75, 83, 106);
+    background-color: var(--color-gr_1); /* Replace with a variable */
 }
+
 .exWin {
-    background-color: #e59c03a8;
+    background-color: var(--color-o_1); /* Replace with a variable */
 }
-.diff_1 { border-bottom: 2px solid #990134; color: #fff; } /* Dark Red */
-.diff_2 { border-bottom: 2px solid #DE4E45; color: #fff; } /* Red */
-.diff_3 { border-bottom: 2px solid #FF9900; color: #fff; } /* Orange */
-.diff_4 { border-bottom: 2px solid #4B9F01; color: #fff; } /* Green */
-.diff_5 { border-bottom: 2px solid #224403; color: #fff; } /* Light Green */
+
+.diff_1 { 
+    border-bottom: 2px solid var(--danger-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
+
+.diff_2 { 
+    border-bottom: 2px solid var(--danger-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
+
+.diff_3 { 
+    border-bottom: 2px solid var(--warning-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
+
+.diff_4 { 
+    border-bottom: 2px solid var(--positive-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
+
+.diff_5 { 
+    border-bottom: 2px solid var(--positive-color); /* Replace with a variable */
+    color: var(--color-w_0); /* Replace with a variable */
+}
 #odds-graph-canvas {
     height: 400px;
     width: 100%;
@@ -802,10 +880,10 @@ ul.tournamentEvents li:last-child {
 }    
 #match-odds span {
     padding: 4px 8px;
-    background-color: rgb(75, 83, 106);
+    background-color: var(--color-gr_5); /* Replace with a variable */
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
-}    
+}
 
 .stats-grid {
             display: grid;
@@ -851,20 +929,20 @@ ul.tournamentEvents li:last-child {
         }
         
         .win-stat .stat-value {
-            color: var(--secondary-color);
-        }
-        
-        .draw-stat .stat-value {
-            color: var(--warning-color);
-        }
-        
-        .loss-stat .stat-value {
-            color: var(--danger-color);
-        }
-        
-        .percentage-stat .stat-value {
-            font-weight: 800;
-        }
+    color: var(--secondary-color);
+}
+
+.draw-stat .stat-value {
+    color: var(--warning-color);
+}
+
+.loss-stat .stat-value {
+    color: var(--danger-color);
+}
+
+.percentage-stat .stat-value {
+    font-weight: 800;
+}
         
         .progress-container {
             height: 6px;
@@ -889,20 +967,21 @@ ul.tournamentEvents li:last-child {
             padding: 10px;
             text-align: left;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         
         .choice-badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: var(--color-o_1);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 0px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-        }
+    top: 16px;
+    right: 16px;
+    background: var(--primary-color);
+    color: var(--color-w_1); /* White color */
+    padding: 4px 8px;
+    border-radius: 0px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
         
         .odd-row {
             display: flex;
@@ -912,8 +991,9 @@ ul.tournamentEvents li:last-child {
         }
         
         .odd-label {
-            color: #7f8c8d; 
-        }
+    color: var(--color-gr_3); /* Replace with a variable */
+}
+
         
         .odd-value {
             font-weight: 700; 
@@ -932,15 +1012,14 @@ ul.tournamentEvents li:last-child {
         }
         
         .positive {
-            background-color: rgba(46, 204, 113, 0.1) !important;
-            color: var(--positive-color);
-        }
-        
-        .negative {
-            background-color: rgba(231, 76, 60, 0.1) !important;
-            color: var(--negative-color);
-        }
-         
+    background-color: rgba(46, 204, 113, 0.1) !important;
+    color: var(--positive-color);
+}
+
+.negative {
+    background-color: rgba(231, 76, 60, 0.1) !important;
+    color: var(--negative-color);
+}
         
         .change-arrow {
             margin-right: 4px;
@@ -959,14 +1038,14 @@ ul.tournamentEvents li:last-child {
         }
         
         .odds-comparison::before {
-            content: "";
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background: #eee;
-        }
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--color-gr_4); /* Replace with a variable */
+}
         
         .odd-comparison-box {
             flex: 1;
@@ -974,12 +1053,14 @@ ul.tournamentEvents li:last-child {
             padding: 8px;
         }
         
-        .odd-comparison-label { 
-            color: #95a5a6;
-            margin-bottom: 4px;
-        }
+
+
+.odd-comparison-label {
+    color: var(--color-gr_2); /* Replace with a variable */
+    margin-bottom: 4px;
+}
         
-        .odd-comparison-value {
+        .odd-comparison, .distance-value {
             font-weight: 700;
         }
 
@@ -994,25 +1075,25 @@ ul.tournamentEvents li:last-child {
   .category-card {
     padding: 15px;
     border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
+    background: var(--color-w_1); /* White background */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
   
   .category-card.local {
-    border-left: 4px solid #2ecc71;
-  }
-  
-  .category-card.regional {
-    border-left: 4px solid #3498db;
-  }
-  
-  .category-card.national {
-    border-left: 4px solid #9b59b6;
-  }
-  
-  .category-card.continental {
-    border-left: 4px solid #e74c3c;
-  }
+    border-left: 4px solid var(--positive-color); /* Replace with a variable */
+}
+
+.category-card.regional {
+    border-left: 4px solid var(--info-color); /* Replace with a variable */
+}
+
+.category-card.national {
+    border-left: 4px solid var(--secondary-color); /* Replace with a variable */
+}
+
+.category-card.continental {
+    border-left: 4px solid var(--danger-color); /* Replace with a variable */
+}
   
   .no-data {
     padding: 15px; 
@@ -1025,11 +1106,10 @@ ul.tournamentEvents li:last-child {
 }
 
 .stats-card {
-  background-color: #f7f7f7;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-light-1); /* Replace with a variable */
+    padding: 20px;
+    border: 1px solid var(--color-gr_6); /* Replace with a variable */
+    border-radius: 10px;
 }
 
 .stat-row {
@@ -1042,8 +1122,9 @@ ul.tournamentEvents li:last-child {
     padding: 4px 8px;
 }
 
+
 .stat-row span:first-child {
-  background-color: #1f222b;
+    background-color: var(--light-color); /* Replace with a variable */
 }
 
 .value {
@@ -1060,16 +1141,17 @@ ul.tournamentEvents li:last-child {
     gap: 10px;
 }
 .stats-card-container {
-    border: 1px solid #1f1f1f;
+    border: 1px solid var(--color-gr_7); /* Replace with a variable */
     border-radius: 8px;
     text-align: center;
-    color: white;
+    color: var(--color-w_1); /* White color */
     margin-top: 15px;
     flex: 1;
 }
+
 .stats-header {
     padding: 6px;
-    color: white;
+    color: var(--color-w_1); /* White color */
     font-weight: 700;
 }
 .stats-grid-card {
@@ -1081,8 +1163,9 @@ ul.tournamentEvents li:last-child {
     text-align: center;
     min-width: 50px;
     flex: 1;
-    background-color: #333; 
+    background-color: var(--bg-dark-1); /* Replace with a variable */
 }
+
 .stats-box:first-child { 
     border-top-left-radius: 0;
 }
@@ -1094,8 +1177,9 @@ ul.tournamentEvents li:last-child {
     opacity: 0.7;
     padding: 4px 0;
 }
+
 .stats-box div:first-child {
-    background-color: #1f1f1f; 
+    background-color: var(--bg-dark-2); /* Replace with a variable */
 }
 .stats-box div:last-child {
     font-weight: 700;
@@ -1134,22 +1218,489 @@ ul.tournamentEvents li:last-child {
 
 #travel-impact-container {
   display: flex;
-    flex-direction: column;
+    flex-direction: column; 
     justify-content: center;
-    margin: 0 0 10px;
+    margin: 0;
     align-items: center;
-    border-bottom: 1px solid #3d3d3d;
-    padding-bottom: 15px;
-}
-   
-#th-stats-container {
-    margin-bottom: 10px;
 }
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr;
             }
         }
+#data-container {
+    gap: 5px;
+    padding: 0 10px;
+}
+.data-card {
+    background-color: var(--bg-dark-1); /* Replace with a variable */
+    color: var(--color-w_1); /* White color */
+    text-align: center;
+    min-width: 100px;
+    flex: 1;
+}
+
+.top-section {
+    padding-top: 5px;
+}  
+.main-number { 
+    font-weight: bold;
+    color: var(--positive-color);
+    font-size: 0.9rem;
+}
+
+.label { 
+    text-transform: uppercase; 
+    font-weight: bold;
+    margin: 5px 0; 
+}
+
+.bottom-section {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--color-gr_1); /* Replace with a variable */
+    padding: 2px 5px;
+}
+
+.stat {
+    text-align: center;
+    padding: 5px 15px;
+}
+.stat:first-child {
+    text-align: center;
+    padding: 5px 15px;
+    border-right: 1px solid var(--color-gr_1); /* Replace with a variable */
+}
+
+.number { 
+    font-weight: bold;
+}
+.data-card-grid {
+  display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 5px;
+    padding: 10px;
+}
+
+.data-cards {
+    background-color: var(--bg-dark-4); /* Replace with a variable */
+    border: 1px solid var(--bg-dark-1); /* Replace with a variable */
+    padding: 5px 0;
+    text-align: center;
+    color: var(--color-w_1);
+}
+
+
+.data-card-title { 
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.data-card-value { 
+  font-weight: bold;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+}
+  
+
+.data-card-league {
+    color: var(--color-gr_1); /* Replace with a variable */
+}
+
+.data-card-value.positive {
+    color: var(--positive-color);
+}
+
+.data-card-value.negative {
+    color: var(--negative-color);
+}
+
+.data-card-value.neutral {
+    color: var(--color-gr_4); /* Replace with a variable */
+}
+.conclusion-container {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--color-gr_2); /* Replace with a variable */
+}
+
+.conclusion-section {
+    margin-bottom: 5px;
+}
+
+.section-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+}
+
+.comparison-list, .travel-list {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.comparison-list li, .travel-list li {
+  margin-bottom: 8px;
+}
+
+.strong-advantage {
+    color: var(--positive-color);
+}
+
+.significant-advantage {
+    color: var(--info-color); /* Replace with a variable */
+}
+
+.moderate-advantage {
+    color: var(--warning-color);
+}
+
+.low-advantage {
+    color: var(--danger-color);
+}
+
+.neutral-advantage {
+    color: var(--primary-color); /* Replace with a variable */
+}
+
+.home-advantage {
+    color: var(--positive-color);
+}
+
+.away-advantage {
+    color: var(--negative-color); /* Replace with a variable */
+}
+
+.no-advantage {
+    padding: 15px;
+    background: var(--color-w_2); /* Replace with a variable */
+    border-radius: 8px;
+    text-align: center;
+    font-style: italic;
+    color: var(--color-gr_2); /* Replace with a variable */
+}
+
+.stats-panel {
+      max-width: 400px;
+      background-color: #111;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section {
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #ccc;
+    }
+
+    .highlight {
+      color: #ff4d4d;
+      font-weight: bold;
+    }
+
+    .subtext {
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 8px; 
+    }
+
+    .good {
+      color: #4cd964;
+    }
+
+    .bad {
+      color: #ff4d4d;
+    }
+
+    .bullet {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+
+    .emphasis {
+      font-weight: bold;
+    }
+
+.goal-diff {
+  display: inline-block;
+  margin-top: 8px;
+  font-style: italic;
+}
+ 
+
+/* Comparison Card Container */
+.comparison-card {
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+ 
+
+/* Card Title */
+.comparison-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-gr_2); /* Replace with a variable */
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+}
+
+.comparison-title:before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--info-color); /* Replace with a variable */
+    margin-right: 8px;
+}
+
+/* Values Container */
+.comparison-values { 
+  align-items: center; 
+  margin-bottom: 8px; 
+}
+
+/* Individual Value Styles */
+.home-value, .away-value {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 8px;
+    margin: 0 2px;
+    border-radius: 6px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.home-value {
+    background: rgba(74, 144, 226, 0.1);
+    color: var(--info-color); /* Replace with a variable */
+}
+
+.away-value {
+    background: rgba(234, 67, 53, 0.1);
+    color: var(--negative-color); /* Replace with a variable */
+}
+
+/* VS Separator */
+.vs {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-gr_3); /* Replace with a variable */
+    padding: 0 8px;
+    text-transform: uppercase;
+}
+
+/* Advantage Indicator */
+.advantage {
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.advantage.positive {
+    background: rgba(52, 168, 83, 0.1);
+    color: var(--positive-color);
+}
+
+.advantage.negative {
+    background: rgba(234, 67, 53, 0.1);
+    color: var(--negative-color);
+}
+
+.advantage.neutral {
+    background: rgba(66, 133, 244, 0.1);
+    color: var(--info-color);
+}
+
+/* Header for Comparison Section */ 
+.comparison-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--color-gr_4); /* Replace with a variable */
+}
+
+.team-name.home {
+    background: rgba(74, 144, 226, 0.1);
+    color: var(--info-color); /* Replace with a variable */
+}
+
+.team-name.away {
+    background: rgba(234, 67, 53, 0.1);
+    color: var(--negative-color); /* Replace with a variable */
+}
+
+/* Grid Layout for Multiple Cards */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .comparison-values {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .vs {
+    padding: 8px 0;
+  }
+}
+
+
+.bet-list-container {
+    position: fixed;
+    bottom: -300px;
+    right: 20px;
+    width: 300px;
+    background: #fff;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    transition: bottom 0.3s ease;
+    z-index: 1000;
+    border: 1px solid #ddd;
+    display: none;
+}
+
+.bet-list-container.show {
+    display: block;
+    bottom: 0;
+}
+
+.bet-list-header {
+    padding: 10px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px 8px 0 0;
+}
+
+.bet-list-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.bet-list-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.clear-bet-list {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.clear-bet-list:hover {
+    background: #eee;
+}
+
+.close-bet-list {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+}
+
+.bet-list-items {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.bet-item {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bet-item:last-child {
+    border-bottom: none;
+}
+
+.bet-item-teams {
+    flex: 1;
+}
+
+.bet-item-stats {
+    text-align: right;
+    font-size: 12px;
+    color: #666;
+    margin-right: 8px;
+}
+
+.bet-item-remove {
+    color: #ff6b6b;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px;
+}
+
+.bet-item-remove:hover {
+    color: #ff0000;
+}
+
+.star-icon {
+    color: #ccc;
+    cursor: pointer;
+    margin-left: 8px;
+    font-size: 16px;
+}
+
+.star-icon.active {
+    color: gold;
+}
   </style>
 </head>
 <body class="closure rfr"> 
@@ -1229,17 +1780,29 @@ ul.tournamentEvents li:last-child {
         <div id="details-column" class="event-details"></div>
         <div id="data-column" class="event-data">                
             <div id="travel-impact-container"></div>
+            <div id="conclusion-div"></div>
             <div id="other-data-container">
+            <div id="team-comparison-container"></div>
+                <div id="changing-odds" class="changing-odds"></div>
                 <div id="odds-graph-change">
                     <canvas id="odds-graph-canvas" style="height: 200px; width: 100%;"></canvas>
                 </div>
-                <div id="h2h-events" class="h2h-events"></div>
                 <div id="stats-container" class="stats-container"></div>
-                <div id="changing-odds" class="changing-odds"></div>
+                <div id="h2h-events" class="h2h-events"></div>
             </div>
         </div>
     </div>
-
+    
+<div id="bet-list-container" class="bet-list-container">
+    <div class="bet-list-header">
+        <h3>My Bet List</h3>
+        <div class="bet-list-actions">
+            <button id="clear-bet-list" class="clear-bet-list">Clear All</button>
+            <button id="close-bet-list" class="close-bet-list">×</button>
+        </div>
+    </div>
+    <div id="bet-list-items" class="bet-list-items"></div>
+</div>
     <script>
         
         const baseURL = 'https://api.sofascore.com/api/v1';
@@ -1508,6 +2071,20 @@ ul.tournamentEvents li:last-child {
                 fetchAndDisplayEvents(currentDate, currentStatus);
                 updateCalendarDays();
             });
+
+             // Check if there are items in the bet list on page load
+    const betList = JSON.parse(localStorage.getItem('betList')) || [];
+    if (betList.length > 0) {
+        updateBetListDisplay();
+        
+        // Sync star states
+        betList.forEach(item => {
+            const star = document.querySelector(`.star-icon[data-event-id="${item.eventId}"]`);
+            if (star) {
+                star.classList.add('active');
+            }
+        });
+    }
         });
      
   // Function to convert fractional odds to decimal odds
@@ -1688,13 +2265,23 @@ async function fetchAndDisplayWinningOdds(matchId) {
     }
 }
 
-
 // Function to fetch odds for an event 
 const fetchOddsForEvent = async (eventId) => {
   const url = `${baseURL}/event/${eventId}/odds/1/all`;
   try {
     const response = await fetch(url);
+
+    // Check if response is a 404
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.warn(`Odds not found for event ${eventId} (404). Skipping...`);
+        return null; // Gracefully handle 404
+      }
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
     const data = await response.json();
+
     if (data && data.markets) {
       const fullTimeMarket = data.markets.find(market => market.marketName === 'Full time');
       if (fullTimeMarket && fullTimeMarket.choices) {
@@ -1707,12 +2294,14 @@ const fetchOddsForEvent = async (eventId) => {
         };
       }
     }
+
     return null; // Return null if no odds found
   } catch (error) {
-    console.error('Error fetching odds:', error.message);
-    return null;
+    console.error(`Error fetching odds for event ${eventId}:`, error.message);
+    return null; // Continue execution without breaking the app
   }
 };
+
 
 async function fetchAndDisplayWinningOdds(matchId) {
     try {
@@ -1776,21 +2365,6 @@ async function fetchAndDisplayWinningOdds(matchId) {
 }
 
 
-// Utility function to fetch events data and filter for finished events excluding the current match
-const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
-    const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
-    const eventsData = await fetchJson(eventsUrl);
-
-    // Check if eventsData exists and contains events
-    if (!eventsData || !eventsData.events) return [];
-
-    // Filter only finished events and exclude the current match
-    const finishedEvents = eventsData.events.reverse().filter(event => 
-        event.status.type === 'finished' && event.id !== currentMatchId
-    );
-
-    return finishedEvents;
-};
 
 // Function to calculate and display home team statistics
 async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, containerId) {
@@ -1830,6 +2404,38 @@ async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, co
     }
 }
 
+// Utility function to fetch events data and filter for finished events excluding the current match
+const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
+    const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
+    const eventsData = await fetchJson(eventsUrl);
+
+    // Check if eventsData exists and contains events
+    if (!eventsData || !eventsData.events) return [];
+
+    // Filter only finished events and exclude the current match
+    const finishedEvents = eventsData.events.reverse().filter(event => 
+        event.status.type === 'finished' && event.id !== currentMatchId
+    );
+
+    return finishedEvents;
+};
+
+async function fetchTeamMatches(tournamentId, seasonId, teamId, currentMatchId) {
+  const events = await fetchEventsData(tournamentId, seasonId, currentMatchId);
+
+  // Filter matches where the team is involved and exclude the current match
+  const teamMatches = events.filter(event =>
+    (event.homeTeam.id === teamId || event.awayTeam.id === teamId) &&
+    event.id !== currentMatchId
+  );
+
+  // Sort by date descending (latest matches first)
+  teamMatches.sort((a, b) => new Date(b.startTimestamp * 1000) - new Date(a.startTimestamp * 1000));
+
+  // Return only the last 5 matches
+  return teamMatches.slice(0, 6);
+}
+
  
  async function fetchHomeH2HEvents(customId, teamId, tournamentId, currentMatchId) {
   const url = `${baseURL}/event/${customId}/h2h/events`;
@@ -1848,38 +2454,97 @@ async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, co
   );
 }
 
+function calculateTeamPerformance(events, teamId) {
+  let total = 0, goalsFor = 0, goalsAgainst = 0, wins = 0, draws = 0;
+  let isHome;
+
+  events.forEach(event => {
+    isHome = event.homeTeam.id === teamId;
+    const gf = isHome ? event.homeScore.current : event.awayScore.current;
+    const ga = isHome ? event.awayScore.current : event.homeScore.current;
+
+    goalsFor += gf;
+    goalsAgainst += ga;
+    total++;
+
+    if (gf > ga) wins++;
+    else if (gf === ga) draws++;
+  });
+
+  return {
+    total,
+    goalsFor,
+    goalsAgainst,
+    goalDiff: goalsFor - goalsAgainst,
+    winRate: ((wins / total) * 100).toFixed(1),
+    drawRate: ((draws / total) * 100).toFixed(1),
+    lossRate: ((100 - (wins / total * 100) - (draws / total * 100)).toFixed(1)),
+    avgGoalsFor: (goalsFor / total).toFixed(2),
+    avgGoalsAgainst: (goalsAgainst / total).toFixed(2)
+  };
+}
+
+function calculateRelativeAdvantage(overallStats, specificStats) {
+  return {
+    goalDiffChange: (specificStats.goalDiff - overallStats.goalDiff).toFixed(2),
+    winRateChange: (specificStats.winRate - overallStats.winRate).toFixed(2),
+    avgGoalsForChange: (specificStats.avgGoalsFor - overallStats.avgGoalsFor).toFixed(2),
+    avgGoalsAgainstChange: (specificStats.avgGoalsAgainst - overallStats.avgGoalsAgainst).toFixed(2)
+  };
+}
+
 async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMatchId, homeTeamId, awayTeamId) {
   try {
-    // Fetch both tournament and H2H events
-    const [tournamentEvents, h2hEvents] = await Promise.all([
+    // Fetch all data in parallel
+    const [tournamentEvents, h2hEvents, homeAllMatches, awayAllMatches] = await Promise.all([
       fetchEventsData(tournamentId, seasonId, currentMatchId),
-      fetchHomeH2HEvents(customId, homeTeamId, tournamentId, currentMatchId)
+      fetchHomeH2HEvents(customId, homeTeamId, tournamentId, currentMatchId),
+      fetchTeamMatches(tournamentId, seasonId, homeTeamId, currentMatchId),
+      fetchTeamMatches(tournamentId, seasonId, awayTeamId, currentMatchId)
     ]);
-    
-    // Calculate statistics
-    const tournamentStats = calculateHomeAdvantageStats(tournamentEvents);
-    const h2hStats = calculateHomeAdvantageStats(h2hEvents);
-    const travelStats = await analyzeTravelImpact(h2hEvents, homeTeamId, awayTeamId);
-    
-    // Display results
-    displayHomeAdvantageStats(tournamentStats, h2hStats, 'th-stats-container');
-    displayTravelImpact(travelStats, 'travel-impact-container');
 
-    const conclusion = concludeHomeAdvantage(tournamentStats, h2hStats, travelStats);
+    // Calculate all statistics
+    const [tournamentStats, h2hStats, travelStats, homeOverall, homeOnlyHome, awayOverall, awayOnlyAway] = await Promise.all([
+      calculateHomeAdvantageStats(tournamentEvents),
+      calculateHomeAdvantageStats(h2hEvents),
+      analyzeTravelImpact(h2hEvents, homeTeamId, awayTeamId),
+      calculateTeamPerformance(homeAllMatches, homeTeamId),
+      calculateTeamPerformance(homeAllMatches.filter(e => e.homeTeam.id === homeTeamId), homeTeamId),
+      calculateTeamPerformance(awayAllMatches, awayTeamId),
+      calculateTeamPerformance(awayAllMatches.filter(e => e.awayTeam.id === awayTeamId), awayTeamId)
+    ]);
+
+    // Relative advantages
+    const homeAdvantage = calculateRelativeAdvantage(homeOverall, homeOnlyHome);
+    const awayAdvantage = calculateRelativeAdvantage(awayOverall, awayOnlyAway);
+    const homeVsAwayAdvantage = {
+      goalDiffGap: (homeOnlyHome.goalDiff - awayOnlyAway.goalDiff).toFixed(2),
+      winRateGap: (homeOnlyHome.winRate - awayOnlyAway.winRate).toFixed(2),
+      avgGoalsForGap: (homeOnlyHome.avgGoalsFor - awayOnlyAway.avgGoalsFor).toFixed(2)
+    };
+
+    // Display all results
+    displayTravelImpact(travelStats, 'travel-impact-container');
+    displayHomeAdvantageStats(tournamentStats, h2hStats, 'th-stats-container');
+    displayTeamComparison(homeOverall, homeOnlyHome, awayOverall, awayOnlyAway, homeVsAwayAdvantage, 'team-comparison-container');
+
+    const conclusion = concludeHomeAdvantage(tournamentStats, h2hStats, travelStats, homeVsAwayAdvantage);
     document.getElementById('conclusion-div').innerHTML = conclusion;
     
-    // Return combined data for further processing
     return {
       tournamentStats,
+      travelStats,
       h2hStats,
-      travelStats
+      homeTeamHomeStats: homeOnlyHome,
+      awayTeamAwayStats: awayOnlyAway,
+      homeVsAwayAdvantage
     };
     
   } catch (error) {
     console.error('Error in home advantage analysis:', error);
     return null;
   }
-} 
+}
 
 /**
  * Fetches team details including location data
@@ -1955,6 +2620,52 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
   };
 }
 
+function displayTeamComparison(homeOverall, homeOnlyHome, awayOverall, awayOnlyAway, homeVsAwayAdvantage, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  const metrics = [
+    {
+      title: "Win Rate:",
+      home: homeOnlyHome.winRate,
+      away: awayOnlyAway.winRate,
+      diff: homeVsAwayAdvantage.winRateGap,
+      format: v => `${v}%`
+    },
+    {
+      title: "Goal Diff:",
+      home: homeOnlyHome.goalDiff,
+      away: awayOnlyAway.goalDiff,
+      diff: homeVsAwayAdvantage.goalDiffGap,
+      format: v => v > 0 ? `+${v}` : v
+    },
+    {
+      title: "Goals:",
+      home: homeOnlyHome.avgGoalsFor,
+      away: awayOnlyAway.avgGoalsFor,
+      diff: homeVsAwayAdvantage.avgGoalsForGap,
+      format: v => v > 0 ? `+${v}` : v
+    }
+  ];
+
+  const cardsHTML = metrics.map(metric => {
+    const homeClass = metric.diff > 0 ? 'positive' : '';
+    const awayClass = metric.diff < 0 ? 'positive' : '';
+    
+    return `
+      <div class="comparison-card"> 
+        <div class="comparison-values">
+          ${metric.title} : <span class="home-value ${homeClass}">${metric.format(metric.home)} </span> <span class="away-value ${awayClass}"> ${metric.format(metric.away)}</span> ${metric.diff > 0 ? 'Home +' + metric.diff : 'Away +' + Math.abs(metric.diff)}
+        </div> 
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = ` 
+    <div class="comparison-grid">${cardsHTML}</div>
+  `;
+}
+
 // ========================
 // 2. Enhanced Travel Impact Analysis
 // ========================
@@ -1973,13 +2684,24 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
   
   if (!homeCoords || !awayCoords) {
     console.warn('Cannot analyze travel impact - missing team coordinates');
-    return null;
+    return {
+      baseDistance: "Travel impact data not available",
+      categories: null,
+      homeTeamLocation: null,
+      awayTeamLocation: null
+    };
   }
   
   const baseDistance = calculateDistance(homeCoords, awayCoords);
-  if (baseDistance === 0) {
-    console.warn('Teams appear to have the same coordinates');
-    return null;
+  
+  // If no events, just return the basic distance info
+  if (!events || events.length === 0) {
+    return {
+      baseDistance: `${baseDistance.toFixed(1)} km`,
+      categories: null,
+      homeTeamLocation: homeCoords,
+      awayTeamLocation: awayCoords
+    };
   }
   
   // Enhanced distance categorization
@@ -1996,8 +2718,7 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
     if (!awayTeamCoords) continue;
     
     const distance = calculateDistance(homeCoords, awayTeamCoords);
-    
-    console.log(homeCoords); 
+     
     // Find the appropriate category
     const category = Object.keys(distanceCategories).find(
       key => distance <= distanceCategories[key].maxDistance
@@ -2028,7 +2749,7 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
   
   return {
     baseDistance: `${baseDistance.toFixed(1)} km`,
-    categories: results,
+    categories: Object.keys(results).length > 0 ? results : null,
     homeTeamLocation: homeCoords,
     awayTeamLocation: awayCoords
   };
@@ -2062,37 +2783,30 @@ function calculateDistance(coords1, coords2) {
  * @returns {Object} - Corrected coordinates with latitude and longitude in correct order
  */
  function detectAndFixSwappedCoordinates(coords) {
-  const { latitude, longitude } = coords;
+  let { latitude, longitude } = coords;
 
-  // Check if the latitude is within the valid range (-90 to +90)
+  // Check if the values are within valid Earth ranges
   const isLatitudeValid = latitude >= -90 && latitude <= 90;
-
-  // Check if the longitude is within the valid range (-180 to +180)
   const isLongitudeValid = longitude >= -180 && longitude <= 180;
 
-  // If latitude is out of range but longitude is valid, then we likely have swapped coordinates
+  // If one of them is invalid, we assume they're swapped
   if (!isLatitudeValid && isLongitudeValid) {
-    console.warn('Coordinates appear to be swapped. Swapping latitude and longitude.');
-    // Swap latitude and longitude
-    return {
-      latitude: longitude,
-      longitude: latitude
-    };
+    console.warn("Coordinates appear to be swapped. Swapping latitude and longitude.");
+    return { latitude: longitude, longitude: latitude };
   }
 
-  // If longitude is out of range but latitude is valid, it's also likely swapped
-  if (isLatitudeValid && !isLongitudeValid) {
-    console.warn('Coordinates appear to be swapped. Swapping latitude and longitude.');
-    // Swap latitude and longitude
-    return {
-      latitude: longitude,
-      longitude: latitude
-    };
+  // General heuristic: In most cases, latitude should be larger than longitude in Europe
+  const isLatitudeUnusuallySmall = latitude > -25 && latitude < 45; // Likely a longitude
+  const isLongitudeUnusuallyLarge = longitude > 35 && longitude < 90; // Likely a latitude
+
+  if (isLatitudeUnusuallySmall && isLongitudeUnusuallyLarge) {
+    console.warn("Coordinates appear swapped based on heuristics. Swapping latitude and longitude.");
+    return { latitude: longitude, longitude: latitude };
   }
 
-  // If both latitude and longitude are within valid ranges, return the original coords
   return coords;
 }
+
 
 /**
  * Extracts team coordinates from team data with better error handling
@@ -2163,55 +2877,64 @@ async function getTeamCoordinates(teamId) {
   const container = document.getElementById(containerId);
   if (!container) return;
 
-  // Helper function to display percentage or "-"
-  const displayPercentage = (percentage) => {
-    return isNaN(percentage) ? '-' : `${percentage}%`;
+  const displayValue = (val) => (val === null || val === undefined || isNaN(val) ? '-' : val);
+  const displayPercentage = (val) => isNaN(val) ? '-' : `${val}`;
+
+  const getChangeSymbol = (h2h, league, reverse = false) => {
+    if (isNaN(h2h) || isNaN(league)) return { symbol: '', className: 'neutral' };
+    const change = h2h - league;
+    
+    let className, symbol;
+    if (change === 0) {
+      className = 'neutral';
+      symbol = '';
+    } else {
+      const isPositive = reverse ? change < 0 : change > 0;
+      className = isPositive ? 'positive' : 'negative';
+      symbol = isPositive ? '↑' : '↓';
+    }
+
+    return { symbol, className };
   };
 
-  container.innerHTML = `
-    <table style="width:100%; text-align:center;">
-      <thead>
-        <tr>
-          <th>HW:</th>
-          <th>DR:</th>
-          <th>AW:</th>
-          <th>AvHG:</th>
-          <th>AvAG:</th>
-          <th>GD</th>
-          <th>HCS</th>
-          <th>ACS</th>
-          <th>HFTS</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Tournament Stats -->
-        <tr>
-          <td>${displayPercentage(tournamentStats.homeWinPercentage)}</td> 
-          <td>${displayPercentage(tournamentStats.drawPercentage)}</td> 
-          <td>${displayPercentage(tournamentStats.awayWinPercentage)}</td> 
-          <td>${tournamentStats.avgHomeGoals}</td> 
-          <td>${tournamentStats.avgAwayGoals}</td> 
-          <td>${tournamentStats.goalDifference}</td>  
-          <td>${displayPercentage(tournamentStats.homeCleanSheetPercentage)}</td> 
-          <td>${displayPercentage(tournamentStats.awayCleanSheetPercentage)}</td> 
-          <td>${displayPercentage(tournamentStats.homeFailedToScorePercentage)}</td>
-        </tr>
-        <!-- H2H Stats -->
-        <tr>
-          <td>${displayPercentage(h2hStats.homeWinPercentage)}</td> 
-          <td>${displayPercentage(h2hStats.drawPercentage)}</td> 
-          <td>${displayPercentage(h2hStats.awayWinPercentage)}</td> 
-          <td>${h2hStats.avgHomeGoals}</td> 
-          <td>${h2hStats.avgAwayGoals}</td> 
-          <td>${h2hStats.goalDifference}</td>  
-          <td>${displayPercentage(h2hStats.homeCleanSheetPercentage)}</td> 
-          <td>${displayPercentage(h2hStats.awayCleanSheetPercentage)}</td> 
-          <td>${displayPercentage(h2hStats.homeFailedToScorePercentage)}</td>
-        </tr>
-      </tbody>
-    </table>
-  `;
+  const calculateChangePercentage = (h2h, league) => {
+    if (isNaN(h2h) || isNaN(league) || league === 0) return '-';
+    const change = ((h2h - league) / league) * 100;
+    const rounded = Math.round(Math.abs(change));
+    return `${change > 0 ? '+' : '-'}${rounded}%`;
+  };
+
+  const metrics = [
+    { title: "Home Win %", h2h: h2hStats.homeWinPercentage, league: tournamentStats.homeWinPercentage, isPercentage: true },
+    { title: "Draw %", h2h: h2hStats.drawPercentage, league: tournamentStats.drawPercentage, isPercentage: true },
+    { title: "Away Win %", h2h: h2hStats.awayWinPercentage, league: tournamentStats.awayWinPercentage, isPercentage: true },
+    { title: "Av.g Home", h2h: h2hStats.avgHomeGoals, league: tournamentStats.avgHomeGoals },
+    { title: "Av.g Away", h2h: h2hStats.avgAwayGoals, league: tournamentStats.avgAwayGoals }, 
+    { title: "Home CS", h2h: h2hStats.homeCleanSheetPercentage, league: tournamentStats.homeCleanSheetPercentage, isPercentage: true },
+    { title: "Away CS", h2h: h2hStats.awayCleanSheetPercentage, league: tournamentStats.awayCleanSheetPercentage, isPercentage: true },
+    { title: "Home FTS", h2h: h2hStats.homeFailedToScorePercentage, league: tournamentStats.homeFailedToScorePercentage, isPercentage: true, reverse: true },
+    { title: "Away FTS", h2h: h2hStats.awayFailedToScorePercentage, league: tournamentStats.awayFailedToScorePercentage, isPercentage: true, reverse: true },
+  ];
+
+  let cardsHTML = metrics.map(metric => {
+    const { symbol, className } = getChangeSymbol(metric.h2h, metric.league, metric.reverse);
+    const h2hVal = metric.isPercentage ? displayPercentage(metric.h2h) : displayValue(metric.h2h);
+    const leagueVal = metric.isPercentage ? displayPercentage(metric.league) : displayValue(metric.league);
+    const percentChange = calculateChangePercentage(metric.h2h, metric.league);
+
+    return `
+      <div class="data-cards">
+        <div class="data-card-title">${metric.title}</div>
+        <div class="data-card-value ${className}">${symbol} ${h2hVal}<!-- / ${percentChange}--></div>
+        <div class="data-card-league">League | ${leagueVal}</div>
+      </div>
+    `;
+  }).join("");
+
+  container.innerHTML = `<div class="data-card-grid">${cardsHTML}</div>`;
 }
+
+
 // ========================
 // 3. Enhanced Visualization
 // ========================
@@ -2223,38 +2946,43 @@ async function getTeamCoordinates(teamId) {
  */
  function displayTravelImpact(travelStats, containerId) {
   const container = document.getElementById(containerId);
-  if (!container || !travelStats) {
-    container.innerHTML = '<div class="no-data">Travel impact data not available</div>';
+  if (!container) return;
+  
+  if (!travelStats) {
+    container.innerHTML = `<div class="no-data">Travel impact data not available
+</div>`;
     return;
   }
   
-  let html = ``; 
-  // Add category breakdown
-  for (const [category, data] of Object.entries(travelStats.categories)) {
-    html += `
-    <p>Travel Impact Stats</p>
-      <span class="value">${travelStats.baseDistance}</span> 
-        <span>${getCategoryName(category)} (${data.matches} matches)</span>
-    <!-- <div class="travel-impact-grid"> 
-        <div class="stat-row">
-          <span>HW</span>
-          <span class="value">${data.homeWinRate}%</span>
-        </div>
-        <div class="stat-row">
-          <span>DR</span>
-          <span class="value">${data.drawRate}%</span>
-        </div>
-        <div class="stat-row">
-          <span>AW</span>
-          <span class="value">${data.lossRate}%</span>
-        </div>
-      </div>-->
-    `;
-  }
-   
+  let html = `<div class="travel-impact-container">`;
   
+  // Always show the base distance
+  html += `<div class="distance-info"> 
+    <span class="distance-value">${travelStats.baseDistance}</span>
+  </div>`;
+  
+  // Show travel impact stats if available
+  if (travelStats.categories) {
+    html += `<div class="travel-impact-stats">`;
+    html += `<p class="travel-impact-title">Travel Impact Stats</p>`;
+    
+    for (const [category, data] of Object.entries(travelStats.categories)) {
+      html += `
+        <div class="travel-category">
+          <span class="category-name">${getCategoryName(category)}</span>
+          <span class="category-matches">(${data.matches} matches)</span> 
+        </div>
+      `;
+    }
+    
+    html += `</div>`;
+  }
+  
+  html += `</div>`;
   container.innerHTML = html;
 }
+
+
 
 /**
  * Helper function to get display name for distance categories
@@ -2276,26 +3004,120 @@ async function getTeamCoordinates(teamId) {
  * @param {Object} travelStats - Travel statistics
  * @returns {string} - Conclusion about home advantage
  */
-function concludeHomeAdvantage(tournamentStats, h2hStats, travelStats) {
-  const homeWinPercentageDiff = h2hStats.homeWinPercentage - tournamentStats.homeWinPercentage;
-  const travelImpact = travelStats?.categories?.local?.homeWinRate;
+ function concludeHomeAdvantage(tournamentStats, h2hStats, travelStats, homeVsAwayAdvantage) {
+  let sections = [];
 
-  let conclusion = '';
+  // 1. Tournament home advantage section
+  if (tournamentStats) {
+    const tournamentHomeWinRate = tournamentStats.homeWinPercentage;
+    const tournamentAvgHomeGoals = parseFloat(tournamentStats.avgHomeGoals);
+    const tournamentAvgAwayGoals = parseFloat(tournamentStats.avgAwayGoals);
+    const goalDiff = tournamentAvgHomeGoals - tournamentAvgAwayGoals;
 
-  if (homeWinPercentageDiff > 10) {
-    conclusion += `${homeWinPercentageDiff}%`;
-  } else if (homeWinPercentageDiff > 0) {
-    conclusion += `${homeWinPercentageDiff}%`;
-  } else {
-    conclusion += '';
+    let tournamentText = '';
+    if (tournamentHomeWinRate > 55) {
+      if (tournamentHomeWinRate > 65) {
+        tournamentText = `<div class="highlight">STRONG home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+      } else if (tournamentHomeWinRate > 60) {
+        tournamentText = `<div class="highlight">SIGNIFICANT home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+      } else {
+        tournamentText = `<div class="highlight">MODERATE home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+      }
+    } else if (tournamentHomeWinRate < 45) {
+      tournamentText = `<div class="highlight">UNUSUALLY LOW home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+    } else {
+      tournamentText = `<div class="highlight">TYPICAL home advantage</div><div class="subtext">(${tournamentHomeWinRate}% home win rate)</div>`;
+    }
+
+    if (goalDiff > 0.3) {
+      tournamentText += `<div class="subtext">Home teams score <strong>${goalDiff.toFixed(1)}</strong> more goals on average</div>`;
+    }
+
+    sections.push(`
+      <div class="section">
+        ${tournamentText}
+      </div>
+    `);
   }
 
-  if (travelImpact && travelImpact > 60) {
-    conclusion += ``;
+  // 2. Team comparison section
+  if (homeVsAwayAdvantage) {
+    let teamComparisonItems = [];
+
+    if (Math.abs(homeVsAwayAdvantage.winRateGap) > 5) {
+      const winClass = homeVsAwayAdvantage.winRateGap > 0 ? 'good' : 'bad';
+      const winText = homeVsAwayAdvantage.winRateGap > 0 ?
+        `✔ Home team has <span class="emphasis">${homeVsAwayAdvantage.winRateGap}%</span> better win rate` :
+        `✖ Away team has <span class="emphasis">${Math.abs(homeVsAwayAdvantage.winRateGap)}%</span> better win rate`;
+      teamComparisonItems.push(`<li class="${winClass}"><span class="bullet">${winText.charAt(0)}</span> ${winText.slice(2)}</li>`);
+    }
+
+    if (Math.abs(homeVsAwayAdvantage.avgGoalsForGap) > 0.3) {
+      const goalClass = homeVsAwayAdvantage.avgGoalsForGap > 0 ? 'good' : 'bad';
+      const goalText = homeVsAwayAdvantage.avgGoalsForGap > 0 ?
+        `✔ Home team scores <span class="emphasis">${homeVsAwayAdvantage.avgGoalsForGap}</span> more goals on average` :
+        `✖ Away team concedes <span class="emphasis">${Math.abs(homeVsAwayAdvantage.avgGoalsForGap)}</span> fewer goals`;
+      teamComparisonItems.push(`<li class="${goalClass}"><span class="bullet">${goalText.charAt(0)}</span> ${goalText.slice(2)}</li>`);
+    }
+
+    if (teamComparisonItems.length > 0) {
+      sections.push(`
+        <div class="section">
+          <div class="section-title">Team Comparison</div>
+          <ul>${teamComparisonItems.join('')}</ul>
+        </div>
+      `);
+    }
   }
 
-  return conclusion;
+  // 3. Head-to-head section
+  if (h2hStats && tournamentStats) {
+    const h2hHomeWinDiff = h2hStats.homeWinPercentage - tournamentStats.homeWinPercentage;
+    if (Math.abs(h2hHomeWinDiff) > 10) {
+      const h2hClass = h2hHomeWinDiff > 0 ? 'good' : 'bad';
+      const h2hText = h2hHomeWinDiff > 0 ?
+        `Historically strong against this opponent <div class="subtext">(+${h2hHomeWinDiff}% above tournament average)</div>` :
+        `Historically weak against this opponent <div class="subtext">(${h2hHomeWinDiff}% below tournament average)</div>`;
+
+      sections.push(`
+        <div class="section">
+          <div class="section-title">Head-to-Head</div>
+          <div class="${h2hClass}">${h2hText}</div>
+        </div>
+      `);
+    }
+  }
+
+  // 4. Travel impact section
+  if (travelStats?.categories) {
+    let travelItems = [];
+
+    if (travelStats.categories.local?.homeWinRate > 65) {
+      travelItems.push(`<li class="good"><span class="bullet">✔</span> Performs well in local derbies (<span class="emphasis">${travelStats.categories.local.homeWinRate}%</span> win rate)</li>`);
+    }
+
+    if (travelStats.categories.continental?.homeWinRate < 40) {
+      travelItems.push(`<li class="bad"><span class="bullet">✖</span> Struggles in long-distance matches (<span class="emphasis">${travelStats.categories.continental.homeWinRate}%</span> win rate)</li>`);
+    }
+
+    if (travelItems.length > 0) {
+      sections.push(`
+        <div class="section">
+          <div class="section-title">Travel Impact</div>
+          <ul>${travelItems.join('')}</ul>
+        </div>
+      `);
+    }
+  }
+
+  // Final Output
+  if (sections.length > 0) {
+    return `<div class="stats-panel">${sections.join('')}</div>`;
+  }
+
+  return `<div class="no-advantage">No significant advantage detected based on available data.</div>`;
 }
+
 
 const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimestamp, sliceCount = 5) => { 
     if (!eventsForTeam) return {}; 
@@ -2332,6 +3154,7 @@ const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimes
             totalGoalsPeriod1Conceded: 0, 
             totalGoalsPeriod2Scored: 0,
             totalGoalsPeriod2Conceded: 0, 
+            totalPoints: 0,  // Add this line
         };
 
         events.reverse().forEach(event => {
@@ -2347,12 +3170,14 @@ const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimes
                 
                 if (teamScore > opponentScore) {
                     stats.wins++;
+                    stats.totalPoints += 3;  // Add 3 points for a win
                     result = 'W';
                 } else if (teamScore < opponentScore) {
                     stats.losses++;
                     result = 'L';
                 } else {
                     stats.draws++;
+                    stats.totalPoints += 1;  // Add 1 point for a draw
                     result = 'D';
                 }
 
@@ -2403,6 +3228,9 @@ const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimes
 // Function to apply color coding based on thresholds
 const getColor = (value, type) => {
     switch (type) {
+        case 'points':
+            return value >= 67 ? 'color: #21b083; font-weight: bold;' : 
+                   value <= 33 ? 'color: #e59c03a8; font-weight: bold;' : '';
         case 'good': 
             return value >= 64 ? 'color: #21b083; font-weight: bold;' : ''; // Good stats (Wins, BTTS, Overs) above 64%
         case 'bad': 
@@ -2419,8 +3247,7 @@ const getColor = (value, type) => {
             return ''; // Default style
     }
 };
-
-// Function to display team stats
+// Function to display team stats (unchanged)
 const displayTeamStats = (teamStats, containerId) => {
     const container = document.getElementById(containerId);
     container.innerHTML = ''; // Clear the container before appending
@@ -2443,12 +3270,19 @@ const displayTeamStats = (teamStats, containerId) => {
     const averageGoalsConceded = totalEvents > 0 ? (teamStats.totalGoalsConceded / totalEvents).toFixed(2) : 0;
     const averageGoals = totalEvents > 0 ? ((teamStats.totalGoalsScored + teamStats.totalGoalsConceded) / totalEvents).toFixed(2) : 0;
 
+    // Calculate points percentage (max possible points is 3 * number of matches)
+    const maxPossiblePoints = totalEvents * 3;
+    const pointsPercent = maxPossiblePoints > 0 
+        ? ((teamStats.totalPoints / maxPossiblePoints) * 100).toFixed(0) 
+        : 0;
+
     // Display stats in three rows
     const statsElem = document.createElement('div');
     statsElem.className = 'team-stats-summary';
 
     statsElem.innerHTML = `
         <div class="stats-row flex _F_r _F_jc">
+            <div style="${getColor(pointsPercent, 'points')}">${pointsPercent}%</div>
             <div>${teamStats.totalGoalsScored + teamStats.totalGoalsConceded}</div>
             <div>${teamStats.totalGoalsScored}</div>
             <div>${teamStats.totalGoalsConceded}</div>
@@ -2464,18 +3298,171 @@ const displayTeamStats = (teamStats, containerId) => {
             </div>
             <div style="${getColor(failedToScorePercent, 'inverse-good') || getColor(failedToScorePercent, 'inverse-bad')}">
                 ${failedToScorePercent}%
-            </div>
-            <div style="${getColor(bttsPercent, 'good')}">${bttsPercent}%</div>
-            <div style="${getColor(over1_5Percent, 'good')}">${over1_5Percent}%</div>
-            <div style="${getColor(over2_5Percent, 'good')}">${over2_5Percent}%</div>
-            <div style="${getColor(over3_5Percent, 'good')}">${over3_5Percent}%</div>
+            </div> 
         </div>
     `;
 
     container.appendChild(statsElem);
 };
 
+ 
 
+function combineStats(homeStats, awayStats) {
+    const totalHome = homeStats.results.length || 1;
+    const totalAway = awayStats.results.length || 1;
+
+    const avg = (home, away) => ((home / totalHome) + (away / totalAway)) / 2;
+
+    return {
+        totalMatches: totalHome + totalAway,
+
+        average: {
+            btts: avg(homeStats.btts, awayStats.btts),
+            over_1_5: avg(homeStats.over1_5, awayStats.over1_5),
+            over_2_5: avg(homeStats.over2_5, awayStats.over2_5),
+            over_3_5: avg(homeStats.over3_5, awayStats.over3_5),
+            goalsScored: avg(homeStats.totalGoalsScored, awayStats.totalGoalsScored),
+            goalsConceded: avg(homeStats.totalGoalsConceded, awayStats.totalGoalsConceded),
+        },
+
+        home: {
+            btts: homeStats.btts / totalHome,
+            over_1_5: homeStats.over1_5 / totalHome,
+            over_2_5: homeStats.over2_5 / totalHome,
+            over_3_5: homeStats.over3_5 / totalHome,
+            goalsScored: homeStats.totalGoalsScored / totalHome,
+            goalsConceded: homeStats.totalGoalsConceded / totalHome,
+        },
+
+        away: {
+            btts: awayStats.btts / totalAway,
+            over_1_5: awayStats.over1_5 / totalAway,
+            over_2_5: awayStats.over2_5 / totalAway,
+            over_3_5: awayStats.over3_5 / totalAway,
+            goalsScored: awayStats.totalGoalsScored / totalAway,
+            goalsConceded: awayStats.totalGoalsConceded / totalAway,
+        }
+    };
+}
+
+function generateDataCard(stats) {
+    const formatPercent = val => `${(val * 100).toFixed(0)}%`;
+    const formatFloat = val => val.toFixed(2);
+
+    const avg = stats.average;
+    const home = stats.home;
+    const away = stats.away;
+
+    return `
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatFloat(avg.goalsScored)}</span>
+        </div>
+        <p class="label">Scored</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatFloat(home.goalsScored)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatFloat(away.goalsScored)}</span> 
+            </div>
+        </div>
+    </div>
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatFloat(avg.goalsConceded)}</span>
+        </div>
+        <p class="label">Conceded</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatFloat(home.goalsConceded)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatFloat(away.goalsConceded)}</span> 
+            </div>
+        </div>
+    </div>
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatPercent(avg.btts)}</span>
+        </div>
+        <p class="label">BTTS</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatPercent(home.btts)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatPercent(away.btts)}</span> 
+            </div>
+        </div>
+    </div>
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatPercent(avg.over_1_5)}</span>
+        </div>
+        <p class="label">Over 1.5</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatPercent(home.over_1_5)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatPercent(away.over_1_5)}</span> 
+            </div>
+        </div>
+    </div>
+   
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatPercent(avg.over_2_5)}</span>
+        </div>
+        <p class="label">Over 2.5</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatPercent(home.over_2_5)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatPercent(away.over_2_5)}</span> 
+            </div>
+        </div>
+    </div>
+  <div class="data-card">
+        <div class="top-section"> 
+            <span class="main-number">${formatPercent(avg.over_3_5)}</span>
+        </div>
+        <p class="label">Over 3.5</p>
+        <div class="bottom-section">
+            <div class="stat">
+                <span class="number">${formatPercent(home.over_3_5)}</span> 
+            </div>
+            <div class="stat">
+                <span class="number">${formatPercent(away.over_3_5)}</span> 
+            </div>
+        </div>
+    </div>
+    `;
+}
+ 
+
+// Improved showDataCard function
+function showDataCard(homeStats, awayStats) { 
+    const stats = combineStats(homeStats, awayStats);    
+  const html = generateDataCard(stats);
+  // Create or clear container
+  let container = document.getElementById('data-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'data-container';
+    document.body.appendChild(container);
+  }
+  container.innerHTML = html;
+
+}
+
+ 
 // Function to display last 5 events
 const displayLast5Events = async (teamStats, containerId) => {
     const container = document.getElementById(containerId);
@@ -2628,7 +3615,7 @@ const calculatePerformance = (stats) => {
         } else if (result.result === 'L') {
             performanceChange = -3; // Fixed performance for losses
         } else {
-            performanceChange = 0; // No performance change for draws
+            performanceChange = 1; // No performance change for draws
         }
 
         // Push the performance change and calculate the cumulative performance
@@ -2668,10 +3655,10 @@ const plotPerformanceGraph = (performanceData, canvasId) => {
             datasets: [{
                 data: performance,
                 borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 2,
+                borderWidth: 1,
                 fill: false,
                 pointRadius: 1,
-                tension: 0 // Optional: add slight curve to the line (set to 0 for a straight line)
+                tension: 0.3 // Optional: add slight curve to the line (set to 0 for a straight line)
             }]
         },
         options: {
@@ -2900,36 +3887,15 @@ function updateMostChangedOdds(oddsData) {
         const oddsHtml = `
             <div class="odds-change-card">
                 <div class="odds-header">
-                    <div class="choice-badge">${mostChangedOdd.choice}</div>
-                    <h3>Odds Change</h3>
-                </div>
-                
-                <div class="odds-details">
-                    <div class="odds-comparison">
-                        <div class="odd-comparison-box">
-                            <div class="odd-comparison-label">Previous Odd</div>
-                            <div class="odd-comparison-value"> ${fractionalToDecimal(mostChangedOdd.previous || '-')}</div>
-                        </div>
-                        <div class="odd-comparison-box">
-                            <div class="odd-comparison-label">Current Odd</div>
-                            <div class="odd-comparison-value current-odd"> ${fractionalToDecimal(mostChangedOdd.current || '-')}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="odd-row">
-                        <span class="odd-label">Change</span>
+                    <span class="headTilt">Odds Change</span>
                         <span class="odd-value">
                             <span class="change-percentage ${changeClass}">
                                 <span class="change-arrow">${arrowSymbol}</span>
                                 ${Math.abs(mostChangedOdd.change).toFixed(2)}%
                             </span>
                         </span>
-                    </div>
-                </div>
-                
-                <div class="time-stamp">
-                    Updated: ${mostChangedOdd.time}
-                </div>
+                    <div class="choice-badge">${mostChangedOdd.choice}</div>
+                </div>  
             </div>
         `;
         oddsContainer.innerHTML += oddsHtml;
@@ -3207,10 +4173,12 @@ function displayH2HEvents(events, containerId) {
 const odds = await fetchOddsForEvent(event.id);
 let oddsDisplay = '';
 
-// Convert decimal odds to percentage
-const homeTeamOdds = odds.odds[0]?.odds;
-const awayTeamOdds = odds.odds[2]?.odds;
-const drawOdds = odds.odds[1]?.odds;
+
+if (odds && odds.odds) {
+  // Convert decimal odds to percentage
+  const homeTeamOdds = odds.odds[0]?.odds;
+  const awayTeamOdds = odds.odds[2]?.odds;
+  const drawOdds = odds.odds[1]?.odds;
 const homeTeamPercentage = homeTeamOdds ? Math.round((1 / homeTeamOdds) * 100) : '-';
 const awayTeamPercentage = awayTeamOdds ? Math.round((1 / awayTeamOdds) * 100) : '-';
 const drawPercentage = drawOdds ? Math.round((1 / drawOdds) * 100) : '-';
@@ -3252,7 +4220,9 @@ if (odds && odds.odds) {
 } else {
     oddsDisplay = '<span>-</span><span>-</span><span>-</span>';
 }
-
+} else {
+  console.warn(`No odds available for event ${event.id}`);
+}
 
     const eventDetailsHtml = `
         <!-- <h2>Event Details ${event.id}</h2> -->
@@ -3309,19 +4279,21 @@ if (odds && odds.odds) {
             <div id="match-odds" class="flex _F_r">
                 ${oddsDisplay}  
             </div> 
+             
+            <div id="data-container" class="flex"></div>
         <!-- Tabs Navigation -->
         <div id="events-tabs" class="tab-contentContainer"> 
         <div id="th-stats-container"></div>
             <div class="tab-menu">
                 <button class="tab-button active rcr" data-tab="home-vs-away-events">Home vs Away</button>
-                <button class="tab-button rcr" data-tab="overall-events">Overall</button>
-                <div id="conclusion-div"></div>
+                <button class="tab-button rcr" data-tab="overall-events">Overall</button> 
                 <div id="expected-actual"></div>
             </div>
             <div class="container-events">
                 <div class="tab-content active" id="home-vs-away-events">
                     <div class="form-container">
                         <div class="stats-row flex _F_r _F_jc title">
+                            <div>PTS</div>
                             <div>TG</div>
                             <div>TS</div>
                             <div>TC</div>
@@ -3333,11 +4305,7 @@ if (odds && odds.odds) {
                             <div>D</div>
                             <div>L</div>
                             <div>CS</div>
-                            <div>FTS</div>
-                            <div>BTS</div>
-                            <div>+1.5</div>
-                            <div>+2.5</div>
-                            <div>+3.5</div>
+                            <div>FTS</div> 
                         </div>
                         <div id="at-home-stats"></div>
                         <div id="at-away-stats"></div>
@@ -3366,6 +4334,7 @@ if (odds && odds.odds) {
                 <div class="tab-content" id="overall-events">
                     <div class="form-container">
                         <div class="stats-row flex _F_r _F_jc title">
+                            <div>PTS</div>
                             <div>TG</div>
                             <div>TS</div>
                             <div>TC</div>
@@ -3377,11 +4346,7 @@ if (odds && odds.odds) {
                             <div>D</div>
                             <div>L</div>
                             <div>CS</div>
-                            <div>FTS</div>
-                            <div>BTS</div>
-                            <div>+1.5</div>
-                            <div>+2.5</div>
-                            <div>+3.5</div>
+                            <div>FTS</div> 
                         </div>
                         <div id="home-team-stats"></div>
                         <div id="away-team-stats"></div>
@@ -3426,6 +4391,16 @@ if (odds && odds.odds) {
         });
     }); 
     
+    const homeTeamId = event.homeTeam.id;
+    const awayTeamId = event.awayTeam.id;
+    const currentMatchId = event.id;
+    const currentMatchTimestamp = event.startTimestamp;
+
+    const tournamentId = event.tournament.id;
+    const uniqueTournamentId = event.tournament.uniqueTournament.id;
+    const seasonId = event.season.id;
+
+    analyzeHomeAdvantage(event.customId, tournamentId, seasonId, currentMatchId, homeTeamId, awayTeamId)
 
      // Fetch odds changes data
      const oddsData = await fetchOddsChanges(event.id);
@@ -3436,75 +4411,22 @@ if (odds && odds.odds) {
         console.error('No odds data available');
     }
 
-    const homeTeamId = event.homeTeam.id;
-    const awayTeamId = event.awayTeam.id;
-    const currentMatchId = event.id;
-    const currentMatchTimestamp = event.startTimestamp;
-
-    const tournamentId = event.tournament.id;
-    const uniqueTournamentId = event.tournament.uniqueTournament.id;
-    const seasonId = event.season.id;
 
     fetchAndDisplayWinningOdds(currentMatchId)
 
-    fetchH2HEvents(event.customId, homeTeamId, tournamentId, currentMatchId, 'h2h-events')
   
-    analyzeHomeAdvantage(event.customId, tournamentId, seasonId, currentMatchId, homeTeamId, awayTeamId)
     // Fetch events data
     const eventsForTeam = await fetchEventsData(tournamentId, seasonId, currentMatchId);
      
+    // Fetch and display away team stats 
+    const awayTeamStats = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 6);
+    const awayTeamStatsAll = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 6);
 
     // Fetch and display home team stats
     const homeTeamStats = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp, 6);
-    const homeTeamStatsAll = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp, 15);
-    const homeTeamFormContainer = document.getElementById('home-team-form');
-    const homeTeamStatsContainer = document.getElementById('home-team-stats');
-    const homeTeamGraphContainer = document.getElementById('home-graph-overall');
-    if (homeTeamFormContainer && homeTeamStatsContainer) {
-        displayTeamStats(homeTeamStats.overall, 'home-team-stats');
-        displayLast5Events(homeTeamStats.overall, 'home-team-form'); 
-        plotPerformanceGraph(calculatePerformance(homeTeamStatsAll.overall), 'homeGraphCanvas');
-    } else {
-        console.error('Home team form or stats container not found');
-    }
+    const homeTeamStatsAll = await fetchTeamStats(eventsForTeam, homeTeamId, currentMatchId, currentMatchTimestamp, 6);
 
-    const atHomeFormContainer = document.getElementById('at-home-form');
-    const atHomeStatsContainer = document.getElementById('at-home-stats');
-    const atHomeGraphContainer = document.getElementById('at-home-graph');
-    if (atHomeFormContainer && atHomeStatsContainer) {
-        displayTeamStats(homeTeamStats.home, 'at-home-stats');
-        displayLast5Events(homeTeamStats.home, 'at-home-form'); 
-        plotPerformanceGraph(calculatePerformance(homeTeamStatsAll.home), 'aThomeGraphCanvas');
-    } else {
-        console.error('At home form or stats container not found');
-    }
-
-    // Fetch and display away team stats 
-    const awayTeamStats = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 6);
-    const awayTeamStatsAll = await fetchTeamStats(eventsForTeam, awayTeamId, currentMatchId, currentMatchTimestamp, 15);
-    const awayTeamFormContainer = document.getElementById('away-team-form');
-    const awayTeamStatsContainer = document.getElementById('away-team-stats');
-    const awayTeamGraphContainer = document.getElementById('away-graph-overall');
-    if (awayTeamFormContainer && awayTeamStatsContainer) {
-        displayTeamStats(awayTeamStats.overall, 'away-team-stats');
-        displayLast5Events(awayTeamStats.overall, 'away-team-form'); 
-        plotPerformanceGraph(calculatePerformance(awayTeamStatsAll.overall), 'awayGraphCanvas');
-    } else {
-        console.error('Away team form or stats container not found');
-    }
-
-    const atAwayFormContainer = document.getElementById('at-away-form');
-    const atAwayStatsContainer = document.getElementById('at-away-stats');
-    const atAwayGraphContainer = document.getElementById('at-away-graph');
-    if (atAwayFormContainer && atAwayStatsContainer) {
-        displayTeamStats(awayTeamStats.away, 'at-away-stats');
-        displayLast5Events(awayTeamStats.away, 'at-away-form');
-        plotPerformanceGraph(calculatePerformance(awayTeamStatsAll.away), 'aTawayGraphCanvas');
-    } else {
-        console.error('At away form or stats container not found');
-    }
-
-
+    showDataCard(homeTeamStats.home, awayTeamStats.away);
     // Start the live timer if the match is in progress
     if (event.status.type === 'inprogress') {
         startLiveTimer(event);
@@ -3517,6 +4439,53 @@ if (odds && odds.odds) {
         }
     }
 
+
+    const homeTeamFormContainer = document.getElementById('home-team-form');
+    const homeTeamStatsContainer = document.getElementById('home-team-stats');
+    const homeTeamGraphContainer = document.getElementById('home-graph-overall');
+    if (homeTeamFormContainer && homeTeamStatsContainer) {
+        plotPerformanceGraph(calculatePerformance(homeTeamStatsAll.overall), 'homeGraphCanvas');
+        displayTeamStats(homeTeamStats.overall, 'home-team-stats');
+        displayLast5Events(homeTeamStats.overall, 'home-team-form'); 
+    } else {
+        console.error('Home team form or stats container not found');
+    }
+
+    const atHomeFormContainer = document.getElementById('at-home-form');
+    const atHomeStatsContainer = document.getElementById('at-home-stats');
+    const atHomeGraphContainer = document.getElementById('at-home-graph');
+    if (atHomeFormContainer && atHomeStatsContainer) {
+        plotPerformanceGraph(calculatePerformance(homeTeamStatsAll.home), 'aThomeGraphCanvas');
+        displayTeamStats(homeTeamStats.home, 'at-home-stats');
+        displayLast5Events(homeTeamStats.home, 'at-home-form'); 
+    } else {
+        console.error('At home form or stats container not found');
+    }
+
+    const awayTeamFormContainer = document.getElementById('away-team-form');
+    const awayTeamStatsContainer = document.getElementById('away-team-stats');
+    const awayTeamGraphContainer = document.getElementById('away-graph-overall');
+    if (awayTeamFormContainer && awayTeamStatsContainer) {
+        plotPerformanceGraph(calculatePerformance(awayTeamStatsAll.overall), 'awayGraphCanvas');
+        displayTeamStats(awayTeamStats.overall, 'away-team-stats');
+        displayLast5Events(awayTeamStats.overall, 'away-team-form'); 
+    } else {
+        console.error('Away team form or stats container not found');
+    }
+
+    const atAwayFormContainer = document.getElementById('at-away-form');
+    const atAwayStatsContainer = document.getElementById('at-away-stats');
+    const atAwayGraphContainer = document.getElementById('at-away-graph');
+    if (atAwayFormContainer && atAwayStatsContainer) {
+        plotPerformanceGraph(calculatePerformance(awayTeamStatsAll.away), 'aTawayGraphCanvas');
+        displayTeamStats(awayTeamStats.away, 'at-away-stats');
+        displayLast5Events(awayTeamStats.away, 'at-away-form');
+    } else {
+        console.error('At away form or stats container not found');
+    } 
+
+   
+    fetchH2HEvents(event.customId, homeTeamId, tournamentId, currentMatchId, 'h2h-events')
     // Refresh scores every 5 seconds 
     const scoreUpdateInterval = setInterval(() => refreshScores(event.id), 5000);
 
@@ -3525,65 +4494,260 @@ if (odds && odds.odds) {
         clearInterval(scoreUpdateInterval);
     };
 }
-
+// Update the displayScheduledEvents function
 function displayScheduledEvents(events) {
-        const topRightList = document.querySelector('.top-right');
-        const bottomRightDetails = document.querySelector('.event-details');
+    const topRightList = document.querySelector('.top-right');
+    const bottomRightDetails = document.querySelector('.event-details');
 
-        if (!topRightList) {
-            console.error('Top right list element not found');
-            return;
-        }
+    if (!topRightList) {
+        console.error('Top right list element not found');
+        return;
+    }
 
-        if (!bottomRightDetails) {
-            console.error('Bottom right details element not found');
-            return;
-        }
+    if (!bottomRightDetails) {
+        console.error('Bottom right details element not found');
+        return;
+    }
 
-        let tournamentEventsHtml = '<ul class="tournamentEvents">';
-        events.forEach(event => {
-            const homeScore = event.homeScore?.current ?? '';
-            const awayScore = event.awayScore?.current ?? '';
-            const status = event.status.type;
-            const eventTime = new Date(event.startTimestamp * 1000).toLocaleString([], {
-                hour: '2-digit', minute: '2-digit', hour12: false
-            });
+    // Initialize bet list from localStorage
+    let betList = JSON.parse(localStorage.getItem('betList')) || [];
 
-            tournamentEventsHtml += `<li class="match-list ${status}" data-event-id="${event.id}" data-custom-id="${event.customId}" data-tournament-id="${event.tournament.id}" data-unique-tournament-id="${event.tournament.uniqueTournament.id}" data-season-id="${event.season.id}" data-home-team-id="${event.homeTeam.id}" data-away-team-id="${event.awayTeam.id}">
-                <div class="info-wrapper">
-                    <div class="date"><span>${eventTime}</span></div>
-                    <div class="team-info">
-                        <div class="teams-info">
-                            <div class="team"><img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">${event.homeTeam.shortName}</div>
-                            <div class="team"><img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">${event.awayTeam.shortName}</div>
-                        </div>
-                        <div class="match-score rcr">
-                            <div class="score" id="homeScore-${event.id}">${homeScore}</div>
-                            <div class="score" id="awayScore-${event.id}">${awayScore}</div>
-                        </div>
+    let tournamentEventsHtml = '<ul class="tournamentEvents">';
+    events.forEach(event => {
+        const homeScore = event.homeScore?.current ?? '';
+        const awayScore = event.awayScore?.current ?? '';
+        const status = event.status.type;
+        const eventTime = new Date(event.startTimestamp * 1000).toLocaleString([], {
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+
+        // Check if this event is in the bet list
+        const isInBetList = betList.some(item => item.eventId === event.id);
+
+        tournamentEventsHtml += `<li class="match-list ${status}" data-event-id="${event.id}" data-custom-id="${event.customId}" data-tournament-id="${event.tournament.id}" data-unique-tournament-id="${event.tournament.uniqueTournament.id}" data-season-id="${event.season.id}" data-home-team-id="${event.homeTeam.id}" data-away-team-id="${event.awayTeam.id}">
+            <div class="info-wrapper">
+                <div class="date"><span>${eventTime}</span></div>
+                <div class="team-info">
+                    <div class="teams-info">
+                        <div class="team"><img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">${event.homeTeam.shortName}</div>
+                        <div class="team"><img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">${event.awayTeam.shortName}</div>
+                    </div>
+                    <div class="match-score rcr">
+                        <div class="score" id="homeScore-${event.id}">${homeScore}</div>
+                        <div class="score" id="awayScore-${event.id}">${awayScore}</div>
                     </div>
                 </div>
-            </li>`;
-        });
-        tournamentEventsHtml += '</ul>';
-        topRightList.innerHTML = tournamentEventsHtml;
+                <div class="star-icon ${isInBetList ? 'active' : ''}" data-event-id="${event.id}">★</div>
+            </div>
+        </li>`;
+    });
+    tournamentEventsHtml += '</ul>';
+    topRightList.innerHTML = tournamentEventsHtml;
 
-        const eventItems = topRightList.querySelectorAll('.match-list');
-        eventItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const eventId = item.getAttribute('data-event-id');
-                const selectedEvent = events.find(event => event.id == eventId);
-                displayEventDetails(selectedEvent);
-            });
+    // Add event listeners for star icons
+    document.querySelectorAll('.star-icon').forEach(star => {
+        star.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleBetListItem(star, events);
         });
+    });
 
-        if (events.length > 0) {
-            const firstEvent = events[0];
-            displayEventDetails(firstEvent);
-        } else {
-            bottomRightDetails.innerHTML = '<p>No events available.</p>';
-        }
+    // Add event listeners for match items
+    const eventItems = topRightList.querySelectorAll('.match-list');
+    eventItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const eventId = item.getAttribute('data-event-id');
+            const selectedEvent = events.find(event => event.id == eventId);
+            displayEventDetails(selectedEvent);
+        });
+    });
+
+    // Initialize bet list display
+    updateBetListDisplay();
+
+    // Add event listener for closing the bet list
+    document.getElementById('close-bet-list')?.addEventListener('click', () => {
+        document.getElementById('bet-list-container').classList.remove('show');
+    });
+
+    // Add event listener for clearing all bets
+    document.getElementById('clear-bet-list')?.addEventListener('click', clearAllBets);
+
+    if (events.length > 0) {
+        const firstEvent = events[0];
+        displayEventDetails(firstEvent);
+
+// ✅ Refresh bet list so points load with correct event data
+  updateBetListDisplay();
+    } else {
+        bottomRightDetails.innerHTML = '<p>No events available.</p>';
     }
+}
+
+async function toggleBetListItem(star, events) {
+    const eventId = star.getAttribute('data-event-id');
+    const event = events.find(e => e.id.toString() === eventId);
+    star.classList.toggle('active');
+
+    let betList = JSON.parse(localStorage.getItem('betList')) || [];
+
+    if (star.classList.contains('active')) {
+        if (!betList.some(item => item.eventId.toString() === eventId)) {
+            betList.push({
+                eventId: event.id.toString(),
+                homeTeam: event.homeTeam.shortName,
+                awayTeam: event.awayTeam.shortName,
+                timestamp: event.startTimestamp
+            });
+        }
+    } else {
+        betList = betList.filter(item => item.eventId.toString() !== eventId);
+    }
+
+    localStorage.setItem('betList', JSON.stringify(betList));
+
+    // ✅ Make sure it's updated **after** localStorage write
+    await updateBetListDisplay();
+}
+
+
+// Function to clear all bets
+function clearAllBets() {
+    // Remove all active star icons
+    document.querySelectorAll('.star-icon.active').forEach(star => {
+        star.classList.remove('active');
+    });
+
+    localStorage.removeItem('betList');
+    updateBetListDisplay();
+}
+
+// Update the bet list display
+async function updateBetListDisplay() {
+    const betListContainer = document.getElementById('bet-list-container');
+    const betListItems = document.getElementById('bet-list-items');
+
+    if (!betListContainer || !betListItems) return;
+
+    let betList = JSON.parse(localStorage.getItem('betList')) || [];
+
+    if (betList.length === 0) {
+        betListContainer.classList.remove('show');
+        betListItems.innerHTML = '';
+        return;
+    }
+
+    betList.sort((a, b) => a.timestamp - b.timestamp);
+
+    let html = '';
+
+    for (const item of betList) { 
+        const pointsData = await getPointsPercentagesForEvent(item.eventId);
+        console.log('Points Data:', pointsData);
+        html += `
+            <div class="bet-item" data-event-id="${item.eventId}">
+                <div class="bet-item-teams">
+                    ${item.homeTeam} vs ${item.awayTeam}
+                </div>
+                <div class="bet-item-stats">
+                    ${pointsData ? `
+                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span> / 
+                        <span style="${getColor(pointsData.awayPercent, 'points')}">${pointsData.awayPercent}%</span>
+                    ` : 'N/A'}
+                </div>
+                <div class="bet-item-remove" data-event-id="${item.eventId}">×</div>
+            </div>
+        `;
+    }
+
+    betListItems.innerHTML = html;
+    betListContainer.classList.add('show');
+
+    // Attach remove listeners
+    document.querySelectorAll('.bet-item-remove').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const eventId = button.getAttribute('data-event-id');
+
+            let betList = JSON.parse(localStorage.getItem('betList')) || [];
+            betList = betList.filter(item => item.eventId.toString() !== eventId);
+            localStorage.setItem('betList', JSON.stringify(betList));
+
+            const star = document.querySelector(`.star-icon[data-event-id="${eventId}"]`);
+            if (star) star.classList.remove('active');
+
+            await updateBetListDisplay();
+        });
+    });
+}
+
+
+// Update the function to use your existing stats functions
+async function getPointsPercentagesForEvent(eventId) {
+    try {
+        // Fetch event data
+        const response = await fetch(`${baseURL}/event/${eventId}`);
+        const json = await response.json();
+        const event = json.event;
+        console.log('Fetched event:', event); 
+        console.log('Fetched event ID:', eventId); 
+        
+        if (!event || !event.homeTeam || !event.awayTeam) {
+            return null;
+        }
+
+        // Get tournament and season info
+        const tournamentId = event.tournament.id;
+        const seasonId = event.season.id;
+        const currentMatchId = event.id;
+        const currentMatchTimestamp = event.startTimestamp;
+
+        // Fetch events data for both teams
+        const eventsForTeam = await fetchEventsData(tournamentId, seasonId, currentMatchId);
+        // Get stats for home team (last 5 matches)
+        const homeTeamStats = await fetchTeamStats(
+            eventsForTeam, 
+            event.homeTeam.id, 
+            currentMatchId, 
+            currentMatchTimestamp, 
+            6
+        );
+        
+        // Get stats for away team (last 5 matches)
+        const awayTeamStats = await fetchTeamStats(
+            eventsForTeam, 
+            event.awayTeam.id, 
+            currentMatchId, 
+            currentMatchTimestamp, 
+            6
+        );
+
+        console.log('homeTeamStats:', homeTeamStats);
+        console.log('awayTeamStats:', awayTeamStats);
+        // Calculate points percentages
+        const homePercent = calculatePointsPercentageFromStats(homeTeamStats.home);
+        const awayPercent = calculatePointsPercentageFromStats(awayTeamStats.away);
+
+        return {
+            homePercent,
+            awayPercent
+        };
+    } catch (error) {
+        console.error('Error getting points percentages:', error);
+        return null;
+    }
+}
+
+// Helper function to calculate points percentage from stats
+function calculatePointsPercentageFromStats(stats) {
+    const totalEvents = stats.results.length;
+    const maxPossiblePoints = totalEvents * 3;
+    return maxPossiblePoints > 0 
+        ? Math.round((stats.totalPoints / maxPossiblePoints) * 100)
+        : 0;
+}
+
+
 
 </script>
 </body>
