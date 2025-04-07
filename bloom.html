@@ -1425,7 +1425,7 @@ hr {
 .bet-item-stats {
     text-align: right;
     font-size: 12px;
-    color: #666;
+    color: #ededed;
     margin-right: 8px;
 }
 
@@ -3111,8 +3111,8 @@ const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimes
 const getColor = (value, type) => {
     switch (type) {
         case 'points':
-            return value >= 67 ? 'color: #21b083; font-weight: bold;' : 
-                   value <= 33 ? 'color: #e59c03a8; font-weight: bold;' : '';
+            return value >= 67 ? 'color: #27fb99; font-weight: bold;' : 
+                   value <= 33 ? 'color: #ffa500; font-weight: bold;' : '';
         case 'good': 
             return value >= 64 ? 'color: #21b083; font-weight: bold;' : ''; // Good stats (Wins, BTTS, Overs) above 64%
         case 'bad': 
