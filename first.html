@@ -1,3 +1,60 @@
+#conclusion-div {
+    font-size: 0.8125rem;
+    margin: 0 auto 15px;
+    text-align: center;
+}
+
+.stats-panel {
+    max-width: 400px;
+    background-color: #111;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.section {
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.comparison-grid {
+    display: grid
+;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.comparison-card {
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.comparison-values {
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.home-value {
+    background: rgba(74, 144, 226, 0.1);
+    color: var(--info-color);
+}
+
+.away-value {
+    background: rgba(234, 67, 53, 0.1);
+    color: var(--negative-color);
+}
+
+.home-value, .away-value {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 8px;
+    margin: 0 2px;
+    border-radius: 6px;
+    min-width: 50px;
+    text-align: center;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
