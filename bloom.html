@@ -4381,126 +4381,127 @@ function displayScheduledEvents(events) {
     const topRightList = document.querySelector('.top-right');
     const bottomRightDetails = document.querySelector('.event-details');
 
-    if (!topRightList) {
-        console.error('Top right list element not found');
-        return;
-    }
-
-    if (!bottomRightDetails) {
-        console.error('Bottom right details element not found');
+    if (!topRightList || !bottomRightDetails) {
+        console.error('Required elements not found');
         return;
     }
 
     // Initialize bet list from localStorage
-    let betList = JSON.parse(localStorage.getItem('betList')) || [];
+    const betList = JSON.parse(localStorage.getItem('betList')) || [];
+    const betListIds = new Set(betList.map(item => item.eventId.toString()));
 
     let tournamentEventsHtml = '<ul class="tournamentEvents">';
     events.forEach(event => {
-        const homeScore = event.homeScore?.current ?? '';
-        const awayScore = event.awayScore?.current ?? '';
-        const status = event.status.type;
-        const eventTime = new Date(event.startTimestamp * 1000).toLocaleString([], {
+        const isInBetList = betListIds.has(event.id.toString());
+        const eventTime = new Date(event.startTimestamp * 1000).toLocaleTimeString([], {
             hour: '2-digit', minute: '2-digit', hour12: false
         });
 
-        // Check if this event is in the bet list
-        const isInBetList = betList.some(item => item.eventId === event.id);
-
-        tournamentEventsHtml += `<li class="match-list ${status}" data-event-id="${event.id}" data-custom-id="${event.customId}" data-tournament-id="${event.tournament.id}" data-unique-tournament-id="${event.tournament.uniqueTournament.id}" data-season-id="${event.season.id}" data-home-team-id="${event.homeTeam.id}" data-away-team-id="${event.awayTeam.id}">
+        tournamentEventsHtml += `
+        <li class="match-list ${event.status.type}" data-event-id="${event.id}">
             <div class="info-wrapper">
                 <div class="date"><span>${eventTime}</span></div>
                 <div class="team-info">
                     <div class="teams-info">
-                        <div class="team"><img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">${event.homeTeam.shortName}</div>
-                        <div class="team"><img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">${event.awayTeam.shortName}</div>
+                        <div class="team">
+                            <img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" 
+                                 alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
+                            ${event.homeTeam.shortName}
+                        </div>
+                        <div class="team">
+                            <img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" 
+                                 alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
+                            ${event.awayTeam.shortName}
+                        </div>
                     </div>
                     <div class="match-score rcr">
-                        <div class="score" id="homeScore-${event.id}">${homeScore}</div>
-                        <div class="score" id="awayScore-${event.id}">${awayScore}</div>
+                        <div class="score" id="homeScore-${event.id}">${event.homeScore?.current ?? ''}</div>
+                        <div class="score" id="awayScore-${event.id}">${event.awayScore?.current ?? ''}</div>
                     </div>
                 </div>
-                <div class="star-icon ${isInBetList ? 'active' : ''}" data-event-id="${event.id}">★</div>
+                <div class="star-icon ${isInBetList ? 'active' : ''}" 
+                     data-event-id="${event.id}">★</div>
             </div>
         </li>`;
     });
     tournamentEventsHtml += '</ul>';
     topRightList.innerHTML = tournamentEventsHtml;
 
-    // Add event listeners for star icons
-    document.querySelectorAll('.star-icon').forEach(star => {
-        star.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleBetListItem(star, events);
-        });
-    });
-
-    // Add event listeners for match items
-    const eventItems = topRightList.querySelectorAll('.match-list');
-    eventItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const eventId = item.getAttribute('data-event-id');
-            const selectedEvent = events.find(event => event.id == eventId);
-            displayEventDetails(selectedEvent);
-        });
-    });
-
-    // Initialize bet list display
-    updateBetListDisplay();
-
-    // Add event listener for closing the bet list
-    document.getElementById('close-bet-list')?.addEventListener('click', () => {
-        document.getElementById('bet-list-container').classList.remove('show');
-    });
-
-    // Add event listener for clearing all bets
-    document.getElementById('clear-bet-list')?.addEventListener('click', clearAllBets);
-
+    // Add event listeners
+    setupEventListeners(events);
+    
+    // Initialize UI
     if (events.length > 0) {
-        const firstEvent = events[0];
-        displayEventDetails(firstEvent);
-
-// ✅ Refresh bet list so points load with correct event data
-  updateBetListDisplay();
+        displayEventDetails(events[0]);
     } else {
         bottomRightDetails.innerHTML = '<p>No events available.</p>';
     }
 }
 
+// Separate function for event listeners
+function setupEventListeners(events) {
+    // Star icon click handler
+    document.querySelectorAll('.star-icon').forEach(star => {
+        star.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await toggleBetListItem(star, events);
+        });
+    });
+
+    // Match item click handler
+    document.querySelectorAll('.match-list').forEach(item => {
+        item.addEventListener('click', () => {
+            const eventId = item.getAttribute('data-event-id');
+            const selectedEvent = events.find(event => event.id.toString() === eventId);
+            if (selectedEvent) displayEventDetails(selectedEvent);
+        });
+    });
+
+    // Bet slip controls
+    document.getElementById('close-bet-list')?.addEventListener('click', () => {
+        document.getElementById('bet-list-container').classList.remove('show');
+    });
+
+    document.getElementById('clear-bet-list')?.addEventListener('click', clearAllBets);
+}
+
+// Improved toggle function
 async function toggleBetListItem(star, events) {
     const eventId = star.getAttribute('data-event-id');
     const event = events.find(e => e.id.toString() === eventId);
+    if (!event) return;
+
     star.classList.toggle('active');
-
+    
     let betList = JSON.parse(localStorage.getItem('betList')) || [];
+    const eventInList = betList.some(item => item.eventId.toString() === eventId);
 
-    if (star.classList.contains('active')) {
-        if (!betList.some(item => item.eventId.toString() === eventId)) {
-            betList.push({
-                eventId: event.id.toString(),
-                homeTeam: event.homeTeam.shortName,
-                awayTeam: event.awayTeam.shortName,
-                timestamp: event.startTimestamp
-            });
-        }
-    } else {
+    if (star.classList.contains('active') && !eventInList) {
+        betList.push({
+            eventId: event.id.toString(),
+            homeTeam: event.homeTeam.shortName,
+            awayTeam: event.awayTeam.shortName,
+            timestamp: event.startTimestamp
+        });
+    } else if (!star.classList.contains('active') && eventInList) {
         betList = betList.filter(item => item.eventId.toString() !== eventId);
     }
 
     localStorage.setItem('betList', JSON.stringify(betList));
-
-    // ✅ Make sure it's updated **after** localStorage write
     await updateBetListDisplay();
 }
 
-
-// Function to clear all bets
+// Clear all bets function
 function clearAllBets() {
-    // Remove all active star icons
+    // Remove active class from all stars
     document.querySelectorAll('.star-icon.active').forEach(star => {
         star.classList.remove('active');
     });
 
+    // Clear localStorage
     localStorage.removeItem('betList');
+    
+    // Update UI
     updateBetListDisplay();
 }
 
