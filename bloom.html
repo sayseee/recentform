@@ -4524,8 +4524,8 @@ async function updateBetListDisplay() {
             <thead>
                 <tr>
                     <th>Match</th>
-                    <th>All Users</th>
-                    <th>Pro Users</th>
+                    <th colspan="2">Overall</th>
+                    <th colspan="2">Home/Away</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -4542,13 +4542,21 @@ async function updateBetListDisplay() {
                 </td>
                 <td class="bet-item-stats">
                     ${pointsData ? `
-                        <span style="${getColor(pointsData.homePercentAll, 'points')}">${pointsData.homePercentAll}%</span> / 
+                        <span style="${getColor(pointsData.homePercentAll, 'points')}">${pointsData.homePercentAll}%</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${pointsData ? `
                         <span style="${getColor(pointsData.awayPercentAll, 'points')}">${pointsData.awayPercentAll}%</span>
                     ` : 'N/A'}
                 </td>
                 <td class="bet-item-stats">
                     ${pointsData ? `
-                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span> / 
+                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${pointsData ? `
                         <span style="${getColor(pointsData.awayPercent, 'points')}">${pointsData.awayPercent}%</span>
                     ` : 'N/A'}
                 </td>
