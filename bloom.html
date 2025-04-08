@@ -4522,28 +4522,48 @@ async function updateBetListDisplay() {
 
     betList.sort((a, b) => a.timestamp - b.timestamp);
 
-    let html = '';
+    let html = `
+        <table class="bet-table">
+            <thead>
+                <tr>
+                    <th>Match</th>
+                    <th>All Users</th>
+                    <th>Pro Users</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
     for (const item of betList) { 
         const pointsData = await getPointsPercentagesForEvent(item.eventId);
         console.log('Points Data:', pointsData);
         html += `
-            <div class="bet-item" data-event-id="${item.eventId}">
-                <div class="bet-item-teams">
+            <tr class="bet-item" data-event-id="${item.eventId}">
+                <td class="bet-item-teams">
                     ${item.homeTeam} vs ${item.awayTeam}
-                </div>
-                <div class="bet-item-stats">
+                </td>
+                <td class="bet-item-stats">
                     ${pointsData ? `
                         <span style="${getColor(pointsData.homePercentAll, 'points')}">${pointsData.homePercentAll}%</span> / 
-                        <span style="${getColor(pointsData.awayPercentAll, 'points')}">${pointsData.awayPercentAll}%</span> -                         
-                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span> / 
-                        <span style="${getColor(pointsData.awayPercent, 'points')}">${pointsData.awayPercent}%</span> 
+                        <span style="${getColor(pointsData.awayPercentAll, 'points')}">${pointsData.awayPercentAll}%</span>
                     ` : 'N/A'}
-                </div>
-                <div class="bet-item-remove" data-event-id="${item.eventId}">×</div>
-            </div>
+                </td>
+                <td class="bet-item-stats">
+                    ${pointsData ? `
+                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span> / 
+                        <span style="${getColor(pointsData.awayPercent, 'points')}">${pointsData.awayPercent}%</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-remove" data-event-id="${item.eventId}">×</td>
+            </tr>
         `;
     }
+
+    html += `
+            </tbody>
+        </table>
+    `;
 
     betListItems.innerHTML = html;
     betListContainer.classList.add('show');
@@ -4565,8 +4585,6 @@ async function updateBetListDisplay() {
         });
     });
 }
-
-
 // Update the function to use your existing stats functions
 async function getPointsPercentagesForEvent(eventId) {
     try {
