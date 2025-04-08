@@ -4534,10 +4534,10 @@ async function updateBetListDisplay() {
                 </div>
                 <div class="bet-item-stats">
                     ${pointsData ? `
-                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span> / 
-                        <span style="${getColor(pointsData.awayPercent, 'points')}">${pointsData.awayPercent}%</span> - 
                         <span style="${getColor(pointsData.homePercentAll, 'points')}">${pointsData.homePercentAll}%</span> / 
-                        <span style="${getColor(pointsData.awayPercentAll, 'points')}">${pointsData.awayPercentAll}%</span> 
+                        <span style="${getColor(pointsData.awayPercentAll, 'points')}">${pointsData.awayPercentAll}%</span> -                         
+                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span> / 
+                        <span style="${getColor(pointsData.awayPercent, 'points')}">${pointsData.awayPercent}%</span> 
                     ` : 'N/A'}
                 </div>
                 <div class="bet-item-remove" data-event-id="${item.eventId}">×</div>
