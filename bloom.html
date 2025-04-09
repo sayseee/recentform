@@ -1343,7 +1343,7 @@ hr {
     position: fixed;
     bottom: -300px;
     right: 20px;
-    width: 350px;
+    width: 750px;
     background: #3b3b3d;
     border-radius: 8px 8px 0 0;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
@@ -4525,41 +4525,105 @@ async function updateBetListDisplay() {
         <table class="bet-table">
             <thead>
                 <tr>
-                    <th>Match</th>
-                    <th colspan="2">Overall</th>
+                    <th rowspan="2">Match</th>
+                    <th colspan="2">Points %</th>
                     <th colspan="2">Home/Away</th>
-                    <th>Del</th>
+                    <th colspan="4">Clean Sheets</th>
+                    <th colspan="4">Failed to Score</th>
+                    <th rowspan="2">Del</th>
+                </tr>
+                <tr class="sub-header">
+                    <!-- Points % -->
+                    <th>Home</th>
+                    <th>Away</th>
+                    <!-- Home/Away -->
+                    <th>Home</th>
+                    <th>Away</th>
+                    <!-- Clean Sheets -->
+                    <th>Home</th>
+                    <th>Away</th>
+                    <th>H All</th>
+                    <th>A All</th>
+                    <!-- Failed to Score -->
+                    <th>Home</th>
+                    <th>Away</th>
+                    <th>H All</th>
+                    <th>A All</th>
                 </tr>
             </thead>
             <tbody>
     `;
 
     for (const item of betList) { 
-        const pointsData = await getPointsPercentagesForEvent(item.eventId);
-        console.log('Points Data:', pointsData);
+        const statsData = await getStatsForEvent(item.eventId);
+        console.log('Stats Data:', statsData);
         html += `
             <tr class="bet-item" data-event-id="${item.eventId}">
                 <td class="bet-item-teams">
                     ${item.homeTeam} vs ${item.awayTeam}
                 </td>
+                <!-- Points % -->
                 <td class="bet-item-stats">
-                    ${pointsData ? `
-                        <span style="${getColor(pointsData.homePercentAll, 'points')}">${pointsData.homePercentAll}%</span>
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homePercentAll, 'points')}">${statsData.homePercentAll}</span>
                     ` : 'N/A'}
                 </td>
                 <td class="bet-item-stats">
-                    ${pointsData ? `
-                        <span style="${getColor(pointsData.awayPercentAll, 'points')}">${pointsData.awayPercentAll}%</span>
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayPercentAll, 'points')}">${statsData.awayPercentAll}</span>
+                    ` : 'N/A'}
+                </td>
+                <!-- Home/Away Points % -->
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homePercent, 'points')}">${statsData.homePercent}</span>
                     ` : 'N/A'}
                 </td>
                 <td class="bet-item-stats">
-                    ${pointsData ? `
-                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span>
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayPercent, 'points')}">${statsData.awayPercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <!-- Clean Sheets -->
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homeCleanSheetsPercent, 'defense')}">${statsData.homeCleanSheetsPercent}</span>
                     ` : 'N/A'}
                 </td>
                 <td class="bet-item-stats">
-                    ${pointsData ? `
-                        <span style="${getColor(pointsData.awayPercent, 'points')}">${pointsData.awayPercent}%</span>
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayCleanSheetsPercent, 'defense')}">${statsData.awayCleanSheetsPercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homeCleanSheetsPercentAll, 'defense')}">${statsData.homeCleanSheetsPercentAll}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayCleanSheetsPercentAll, 'defense')}">${statsData.awayCleanSheetsPercentAll}</span>
+                    ` : 'N/A'}
+                </td>
+                <!-- Failed to Score -->
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homeFailedToScorePercent, 'offense')}">${statsData.homeFailedToScorePercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayFailedToScorePercent, 'offense')}">${statsData.awayFailedToScorePercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homeFailedToScorePercentAll, 'offense')}">${statsData.homeFailedToScorePercentAll}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayFailedToScorePercentAll, 'offense')}">${statsData.awayFailedToScorePercentAll}</span>
                     ` : 'N/A'}
                 </td>
                 <td class="bet-item-remove" data-event-id="${item.eventId}">×</td>
@@ -4592,15 +4656,13 @@ async function updateBetListDisplay() {
         });
     });
 }
-// Update the function to use your existing stats functions
-async function getPointsPercentagesForEvent(eventId) {
+
+async function getStatsForEvent(eventId) {
     try {
         // Fetch event data
         const response = await fetch(`${baseURL}/event/${eventId}`);
         const json = await response.json();
         const event = json.event;
-        console.log('Fetched event:', event); 
-        console.log('Fetched event ID:', eventId); 
         
         if (!event || !event.homeTeam || !event.awayTeam) {
             return null;
@@ -4614,7 +4676,8 @@ async function getPointsPercentagesForEvent(eventId) {
 
         // Fetch events data for both teams
         const eventsForTeam = await fetchEventsData(tournamentId, seasonId, currentMatchId);
-        // Get stats for home team (last 5 matches)
+        
+        // Get stats for home team
         const homeTeamStats = await fetchTeamStats(
             eventsForTeam, 
             event.homeTeam.id, 
@@ -4623,7 +4686,7 @@ async function getPointsPercentagesForEvent(eventId) {
             6
         );
         
-        // Get stats for away team (last 5 matches)
+        // Get stats for away team
         const awayTeamStats = await fetchTeamStats(
             eventsForTeam, 
             event.awayTeam.id, 
@@ -4638,14 +4701,39 @@ async function getPointsPercentagesForEvent(eventId) {
         const homePercentAll = calculatePointsPercentageFromStats(homeTeamStats.overall);
         const awayPercentAll = calculatePointsPercentageFromStats(awayTeamStats.overall);
 
+        // Clean sheets and failed to score for home/away stats
+        const homeStats = getCleanSheetsAndFailedToScore(homeTeamStats.home);
+        const awayStats = getCleanSheetsAndFailedToScore(awayTeamStats.away);
+        
+        // Clean sheets and failed to score for overall stats
+        const homeStatsAll = getCleanSheetsAndFailedToScore(homeTeamStats.overall);
+        const awayStatsAll = getCleanSheetsAndFailedToScore(awayTeamStats.overall);
+
         return {
+            // Points percentages
             homePercent,
             awayPercent,
             homePercentAll,
-            awayPercentAll
+            awayPercentAll,
+            
+            // Clean Sheets (home/away)
+            homeCleanSheetsPercent: homeStats.cleanSheetsPercent,
+            awayCleanSheetsPercent: awayStats.cleanSheetsPercent,
+            
+            // Clean Sheets (overall)
+            homeCleanSheetsPercentAll: homeStatsAll.cleanSheetsPercent,
+            awayCleanSheetsPercentAll: awayStatsAll.cleanSheetsPercent,
+            
+            // Failed to Score (home/away)
+            homeFailedToScorePercent: homeStats.failedToScorePercent,
+            awayFailedToScorePercent: awayStats.failedToScorePercent,
+            
+            // Failed to Score (overall)
+            homeFailedToScorePercentAll: homeStatsAll.failedToScorePercent,
+            awayFailedToScorePercentAll: awayStatsAll.failedToScorePercent
         };
     } catch (error) {
-        console.error('Error getting points percentages:', error);
+        console.error('Error getting stats:', error);
         return null;
     }
 }
@@ -4659,7 +4747,16 @@ function calculatePointsPercentageFromStats(stats) {
         : 0;
 }
 
-
+// Helper function to calculate clean sheets and failed to score percentages
+function getCleanSheetsAndFailedToScore(stats) {
+    const totalEvents = stats.results.length;
+    const getPercent = (stat) => totalEvents > 0 ? Math.round((stat / totalEvents) * 100) : 0;
+ 
+    return {
+        cleanSheetsPercent: getPercent(stats.cleanSheets),
+        failedToScorePercent: getPercent(stats.failedToScore)
+    };
+}
 
 </script>
 </body>
