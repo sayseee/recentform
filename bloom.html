@@ -1400,7 +1400,8 @@ hr {
     color: #666;
 }
 .bet-table {
-  width: 100%;
+    width: 100%;
+    border-collapse: collapse;
 }
 .bet-list-items {
     max-height: 300px;
@@ -1410,21 +1411,23 @@ hr {
 
 .bet-item {
     padding: 8px;
-    border-bottom: 1px solid #eee;
+    border: 1px solid #4c5458 !important;
 }
 
 .bet-item:last-child {
     border-bottom: none;
 }
 
-.bet-item-teams {
+.bet-item-teams {    
     flex: 1;
+    padding-left: 5px;
 }
 
 .bet-item-stats {
-    text-align: right;
+    text-align: center;
     font-size: 12px;
     color: #ededed;
+    border: 1px solid #4c5458;
     margin-right: 8px;
 }
 
@@ -1433,6 +1436,7 @@ hr {
     cursor: pointer;
     font-size: 14px;
     padding: 2px;
+    text-align: center;
 }
 
 .bet-item-remove:hover {
