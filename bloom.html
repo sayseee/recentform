@@ -1423,7 +1423,7 @@ hr {
     padding-left: 5px;
 }
 
-.bet-item-stats {
+.bet-item-stats, .bet-item-score {
     text-align: center;
     font-size: 12px;
     color: #ededed;
@@ -1456,6 +1456,27 @@ hr {
 
 .star-icon.active {
     color: gold;
+}
+
+.bet-item-score {
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+}
+
+.win-score {
+    background-color: rgba(76, 175, 80, 0.2); /* Green with transparency */
+    color: var(--color-w_1);
+}
+
+.loss-score {
+    background-color: rgba(244, 67, 54, 0.2); /* Red with transparency */
+    color: var(--color-w_1);
+}
+
+.draw-score {
+    background-color: rgba(255, 193, 7, 0.2); /* Yellow with transparency */
+    color: var(--color-w_1);
 }
 
 .conclusion-container {
@@ -4507,7 +4528,6 @@ function clearAllBets() {
     // Update UI
     updateBetListDisplay();
 }
-
 // Update the bet list display
 async function updateBetListDisplay() {
     const betListContainer = document.getElementById('bet-list-container');
@@ -4530,6 +4550,7 @@ async function updateBetListDisplay() {
             <thead>
                 <tr>
                     <th rowspan="2">Match</th>
+                    <th rowspan="2">Score</th>
                     <th colspan="2">Points %</th>
                     <th colspan="2">Home/Away</th>
                     <th colspan="4">Clean Sheets</th>
@@ -4560,11 +4581,15 @@ async function updateBetListDisplay() {
 
     for (const item of betList) { 
         const statsData = await getStatsForEvent(item.eventId);
-        console.log('Stats Data:', statsData);
+        const scoreClass = getScoreClass(statsData.homeScore, statsData.awayScore);
+        
         html += `
             <tr class="bet-item" data-event-id="${item.eventId}">
                 <td class="bet-item-teams">
                     ${item.homeTeam} vs ${item.awayTeam}
+                </td>
+                <td class="bet-item-score ${scoreClass}">
+                    ${statsData.homeScore !== undefined ? statsData.homeScore : '-'} - ${statsData.awayScore !== undefined ? statsData.awayScore : '-'}
                 </td>
                 <!-- Points % -->
                 <td class="bet-item-stats">
@@ -4661,6 +4686,14 @@ async function updateBetListDisplay() {
     });
 }
 
+// Helper function to determine score class for styling
+function getScoreClass(homeScore, awayScore) {
+    if (homeScore === undefined || awayScore === undefined) return '';
+    if (homeScore > awayScore) return 'win-score';
+    if (homeScore < awayScore) return 'loss-score';
+    return 'draw-score';
+}
+
 async function getStatsForEvent(eventId) {
     try {
         // Fetch event data
@@ -4671,6 +4704,10 @@ async function getStatsForEvent(eventId) {
         if (!event || !event.homeTeam || !event.awayTeam) {
             return null;
         }
+
+        // Get scores (handle cases where score might not be available)
+        const homeScore = event.homeScore?.current;
+        const awayScore = event.awayScore?.current;
 
         // Get tournament and season info
         const tournamentId = event.tournament.id;
@@ -4714,6 +4751,8 @@ async function getStatsForEvent(eventId) {
         const awayStatsAll = getCleanSheetsAndFailedToScore(awayTeamStats.overall);
 
         return {
+            homeScore,
+            awayScore,
             // Points percentages
             homePercent,
             awayPercent,
@@ -4741,7 +4780,6 @@ async function getStatsForEvent(eventId) {
         return null;
     }
 }
-
 // Helper function to calculate points percentage from stats
 function calculatePointsPercentageFromStats(stats) {
     const totalEvents = stats.results.length;
