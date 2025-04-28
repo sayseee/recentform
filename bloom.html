@@ -1710,8 +1710,8 @@ li {
     <div id="bet-list-items" class="bet-list-items"></div>
 </div>
     <script>
-        
-        const proxy = 'https://corsproxy.io/?';
+         
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Or set up your own proxy
         const baseURL = 'https://api.sofascore.com/api/v1';
         const staticImageUrl = 'https://www.sofascore.com/static/images';
     
@@ -1750,9 +1750,9 @@ li {
             
             try {
                 const [categoriesData, topTournamentsData, scheduledEventsData] = await Promise.all([
-                    fetch(`${baseURL}/sport/football/categories`).then(response => response.json()),
-                    fetch(`${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
-                    fetch(`${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json())
+                    fetch(`${proxyUrl}${baseURL}/sport/football/categories`).then(response => response.json()),
+                    fetch(`${proxyUrl}${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
+                    fetch(`${proxyUrl}${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json())
                 ]);
     
                 const categories = categoriesData.categories.sort((a, b) => a.name.localeCompare(b.name));
@@ -1814,7 +1814,7 @@ li {
                 categories.forEach((category) => {
                     if (categoryEventCounts[category.id]) {
                         const categoryId = category.id;
-                        const promise = fetch(`${baseURL}/category/${categoryId}/unique-tournaments`)
+                        const promise = fetch(`${proxyUrl}${baseURL}/category/${categoryId}/unique-tournaments`)
                             .then(response => response.json())
                             .then(data => {
                                 const uniqueTournaments = data.groups[0].uniqueTournaments;
@@ -1827,7 +1827,7 @@ li {
                                 uniqueTournaments.forEach((tournament) => {
                                     if (tournamentEventCounts[tournament.id]) {
                                         const tournamentEventCount = tournamentEventCounts[tournament.id];
-                                        categoryHtml += `<li data-tournament-id="${tournament.id}"><img src="${baseURL}/unique-tournament/${tournament.id}/image" alt="${tournament.name}" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;"> ${tournament.name}<span class="event-count rcr">${tournamentEventCount}</span></li>`;
+                                        categoryHtml += `<li data-tournament-id="${tournament.id}"><img src="${proxyUrl}${baseURL}/unique-tournament/${tournament.id}/image" alt="${tournament.name}" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;"> ${tournament.name}<span class="event-count rcr">${tournamentEventCount}</span></li>`;
                                     }
                                 });
                                 categoryHtml += `</ul>`;
@@ -2092,7 +2092,7 @@ const calculateElapsedTime = (eventData) => {
 // Function to refresh scores
 const refreshScores = async (eventId) => {
   try {
-            const updatedEventDetails = await fetchJson(`${baseURL}/event/${eventId}`);
+            const updatedEventDetails = await fetchJson(`${proxyUrl}${baseURL}/event/${eventId}`);
             if (!updatedEventDetails) return;
             const updatedEventData = updatedEventDetails.event;
 
@@ -2113,7 +2113,7 @@ const refreshScores = async (eventId) => {
 
 async function fetchAndDisplayWinningOdds(matchId) {
     try {
-        const response = await fetch(`${baseURL}/event/${matchId}/provider/1/winning-odds`);
+        const response = await fetch(`${proxyUrl}${baseURL}/event/${matchId}/provider/1/winning-odds`);
         const winningOddsData = await response.json();
 
         if (winningOddsData) {
@@ -2174,7 +2174,7 @@ async function fetchAndDisplayWinningOdds(matchId) {
 
 // Function to fetch odds for an event 
 const fetchOddsForEvent = async (eventId) => {
-  const url = `${baseURL}/event/${eventId}/odds/1/all`;
+  const url = `${proxyUrl}${baseURL}/event/${eventId}/odds/1/all`;
   try {
     const response = await fetch(url);
 
@@ -2212,7 +2212,7 @@ const fetchOddsForEvent = async (eventId) => {
 
 async function fetchAndDisplayWinningOdds(matchId) {
     try {
-        const response = await fetch(`${baseURL}/event/${matchId}/provider/1/winning-odds`);
+        const response = await fetch(`${proxyUrl}${baseURL}/event/${matchId}/provider/1/winning-odds`);
         const winningOddsData = await response.json();
 
         if (winningOddsData) {
@@ -2276,7 +2276,7 @@ async function fetchAndDisplayWinningOdds(matchId) {
 // Function to calculate and display home team statistics
 async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, containerId) {
     try {
-        const response = await fetch(`${baseURL}/event/${customId}/h2h/events`);
+        const response = await fetch(`${proxyUrl}${baseURL}/event/${customId}/h2h/events`);
         const data = await response.json();
 
         // Get the current date and calculate the timestamp for 4 years ago  
@@ -2313,7 +2313,7 @@ async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, co
 
 // Utility function to fetch events data and filter for finished events excluding the current match
 const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
-    const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
+    const eventsUrl = `${proxyUrl}${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
     const eventsData = await fetchJson(eventsUrl);
 
     // Check if eventsData exists and contains events
@@ -2345,7 +2345,7 @@ async function fetchTeamMatches(tournamentId, seasonId, teamId, currentMatchId) 
 
  
  async function fetchHomeH2HEvents(customId, teamId, tournamentId, currentMatchId) {
-  const url = `${baseURL}/event/${customId}/h2h/events`;
+  const url = `${proxyUrl}${baseURL}/event/${customId}/h2h/events`;
   const data = await fetchJson(url);
   
   if (!data?.events) return [];
@@ -2459,7 +2459,7 @@ async function analyzeHomeAdvantage(customId, tournamentId, seasonId, currentMat
  * @returns {Promise<Object>} - Team details with location
  */
  async function fetchTeamDetails(teamId) {
-  const url = `${baseURL}/team/${teamId}`;
+  const url = `${proxyUrl}${baseURL}/team/${teamId}`;
   return await fetchJson(url);
 }
 
@@ -3813,7 +3813,7 @@ function updateMostChangedOdds(oddsData) {
 
 // Function to fetch odds changes data from the API
 async function fetchOddsChanges(eventId) {
-    const endpoint = `${baseURL}/event/${eventId}/odds/1/changes`;
+    const endpoint = `${proxyUrl}${baseURL}/event/${eventId}/odds/1/changes`;
     try {
         const response = await fetch(endpoint);
 
@@ -4161,7 +4161,7 @@ if (odds && odds.odds) {
 
 
             <div class="team duelParticipant__home">
-                <img src="${baseURL}/team/${event.homeTeam.id}/image" width="16" height="16" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
+                <img src="${proxyUrl}${baseURL}/team/${event.homeTeam.id}/image" width="16" height="16" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
                 <div class="team-name">${event.homeTeam.shortName}</div>
             </div>
 
@@ -4178,7 +4178,7 @@ if (odds && odds.odds) {
                 </div> 
             </div>
             <div class="team duelParticipant__away">
-                <img src="${baseURL}/team/${event.awayTeam.id}/image" width="16" height="16" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
+                <img src="${proxyUrl}${baseURL}/team/${event.awayTeam.id}/image" width="16" height="16" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
                 <div class="team-name">${event.awayTeam.shortName}</div>
             </div>
         </div> 
@@ -4429,12 +4429,12 @@ function displayScheduledEvents(events) {
                 <div class="team-info">
                     <div class="teams-info">
                         <div class="team">
-                            <img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" 
+                            <img src="${proxyUrl}${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" 
                                  alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
                             ${event.homeTeam.shortName}
                         </div>
                         <div class="team">
-                            <img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" 
+                            <img src="${proxyUrl}${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" 
                                  alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
                             ${event.awayTeam.shortName}
                         </div>
@@ -4698,7 +4698,7 @@ function getScoreClass(homeScore, awayScore) {
 async function getStatsForEvent(eventId) {
     try {
         // Fetch event data
-        const response = await fetch(`${baseURL}/event/${eventId}`);
+        const response = await fetch(`${proxyUrl}${baseURL}/event/${eventId}`);
         const json = await response.json();
         const event = json.event;
         
