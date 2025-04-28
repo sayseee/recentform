@@ -1748,10 +1748,11 @@ li {
             const formattedDate = formatDateForApi(date);
             
             try {
+                const proxy = 'https://corsproxy.io/?';
                 const [categoriesData, topTournamentsData, scheduledEventsData] = await Promise.all([
-                    fetch(`${baseURL}/sport/football/categories`).then(response => response.json()),
-                    fetch(`${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
-                    fetch(`${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json())
+                    fetch(`${proxy}${baseURL}/sport/football/categories`).then(response => response.json()),
+                    fetch(`${proxy}${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
+                    fetch(`${proxy}${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json())
                 ]);
     
                 const categories = categoriesData.categories.sort((a, b) => a.name.localeCompare(b.name));
