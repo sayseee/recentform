@@ -59,8 +59,7 @@
     position: relative; 
     padding:2px 0;
     font-weight: 700;
-    width: 20px;
-    height: 20px;
+    width: 20px; 
 } 
 .W, .win, .pos {
     background-color: var(--positive-color);
@@ -80,6 +79,22 @@
 }
 ::-webkit-scrollbar-track {
     background: #020001;
+}
+/* Constants */
+.flex {
+    display: flex;
+}
+._F_r{
+    flex-direction: row !important;
+}
+._F_c{
+    flex-direction: column !important;
+}
+._F_ac {
+    align-items: center;
+}
+._F_jc {
+    justify-content: space-between;
 }
 body.closure {
     background-color: var(--color-b_0);
@@ -414,6 +429,37 @@ ul.tournamentEvents li {
     font-size: 40px;
     font-weight: 700;
 }
+.form-display {
+    display: inline-flex;
+    gap: 2px;
+}
+.form-display span {
+    flex: 1;
+}
+
+
+#match-odds {
+    justify-content: center;
+    gap: 5px;    
+    font-weight: 700;
+    margin-bottom: 15px;
+}    
+#match-odds span {
+    padding: 4px 8px;
+    background-color: var(--color-gr_5); /* Replace with a variable */
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.positive {
+    background-color: rgba(46, 204, 113, 0.1) !important;
+    color: var(--positive-color);
+}
+
+.negative {
+    background-color: rgba(231, 76, 60, 0.1) !important;
+    color: var(--negative-color);
+}
+  
         </style>
     </head>
     <body class="closure rfr"> 
@@ -510,6 +556,18 @@ ul.tournamentEvents li {
             }
         };
     
+// Helper function to convert fractional odds to decimal
+function fractionalToDecimal(fractionalOdds) {
+    if (!fractionalOdds || fractionalOdds === '-' || !fractionalOdds.includes('/')) {
+        return '-';
+    }
+    const [numerator, denominator] = fractionalOdds.split('/');
+    if (!numerator || !denominator || isNaN(numerator) || isNaN(denominator) || parseInt(denominator) === 0) {
+        return '-';
+    }
+    return (parseInt(numerator) / parseInt(denominator) + 1).toFixed(2);
+}
+
         // Function to format date as "DD/MM Day"
         const formatDate = (date) => {
             const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -1014,7 +1072,7 @@ const renderPregameForm = ({ name, avgRating, value, position, containerId, form
             Pts: <span class="value">${displayValue}</span> 
             ${avgRating ? `<div class="box animate" cursor="default"><div class="sideBox-inner"></div></div> <strong class="value">${avgRating}</strong>` : ""}
         </div>
-        <p><span id="${formDisplayId}">${formHtml}</span></p>
+        <div id="${formDisplayId}" class="form-display">${formHtml}</div>
     `;
 };
 
@@ -1162,30 +1220,39 @@ const renderManagerDuelStats = (managerDuel) => {
     `; 
 };
 
-// Function to fetch odds for an event
 const fetchOddsForEvent = async (eventId) => {
-    try {
-        const oddsResponse = await fetch(`https://www.sofascore.com/api/v1/event/${eventId}/odds/1/all`);
-        const oddsData = await oddsResponse.json();
-
-        // Extract odds values
-        const homeOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '1')?.fractionalValue || '-';
-        const drawOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === 'X')?.fractionalValue || '-';
-        const awayOdds = oddsData.markets[0]?.choices.find((choice) => choice.name === '2')?.fractionalValue || '-';
-
-        return {
-            homeOdds,
-            drawOdds,
-            awayOdds
-        };
-    } catch (error) {
-        console.error(`Failed to fetch odds for event ${eventId}`, error);
-        return {
-            homeOdds: '-',
-            drawOdds: '-',
-            awayOdds: '-'
-        };
+  const url = `${baseURL}/event/${eventId}/odds/1/all`;
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.warn(`Odds not found for event ${eventId} (404). Skipping...`);
+        return null;
+      }
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
+    const data = await response.json();
+    if (data && data.markets) {
+      const fullTimeMarket = data.markets.find(market => market.marketName === 'Full time');
+      if (fullTimeMarket && fullTimeMarket.choices) {
+        const homeChoice = fullTimeMarket.choices.find(choice => choice.name === '1') || {};
+        const drawChoice = fullTimeMarket.choices.find(choice => choice.name === 'X') || {};
+        const awayChoice = fullTimeMarket.choices.find(choice => choice.name === '2') || {};
+        return {
+          homeOdds: homeChoice.fractionalValue || '-',
+          drawOdds: drawChoice.fractionalValue || '-',
+          awayOdds: awayChoice.fractionalValue || '-',
+          homeChange: homeChoice.change || 0,
+          drawChange: drawChoice.change || 0,
+          awayChange: awayChoice.change || 0
+        };
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error(`Error fetching odds for event ${eventId}:`, error.message);
+    return null;
+  }
 };
 
 const fetchAndDisplayMostRecentH2HEvent = async (teamId, customId, currentMatchId, elementId) => {
@@ -1356,6 +1423,29 @@ const homeScore = event.homeScore?.current ?? '';
 const awayScore = event.awayScore?.current ?? '';
 const eventTime = new Date(event.startTimestamp * 1000).toLocaleString();
 
+// Fetch odds for this event
+    const odds = await fetchOddsForEvent(event.id);
+    let oddsDisplay = '';
+
+    // Check if odds are available and convert to decimal with change indicators
+    if (odds && odds.homeOdds !== '-' && odds.drawOdds !== '-' && odds.awayOdds !== '-') {
+        const formatOdds = (decimalOdds, change) => {
+            const changeClass = change > 0 ? 'negative' : change < 0 ? 'positive' : 'neutral';
+            const arrowSymbol = change > 0 ? '\u2191' : change < 0 ? '\u2193' : '';
+            return `<span class="${changeClass}">${decimalOdds}${arrowSymbol ? ' ' + arrowSymbol : ''}</span>`;
+        };
+
+        oddsDisplay = `
+            ${formatOdds(fractionalToDecimal(odds.homeOdds), odds.homeChange)}
+            ${formatOdds(fractionalToDecimal(odds.drawOdds), odds.drawChange)}
+            ${formatOdds(fractionalToDecimal(odds.awayOdds), odds.awayChange)}
+        `;
+        console.log('Odds Data:', odds); // Debug: Log odds object
+        console.log('Odds Display:', oddsDisplay); // Debug: Log generated HTML
+    } else {
+        oddsDisplay = '<span>-</span><span>-</span><span>-</span>';
+        console.warn(`No odds available for event ${event.id}`);
+    }
 
 const uniqueEventId = `eventInfo-${event.id}`; // Unique ID for the event's info container
 const uniqueH2hContainer = `h2h-container-${event.id}`; // Unique ID for the event's info container
@@ -1416,6 +1506,9 @@ const eventDetailsHtml = `
         </div>
     </div> 
     
+            <div id="match-odds" class="flex _F_r">
+                ${oddsDisplay}  
+            </div> 
                 <div class="h2h-event" id="${uniqueEventId}"></div> 
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>  
 `;
