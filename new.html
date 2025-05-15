@@ -1411,6 +1411,131 @@ function calculateH2HStats(events, teamId) {
     };
 }
 
+// Function to fetch odds changes data from the API
+async function fetchOddsChanges(eventId) {
+    const endpoint = `${baseURL}/event/${eventId}/odds/1/changes`;
+    try {
+        const response = await fetch(endpoint);
+
+        if (!response.ok) {
+            console.error('Error fetching odds changes:', response.statusText);
+            return null;
+        }
+
+        const data = await response.json();
+        return data.changedOdds; // Assuming changedOdds is an array as per the provided example
+    } catch (error) {
+        console.error('Failed to fetch odds changes:', error);
+        return null;
+    }
+}
+
+
+let oddsGraphChart; // Declare a variable to store the chart instance
+
+// Function to draw the odds graphs using Chart.js
+async function drawOddsGraphs(oddsData) {
+    if (!oddsData) return;
+
+    // Arrays to store the data for plotting
+    const timestamps = [];
+    const choice1Odds = [];
+    const choice2Odds = [];
+    const choice3Odds = [];
+
+    // If there are more than 5 data points, slice to keep the first 2 and the last 3
+    if (oddsData.length > 5) {
+        oddsData = [...oddsData.slice(0, 3), ...oddsData.slice(-10)];
+    }
+
+    // Extract and convert the data
+    oddsData.forEach(entry => {
+        timestamps.push(new Date(entry.timestamp * 1000).toLocaleTimeString()); // Convert timestamp to readable time
+        choice1Odds.push(fractionalToDecimal(entry.choice1.fractionalValue));
+        choice2Odds.push(fractionalToDecimal(entry.choice2.fractionalValue));
+        choice3Odds.push(fractionalToDecimal(entry.choice3.fractionalValue));
+    });
+
+    // Get the target canvas element by its ID
+    const ctx = document.getElementById('odds-graph-canvas').getContext('2d');
+
+    // Destroy the existing chart instance if it exists
+    if (oddsGraphChart) {
+        oddsGraphChart.destroy();
+    }
+
+    // Create a new chart instance
+    oddsGraphChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timestamps, // Time labels
+            datasets: [{
+                label: '1',
+                data: choice1Odds,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+                pointRadius: 1,
+                fill: false,
+                tension: 0
+            }, {
+                label: 'X',
+                data: choice2Odds,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                pointRadius: 1,
+                fill: false,
+                tension: 0
+            }, {
+                label: '2',
+                data: choice3Odds,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                pointRadius: 1,
+                fill: false,
+                tension: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Odds Changes Over Time'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return `Odds: ${tooltipItem.raw.toFixed(2)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    display: false, // Hide x-axis labels
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Odds (Decimal)'
+                    },
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+}
+
+// Function to calculate percentage change in odds
+function calculatePercentageChange(oldOdds, newOdds) {
+    if (oldOdds === 0 || newOdds === 0) return 0;  // Avoid division by zero
+    return ((newOdds - oldOdds) / oldOdds) * 100;
+}
+
 async function displayEventDetails(event) {
 const bottomRightDetails = document.querySelector('.event-details');
 
@@ -1509,6 +1634,10 @@ const eventDetailsHtml = `
             <div id="match-odds" class="flex _F_r">
                 ${oddsDisplay}  
             </div> 
+            
+                <div id="odds-graph-change">
+                    <canvas id="odds-graph-canvas" style="height: 200px; width: 100%;"></canvas>
+                </div>
                 <div class="h2h-event" id="${uniqueEventId}"></div> 
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>  
 `;
@@ -1545,7 +1674,14 @@ bottomRightDetails.innerHTML = eventDetailsHtml;
 
         fetchHeadToHead(currentMatchId, uniqueH2hContainer);  // Pass the correct ID to fetchHeadToHead 
 
-        
+         // Fetch odds changes data
+     const oddsData = await fetchOddsChanges(event.id);
+    if (oddsData) { 
+        drawOddsGraphs(oddsData);
+    } else {
+        console.error('No odds data available');
+    }
+
         // Fetch and display most recent H2H event for the current event
         fetchAndDisplayMostRecentH2HEvent(homeTeamId, customId, currentMatchId, uniqueEventId); 
 // Clear interval when navigating away from the event details
