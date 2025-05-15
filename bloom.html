@@ -1343,8 +1343,8 @@ hr {
     position: fixed;
     bottom: -300px;
     right: 20px;
-    width: 350px;
-    background: var(--color-b_0);
+    width: 750px;
+    background: #3b3b3d;
     border-radius: 8px 8px 0 0;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
     transition: bottom 0.3s ease;
@@ -1359,7 +1359,7 @@ hr {
 
 .bet-list-header {
     padding: 10px;
-    background: var(--bg-dark-2);
+    background: #292929;
     border-bottom: 1px solid #333;
     display: flex;
     justify-content: space-between;
@@ -1399,7 +1399,10 @@ hr {
     cursor: pointer;
     color: #666;
 }
-
+.bet-table {
+    width: 100%;
+    border-collapse: collapse;
+}
 .bet-list-items {
     max-height: 300px;
     overflow-y: auto;
@@ -1408,24 +1411,23 @@ hr {
 
 .bet-item {
     padding: 8px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    border: 1px solid #4c5458 !important;
 }
 
 .bet-item:last-child {
     border-bottom: none;
 }
 
-.bet-item-teams {
+.bet-item-teams {    
     flex: 1;
+    padding-left: 5px;
 }
 
-.bet-item-stats {
-    text-align: right;
+.bet-item-stats, .bet-item-score {
+    text-align: center;
     font-size: 12px;
-    color: #666;
+    color: #ededed;
+    border: 1px solid #4c5458;
     margin-right: 8px;
 }
 
@@ -1434,6 +1436,7 @@ hr {
     cursor: pointer;
     font-size: 14px;
     padding: 2px;
+    text-align: center;
 }
 
 .bet-item-remove:hover {
@@ -1453,6 +1456,27 @@ hr {
 
 .star-icon.active {
     color: gold;
+}
+
+.bet-item-score {
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+}
+
+.win-score {
+    background-color: rgba(76, 175, 80, 0.2); /* Green with transparency */
+    color: var(--color-w_1);
+}
+
+.loss-score {
+    background-color: rgba(244, 67, 54, 0.2); /* Red with transparency */
+    color: var(--color-w_1);
+}
+
+.draw-score {
+    background-color: rgba(255, 193, 7, 0.2); /* Yellow with transparency */
+    color: var(--color-w_1);
 }
 
 .conclusion-container {
@@ -1686,7 +1710,8 @@ li {
     <div id="bet-list-items" class="bet-list-items"></div>
 </div>
     <script>
-        
+         
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/'; // Or set up your own proxy
         const baseURL = 'https://api.sofascore.com/api/v1';
         const staticImageUrl = 'https://www.sofascore.com/static/images';
     
@@ -2088,7 +2113,7 @@ const refreshScores = async (eventId) => {
 
 async function fetchAndDisplayWinningOdds(matchId) {
     try {
-        const response = await fetch(`https://api.sofascore.com/api/v1/event/${matchId}/provider/1/winning-odds`);
+        const response = await fetch(`${baseURL}/event/${matchId}/provider/1/winning-odds`);
         const winningOddsData = await response.json();
 
         if (winningOddsData) {
@@ -2187,7 +2212,7 @@ const fetchOddsForEvent = async (eventId) => {
 
 async function fetchAndDisplayWinningOdds(matchId) {
     try {
-        const response = await fetch(`https://api.sofascore.com/api/v1/event/${matchId}/provider/1/winning-odds`);
+        const response = await fetch(`${baseURL}/event/${matchId}/provider/1/winning-odds`);
         const winningOddsData = await response.json();
 
         if (winningOddsData) {
@@ -2251,7 +2276,7 @@ async function fetchAndDisplayWinningOdds(matchId) {
 // Function to calculate and display home team statistics
 async function fetchH2HEvents(customId, teamId, tournamentId, currentMatchId, containerId) {
     try {
-        const response = await fetch(`https://www.sofascore.com/api/v1/event/${customId}/h2h/events`);
+        const response = await fetch(`${baseURL}/event/${customId}/h2h/events`);
         const data = await response.json();
 
         // Get the current date and calculate the timestamp for 4 years ago  
@@ -3111,8 +3136,8 @@ const fetchTeamStats = (eventsForTeam, teamId, currentMatchId, currentMatchTimes
 const getColor = (value, type) => {
     switch (type) {
         case 'points':
-            return value >= 67 ? 'color: #21b083; font-weight: bold;' : 
-                   value <= 33 ? 'color: #e59c03a8; font-weight: bold;' : '';
+            return value >= 67 ? 'color: #27fb99; font-weight: bold;' : 
+                   value <= 33 ? 'color: #ffa500; font-weight: bold;' : '';
         case 'good': 
             return value >= 64 ? 'color: #21b083; font-weight: bold;' : ''; // Good stats (Wins, BTTS, Overs) above 64%
         case 'bad': 
@@ -3788,7 +3813,7 @@ function updateMostChangedOdds(oddsData) {
 
 // Function to fetch odds changes data from the API
 async function fetchOddsChanges(eventId) {
-    const endpoint = `https://www.sofascore.com/api/v1/event/${eventId}/odds/1/changes`;
+    const endpoint = `${baseURL}/event/${eventId}/odds/1/changes`;
     try {
         const response = await fetch(endpoint);
 
@@ -4381,129 +4406,129 @@ function displayScheduledEvents(events) {
     const topRightList = document.querySelector('.top-right');
     const bottomRightDetails = document.querySelector('.event-details');
 
-    if (!topRightList) {
-        console.error('Top right list element not found');
-        return;
-    }
-
-    if (!bottomRightDetails) {
-        console.error('Bottom right details element not found');
+    if (!topRightList || !bottomRightDetails) {
+        console.error('Required elements not found');
         return;
     }
 
     // Initialize bet list from localStorage
-    let betList = JSON.parse(localStorage.getItem('betList')) || [];
+    const betList = JSON.parse(localStorage.getItem('betList')) || [];
+    const betListIds = new Set(betList.map(item => item.eventId.toString()));
 
     let tournamentEventsHtml = '<ul class="tournamentEvents">';
     events.forEach(event => {
-        const homeScore = event.homeScore?.current ?? '';
-        const awayScore = event.awayScore?.current ?? '';
-        const status = event.status.type;
-        const eventTime = new Date(event.startTimestamp * 1000).toLocaleString([], {
+        const isInBetList = betListIds.has(event.id.toString());
+        const eventTime = new Date(event.startTimestamp * 1000).toLocaleTimeString([], {
             hour: '2-digit', minute: '2-digit', hour12: false
         });
 
-        // Check if this event is in the bet list
-        const isInBetList = betList.some(item => item.eventId === event.id);
-
-        tournamentEventsHtml += `<li class="match-list ${status}" data-event-id="${event.id}" data-custom-id="${event.customId}" data-tournament-id="${event.tournament.id}" data-unique-tournament-id="${event.tournament.uniqueTournament.id}" data-season-id="${event.season.id}" data-home-team-id="${event.homeTeam.id}" data-away-team-id="${event.awayTeam.id}">
+        tournamentEventsHtml += `
+        <li class="match-list ${event.status.type}" data-event-id="${event.id}">
             <div class="info-wrapper">
                 <div class="date"><span>${eventTime}</span></div>
                 <div class="team-info">
                     <div class="teams-info">
-                        <div class="team"><img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">${event.homeTeam.shortName}</div>
-                        <div class="team"><img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">${event.awayTeam.shortName}</div>
+                        <div class="team">
+                            <img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" 
+                                 alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
+                            ${event.homeTeam.shortName}
+                        </div>
+                        <div class="team">
+                            <img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" 
+                                 alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
+                            ${event.awayTeam.shortName}
+                        </div>
                     </div>
                     <div class="match-score rcr">
-                        <div class="score" id="homeScore-${event.id}">${homeScore}</div>
-                        <div class="score" id="awayScore-${event.id}">${awayScore}</div>
+                        <div class="score" id="homeScore-${event.id}">${event.homeScore?.current ?? ''}</div>
+                        <div class="score" id="awayScore-${event.id}">${event.awayScore?.current ?? ''}</div>
                     </div>
                 </div>
-                <div class="star-icon ${isInBetList ? 'active' : ''}" data-event-id="${event.id}">★</div>
+                <div class="star-icon ${isInBetList ? 'active' : ''}" 
+                     data-event-id="${event.id}">★</div>
             </div>
         </li>`;
     });
     tournamentEventsHtml += '</ul>';
     topRightList.innerHTML = tournamentEventsHtml;
 
-    // Add event listeners for star icons
-    document.querySelectorAll('.star-icon').forEach(star => {
-        star.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleBetListItem(star, events);
-        });
-    });
-
-    // Add event listeners for match items
-    const eventItems = topRightList.querySelectorAll('.match-list');
-    eventItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const eventId = item.getAttribute('data-event-id');
-            const selectedEvent = events.find(event => event.id == eventId);
-            displayEventDetails(selectedEvent);
-        });
-    });
-
-    // Initialize bet list display
-    updateBetListDisplay();
-
-    // Add event listener for closing the bet list
-    document.getElementById('close-bet-list')?.addEventListener('click', () => {
-        document.getElementById('bet-list-container').classList.remove('show');
-    });
-
-    // Add event listener for clearing all bets
-    document.getElementById('clear-bet-list')?.addEventListener('click', clearAllBets);
-
+    // Add event listeners
+    setupEventListeners(events);
+    
+    // Initialize UI
     if (events.length > 0) {
-        const firstEvent = events[0];
-        displayEventDetails(firstEvent);
-
-// ✅ Refresh bet list so points load with correct event data
-  updateBetListDisplay();
+        displayEventDetails(events[0]);
     } else {
         bottomRightDetails.innerHTML = '<p>No events available.</p>';
     }
 }
 
+// Separate function for event listeners
+function setupEventListeners(events) {
+    // Star icon click handler
+    document.querySelectorAll('.star-icon').forEach(star => {
+        star.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await toggleBetListItem(star, events);
+        });
+    });
+
+    // Match item click handler
+    document.querySelectorAll('.match-list').forEach(item => {
+        item.addEventListener('click', () => {
+            const eventId = item.getAttribute('data-event-id');
+            const selectedEvent = events.find(event => event.id.toString() === eventId);
+            if (selectedEvent) displayEventDetails(selectedEvent);
+        });
+    });
+
+    // Bet slip controls
+    document.getElementById('close-bet-list')?.addEventListener('click', () => {
+        document.getElementById('bet-list-container').classList.remove('show');
+    });
+
+    document.getElementById('clear-bet-list')?.addEventListener('click', clearAllBets);
+}
+
+// Improved toggle function
 async function toggleBetListItem(star, events) {
     const eventId = star.getAttribute('data-event-id');
     const event = events.find(e => e.id.toString() === eventId);
+    if (!event) return;
+
     star.classList.toggle('active');
-
+    
     let betList = JSON.parse(localStorage.getItem('betList')) || [];
+    const eventInList = betList.some(item => item.eventId.toString() === eventId);
 
-    if (star.classList.contains('active')) {
-        if (!betList.some(item => item.eventId.toString() === eventId)) {
-            betList.push({
-                eventId: event.id.toString(),
-                homeTeam: event.homeTeam.shortName,
-                awayTeam: event.awayTeam.shortName,
-                timestamp: event.startTimestamp
-            });
-        }
-    } else {
+    if (star.classList.contains('active') && !eventInList) {
+        betList.push({
+            eventId: event.id.toString(),
+            homeTeam: event.homeTeam.shortName,
+            awayTeam: event.awayTeam.shortName,
+            timestamp: event.startTimestamp
+        });
+    } else if (!star.classList.contains('active') && eventInList) {
         betList = betList.filter(item => item.eventId.toString() !== eventId);
     }
 
     localStorage.setItem('betList', JSON.stringify(betList));
-
-    // ✅ Make sure it's updated **after** localStorage write
     await updateBetListDisplay();
 }
 
-
-// Function to clear all bets
+// Clear all bets function
 function clearAllBets() {
-    // Remove all active star icons
+    // Remove active class from all stars
     document.querySelectorAll('.star-icon.active').forEach(star => {
         star.classList.remove('active');
     });
 
+    // Clear localStorage
     localStorage.removeItem('betList');
+    
+    // Update UI
     updateBetListDisplay();
 }
-
 // Update the bet list display
 async function updateBetListDisplay() {
     const betListContainer = document.getElementById('bet-list-container');
@@ -4521,28 +4546,125 @@ async function updateBetListDisplay() {
 
     betList.sort((a, b) => a.timestamp - b.timestamp);
 
-    let html = '';
+    let html = `
+        <table class="bet-table">
+            <thead>
+                <tr>
+                    <th rowspan="2">Match</th>
+                    <th rowspan="2">Score</th>
+                    <th colspan="2">Points %</th>
+                    <th colspan="2">Home/Away</th>
+                    <th colspan="4">Clean Sheets</th>
+                    <th colspan="4">Failed to Score</th>
+                    <th rowspan="2">Del</th>
+                </tr>
+                <tr class="sub-header">
+                    <!-- Points % -->
+                    <th>Home</th>
+                    <th>Away</th>
+                    <!-- Home/Away -->
+                    <th>Home</th>
+                    <th>Away</th>
+                    <!-- Clean Sheets -->
+                    <th>Home</th>
+                    <th>Away</th>
+                    <th>H All</th>
+                    <th>A All</th>
+                    <!-- Failed to Score -->
+                    <th>Home</th>
+                    <th>Away</th>
+                    <th>H All</th>
+                    <th>A All</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
     for (const item of betList) { 
-        const pointsData = await getPointsPercentagesForEvent(item.eventId);
-        console.log('Points Data:', pointsData);
+        const statsData = await getStatsForEvent(item.eventId);
+        const scoreClass = getScoreClass(statsData.homeScore, statsData.awayScore);
+        
         html += `
-            <div class="bet-item" data-event-id="${item.eventId}">
-                <div class="bet-item-teams">
+            <tr class="bet-item" data-event-id="${item.eventId}">
+                <td class="bet-item-teams">
                     ${item.homeTeam} vs ${item.awayTeam}
-                </div>
-                <div class="bet-item-stats">
-                    ${pointsData ? `
-                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span> / 
-                        <span style="${getColor(pointsData.awayPercent, 'points')}">${pointsData.awayPercent}%</span> - 
-                        <span style="${getColor(pointsData.homePercentAll, 'points')}">${pointsData.homePercentAll}%</span> / 
-                        <span style="${getColor(pointsData.awayPercentAll, 'points')}">${pointsData.awayPercentAll}%</span> 
+                </td>
+                <td class="bet-item-score ${scoreClass}">
+                    ${statsData.homeScore !== undefined ? statsData.homeScore : '-'} - ${statsData.awayScore !== undefined ? statsData.awayScore : '-'}
+                </td>
+                <!-- Points % -->
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homePercentAll, 'points')}">${statsData.homePercentAll}</span>
                     ` : 'N/A'}
-                </div>
-                <div class="bet-item-remove" data-event-id="${item.eventId}">×</div>
-            </div>
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayPercentAll, 'points')}">${statsData.awayPercentAll}</span>
+                    ` : 'N/A'}
+                </td>
+                <!-- Home/Away Points % -->
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homePercent, 'points')}">${statsData.homePercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayPercent, 'points')}">${statsData.awayPercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <!-- Clean Sheets -->
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homeCleanSheetsPercent, 'defense')}">${statsData.homeCleanSheetsPercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayCleanSheetsPercent, 'defense')}">${statsData.awayCleanSheetsPercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homeCleanSheetsPercentAll, 'defense')}">${statsData.homeCleanSheetsPercentAll}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayCleanSheetsPercentAll, 'defense')}">${statsData.awayCleanSheetsPercentAll}</span>
+                    ` : 'N/A'}
+                </td>
+                <!-- Failed to Score -->
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homeFailedToScorePercent, 'offense')}">${statsData.homeFailedToScorePercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayFailedToScorePercent, 'offense')}">${statsData.awayFailedToScorePercent}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.homeFailedToScorePercentAll, 'offense')}">${statsData.homeFailedToScorePercentAll}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-stats">
+                    ${statsData ? `
+                        <span style="${getColor(statsData.awayFailedToScorePercentAll, 'offense')}">${statsData.awayFailedToScorePercentAll}</span>
+                    ` : 'N/A'}
+                </td>
+                <td class="bet-item-remove" data-event-id="${item.eventId}">×</td>
+            </tr>
         `;
     }
+
+    html += `
+            </tbody>
+        </table>
+    `;
 
     betListItems.innerHTML = html;
     betListContainer.classList.add('show');
@@ -4565,20 +4687,28 @@ async function updateBetListDisplay() {
     });
 }
 
+// Helper function to determine score class for styling
+function getScoreClass(homeScore, awayScore) {
+    if (homeScore === undefined || awayScore === undefined) return '';
+    if (homeScore > awayScore) return 'win-score';
+    if (homeScore < awayScore) return 'loss-score';
+    return 'draw-score';
+}
 
-// Update the function to use your existing stats functions
-async function getPointsPercentagesForEvent(eventId) {
+async function getStatsForEvent(eventId) {
     try {
         // Fetch event data
         const response = await fetch(`${baseURL}/event/${eventId}`);
         const json = await response.json();
         const event = json.event;
-        console.log('Fetched event:', event); 
-        console.log('Fetched event ID:', eventId); 
         
         if (!event || !event.homeTeam || !event.awayTeam) {
             return null;
         }
+
+        // Get scores (handle cases where score might not be available)
+        const homeScore = event.homeScore?.current;
+        const awayScore = event.awayScore?.current;
 
         // Get tournament and season info
         const tournamentId = event.tournament.id;
@@ -4588,7 +4718,8 @@ async function getPointsPercentagesForEvent(eventId) {
 
         // Fetch events data for both teams
         const eventsForTeam = await fetchEventsData(tournamentId, seasonId, currentMatchId);
-        // Get stats for home team (last 5 matches)
+        
+        // Get stats for home team
         const homeTeamStats = await fetchTeamStats(
             eventsForTeam, 
             event.homeTeam.id, 
@@ -4597,7 +4728,7 @@ async function getPointsPercentagesForEvent(eventId) {
             6
         );
         
-        // Get stats for away team (last 5 matches)
+        // Get stats for away team
         const awayTeamStats = await fetchTeamStats(
             eventsForTeam, 
             event.awayTeam.id, 
@@ -4612,18 +4743,44 @@ async function getPointsPercentagesForEvent(eventId) {
         const homePercentAll = calculatePointsPercentageFromStats(homeTeamStats.overall);
         const awayPercentAll = calculatePointsPercentageFromStats(awayTeamStats.overall);
 
+        // Clean sheets and failed to score for home/away stats
+        const homeStats = getCleanSheetsAndFailedToScore(homeTeamStats.home);
+        const awayStats = getCleanSheetsAndFailedToScore(awayTeamStats.away);
+        
+        // Clean sheets and failed to score for overall stats
+        const homeStatsAll = getCleanSheetsAndFailedToScore(homeTeamStats.overall);
+        const awayStatsAll = getCleanSheetsAndFailedToScore(awayTeamStats.overall);
+
         return {
+            homeScore,
+            awayScore,
+            // Points percentages
             homePercent,
             awayPercent,
             homePercentAll,
-            awayPercentAll
+            awayPercentAll,
+            
+            // Clean Sheets (home/away)
+            homeCleanSheetsPercent: homeStats.cleanSheetsPercent,
+            awayCleanSheetsPercent: awayStats.cleanSheetsPercent,
+            
+            // Clean Sheets (overall)
+            homeCleanSheetsPercentAll: homeStatsAll.cleanSheetsPercent,
+            awayCleanSheetsPercentAll: awayStatsAll.cleanSheetsPercent,
+            
+            // Failed to Score (home/away)
+            homeFailedToScorePercent: homeStats.failedToScorePercent,
+            awayFailedToScorePercent: awayStats.failedToScorePercent,
+            
+            // Failed to Score (overall)
+            homeFailedToScorePercentAll: homeStatsAll.failedToScorePercent,
+            awayFailedToScorePercentAll: awayStatsAll.failedToScorePercent
         };
     } catch (error) {
-        console.error('Error getting points percentages:', error);
+        console.error('Error getting stats:', error);
         return null;
     }
 }
-
 // Helper function to calculate points percentage from stats
 function calculatePointsPercentageFromStats(stats) {
     const totalEvents = stats.results.length;
@@ -4633,7 +4790,16 @@ function calculatePointsPercentageFromStats(stats) {
         : 0;
 }
 
-
+// Helper function to calculate clean sheets and failed to score percentages
+function getCleanSheetsAndFailedToScore(stats) {
+    const totalEvents = stats.results.length;
+    const getPercent = (stat) => totalEvents > 0 ? Math.round((stat / totalEvents) * 100) : 0;
+ 
+    return {
+        cleanSheetsPercent: getPercent(stats.cleanSheets),
+        failedToScorePercent: getPercent(stats.failedToScore)
+    };
+}
 
 </script>
 </body>
