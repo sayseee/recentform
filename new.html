@@ -1635,10 +1635,12 @@ const eventDetailsHtml = `
                 ${oddsDisplay}  
             </div> 
             
-                <div id="odds-graph-change">
-                    <canvas id="odds-graph-canvas" style="height: 200px; width: 100%;"></canvas>
-                </div>
-                <div class="h2h-event" id="${uniqueEventId}"></div> 
+                <div id="change" class="flex _F_r">
+                    <div id="odds-graph-change">
+                        <canvas id="odds-graph-canvas" style="height: 200px; width: 100%;"></canvas>
+                    </div>
+                    <div class="h2h-event" id="${uniqueEventId}"></div> 
+                </div> 
                 <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>  
 `;
 
