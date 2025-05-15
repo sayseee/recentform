@@ -144,7 +144,6 @@ h2 {
 li {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 8px;
 }
 .header {
     background-color: var(--light-color);
@@ -309,6 +308,12 @@ ul.tournamentEvents {
 ul.tournamentEvents li {
     display: flex;
     cursor: pointer;
+}
+ul.tournamentEvents li:not(:first-child) {
+    border-top: #3f3f3f 1px solid;
+}
+ul.tournamentEvents li:last-child {
+    border-bottom: #3f3f3f 1px solid;
 }
 .info-wrapper {
     display: flex;
