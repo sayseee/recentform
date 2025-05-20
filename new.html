@@ -9,472 +9,1003 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+/* ============================= */
+/* 1. CSS VARIABLES & CONSTANTS  */
+/* ============================= */
 :root {
-    --color-b_0: #121212;
-    --color-w_0: white;
-    --color-w_1: #cdcdcd;
-    --color-w_2: #8eb1c5;
-    --color-gr_1: #727175;
-    --color-gr_2: #3c3c3c;
-    --color-gr_4: #191a1f80;
-    --color-gr_3: #191a1f;
-    --color-gr_5: #1e1c1d;
-    --color-gr_6: #181818;
-    --color-gr_7: #202020;
-    --color-g_1: #4e9e7b;
-    --color-g_2: #003c01;
-    --color-g_3: #274454;
-    --color-g_4: #002e00;
-    --color-g_5: #120915;
-    --color-r_1: #b37488;
-    --color-r_2: #d17092;
-    --color-r_3: #e11539;
-    --color-r_4: #710015;
-    --color-r_5: #550216;
-    --color-y_1: #FFA028;
-    --color-o_1: #e49d18;
-    --primary-color: #3498db;
-    --positive-color: #2ecc71;
-    --negative-color: #e74c3c;
-    --neutral-color: #f39c12;
-    --dark-color: #2c3e50;
-    --light-color: #ecf0f1;
-    --secondary-color: #2ecc71;
-    --danger-color: #e74c3c;
-    --warning-color: #f39c12;
-    --bg-dark-1: #3b3b3d;
-    --bg-dark-2: #1e1e1e;
-    --border-default: 1px solid #333;
-    --border-bottom: 1px solid #1f222b;
-    --light-color: #1f222b;
-    --dark-color: #303440;
-    --bg-overlay: rgba(6, 12, 26, 0.6);
-    --border-top: #000 1px solid;
+  /* Base Colors */
+  --color-b_0: #121212;
+  --color-w_0: #ffffff;
+  --color-w_1: #cdcdcd;
+  --color-w_2: #8eb1c5;
+  --color-gr_1: #727175;
+  --color-gr_2: #3c3c3c;
+  --color-gr_3: #191a1f;
+  --color-gr_4: #191a1f80;
+  --color-gr_5: #1e1c1d;
+  --color-gr_6: #181818;
+  --color-gr_7: #202020;
+  --color-g_1: #4e9e7b;
+  --color-g_2: #003c01;
+  --color-g_3: #274454;
+  --color-g_4: #002e00;
+  --color-g_5: #120915;
+  --color-r_1: #b37488;
+  --color-r_2: #d17092;
+  --color-r_3: #e11539;
+  --color-r_4: #710015;
+  --color-r_5: #550216;
+  --color-y_1: #FFA028;
+  --color-o_1: #e49d18;
+
+  /* Semantic Colors */
+  --primary-color: #3498db;
+  --positive-color: #2ecc71;
+  --negative-color: #e74c3c;
+  --neutral-color: #f39c12;
+  --secondary-color: #2ecc71;
+  --danger-color: #e74c3c;
+  --warning-color: #f39c12;
+
+  /* UI Colors */
+  --header-bg: var(--color-b_0);
+  --header-shadow: rgba(0, 0, 0, 0.1);
+  --link-color: #ccc;
+  --link-active-color: var(--color-o_1);
+  --calendar-bg: #060c1a;
+  --calendar-active-bg: #007bff;
+  --calendar-active-color: #fff;
+  --calendar-hover-color: #fff;
+  --calendar-hover-bg1: rgba(12, 22, 20, .1);
+  --calendar-hover-bg2: #009969;
+  --calendar-hover-bg3: #0c1614;
+  --calendar-hover-bg4: #084436;
+  --calendar-days-bg: linear-gradient(var(--calendar-hover-bg1), transparent 20px), radial-gradient(122% 370px at center -220px, var(--calendar-hover-bg2) 0, transparent 100%), linear-gradient(to right bottom, #215349, var(--calendar-hover-bg4));
+  --calendar-days-color: #fff;
+  --scrollbar-thumb: #3d3d3d;
+  --scrollbar-track: #020001;
+  --border-default: 1px solid #333;
+  --border-bottom: 1px solid #1f222b;
+  --border-top: 1px solid #000;
+  --border-table: 1px solid var(--color-gr_7);
+  --star-color: #ccc;
+  --bet-list-bg: #232323;
+  --bet-list-header-bg: #181818;
+  --bet-list-item-bg: #222;
+  --bet-list-remove: var(--danger-color);
+  --bet-list-remove-hover: var(--danger-color);
+  --form-tooltip-bg: #222;
+  --form-tooltip-color: #fff;
+  --highlight-home-bg: #e3f6ff;
+  --highlight-away-bg: #ffe3e3;
+  --promotion-champions-league-bg: #d0eaff;
+  --promotion-europa-league-bg: #ffeecf;
+  --promotion-conference-league-bg: #e8ffe8;
+  --promotion-relegation-bg: #ffd6d6;
+  --league-table-th-bg: var(--color-gr_2);
+  --league-table-even-bg: var(--color-gr_3);
+  --league-table-odd-bg: transparent;
+  --form-W-bg: var(--positive-color);
+  --form-D-bg: var(--warning-color);
+  --form-L-bg: var(--negative-color);
+  --form-W-color: #fff;
+  --form-D-color: #fff;
+  --form-L-color: #fff;
+
+  /* Playoff/Promotion Colors */
+  --playoffs-promotion-to-x: rgb(18,110,81);
+  --playoffs-promotion-to-x-playoff: #49cb40;
+  --playoffs-promotion-to-y: #0056a3;
+  --playoffs-promotion-to-y-playoff: #0a8dff;
+  --playoffs-promotion-to-z: #016565;
+  --playoffs-promotion-to-z-playoff: #018e8d;
+  --playoffs-promotion-to-z-playoff-secondary: #01b7b6;
+  --playoffs-promotion-to-relegation: #c1262d;
+  --playoffs-promotion-to-relegation-playoff: rgba(229, 156, 3, 0.9);
 }
-.W, .D, .L {  
-    color: #000;
-    align-items: center; 
-    justify-content: center;
-    overflow: hidden;
-    position: relative; 
-    padding:2px 0;
-    font-weight: 700;
-    width: 20px; 
-} 
-.W, .win, .pos {
-    background-color: var(--positive-color);
+
+/* ============================= */
+/* 2. GLOBAL RESETS & BASICS     */
+/* ============================= */
+body.closure {
+  background-color: var(--color-b_0);
+  margin: 0;
+  padding: 0;
+  color: var(--color-w_1);
+  display: grid;
+  grid-template-rows: 50px auto;
+  height: 100vh;
+  min-height: 100vh;
+  min-width: 100vw;
+  overflow: hidden;
+  font-size: 0.6875rem;
+  gap: 2px;
 }
-.D, .draw {
-    background-color: var(--color-gr_1);
+
+h2 {
+  color: var(--color-o_1);
+  margin-top: 0;
+  padding: 10px 10px 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
 }
-.L, .loss, .neg {
-    background-color: var(--color-r_2);
+
+li {
+  display: flex;
+  align-items: flex-start;
 }
+
+/* ============================= */
+/* 3. TYPOGRAPHY                 */
+/* ============================= */
+.rfr, .rcr {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+}
+
+.rfr { font-weight: 400; font-style: normal; }
+.rcr { font-weight: 700; font-style: normal; }
+
+/* ============================= */
+/* 4. SCROLLBAR STYLES           */
+/* ============================= */
 ::-webkit-scrollbar {
-    width: 3px;
-    height: 3px;
+  width: 3px;
+  height: 3px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #3d3d3d;
+  background: #3d3d3d;
 }
 ::-webkit-scrollbar-track {
-    background: #020001;
-}
-/* Constants */
-.flex {
-    display: flex;
-}
-._F_r{
-    flex-direction: row !important;
-}
-._F_c{
-    flex-direction: column !important;
-}
-._F_ac {
-    align-items: center;
-}
-._F_jc {
-    justify-content: space-between;
+  background: #020001;
 }
 
-.gT5 {
-    gap: 5px;
-}
-.gT10 {
-    gap: 10px;
-}
-.gT20 {
-    gap: 20px;
-}
-body.closure {
-    background-color: var(--color-b_0);
-    margin: 0;
-    padding: 0;
-    color: var(--color-w_1);
-    display: grid;
-    grid-template-rows: 50px auto;
-    height: 100vh;
-    min-height: 100vh;
-    min-width: 100vw;
-    overflow: hidden;
-    font-size: 0.6875rem;
-    gap: 2px;
-}
-.rfr {
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-}
+/* ============================= */
+/* 5. FLEX & UTILITY CLASSES     */
+/* ============================= */
+.flex { display: flex; }
+._F_r { flex-direction: row !important; }
+._F_c { flex-direction: column !important; }
+._F_ac { align-items: center; }
+._F_jc { justify-content: space-between; }
+._F_jC { justify-content: center; }
+.gT5 { gap: 5px; }
+.gT10 { gap: 10px; }
+.gT20 { gap: 20px; }
 
-.rcr {
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
-}
-h2 {
-    color: var(--color-o_1);
-    margin-top: 0;
-    padding: 10px 10px 0;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 20px;
-}
-li {
-    display: flex;
-    align-items: flex-start;
-}
+/* ============================= */
+/* 6. HEADER & NAVIGATION        */
+/* ============================= */
 .header {
-    background-color: var(--light-color);
-    width: 100%;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    justify-content: space-between;
+  background-color: var(--light-color);
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
 }
+
 .filters__group {
-    list-style: none;
-    display: flex;
-    gap: 23px;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  display: flex;
+  gap: 23px;
+  padding: 0;
+  margin: 0;
 }
-
-.filters__group li {
-    min-width: 50px;
-}
-.filters__group li a.active, .filters__group li a:hover {
-    color: var(--color-o_1);
-}
+.filters__group li { min-width: 50px; }
 .filters__group li a {
-    text-decoration: none;
-    color: #ccc;
-    padding: 5px 10px;
-    width: 100%;
-    display: block;
-    text-align: center;
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: center;
-    font-weight: 700;
+  text-decoration: none;
+  color: var(--color-link);
+  padding: 5px 10px;
+  width: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  font-weight: 700;
+}
+.filters__group li a.active,
+.filters__group li a:hover {
+  color: var(--color-o_1);
 }
 
+/* ============================= */
+/* 7. CALENDAR COMPONENT         */
+/* ============================= */
 .calendar {
-    display: flex;
-    gap: 5px;
-    position: relative;
-    background: rgb(6, 12, 26);
-    border-radius: 3px;
+  display: flex;
+  gap: 5px;
+  position: relative;
+  background: var(--calendar-bg);
+  border-radius: 3px;
 }
 .calendar__navigation {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
 }
 .calendar__datepicker {
-    align-items: center;
-    background-color: initial;
-    border: initial;
-    color: inherit;
-    cursor: pointer;
-    display: flex;
-    font-family: inherit;
-    font-weight: 700;
-    grid-area: datepicker;
-    height: 100%;
-    justify-content: space-between;
-    letter-spacing: .4px;
-    padding: 4px;
-    text-transform: uppercase;
-    flex: 1;
-    width: 100px;
-    gap: 10px;
-    font-size: 0.6875rem;
-    margin-top: 4px;
+  align-items: center;
+  background-color: initial;
+  border: initial;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  font-weight: 700;
+  grid-area: datepicker;
+  height: 100%;
+  justify-content: space-between;
+  letter-spacing: .4px;
+  padding: 4px;
+  text-transform: uppercase;
+  flex: 1;
+  width: 100px;
+  gap: 10px;
+  font-size: 0.6875rem;
+  margin-top: 4px;
+}
+.calendar__day {
+  background: none;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  width: inherit;
+}
+.calendar__day--active {
+  background-color: var(--calendar-active-bg);
+  color: var(--calendar-active-color);
+}
+.calendar__day:hover {
+  color: var(--calendar-hover-color);
+  background-size: 100% 100%;
+  background-image: linear-gradient(var(--calendar-hover-bg1), transparent 20px),
+    radial-gradient(122% 370px at center -220px, var(--calendar-hover-bg2) 0, transparent 100%),
+    linear-gradient(to right bottom, var(--calendar-hover-bg3), var(--calendar-hover-bg4));
 }
 .calendar__days {
-    width: 100%;
-    color: #fff;
-    display: none;
-    position: absolute;
-    border: 0;
-    list-style: none;
-    padding: 0;
-    margin-top: 5px;
-    box-shadow: 2 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1;
-    top: 30px;
-    left: 0;
-    font-family: inherit;
-    background-size: 100% 100%;
-    background-image: linear-gradient(rgba(12, 22, 20, .1), transparent 20px), radial-gradient(122% 370px at center -220px, #009969 0, transparent 100%), linear-gradient(to right bottom, #215349, #084436);
+  width: 100%;
+color: var(--calendar-days-color);
+  display: none;
+  position: absolute;
+  border: 0;
+  list-style: none;
+  padding: 0;
+  margin-top: 5px;
+  box-shadow: 2 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  top: 30px;
+  left: 0;
+  font-family: inherit;
+  background-size: 100% 100%;
+  background-image: var(--calendar-days-bg);
 }
 .calendar__listItem {
-    display: flex;
-    justify-content: center;
-    width: inherit;
+  display: flex;
+  justify-content: center;
+  width: inherit;
 }
-.calendar__navigation svg {
-    width: 24px;
-    height: 24px;
-    fill: #fff;
-}
+.calendar__navigation svg,
 .calendar__datepicker svg {
-    width: 20px;
-    height: 20px;
-    fill: #fff;
-}
-.main-content {
-    display: grid;
-    grid-template-columns: 225px 235px 1fr 300px;
-    gap: 2px;
+  width: 20px;
+  height: 20px;
+  fill: #fff;
 }
 
+/* ============================= */
+/* 8. MAIN LAYOUT                */
+/* ============================= */
+.main-content {
+  display: grid;
+  grid-template-columns: 14% 26% 34% 25%;
+}
+
+/* ============================= */
+/* 9. LEFT COLUMN: CATEGORIES    */
+/* ============================= */
 #categories {
-    background-color: var(--bg-column-1);
-    overflow-y: auto;
-    height: calc(100vh - 50px);
+  background-color: var(--bg-column-1);
+  overflow-y: auto;
+  height: calc(100vh - 50px);
 }
 .category-header {
-    cursor: pointer;
-    padding: 5px;
-    background-color: var(--color-gr_6);
-    border: 1px solid var(--color-gr_7);
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  background-color: var(--color-gr_6);
+  border: 1px solid var(--color-gr_7);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
 }
-.category-header img {
-    margin-right: 10px;
-}
-.category-tournaments, .tournament-list {
-    display: none;
-}
+.category-header img { margin-right: 10px; }
+.category-tournaments, .tournament-list { display: none; }
 ul.topTourn, ul.category-tournaments, ul.tournament-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 ul.topTourn li, ul.category-tournaments li, ul.tournament-list li {
-    padding: 5px;
-    border-bottom: 1px solid var(--color-gr_7);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+  padding: 5px;
+  border-bottom: 1px solid var(--color-gr_7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
-.category-header .event-count, .category-tournaments .event-count, .topTourn .event-count {
-    margin-left: auto;
-    font-weight: bold;
-    color: var(--color-w_2);
+ul.topTourn li img, ul.category-tournaments li img, ul.tournament-list li img {
+  margin-right: 10px;
 }
+.category-header .event-count,
+.category-tournaments .event-count,
+.topTourn .event-count {
+  margin-left: auto;
+  font-weight: bold;
+  color: var(--color-w_2);
+}
+
+/* ============================= */
+/* 10. EVENTS COLUMN             */
+/* ============================= */
 #events-column {
-    background-color: var(--color-gr_3);
-    overflow-y: auto;
-    height: 100vh;
+  background-color: var(--color-gr_3);
+  overflow-y: auto;
+  height: 100vh;
 }
-.top-right {
-    overflow-x: auto;
-}
+.top-right { overflow-x: auto; }
 ul.tournamentEvents {
-    display: flex;
-    flex-direction: column;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 ul.tournamentEvents li {
-    display: flex;
-    cursor: pointer;
+  display: flex;
+  cursor: pointer;
 }
 ul.tournamentEvents li:not(:first-child) {
-    border-top: #3f3f3f 1px solid;
+  border-top: var(--tournament-border);
 }
 ul.tournamentEvents li:last-child {
-    border-bottom: #3f3f3f 1px solid;
+  border-bottom: var(--tournament-border);
 }
+ul.tournamentEvents li.match-list {
+  display: grid;
+  grid-template-columns: 38px 1fr 20px 110px 20px;
+  align-items: stretch;
+  gap: 0;
+  box-sizing: border-box;
+}
+ul.tournamentEvents li.match-list .date {
+  grid-column: 1;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 2px;
+  font-size: 0.95em;
+  border-right: 1px solid #232323;
+  min-width: 30px;
+  max-width: 30px;
+  margin-right: 4px;
+}
+ul.tournamentEvents li.match-list .team-info {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+ul.tournamentEvents li.match-list .match-score {
+  grid-column: 3;
+  min-width: 20px;
+  max-width: 20px;
+  text-align: center;
+  border-right: 1px solid #232323;
+}
+ul.tournamentEvents li.match-list .winning-odds {
+  grid-column: 4;
+  min-width: 105px;
+  max-width: 105px;
+  display: flex;
+  flex-direction: column;
+}
+ul.tournamentEvents li.match-list .star-icon {
+  grid-column: 5;
+  min-width: 20px;
+  max-width: 20px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-left: 1px solid #232323;
+  cursor: pointer;
+  background: none;
+  padding: 0;
+}
+
+/* ============================= */
+/* 11. MATCH & TEAM INFO         */
+/* ============================= */
 .info-wrapper {
-    display: flex;
-    flex: 1;
-    align-items: stretch;
+  display: flex;
+  flex: 1;
+  align-items: stretch;
 }
 .date {
-    display: flex;
-    flex-direction: column;
-    padding-right: 8px;
-    text-align: center;
-    flex: 0 0 35px;
-    -webkit-box-flex: 0;
-    color: #555;
-    border-right: 1px solid var();
-    justify-content: center;
-}
-.team-info {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: calc(100% - 63px);
+  display: flex;
+  flex-direction: column;
+  padding-right: 8px;
+  text-align: center;
+  flex: 0 0 35px;
+  color: #555;
+  border-right: 1px solid var();
+  justify-content: center;
 }
 .teams-info {
-    display: flex;
-    flex-direction: column;
-    overflow-x: clip;
-    gap: 3px;
-    justify-content: center;
-    padding: 5px 0;
-    flex: 1 1 130px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  gap: 3px;
+  justify-content: center;
+  padding: 5px 0;
+  flex: 1 1 130px;
 }
 .team {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    line-height: 1.51429;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1.51429;
 }
-
+.winning-odds {
+  gap: 1px;
+  display: flex;
+  flex-direction: column;
+}
 .match-score {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 0 0 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    justify-content: space-around;
-    color: var(--color-gr_1);
-    border-right: 1px solid #020001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  justify-content: space-around;
+  color: var(--color-gr_1);
+  border-right: 1px solid #020001;
 }
-.match-score div:not(:last-child) {
-    border-bottom: 1px solid #020001;
-}
-.match-score div:last-child {
-    border-top: 1px solid #313030;
-}
+.match-score div:not(:last-child) { border-bottom: 1px solid #020001; }
+.match-score div:last-child { border-top: 1px solid #313030; }
 .match-score div {
-    display: flex;
-    height: 100%;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px solid #020001;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #020001;
 }
 .star-icon {
-    color: #ccc;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    border-left: 1px solid #313030;
+  color: var(--color-link);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #313030;
 }
 
-#details-column {
-    background-color: var(--color-gr_4);
+/* ============================= */
+/* 12. BET LIST MODAL            */
+/* ============================= */
+#bet-list-container {
+  display: none;
+  position: fixed;
+    bottom: 60px;
+    right: 40px;
+    width: 50%;
+  max-width: 95vw;
+  background: var(--bet-list-bg);
+  color: var(--color-w_0);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  z-index: 9999;
+  padding: 0 0 10px 0;
+  transition: opacity 0.2s;
+  opacity: 0;
 }
-.event-details {
-    border-top: 1px solid #212121;
+#bet-list-container.show {
+  display: block;
+  opacity: 1;
 }
-.duelParticipant {
-    --spacer: 17px;
-    display: grid;
-    grid-template:
-        "home time away" max-content
-        "home score away" max-content
-        ". . . " 5px / var(--width, minmax(110px, 250px)) var(--width, minmax(80px, 180px)) var(--width, minmax(110px, 250px));
-    justify-content: center;
-    padding: 10px 0 0;
-    text-align: center;
+.bet-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  padding: 10px 16px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;   
+  background: var(--bet-list-header-bg);
+  border-bottom: var(--border-default);
 }
-.duelParticipant .match-time {
-    display: grid;
-    grid-area: time;
-    text-align: center;
+.bet-list-items {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 10px 16px;
 }
-.duelParticipant__home {
-    display: flex;
-    justify-content: center;
-    grid-area: home;
-    font-weight: 700;
-    text-align: center;
-    flex-direction: column;
-    gap: 10px;
+.bet-item-teams { flex: 1; font-weight: 600; }
+.bet-item-stats { margin-left: 10px; font-size: 0.95em; }
+.bet-item-remove {
+  margin-left: 10px;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+/* Improved Bet List Item Styles */
+.bet-item {
+  display: flex;
+  align-items: stretch;
+  background: var(--color-gr_6);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  margin-bottom: 14px;
+  padding: 0;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 1px solid var(--color-gr_2);
+}
+.bet-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  transform: translateY(-2px) scale(1.01);
+}
+.bet-item-teams {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  background: var(--color-gr_7);
+  padding: 16px 18px;
+  min-width: 120px;
+  border-right: 1px solid var(--color-gr_2);
+}
+.bet-item-teams .team-names {
+  font-weight: 700;
+  font-size: 1.08em;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bet-item-teams img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  margin-right: 6px;
+  border: 1px solid var(--color-gr_2);
+}
+.bet-item-summary {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 0.98em;
+  background: var(--color-gr_5);
+}
+.bet-item-summary table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.97em;
+}
+.bet-item-summary th, .bet-item-summary td {
+  padding: 3px 6px;
+  text-align: center;
+  border: none;
+}
+.bet-item-summary th {
+  color: var(--color-o_1);
+  font-weight: 600;
+  background: none;
+}
+.bet-item-summary tr:not(:last-child) td {
+  border-bottom: 1px solid var(--color-gr_2);
+}
+.bet-item-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  font-size: 1.6em;
+  color: var(--danger-color);
+  background: transparent;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, color 0.15s;
+}
+.bet-item-remove:hover {
+  background: var(--danger-color);
+  color: #fff;
+}
+.clear-bet-list, .close-bet-list {
+  background: none;
+  border: none;
+  color: var(--color-w_0);
+  font-size: 1.1em;
+  cursor: pointer;
+  margin-left: 8px;
+}
+.clear-bet-list:hover, .close-bet-list:hover { color: #e74c3c; }
+
+/* ============================= */
+/* 13. LEAGUE TABLE TABS         */
+/* ============================= */
+.league-table-tabs .tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.league-table-tabs .tab {
+  padding: 5px 10px;
+  border: none;
+  background: var(--color-gr_2, #eee);
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 4px 4px 0 0;
+}
+.league-table-tabs .tab.active {
+  background: var(--color-b_0, #fff);
+  color: var(--color-w_0, #222);
+  border-bottom: 2px solid var(--primary-color, #0078d4);
+}
+.league-table-tabs .tab-content {
+  background: var(--color-b_0, #fff);
+  border-radius: 0 0 4px 4px;
+  padding: 0;
+}
+.league-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+.league-table th {
+  background: var(--color-gr_2, #f7f7f7);
+}
+.league-table th, .league-table td {
+  padding: 3px 4px;
+  text-align: center;
+}
+.league-table tbody tr:nth-child(even) { background-color: var(--color-gr_3); }
+.league-table tbody tr:nth-child(odd) { background-color: transparent; }
+
+/* ============================= */
+/* 14. FORM & TOOLTIP STYLES     */
+/* ============================= */
+.form-span {
+  display: flex;
+  width: 15px;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.85em;
+  padding: 2px 0;
+  position: relative;
+  cursor: pointer;
+}
+.form-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  width: max-content;
+  max-width: 260px;
+  background: #222;
+  color: #fff;
+  text-align: left;
+  border-radius: 4px;
+  padding: 6px 10px;
+  position: absolute;
+  z-index: 10;
+  top: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.95em;
+  white-space: pre-line;
+  pointer-events: none;
+  transition: opacity 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.form-tooltip::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #222 transparent;
+  width: 0;
+  height: 0;
+  z-index: 11;
+}
+.form-span:hover .form-tooltip,
+.form-span:focus .form-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+[id^="form-overall-"] {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+}
+[id^="live-timer-"] {
+  color: var(--danger-color);
+  font-weight: 600;
+}
+/* Form Spans */
+.form-W {
+  background: var(--form-W-bg);
+  color: var(--form-W-color);
+}
+.form-D {
+  background: var(--form-D-bg);
+  color: var(--form-D-color);
+}
+.form-L {
+  background: var(--form-L-bg);
+  color: var(--form-L-color);
 }
 
-.duelParticipant__away {
-    display: flex;
-    justify-content: center;
-    grid-area: away;
-    font-weight: 700;
-    text-align: center;
-    flex-direction: column;
-    gap: 10px;
+/* Win/Draw/Loss Badges */
+.W, .D, .L {
+  color: var(--color-b_0);
 }
-.duelParticipant__home img, .duelParticipant__away img {
-    height: 38px;
-    width: 38px;
+ 
+/* ============================= */
+/* 15. HIGHLIGHT ROWS            */
+/* ============================= */
+.highlight-home {
+  background: #e3f6ff !important;
+  color: var(--color-b_0);
 }
-.duelParticipant__score {
-    display: grid;
-    justify-content: center;
-    grid-area: score;
-    flex-flow: row wrap;
-}
-.detailScore__wrapper {
-    font-size: 40px;
-    font-weight: 700;
-}
-.form-display {
-    display: inline-flex;
-    gap: 2px;
-}
-.form-display span {
-    flex: 1;
+.highlight-away {
+  background: #ffe3e3 !important;
+  color: var(--color-b_0);
 }
 
+/* ============================= */
+/* 16. PROMOTION/RELEGATION ROWS */
+/* ============================= */
+.promotion-champions-league { background: #d0eaff !important; }
+.promotion-europa-league { background: #ffeecf !important; }
+.promotion-conference-league { background: #e8ffe8 !important; }
+.promotion-relegation { background: #ffd6d6 !important; }
 
+.promotion-to-x td:first-child { background-color: var(--playoffs-promotion-to-x); }
+.promotion-to-x-playoff td:first-child { background-color: var(--playoffs-promotion-to-x-playoff); }
+.promotion-to-y td:first-child { background-color: var(--playoffs-promotion-to-y); }
+.promotion-to-y-playoff td:first-child { background-color: var(--playoffs-promotion-to-y-playoff); }
+.promotion-to-z td:first-child { background-color: var(--playoffs-promotion-to-z); }
+.promotion-to-z-playoff td:first-child { background-color: var(--playoffs-promotion-to-z-playoff); }
+.promotion-to-z-playoff-secondary td:first-child { background-color: var(--playoffs-promotion-to-z-playoff-secondary); }
+.relegation td:first-child { background-color: var(--playoffs-promotion-to-relegation); }
+.relegation-playoff td:first-child { background-color: var(--playoffs-promotion-to-relegation-playoff); }
+
+.promotion span.promotion-to-x::before,
+.promotion span.promotion-to-x-playoff::before,
+.promotion span.promotion-to-y::before,
+.promotion span.promotion-to-y-playoff::before,
+.promotion span.promotion-to-z::before,
+.promotion span.promotion-to-z-playoff::before,
+.promotion span.promotion-to-z-playoff-secondary::before,
+.promotion span.relegation::before,
+.promotion span.relegation-playoff::before {
+  content: '';
+  display: flex;
+  width: 100%;
+  height: 5px;
+  margin-bottom: 4px;
+}
+.promotion span.promotion-to-x::before { background-color: var(--playoffs-promotion-to-x); }
+.promotion span.promotion-to-x-playoff::before { background-color: var(--playoffs-promotion-to-x-playoff); }
+.promotion span.promotion-to-y::before { background-color: var(--playoffs-promotion-to-y); }
+.promotion span.promotion-to-y-playoff::before { background-color: var(--playoffs-promotion-to-y-playoff); }
+.promotion span.promotion-to-z::before { background-color: var(--playoffs-promotion-to-z); }
+.promotion span.promotion-to-z-playoff::before { background-color: var(--playoffs-promotion-to-z-playoff); }
+.promotion span.promotion-to-z-playoff-secondary::before { background-color: var(--playoffs-promotion-to-z-playoff-secondary); }
+.promotion span.relegation::before { background-color: var(--playoffs-promotion-to-relegation); }
+.promotion span.relegation-playoff::before { background-color: var(--playoffs-promotion-to-relegation-playoff); }
+
+.promotion-to-x td:first-child,
+.promotion-to-x-playoff td:first-child,
+.promotion-to-y td:first-child,
+.promotion-to-y-playoff td:first-child,
+.promotion-to-z td:first-child,
+.promotion-to-z-playoff td:first-child,
+.promotion-to-z-playoff-secondary td:first-child,
+.relegation td:first-child,
+.relegation-playoff td:first-child {
+  font-weight: 600;
+  color: var(--color-greyE4);
+}
+
+/* Promotion Key */
+.promotion-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 0.95em;
+  flex-direction: column;
+  margin: 20px;
+}
+.promotion-key-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 10px;
+}
+.promotion-key-color {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+}
+.promotion-to-x .promotion-key-color { background: var(--playoffs-promotion-to-x); }
+.promotion-to-x-playoff .promotion-key-color { background: var(--playoffs-promotion-to-x-playoff); }
+.promotion-to-y .promotion-key-color { background: var(--playoffs-promotion-to-y); }
+.promotion-to-y-playoff .promotion-key-color { background: var(--playoffs-promotion-to-y-playoff); }
+.promotion-to-z .promotion-key-color { background: var(--playoffs-promotion-to-z); }
+.promotion-to-z-playoff .promotion-key-color { background: var(--playoffs-promotion-to-z-playoff); }
+.promotion-to-z-playoff-secondary .promotion-key-color { background: var(--playoffs-promotion-to-z-playoff-secondary); }
+.relegation .promotion-key-color { background: var(--playoffs-promotion-to-relegation); }
+.relegation-playoff .promotion-key-color { background: var(--playoffs-promotion-to-relegation-playoff); }
+
+/* ============================= */
+/* 17. WIN/LOSS/DRAW BADGES      */
+/* ============================= */
+.W, .D, .L { 
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  padding: 2px 0;
+  font-weight: 700;
+  width: 20px;
+}
+.W, .win, .pos { background-color: var(--positive-color); }
+.D, .draw { background-color: var(--color-gr_1); }
+.L, .loss, .neg { background-color: var(--color-r_2); }
+
+/* ============================= */
+/* 18. ODDS & SCORE COMPONENTS   */
+/* ============================= */
 #match-odds {
-    justify-content: center;
-    gap: 5px;    
-    font-weight: 700;
-    margin-bottom: 15px;
-}    
+  justify-content: center;
+  gap: 5px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
 #match-odds span {
-    padding: 4px 8px;
-    background-color: var(--color-gr_5); /* Replace with a variable */
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
+  padding: 4px 8px;
+  background-color: var(--color-gr_5);
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
 }
 .positive {
-    background-color: rgba(46, 204, 113, 0.1) !important;
-    color: var(--positive-color);
+  background-color: rgba(46, 204, 113, 0.1) !important;
+  color: var(--positive-color);
 }
-
 .negative {
-    background-color: rgba(231, 76, 60, 0.1) !important;
-    color: var(--negative-color);
+  background-color: rgba(231, 76, 60, 0.1) !important;
+  color: var(--negative-color);
 }
-  
+.actual-home, .actual-away {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+}
+.actual-home::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -7px;
+  width: 7px;
+  height: 7px;
+  background-color: var(--color-g_2);
+}
+.actual-away::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -7px;
+  width: 7px;
+  height: 7px;
+  background-color: var(--color-r_3);
+}
+.allOut {
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 70px;
+}
+.allOut > div {
+  flex: 0 0 50%;
+  padding: 4px 0;
+  text-align: center;
+}
+.allOutOdd {
+  flex: 0 0 30px;
+  text-align: center;
+}
+.exWin, .default {
+  color: var(--color-w_0);
+  font-weight: 600;
+}
+.default { background-color: var(--color-gr_1); }
+.exWin { background-color: var(--color-o_1); }
+
+/* ============================= */
+/* 19. DUEL PARTICIPANT & DETAILS*/
+/* ============================= */
+#details-column { background-color: var(--color-gr_4); }
+.event-details { border-top: 1px solid #212121; }
+.duelParticipant {
+  --spacer: 17px;
+  display: grid;
+  grid-template:
+    "home time away" max-content
+    "home score away" max-content
+    ". . . " 5px / var(--width, minmax(110px, 250px)) var(--width, minmax(80px, 180px)) var(--width, minmax(110px, 250px));
+  justify-content: center;
+  padding: 10px 0 0;
+  text-align: center;
+}
+.duelParticipant .match-time {
+  display: grid;
+  grid-area: time;
+  text-align: center;
+}
+.duelParticipant__home, .duelParticipant__away {
+  display: flex;
+  justify-content: center;
+  font-weight: 700;
+  text-align: center;
+  flex-direction: column;
+  gap: 10px;
+}
+.duelParticipant__home { grid-area: home; }
+.duelParticipant__away { grid-area: away; }
+.duelParticipant__home img, .duelParticipant__away img {
+  height: 38px;
+  width: 38px;
+}
+.duelParticipant__score {
+  display: grid;
+  justify-content: center;
+  grid-area: score;
+  flex-flow: row wrap;
+}
+.detailScore__wrapper { font-size: 40px; font-weight: 700; }
+.form-display { display: inline-flex; gap: 2px; }
+.form-display span { flex: 1; }
+
+/* ============================= */
+/* 20. TEAM MANAGER H2H          */
+/* ============================= */
+.team-manager-h2h > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.team-manager-h2h > div > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+}
+.team-manager-h2h > div > div p { flex: 1; }
         </style>
     </head>
     <body class="closure rfr"> 
@@ -551,8 +1082,38 @@ ul.tournamentEvents li:last-child {
         <div class="main-content">
             <div id="categories" class="categories"></div>
             <div id="events-column" class="top-right"></div>
-            <div id="details-column" class="event-details"></div> 
+            <div id="details-column" class="event-details"></div>
+            <!-- League Table Tabs -->
+            <div id="league-table-tabs" class="league-table-tabs">
+            <div class="tabs">
+                <button class="tab active" data-tab="overall">Overall</button>
+                <button class="tab" data-tab="home">Home</button>
+                <button class="tab" data-tab="away">Away</button>
+                <button class="tab" data-tab="btts">BTTS</button>
+                <button class="tab" data-tab="over15">+1.5</button>
+                <button class="tab" data-tab="over25">+2.5</button>
+            </div>
+            <div class="tab-content" id="overall-table"></div>
+            <div class="tab-content" id="home-table" style="display:none"></div>
+            <div class="tab-content" id="away-table" style="display:none"></div>
+            <div class="tab-content" id="btts-table" style="display:none"></div>
+            <div class="tab-content" id="over15-table" style="display:none"></div>
+            <div class="tab-content" id="over25-table" style="display:none"></div>
+            <div id="promotion-key" class="promotion-key"></div>
+            </div>
         </div>
+
+        
+<div id="bet-list-container" class="bet-list-container">
+    <div class="bet-list-header">
+        <h3>My Bet List</h3>
+        <div class="bet-list-actions">
+            <button id="clear-bet-list" class="clear-bet-list">Clear All</button>
+            <button id="close-bet-list" class="close-bet-list">×</button>
+        </div>
+    </div>
+    <div id="bet-list-items" class="bet-list-items"></div>
+</div>
     <script>
         const baseURL = 'https://api.sofascore.com/api/v1';
         const staticImageUrl = 'https://www.sofascore.com/static/images';
@@ -570,6 +1131,118 @@ ul.tournamentEvents li:last-child {
                 return null;
             }
         };
+
+     
+
+const formatTime = (time) => {
+        return time < 10 ? `0${time}` : time; // Add leading zero if less than 10
+    };
+
+    const calculateElapsedTime = (event) => {
+        const now = Math.floor(Date.now() / 1000);
+        let elapsedSeconds = now - event.time.currentPeriodStartTimestamp;
+            //console.log(event.time.currentPeriodStartTimestamp);
+        // Check for match status descriptions
+        if (event.status.description === 'Halftime') {
+            return "HT"; // Display Halftime when it's halftime
+        } else if (event.status.description === 'Ended') {
+            return "Ended"; // Display Ended when the match has ended
+        } else if (event.status.description === '1st half') {
+            if (elapsedSeconds < 2700) {
+                const minutes = Math.floor(elapsedSeconds / 60);
+                const seconds = elapsedSeconds % 60;
+                return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
+            }
+            return "HT"; // Full time for 1st half
+        } else if (event.status.description === '2nd half') {
+            if (elapsedSeconds < 5400) {
+                const minutes = Math.floor((elapsedSeconds + 2700) / 60); // Add 2700 seconds for the 1st half
+                const seconds = (elapsedSeconds + 2700) % 60;
+                return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
+            }
+            return "FT"; // Full time for 2nd half
+        } 
+        return "00:00"; // Default if not in progress
+    };
+
+let liveTimerInterval = null;
+let liveScoreInterval = null;
+
+// Call this in displayEventDetails(event)
+function setupLiveTimerAndScore(event) {
+    if (liveTimerInterval) clearInterval(liveTimerInterval);
+    if (liveScoreInterval) clearInterval(liveScoreInterval);
+
+    if (event.status && event.status.type === "inprogress") {
+        liveTimerInterval = setInterval(() => {
+            const timerElement = document.getElementById(`live-timer-${event.id}`);
+            if (timerElement) {
+                timerElement.innerHTML = calculateElapsedTime(event);
+            }
+        }, 1000);
+
+        liveScoreInterval = setInterval(async () => {
+            const url = `${baseURL}/event/${event.id}`;
+            const updatedEventData = await fetchJson(url);
+            if (!updatedEventData || !updatedEventData.event) return;
+
+            const updatedEvent = updatedEventData.event;
+
+            // Update scheduled events list
+            const homeScoreElemList = document.getElementById(`homeScores-${event.id}`);
+            const awayScoreElemList = document.getElementById(`awayScores-${event.id}`);
+            if (homeScoreElemList && awayScoreElemList) {
+                homeScoreElemList.textContent = updatedEvent.homeScore.current;
+                awayScoreElemList.textContent = updatedEvent.awayScore.current;
+            }
+
+            // Update event details view
+            const homeScoreElemDetails = document.getElementById(`details-homeScores-${event.id}`);
+            const awayScoreElemDetails = document.getElementById(`details-awayScores-${event.id}`);
+            if (homeScoreElemDetails && awayScoreElemDetails) {
+                homeScoreElemDetails.textContent = updatedEvent.homeScore.current;
+                awayScoreElemDetails.textContent = updatedEvent.awayScore.current;
+            }
+
+            // Update timer/status if needed
+            const timerElement = document.getElementById(`live-timer-${event.id}`);
+            if (timerElement) {
+                timerElement.innerHTML = calculateElapsedTime(updatedEvent);
+            }
+
+            if (updatedEvent.status.type !== "inprogress") {
+                clearInterval(liveTimerInterval);
+                clearInterval(liveScoreInterval);
+            }
+        }, 10000);
+    }
+}
+
+
+
+// When navigating away or switching events, always clear intervals:
+function clearLiveIntervals() {
+    if (liveTimerInterval) clearInterval(liveTimerInterval);
+    if (liveScoreInterval) clearInterval(liveScoreInterval);
+}
+// Function to refresh match time div when the match starts
+const scheduleMatchStartRefresh = (event) => {
+    const matchStartTime = event.startTimestamp * 1000; // Convert to milliseconds
+    const currentTime = Date.now(); // Current time in milliseconds
+    const timeUntilStart = matchStartTime - currentTime;
+
+    if (timeUntilStart > 0) {
+        // Schedule the update at the match start time
+        setTimeout(() => {
+            const matchTimeElement = document.querySelector(`.match-time[data-event-id="${event.id}"]`);
+            if (matchTimeElement) {
+                matchTimeElement.innerHTML = `<span class="live-status">Live</span>`;
+                startLiveTimer(event); // Start the live timer
+            }
+        }, timeUntilStart);
+    }
+};
+
     
 // Helper function to convert fractional odds to decimal
 function fractionalToDecimal(fractionalOdds) {
@@ -599,13 +1272,33 @@ function fractionalToDecimal(fractionalOdds) {
         };
 
         
-
+// Function to apply color coding based on thresholds
+const getColor = (value, type) => {
+    switch (type) {
+        case 'points':
+            return value >= 67 ? 'color: #27fb99; font-weight: bold;' : 
+                   value <= 33 ? 'color: #ffa500; font-weight: bold;' : '';
+        case 'good': 
+            return value >= 64 ? 'color: #21b083; font-weight: bold;' : ''; // Good stats (Wins, BTTS, Overs) above 64%
+        case 'bad': 
+            return value >= 49 ? 'color: #e59c03a8; font-weight: bold;' : ''; // Bad stats (Losses) above 49%
+        case 'inverse-good': 
+            return value === 0 ? 'color: #21b083; font-weight: bold;' : ''; // 0% Failed to Score is excellent
+        case 'inverse-bad': 
+            return value >= 33 ? 'color: #e59c03a8; font-weight: bold;' : ''; // 33% or more Failed to Score is bad
+        case 'cleansheet-good': 
+            return value >= 33 ? 'color: #21b083; font-weight: bold;' : ''; // 33%+ Clean Sheets is good
+        case 'cleansheet-bad': 
+            return value === 0 ? 'color: #e59c03a8; font-weight: bold;' : ''; // 0% Clean Sheets is bad
+        default:
+            return ''; // Default style
+    }
+};
 
 // Update the bet list display
 async function updateBetListDisplay() {
     const betListContainer = document.getElementById('bet-list-container');
     const betListItems = document.getElementById('bet-list-items');
-
     if (!betListContainer || !betListItems) return;
 
     let betList = JSON.parse(localStorage.getItem('betList')) || [];
@@ -620,24 +1313,65 @@ async function updateBetListDisplay() {
 
     let html = '';
 
-    for (const item of betList) { 
-        const pointsData = await getPointsPercentagesForEvent(item.eventId);
-        console.log('Points Data:', pointsData);
+    for (const item of betList) {
+        // Fetch or retrieve cached stats for this event
+        const stats = await getEventSummaryStats(item.eventId); // <-- implement this function
+
         html += `
-            <div class="bet-item" data-event-id="${item.eventId}">
-                <div class="bet-item-teams">
-                    ${item.homeTeam} vs ${item.awayTeam}
+        <div class="bet-item" data-event-id="${item.eventId}">
+            <div class="bet-item-teams">
+                <div class="team-names">
+                <img src="${baseURL}/team/${item.homeTeamId}/image" alt="${item.homeTeam}" />
+                <span>${item.homeTeam}</span>
+                <span style="color:var(--color-o_1);font-weight:400;">vs</span>
+                <img src="${baseURL}/team/${item.awayTeamId}/image" alt="${item.awayTeam}" />
+                <span>${item.awayTeam}</span>
                 </div>
-                <div class="bet-item-stats">
-                    ${pointsData ? `
-                        <span style="${getColor(pointsData.homePercent, 'points')}">${pointsData.homePercent}%</span> / 
-                        <span style="${getColor(pointsData.awayPercent, 'points')}">${pointsData.awayPercent}%</span> - 
-                        <span style="${getColor(pointsData.homePercentAll, 'points')}">${pointsData.homePercentAll}%</span> / 
-                        <span style="${getColor(pointsData.awayPercentAll, 'points')}">${pointsData.awayPercentAll}%</span> 
-                    ` : 'N/A'}
+                <div style="font-size:0.92em;color:var(--color-w_2);margin-top:2px;">
+                ${item.matchTime || ""}
                 </div>
-                <div class="bet-item-remove" data-event-id="${item.eventId}">×</div>
             </div>
+            <div class="bet-item-summary">
+                <table>
+                <tr>
+                    <th></th>
+                    <th>${item.homeTeam}</th>
+                    <th>${item.awayTeam}</th>
+                </tr>
+                <tr>
+                    <td>Form</td>
+                    <td>${stats.home.form}</td>
+                    <td>${stats.away.form}</td>
+                </tr>
+                <tr>
+                    <td>BTTS %</td>
+                    <td>${stats.home.btts}%</td>
+                    <td>${stats.away.btts}%</td>
+                </tr>
+                <tr>
+                    <td>+1.5 %</td>
+                    <td>${stats.home.over15}%</td>
+                    <td>${stats.away.over15}%</td>
+                </tr>
+                <tr>
+                    <td>+2.5 %</td>
+                    <td>${stats.home.over25}%</td>
+                    <td>${stats.away.over25}%</td>
+                </tr>
+                <tr>
+                    <td>Table Pos</td>
+                    <td>${stats.home.position}</td>
+                    <td>${stats.away.position}</td>
+                </tr>
+                <tr>
+                    <td>Points</td>
+                    <td>${stats.home.points}</td>
+                    <td>${stats.away.points}</td>
+                </tr>
+                </table>
+            </div>
+            <button class="bet-item-remove" data-event-id="${item.eventId}" title="Remove">×</button>
+        </div>
         `;
     }
 
@@ -649,17 +1383,106 @@ async function updateBetListDisplay() {
         button.addEventListener('click', async (e) => {
             e.stopPropagation();
             const eventId = button.getAttribute('data-event-id');
-
             let betList = JSON.parse(localStorage.getItem('betList')) || [];
             betList = betList.filter(item => item.eventId.toString() !== eventId);
             localStorage.setItem('betList', JSON.stringify(betList));
-
             const star = document.querySelector(`.star-icon[data-event-id="${eventId}"]`);
             if (star) star.classList.remove('active');
-
             await updateBetListDisplay();
         });
     });
+}
+
+/**
+ * Fetches and calculates summary stats for a given event (for bet list modal).
+ * Returns an object with home/away form, BTTS, over 1.5/2.5, position, and points.
+ */
+async function getEventSummaryStats(eventId) {
+    // Fetch event details
+    const eventUrl = `${baseURL}/event/${eventId}`;
+    const eventData = await fetchJson(eventUrl);
+    if (!eventData || !eventData.event) return null;
+
+    const event = eventData.event;
+    const tournamentId = event.tournament.id;
+    const seasonId = event.season.id;
+    const homeTeamId = event.homeTeam.id;
+    const awayTeamId = event.awayTeam.id;
+
+    // Fetch standings
+    const standingsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/standings/total`;
+    const standingsData = await fetchJson(standingsUrl);
+    const rows = standingsData?.standings?.[0]?.rows || [];
+
+    // Helper to get team row
+    const getTeamRow = (teamId) => rows.find(r => r.team.id === teamId) || {};
+
+    // Fetch last 5 finished events (excluding current event)
+    const events = await fetchEventsData(tournamentId, seasonId, eventId);
+
+    // Helper to get last 5 for a team (overall, home, away)
+    function getLast5(teamId, type) {
+        let filtered;
+        if (type === 'home') {
+            filtered = events.filter(ev => ev.homeTeam.id === teamId).slice(0, 5);
+        } else if (type === 'away') {
+            filtered = events.filter(ev => ev.awayTeam.id === teamId).slice(0, 5);
+        } else {
+            filtered = events.filter(ev => ev.homeTeam.id === teamId || ev.awayTeam.id === teamId).slice(0, 5);
+        }
+        return filtered;
+    }
+
+    // Calculate stats for a team
+    function calcStats(teamId) {
+        const row = getTeamRow(teamId);
+        const last5 = getLast5(teamId, 'overall');
+        const formArr = last5.map(ev => {
+            if (ev.homeTeam.id === teamId) {
+                if (ev.homeScore.current > ev.awayScore.current) return 'W';
+                if (ev.homeScore.current < ev.awayScore.current) return 'L';
+                return 'D';
+            } else {
+                if (ev.awayScore.current > ev.homeScore.current) return 'W';
+                if (ev.awayScore.current < ev.homeScore.current) return 'L';
+                return 'D';
+            }
+        });
+        const form = formArr.join(' ');
+
+        // Calculate all required stats
+        let btts = 0, over15 = 0, over25 = 0, over35 = 0;
+        last5.forEach(ev => {
+            const goals = ev.homeScore.current + ev.awayScore.current;
+            if (ev.homeScore.current > 0 && ev.awayScore.current > 0) btts++;
+            if (goals > 1.5) over15++;
+            if (goals > 2.5) over25++;
+            if (goals > 3.5) over35++;
+        });
+        
+        const percent = (val) => last5.length ? Math.round((val / last5.length) * 100) : 0;
+
+        return {
+            form,
+            btts: percent(btts),
+            over15: percent(over15),
+            over25: percent(over25),
+            over35: percent(over35),
+            position: row.position || '-',
+            points: row.points || '-',
+            // Additional calculated stats for completeness
+            under15: 100 - percent(over15),
+            under25: 100 - percent(over25),
+            under35: 100 - percent(over35),
+            bttsNo: 100 - percent(btts)
+        };
+    }
+
+
+    return {
+        home: calcStats(homeTeamId),
+        away: calcStats(awayTeamId)
+    };
 }
         
 // Function to clear all bets
@@ -674,8 +1497,6 @@ function clearAllBets() {
 }
 
 
-
-        // Update the displayScheduledEvents function
 function displayScheduledEvents(events) {
     const topRightList = document.querySelector('.top-right');
     const bottomRightDetails = document.querySelector('.event-details');
@@ -705,22 +1526,30 @@ function displayScheduledEvents(events) {
         // Check if this event is in the bet list
         const isInBetList = betList.some(item => item.eventId === event.id);
 
+        // Placeholder for odds (will be populated after fetching)
+        let oddsHtml = '<span>Loading odds...</span>';
+
         tournamentEventsHtml += `<li class="match-list ${status}" data-event-id="${event.id}" data-custom-id="${event.customId}" data-tournament-id="${event.tournament.id}" data-unique-tournament-id="${event.tournament.uniqueTournament.id}" data-season-id="${event.season.id}" data-home-team-id="${event.homeTeam.id}" data-away-team-id="${event.awayTeam.id}">
-            <div class="info-wrapper">
-                <div class="date"><span>${eventTime}</span></div>
-                <div class="team-info">
-                    <div class="teams-info">
-                        <div class="team"><img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">${event.homeTeam.shortName}</div>
-                        <div class="team"><img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">${event.awayTeam.shortName}</div>
+            <div class="date"><span>${eventTime}</span></div> 
+                    <div class="teams-info team-info"><div class="team">
+  <img src="${baseURL}/team/${event.homeTeam.id}/image" width="14" height="14" alt="${event.homeTeam.name}" loading="lazy" class="team-logo">
+  ${event.homeTeam.shortName || event.homeTeam.name}
+</div>
+<div class="team">
+  <img src="${baseURL}/team/${event.awayTeam.id}/image" width="14" height="14" alt="${event.awayTeam.name}" loading="lazy" class="team-logo">
+  ${event.awayTeam.shortName || event.awayTeam.name}
+</div>
                     </div>
                     <div class="match-score rcr">
-                        <div class="score" id="homeScore-${event.id}">${homeScore}</div>
-                        <div class="score" id="awayScore-${event.id}">${awayScore}</div>
-                    </div>
-                </div>
-                <div class="star-icon ${isInBetList ? 'active' : ''}" data-event-id="${event.id}">★</div>
-            </div>
+                        <div class="score" id="homeScores-${event.id}">${homeScore}</div>
+                        <div class="score" id="awayScores-${event.id}">${awayScore}</div>
+                    </div> 
+                <div class="winning-odds rcr" id="odds-${event.id}">${oddsHtml}</div>
+                <div class="star-icon ${isInBetList ? 'active' : ''}" data-event-id="${event.id}">★</div> 
         </li>`;
+
+        // Fetch odds for this event
+        fetchAndDisplayWinningOdds(event.id);
     });
     tournamentEventsHtml += '</ul>';
     topRightList.innerHTML = tournamentEventsHtml;
@@ -757,265 +1586,288 @@ function displayScheduledEvents(events) {
     if (events.length > 0) {
         const firstEvent = events[0];
         displayEventDetails(firstEvent);
-
-// ✅ Refresh bet list so points load with correct event data
-  updateBetListDisplay();
+        updateBetListDisplay();
     } else {
         bottomRightDetails.innerHTML = '<p>No events available.</p>';
     }
 }
+// Improved toggle function
+async function toggleBetListItem(star, events) {
+    const eventId = star.getAttribute('data-event-id');
+    const event = events.find(e => e.id.toString() === eventId);
+    if (!event) return;
+
+    star.classList.toggle('active');
+    
+    let betList = JSON.parse(localStorage.getItem('betList')) || [];
+    const eventInList = betList.some(item => item.eventId.toString() === eventId);
+
+    if (star.classList.contains('active') && !eventInList) {
+        betList.push({
+            eventId: event.id.toString(),
+            homeTeam: event.homeTeam.shortName,
+            awayTeam: event.awayTeam.shortName,
+            timestamp: event.startTimestamp
+        });
+    } else if (!star.classList.contains('active') && eventInList) {
+        betList = betList.filter(item => item.eventId.toString() !== eventId);
+    }
+
+    localStorage.setItem('betList', JSON.stringify(betList));
+    await updateBetListDisplay();
+}
 
     
-        // Function to fetch and display events for a specific date and status
-        const fetchAndDisplayEvents = async (date, status = 'all') => {
-            const formattedDate = formatDateForApi(date);
-            
-            try {
-                const [categoriesData, topTournamentsData, scheduledEventsData] = await Promise.all([
-                    fetch(`${baseURL}/sport/football/categories`).then(response => response.json()),
-                    fetch(`${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
-                    fetch(`${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json())
-                ]);
-    
-                const categories = categoriesData.categories.sort((a, b) => a.name.localeCompare(b.name));
-                const startOfDay = new Date(formattedDate).setHours(0, 30, 0, 0) / 1000;
-                const endOfDay = startOfDay + 36 * 60 * 60;
-                const topTournaments = topTournamentsData.uniqueTournaments;
-    
-                let events = scheduledEventsData.events.filter(event => event.startTimestamp >= startOfDay && event.startTimestamp <= endOfDay);
-                let uniqueEvents = events.filter((event, index, self) => index === self.findIndex(e => e.id === event.id));
-    
-                // Apply event status filter
-                if (status !== 'all') {
-                    uniqueEvents = uniqueEvents.filter(event => {
-                        switch (status) {
-                            case 'live':
-                                return event.status?.type === 'inprogress';
-                            case 'finished':
-                                return event.status?.type === 'finished';
-                            case 'scheduled':
-                                return event.status?.type === 'notstarted';
-                            default:
-                                return true;
-                        }
-                    });
+    // Function to fetch and display events for a specific date and status
+    const fetchAndDisplayEvents = async (date, status = 'all') => {
+        const formattedDate = formatDateForApi(date);
+        
+        try {
+            const [categoriesData, topTournamentsData, scheduledEventsData] = await Promise.all([
+                fetch(`${baseURL}/sport/football/categories`).then(response => response.json()),
+                fetch(`${baseURL}/config/top-unique-tournaments/UG/football`).then(response => response.json()),
+                fetch(`${baseURL}/sport/football/scheduled-events/${formattedDate}`).then(response => response.json())
+            ]);
+
+            const categories = categoriesData.categories.sort((a, b) => a.name.localeCompare(b.name));
+            const startOfDay = new Date(formattedDate).setHours(0, 30, 0, 0) / 1000;
+            const endOfDay = startOfDay + 36 * 60 * 60;
+            const topTournaments = topTournamentsData.uniqueTournaments;
+
+            let events = scheduledEventsData.events.filter(event => event.startTimestamp >= startOfDay && event.startTimestamp <= endOfDay);
+            let uniqueEvents = events.filter((event, index, self) => index === self.findIndex(e => e.id === event.id));
+
+            // Apply event status filter
+            if (status !== 'all') {
+                uniqueEvents = uniqueEvents.filter(event => {
+                    switch (status) {
+                        case 'live':
+                            return event.status?.type === 'inprogress';
+                        case 'finished':
+                            return event.status?.type === 'finished';
+                        case 'scheduled':
+                            return event.status?.type === 'notstarted';
+                        default:
+                            return true;
+                    }
+                });
+            }
+
+            const categoryEventCounts = {};
+            const tournamentEventCounts = {};
+
+            uniqueEvents.forEach(event => {
+                const categoryId = event.tournament.category.id;
+                const tournamentId = event.tournament.uniqueTournament.id;
+
+                categoryEventCounts[categoryId] = (categoryEventCounts[categoryId] || 0) + 1;
+                tournamentEventCounts[tournamentId] = (tournamentEventCounts[tournamentId] || 0) + 1;
+            });
+
+            const leftCol = document.querySelector('.categories');
+            const topRightList = document.querySelector('.tournament-list');
+            const bottomRightDetails = document.querySelector('.event-details');
+            const middleCol = document.querySelector('.col-middle');
+
+            const promises = [];
+
+            let topTournamentsHtml = '<h2>Top leagues</h2><ul class="topTourn">';
+                
+            topTournaments.forEach(tournament => {
+                if (tournamentEventCounts[tournament.id]) {
+                    const category = tournament.category;
+                    const imageUrl = category.alpha2
+                        ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
+                        : `${staticImageUrl}/flags/${category.flag}.png`;
+                    const eventCount = tournamentEventCounts[tournament.id];
+                    topTournamentsHtml += `<li data-tournament-id="${tournament.id}"><img src="${imageUrl}" alt="${category.name} flag" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${tournament.name}<span class="event-count rcr">${eventCount}</span></li>`;
                 }
-    
-                const categoryEventCounts = {};
-                const tournamentEventCounts = {};
-    
-                uniqueEvents.forEach(event => {
-                    const categoryId = event.tournament.category.id;
-                    const tournamentId = event.tournament.uniqueTournament.id;
-    
-                    categoryEventCounts[categoryId] = (categoryEventCounts[categoryId] || 0) + 1;
-                    tournamentEventCounts[tournamentId] = (tournamentEventCounts[tournamentId] || 0) + 1;
-                });
-    
-                const leftCol = document.querySelector('.categories');
-                const topRightList = document.querySelector('.tournament-list');
-                const bottomRightDetails = document.querySelector('.event-details');
-                const middleCol = document.querySelector('.col-middle');
-    
-                const promises = [];
-    
-                let topTournamentsHtml = '<h2>Top leagues</h2><ul class="topTourn">';
-                    
-                topTournaments.forEach(tournament => {
-                    if (tournamentEventCounts[tournament.id]) {
-                        const category = tournament.category;
-                        const imageUrl = category.alpha2
-                            ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
-                            : `${staticImageUrl}/flags/${category.flag}.png`;
-                        const eventCount = tournamentEventCounts[tournament.id];
-                        topTournamentsHtml += `<li data-tournament-id="${tournament.id}"><img src="${imageUrl}" alt="${category.name} flag" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${tournament.name}<span class="event-count rcr">${eventCount}</span></li>`;
-                    }
-                });
-                topTournamentsHtml += '</ul> <h2>All Leagues </h2>';
-    
-                categories.forEach((category) => {
-                    if (categoryEventCounts[category.id]) {
-                        const categoryId = category.id;
-                        const promise = fetch(`${baseURL}/category/${categoryId}/unique-tournaments`)
-                            .then(response => response.json())
-                            .then(data => {
-                                const uniqueTournaments = data.groups[0].uniqueTournaments;
-                                const imageUrl = category.alpha2
-                                    ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
-                                    : `${staticImageUrl}/flags/${category.flag}.png`;
-    
-                                const categoryEventCount = categoryEventCounts[category.id];
-                                let categoryHtml = `<div class="category-header"><img src="${imageUrl}" alt="${category.name} flag"  width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${category.name}<span class="event-count rcr">${categoryEventCount}</span></div><ul class="category-tournaments">`;
-                                uniqueTournaments.forEach((tournament) => {
-                                    if (tournamentEventCounts[tournament.id]) {
-                                        const tournamentEventCount = tournamentEventCounts[tournament.id];
-                                        categoryHtml += `<li data-tournament-id="${tournament.id}"><img src="${baseURL}/unique-tournament/${tournament.id}/image" alt="${tournament.name}" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;"> ${tournament.name}<span class="event-count rcr">${tournamentEventCount}</span></li>`;
-                                    }
-                                });
-                                categoryHtml += `</ul>`;
-                                return categoryHtml;
-                            });
-                        promises.push(promise);
-                    }
-                });
-    
-                Promise.all(promises).then(results => {
-                    leftCol.innerHTML = topTournamentsHtml + results.join('');
-    
-                    const categoryHeaders = leftCol.querySelectorAll('.category-header');
-                    categoryHeaders.forEach((header) => {
-                        header.addEventListener('click', () => {
-                            const ul = header.nextElementSibling;
-                            if (ul.style.display === 'none' || ul.style.display === '') {
-                                ul.style.display = 'block';
-                                header.classList.add('expanded');
-                            } else {
-                                ul.style.display = 'none';
-                                header.classList.remove('expanded');
-                            }
-    
-                            const otherHeaders = leftCol.querySelectorAll('.category-header');
-                            otherHeaders.forEach((otherHeader) => {
-                                if (otherHeader !== header) {
-                                    const otherUl = otherHeader.nextElementSibling;
-                                    otherUl.style.display = 'none';
-                                    otherHeader.classList.remove('expanded');
+            });
+            topTournamentsHtml += '</ul> <h2>All Leagues </h2>';
+
+            categories.forEach((category) => {
+                if (categoryEventCounts[category.id]) {
+                    const categoryId = category.id;
+                    const promise = fetch(`${baseURL}/category/${categoryId}/unique-tournaments`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const uniqueTournaments = data.groups[0].uniqueTournaments;
+                            const imageUrl = category.alpha2
+                                ? `${staticImageUrl}/flags/${category.alpha2.toLowerCase()}.png`
+                                : `${staticImageUrl}/flags/${category.flag}.png`;
+
+                            const categoryEventCount = categoryEventCounts[category.id];
+                            let categoryHtml = `<div class="category-header"><img src="${imageUrl}" alt="${category.name} flag"  width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;" /> ${category.name}<span class="event-count rcr">${categoryEventCount}</span></div><ul class="category-tournaments">`;
+                            uniqueTournaments.forEach((tournament) => {
+                                if (tournamentEventCounts[tournament.id]) {
+                                    const tournamentEventCount = tournamentEventCounts[tournament.id];
+                                    categoryHtml += `<li data-tournament-id="${tournament.id}"><img src="${baseURL}/unique-tournament/${tournament.id}/image" alt="${tournament.name}" width="16" height="16" loading="lazy" decoding="async" style="vertical-align: top;"> ${tournament.name}<span class="event-count rcr">${tournamentEventCount}</span></li>`;
                                 }
                             });
+                            categoryHtml += `</ul>`;
+                            return categoryHtml;
                         });
-                    });
-    
-                    const tournamentItems = document.querySelectorAll('ul.topTourn li, .category-tournaments li');
-                    tournamentItems.forEach(item => {
-                        item.addEventListener('click', async () => {
-                            const tournamentId = parseInt(item.dataset.tournamentId);
-                            try {
-                                const tournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === tournamentId);
-                                displayScheduledEvents(tournamentEvents);
-                            } catch (error) {
-                                console.error('Error fetching data:', error);
+                    promises.push(promise);
+                }
+            });
+
+            Promise.all(promises).then(results => {
+                leftCol.innerHTML = topTournamentsHtml + results.join('');
+
+                const categoryHeaders = leftCol.querySelectorAll('.category-header');
+                categoryHeaders.forEach((header) => {
+                    header.addEventListener('click', () => {
+                        const ul = header.nextElementSibling;
+                        if (ul.style.display === 'none' || ul.style.display === '') {
+                            ul.style.display = 'block';
+                            header.classList.add('expanded');
+                        } else {
+                            ul.style.display = 'none';
+                            header.classList.remove('expanded');
+                        }
+
+                        const otherHeaders = leftCol.querySelectorAll('.category-header');
+                        otherHeaders.forEach((otherHeader) => {
+                            if (otherHeader !== header) {
+                                const otherUl = otherHeader.nextElementSibling;
+                                otherUl.style.display = 'none';
+                                otherHeader.classList.remove('expanded');
                             }
                         });
                     });
-    
-                    if (uniqueEvents.length > 0) {
-                        const firstTournamentId = uniqueEvents[0].tournament.uniqueTournament.id;
-                        const firstTournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === firstTournamentId);
-                        displayScheduledEvents(firstTournamentEvents);
-                    } else {
-                        // Display a message when no events are found
-                        middleCol.innerHTML = '<div class="no-events">No events found for the selected date and filter.</div>';
-                    }
-                }).catch(error => {
-                    console.error('Error fetching data:', error);
                 });
-            } catch (error) {
-                console.error('Error fetching events:', error);
+
+                const tournamentItems = document.querySelectorAll('ul.topTourn li, .category-tournaments li');
+                tournamentItems.forEach(item => {
+                    item.addEventListener('click', async () => {
+                        const tournamentId = parseInt(item.dataset.tournamentId);
+                        try {
+                            const tournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === tournamentId);
+                            displayScheduledEvents(tournamentEvents);
+                        } catch (error) {
+                            console.error('Error fetching data:', error);
+                        }
+                    });
+                });
+
+                if (uniqueEvents.length > 0) {
+                    const firstTournamentId = uniqueEvents[0].tournament.uniqueTournament.id;
+                    const firstTournamentEvents = uniqueEvents.filter(event => event.tournament.uniqueTournament.id === firstTournamentId);
+                    displayScheduledEvents(firstTournamentEvents);
+                } else {
+                    // Display a message when no events are found
+                    middleCol.innerHTML = '<div class="no-events">No events found for the selected date and filter.</div>';
+                }
+            }).catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize calendar
+        const calendarMenu = document.getElementById('calendarMenu');
+        const calendarDays = document.querySelector('.calendar__days');
+        const selectedDateElement = document.getElementById('selectedDate');
+        const yesterdayButton = document.querySelector('.calendar__navigation--yesterday');
+        const tomorrowButton = document.querySelector('.calendar__navigation--tomorrow');
+        
+        // Initialize status filter
+        const filterButtons = document.querySelectorAll('.filters__group a');
+        let currentStatus = 'all';
+        let currentDate = new Date();
+
+        // Function to update the calendar days
+        const updateCalendarDays = () => {
+            calendarDays.innerHTML = '';
+            for (let i = -7; i <= 7; i++) {
+                const date = new Date(currentDate);
+                date.setDate(currentDate.getDate() + i);
+
+                const li = document.createElement('li');
+                li.className = 'calendar__listItem';
+
+                const button = document.createElement('button');
+                button.className = 'calendar__day';
+                button.textContent = formatDate(date);
+
+                if (i === 0) {
+                    button.classList.add('calendar__day--active');
+                }
+
+                button.addEventListener('click', () => {
+                    currentDate = date;
+                    selectedDateElement.textContent = formatDate(date);
+                    fetchAndDisplayEvents(date, currentStatus);
+                    calendarMenu.setAttribute('aria-expanded', 'false');
+                    calendarDays.style.display = 'none';
+                });
+
+                li.appendChild(button);
+                calendarDays.appendChild(li);
             }
         };
-    
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize calendar
-            const calendarMenu = document.getElementById('calendarMenu');
-            const calendarDays = document.querySelector('.calendar__days');
-            const selectedDateElement = document.getElementById('selectedDate');
-            const yesterdayButton = document.querySelector('.calendar__navigation--yesterday');
-            const tomorrowButton = document.querySelector('.calendar__navigation--tomorrow');
-            
-            // Initialize status filter
-            const filterButtons = document.querySelectorAll('.filters__group a');
-            let currentStatus = 'all';
-            let currentDate = new Date();
-    
-            // Function to update the calendar days
-            const updateCalendarDays = () => {
-                calendarDays.innerHTML = '';
-                for (let i = -7; i <= 7; i++) {
-                    const date = new Date(currentDate);
-                    date.setDate(currentDate.getDate() + i);
-    
-                    const li = document.createElement('li');
-                    li.className = 'calendar__listItem';
-    
-                    const button = document.createElement('button');
-                    button.className = 'calendar__day';
-                    button.textContent = formatDate(date);
-    
-                    if (i === 0) {
-                        button.classList.add('calendar__day--active');
-                    }
-    
-                    button.addEventListener('click', () => {
-                        currentDate = date;
-                        selectedDateElement.textContent = formatDate(date);
-                        fetchAndDisplayEvents(date, currentStatus);
-                        calendarMenu.setAttribute('aria-expanded', 'false');
-                        calendarDays.style.display = 'none';
-                    });
-    
-                    li.appendChild(button);
-                    calendarDays.appendChild(li);
-                }
-            };
-    
-            // Initialize status filter buttons
-            filterButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    
-                    // Update active state
-                    filterButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    
-                    // Update current status and fetch events
-                    currentStatus = button.dataset.status;
-                    fetchAndDisplayEvents(currentDate, currentStatus);
-                });
-            });
-    
-            // Initialize calendar and fetch today's events
-            selectedDateElement.textContent = formatDate(currentDate);
-            updateCalendarDays();
-            fetchAndDisplayEvents(currentDate, currentStatus);
-    
-            // Toggle calendar days visibility
-            calendarMenu.addEventListener('click', () => {
-                const isExpanded = calendarMenu.getAttribute('aria-expanded') === 'true';
-                calendarMenu.setAttribute('aria-expanded', !isExpanded);
-                calendarDays.style.display = isExpanded ? 'none' : 'grid';
-            });
-    
-            // Navigate to previous day
-            yesterdayButton.addEventListener('click', () => {
-                currentDate.setDate(currentDate.getDate() - 1);
-                selectedDateElement.textContent = formatDate(currentDate);
-                fetchAndDisplayEvents(currentDate, currentStatus);
-                updateCalendarDays();
-            });
-    
-            // Navigate to next day
-            tomorrowButton.addEventListener('click', () => {
-                currentDate.setDate(currentDate.getDate() + 1);
-                selectedDateElement.textContent = formatDate(currentDate);
-                fetchAndDisplayEvents(currentDate, currentStatus);
-                updateCalendarDays();
-            });
 
-             // Check if there are items in the bet list on page load
-    const betList = JSON.parse(localStorage.getItem('betList')) || [];
-    if (betList.length > 0) {
-        updateBetListDisplay();
-        
-        // Sync star states
-        betList.forEach(item => {
-            const star = document.querySelector(`.star-icon[data-event-id="${item.eventId}"]`);
-            if (star) {
-                star.classList.add('active');
-            }
+        // Initialize status filter buttons
+        filterButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Update active state
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update current status and fetch events
+                currentStatus = button.dataset.status;
+                fetchAndDisplayEvents(currentDate, currentStatus);
+            });
         });
-    }
+
+        // Initialize calendar and fetch today's events
+        selectedDateElement.textContent = formatDate(currentDate);
+        updateCalendarDays();
+        fetchAndDisplayEvents(currentDate, currentStatus);
+
+        // Toggle calendar days visibility
+        calendarMenu.addEventListener('click', () => {
+            const isExpanded = calendarMenu.getAttribute('aria-expanded') === 'true';
+            calendarMenu.setAttribute('aria-expanded', !isExpanded);
+            calendarDays.style.display = isExpanded ? 'none' : 'grid';
         });
-     
+
+        // Navigate to previous day
+        yesterdayButton.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() - 1);
+            selectedDateElement.textContent = formatDate(currentDate);
+            fetchAndDisplayEvents(currentDate, currentStatus);
+            updateCalendarDays();
+        });
+
+        // Navigate to next day
+        tomorrowButton.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() + 1);
+            selectedDateElement.textContent = formatDate(currentDate);
+            fetchAndDisplayEvents(currentDate, currentStatus);
+            updateCalendarDays();
+        });
+
+            // Check if there are items in the bet list on page load
+const betList = JSON.parse(localStorage.getItem('betList')) || [];
+if (betList.length > 0) {
+    updateBetListDisplay();
+    
+    // Sync star states
+    betList.forEach(item => {
+        const star = document.querySelector(`.star-icon[data-event-id="${item.eventId}"]`);
+        if (star) {
+            star.classList.add('active');
+        }
+    });
+}
+    });
+    
 
 // Separate function to update the PPG in a targeted div
 const renderManagerInfo = (manager, managerId) => {
@@ -1181,7 +2033,6 @@ const fetchHeadToHead = async (eventId, h2hContainerId) => {
         
         const h2hData = await response.json();
         const { teamDuel, managerDuel } = h2hData;
-
         // Render team duel data if available
         const teamDuelHTML = teamDuel ? renderTeamDuelStats(teamDuel) : '<div></div>';
 
@@ -1225,7 +2076,7 @@ const renderManagerDuelStats = (managerDuel) => {
 
     return `
     <div>
-        <span>Manager Duel (${totalGames})</span>
+        <h4>Manager Duel (${totalGames})</h4>
         <div>
             <p><strong>${homeWinPercentage}%</strong></p>
             <p><strong>${drawPercentage}%</strong></p>
@@ -1234,6 +2085,84 @@ const renderManagerDuelStats = (managerDuel) => {
     </div>
     `; 
 };
+
+
+async function fetchAndDisplayWinningOdds(matchId) {
+    try {
+        const response = await fetch(`${baseURL}/event/${matchId}/provider/1/winning-odds`);
+        const winningOddsData = await response.json();
+
+        if (winningOddsData) {
+            const { home, away } = winningOddsData;
+            const expectedActualDiv = document.getElementById(`odds-${matchId}`);
+
+            if (expectedActualDiv) {
+                // Clear previous content
+                expectedActualDiv.innerHTML = '';
+
+                // Check and display home odds data if available
+                if (home) {
+                    const expectedHomeOdds = home.expected;
+                    const actualHomeOdds = home.actual;
+                    const fractionalHomeOdds = fractionalToDecimal(home.fractionalValue);
+                    const homeWinClass = actualHomeOdds > expectedHomeOdds ? 'exWin' : 'default';
+                    const homeWinDiff = actualHomeOdds - expectedHomeOdds;
+                    
+                    const changeClass = homeWinDiff > 0 ? 'positive' : homeWinDiff < 0 ? 'negative' : 'neutral';
+                    const arrowSymbol = homeWinDiff > 0 ? '\u2191' : homeWinDiff < 0 ? '\u2193' : '';
+
+                    const homeDiv = document.createElement('div');
+                    homeDiv.className = 'actual-home';
+                    homeDiv.innerHTML = `
+                        <div class="allOut">
+                            <div class="${homeWinClass}">${actualHomeOdds}</div>
+                            <div class="${changeClass}">
+                                ${homeWinDiff} ${arrowSymbol}
+                            </div>
+                        </div>
+                        <div class="allOutOdd">${fractionalHomeOdds}</div>
+                    `;
+                    expectedActualDiv.appendChild(homeDiv);
+                } else {
+                    console.error('Home odds data is missing.');
+                }
+
+                // Check and display away odds data if available
+                if (away) {
+                    const expectedAwayOdds = away.expected;
+                    const actualAwayOdds = away.actual;
+                    const fractionalAwayOdds = fractionalToDecimal(away.fractionalValue);
+                    const awayWinClass = actualAwayOdds > expectedAwayOdds ? 'exWin' : 'default';
+                    const awayWinDiff = actualAwayOdds - expectedAwayOdds;
+                    
+                    const changeClass = awayWinDiff > 0 ? 'positive' : awayWinDiff < 0 ? 'negative' : 'neutral';
+                    const arrowSymbol = awayWinDiff > 0 ? '\u2191' : awayWinDiff < 0 ? '\u2193' : '';
+
+                    const awayDiv = document.createElement('div');
+                    awayDiv.className = 'actual-away';
+                    awayDiv.innerHTML = `
+                        <div class="allOut">
+                            <div class="${awayWinClass}">${actualAwayOdds}</div>
+                            <div class="${changeClass}">
+                                ${awayWinDiff} ${arrowSymbol}
+                            </div>
+                        </div>
+                        <div class="allOutOdd">${fractionalAwayOdds}</div>
+                    `;
+                    expectedActualDiv.appendChild(awayDiv);
+                } else {
+                    console.error('Away odds data is missing.');
+                }
+            } else {
+                console.error('expected-actual div is not found.');
+            }
+        } else {
+            console.error('Invalid winning odds data:', winningOddsData);
+        }
+    } catch (error) {
+        console.error('Error fetching winning odds:', error);
+    }
+}
 
 const fetchOddsForEvent = async (eventId) => {
   const url = `${baseURL}/event/${eventId}/odds/1/all`;
@@ -1270,160 +2199,380 @@ const fetchOddsForEvent = async (eventId) => {
   }
 };
 
-const fetchAndDisplayMostRecentH2HEvent = async (teamId, customId, currentMatchId, elementId) => {
-    const url = `${baseURL}/event/${customId}/h2h/events`;
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
 
-        if (data && data.events) { 
-            // Filter events to include only those from the last 2 years, exclude the current match, and ensure the team is playing at home
-            const filteredEvents = data.events
-            .filter(event => {
-                    const eventDate = new Date(event.startTimestamp * 1000); // Convert timestamp to date
-                    const fiveYearsAgo = new Date();
-                    fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5); // Set to 5 years ago
+const marketPriority = [
+  "Over 2.5 Goals",
+  "BTTS Yes",
+  "Home Win",
+  "Away Win",
+  "Draw",
+  "Over 1.5 Goals",
+  "Under 2.5 Goals",
+  "BTTS No",
+  "Over 3.5 Goals",
+  "Under 3.5 Goals",
+  "Under 1.5 Goals"
+];
 
-                    return event.status?.type === 'finished' && 
-                        event.homeTeam.id === teamId && 
-                        event.id !== currentMatchId &&
-                        eventDate >= fiveYearsAgo; // Ensure event is within the last 5 years
-                });
+const IDEAL_THRESHOLD = 63;
 
-            const eventsWithStats = await Promise.all(filteredEvents.map(async (event) => {
-                try {
-                    const odds = await fetchOddsForEvent(event.id);
-                    const totalGoals = event.homeScore.current + event.awayScore.current;
-                    const btts = event.homeScore.current > 0 && event.awayScore.current > 0 ? "Yes" : "No";
+// Map market names to teamStats keys or derived logic
+const statMap = {
+  "BTTS Yes": "btts",
+  "BTTS No": (stats) => 100 - (stats.btts || 0),
+  "Over 1.5 Goals": "over15",
+  "Under 1.5 Goals": (stats) => 100 - (stats.over15 || 0),
+  "Over 2.5 Goals": "over25",
+  "Under 2.5 Goals": (stats) => 100 - (stats.over25 || 0),
+  "Over 3.5 Goals": (stats) => (stats.over25 || 0) * 0.7, // Proxy: scale down over25
+  "Under 3.5 Goals": (stats) => 100 - ((stats.over25 || 0) * 0.7),
+  "Home Win": (stats) => calculateFormScore(stats.form),
+  "Away Win": (stats) => calculateFormScore(stats.form),
+  "Draw": (stats) => calculateFormScore(stats.form, true)
+};
 
-                    console.log(event.homeTeam.id);
-                    let favorite = null;
-                    let favoriteWin = false;
+// Calculate a form score based on recent matches (e.g., "W D W L D")
+function calculateFormScore(form, forDraw = false) {
+  if (!form) return 0;
+  const matches = form.split(" ").slice(0, 5); // Last 5 matches
+  let score = 0;
+  matches.forEach(match => {
+    if (forDraw && match === "D") score += 3; // Weight draws higher for Draw market
+    else if (!forDraw && match === "W") score += 3;
+    else if (!forDraw && match === "D") score += 1;
+  });
+  // Normalize to percentage (max 15 points for 5 wins/draws)
+  return Math.round((score / 15) * 100);
+}
 
-                    // Determine if the home or away team is the favorite
-                    if (odds.homeOdds < odds.awayOdds) {
-                        favorite = "Home Team";
-                        favoriteWin = event.homeScore.current > event.awayScore.current;
-                    } else if (odds.awayOdds < odds.homeOdds) {
-                        favorite = "Away Team";
-                        favoriteWin = event.awayScore.current > event.homeScore.current;
-                    } else {
-                        favorite = "None"; // In case odds are equal
-                    }
-
-                    // Store the favorite as "Home Team" or "Away Team" for better readability
-                    return { ...event, ...odds, totalGoals, btts, favorite, favoriteWin };
-                } catch (error) {
-                    console.error(`Error fetching odds for event ${event.id}:`, error.message);
-                    return { ...event, totalGoals: 0, btts: "No", favorite: null, favoriteWin: false };
-                }
-            }));
-
-            const totalFavoriteMatches = eventsWithStats.filter(event => event.favorite).length;
-            const totalFavoriteWins = eventsWithStats.filter(event => event.favoriteWin).length;
-            const favoriteWinPercentage = totalFavoriteMatches > 0
-                ? ((totalFavoriteWins / totalFavoriteMatches) * 100).toFixed(2)
-                : 0;
-
-            // If totalFavoriteMatches is less than 4, don't show stats
-            if (totalFavoriteMatches < 2) {
-                document.getElementById(elementId).innerHTML = ''; // Show nothing
-                return; // Exit the function
-            }
-
-            // Determine the market with the highest percentage
-            const h2hStats = calculateH2HStats(eventsWithStats, teamId);
-            const marketAnalysis = [
-                { name: "Home Win", percentage: h2hStats.homeWinPercentage },
-                { name: "Draw", percentage: h2hStats.drawPercentage },
-                { name: "Away Win", percentage: h2hStats.awayWinPercentage },
-                { name: "BTTS Yes", percentage: h2hStats.bttsYesPercentage },
-                { name: "BTTS No", percentage: 100 - h2hStats.bttsYesPercentage },
-                { name: "Over 1.5 Goals", percentage: h2hStats.overs1_5Percentage },
-                { name: "Over 1.5 Goals", percentage: 100 - h2hStats.overs1_5Percentage },
-                { name: "Over 2.5 Goals", percentage: h2hStats.overs2_5Percentage },
-                { name: "Under 2.5 Goals", percentage: 100 - h2hStats.overs2_5Percentage },
-                { name: "Over 3.5 Goals", percentage: h2hStats.overs3_5Percentage },
-                { name: "Under 3.5 Goals", percentage: 100 - h2hStats.overs3_5Percentage },
-            ];
-            const bestMarket = marketAnalysis.reduce((max, market) =>
-                market.percentage > max.percentage ? market : max, { name: "", percentage: 0 });
-
-            // Create HTML for favorite team and H2H stats
-            const h2hHeadingHtml = `
-                <h4 style="text-align:center;">H2H ${totalFavoriteMatches} matches</h4> 
-                <div style="text-align:center;"><strong>Best Market:</strong> ${bestMarket.name} (${bestMarket.percentage}%)</div>
-            `;
-
-            const statsHtml = `
-                <div class="h2h-stats" style="text-align:center;">
-                    <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
-                        Home:<span class="value">${h2hStats.homeWinPercentage}%</span>
-                        Draws:<span class="value">${h2hStats.drawPercentage}%</span>
-                        Away:<span class="value">${h2hStats.awayWinPercentage}%</span>
-                    </div>
-                    <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
-                        BTTS Yes:<span class="value">${h2hStats.bttsYesPercentage}%</span>
-                        BTTS No:<span class="value">${h2hStats.bttsNoPercentage}%</span>
-                    </div>
-                    <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
-                        +1.5:<span class="value">${h2hStats.overs1_5Percentage}%</span>
-                        +2.5:<span class="value">${h2hStats.overs2_5Percentage}%</span>
-                        +3.5:<span class="value">${h2hStats.overs3_5Percentage}%</span>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById(elementId).innerHTML = h2hHeadingHtml + statsHtml;
-        } else {
-            document.getElementById(elementId).innerHTML = '<span style="text-align:center;">No events data available.</span>';
-        }
-    } catch (error) {
-        console.error('Error fetching H2H events:', error.message);
-        document.getElementById(elementId).innerHTML = '<span style="text-align:center;">Error fetching H2H events.</span>';
+function getBestMarketWithForm(marketAnalysis, teamStats, threshold = IDEAL_THRESHOLD) {
+  // Helper to get stat value for a team and market
+  const getStat = (team, marketName) => {
+    const statKey = statMap[marketName];
+    if (!statKey) return 0;
+    if (typeof statKey === "function") {
+      return statKey(team);
     }
+    return team[statKey] || 0;
+  };
+
+  // Check if marketAnalysis is empty or has no valid percentages
+  const hasValidMarketAnalysis = marketAnalysis && 
+                               marketAnalysis.length > 0 && 
+                               marketAnalysis.some(m => m.percentage > 0);
+
+  // If no valid marketAnalysis, rely entirely on teamStats
+  if (!hasValidMarketAnalysis) {
+    const statsBasedMarkets = marketPriority.map(marketName => {
+      const homeStat = getStat(teamStats.home, marketName);
+      const awayStat = getStat(teamStats.away, marketName);
+      const statSupport = (homeStat + awayStat) / 2;
+      return {
+        name: marketName,
+        percentage: statSupport,
+        statSupport: statSupport,
+        score: statSupport // For stats-only, score is just the statSupport
+      };
+    });
+
+    // Filter and sort stats-based markets
+    const idealStatsMarkets = statsBasedMarkets.filter(m => m.statSupport >= threshold);
+    
+    if (idealStatsMarkets.length > 0) {
+      idealStatsMarkets.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return marketPriority.indexOf(a.name) - marketPriority.indexOf(b.name);
+      });
+      return idealStatsMarkets[0];
+    }
+
+    // Fallback to best available from stats if none meet threshold
+    statsBasedMarkets.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return marketPriority.indexOf(a.name) - marketPriority.indexOf(b.name);
+    });
+    return statsBasedMarkets[0] || { name: "None", percentage: 0, score: 0 };
+  }
+
+  // If we have valid marketAnalysis, proceed with original weighted approach
+  const enhancedMarkets = marketAnalysis.map(market => {
+    const homeStat = getStat(teamStats.home, market.name);
+    const awayStat = getStat(teamStats.away, market.name);
+    const statSupport = (homeStat + awayStat) / 2;
+    const score = (market.percentage * 0.7) + (statSupport * 0.3);
+    return { ...market, statSupport, score };
+  });
+
+  // Filter markets that meet minimum criteria
+  const idealMarkets = enhancedMarkets.filter(m => 
+    m.statSupport >= threshold * 0.8
+  );
+
+  if (idealMarkets.length === 0) {
+    // Fallback: Select market with highest score
+    enhancedMarkets.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return marketPriority.indexOf(a.name) - marketPriority.indexOf(b.name);
+    });
+    return enhancedMarkets[0] || { name: "None", percentage: 0, score: 0 };
+  }
+
+  // Sort by score, then priority
+  idealMarkets.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return marketPriority.indexOf(a.name) - marketPriority.indexOf(b.name);
+  });
+
+  return idealMarkets[0];
+}
+ 
+function getBestMarketWithForm(marketAnalysis, teamStats, threshold = IDEAL_THRESHOLD) {
+  // Helper to get stat value for a team and market
+  const getStat = (team, marketName) => {
+    const statKey = statMap[marketName];
+    if (!statKey) return 0;
+    if (typeof statKey === "function") {
+      return statKey(team);
+    }
+    return team[statKey] || 0;
+  };
+
+  // Define default markets if marketAnalysis is empty
+  const defaultMarkets = [
+    { name: "Home Win", percentage: 0 },
+    { name: "Draw", percentage: 0 },
+    { name: "Away Win", percentage: 0 },
+    { name: "BTTS Yes", percentage: 0 },
+    { name: "BTTS No", percentage: 0 },
+    { name: "Over 1.5 Goals", percentage: 0 },
+    { name: "Under 1.5 Goals", percentage: 0 },
+    { name: "Over 2.5 Goals", percentage: 0 },
+    { name: "Under 2.5 Goals", percentage: 0 },
+    { name: "Over 3.5 Goals", percentage: 0 },
+    { name: "Under 3.5 Goals", percentage: 0 }
+  ];
+
+  // Use marketAnalysis if available, otherwise use defaultMarkets
+  const markets = (!marketAnalysis || marketAnalysis.length === 0) ? defaultMarkets : marketAnalysis;
+
+  // Calculate a score for each market
+  const enhancedMarkets = markets.map(market => {
+    const homeStat = getStat(teamStats.home, market.name);
+    const awayStat = getStat(teamStats.away, market.name);
+    // Average stat support from both teams
+    const statSupport = (homeStat + awayStat) / 2;
+    // If marketAnalysis is empty, use statSupport as the score; otherwise, weight as before
+    const score = (!marketAnalysis || marketAnalysis.length === 0)
+      ? statSupport
+      : (market.percentage * 0.7) + (statSupport * 0.3);
+    return { ...market, statSupport, score };
+  });
+
+  // Filter markets that meet minimum criteria
+  const idealMarkets = enhancedMarkets.filter(m => 
+    m.statSupport >= threshold * 0.8 // Focus on statSupport for filtering
+  );
+
+  if (idealMarkets.length === 0) {
+    // Fallback: Select market with highest score
+    enhancedMarkets.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return marketPriority.indexOf(a.name) - marketPriority.indexOf(b.name);
+    });
+    return enhancedMarkets[0] || { name: "None", percentage: 0, score: 0 };
+  }
+
+  // Sort by score, then priority
+  idealMarkets.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return marketPriority.indexOf(a.name) - marketPriority.indexOf(b.name);
+  });
+
+  return idealMarkets[0];
+}
+
+const fetchAndDisplayMostRecentH2HEvent = async (teamId, customId, currentMatchId, elementId) => {
+  const url = `${baseURL}/event/${customId}/h2h/events`; // Ensure baseURL is defined
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    // Get team stats first as we might need them in both scenarios
+    const teamStats = await getEventSummaryStats(currentMatchId);
+
+    if (data && Array.isArray(data.events)) {
+      // Filter events to include only finished events, where the team is playing at home, exclude the current match
+      const filteredEvents = data.events
+        .filter(event => {
+          return event.status?.type === 'finished' &&
+                 event.id !== currentMatchId;
+        })
+        .slice(0, 5); // Limit to maximum 5 events
+
+      const eventsWithStats = await Promise.all(filteredEvents.map(async (event) => {
+        try {
+          const odds = await fetchOddsForEvent(event.id);
+          const totalGoals = event.homeScore.current + event.awayScore.current;
+          const btts = event.homeScore.current > 0 && event.awayScore.current > 0 ? "Yes" : "No";
+
+          let favorite = null;
+          let favoriteWin = false;
+
+          if (odds.homeOdds < odds.awayOdds) {
+            favorite = "Home Team";
+            favoriteWin = event.homeScore.current > event.awayScore.current;
+          } else if (odds.awayOdds < odds.homeOdds) {
+            favorite = "Away Team";
+            favoriteWin = event.awayScore.current > event.homeScore.current;
+          } else {
+            favorite = "None";
+          }
+
+          return { ...event, ...odds, totalGoals, btts, favorite, favoriteWin };
+        } catch (error) {
+          console.error(`Error fetching odds for event ${event.id}:`, error.message);
+          return { ...event, totalGoals: 0, btts: "No", favorite: null, favoriteWin: false };
+        }
+      }));
+ 
+
+      if (eventsWithStats.length > 0) {
+        const totalFavoriteMatches = eventsWithStats.filter(event => event.favorite).length;
+        const totalFavoriteWins = eventsWithStats.filter(event => event.favoriteWin).length;
+        const favoriteWinPercentage = totalFavoriteMatches > 0
+          ? Math.round((totalFavoriteWins / totalFavoriteMatches) * 100)
+          : 0;
+
+        // Calculate H2H stats
+        const h2hStats = calculateH2HStats(eventsWithStats, teamId);
+
+        // Define market analysis
+        const marketAnalysis = [
+          { name: "Home Win", percentage: h2hStats.homeWinPercentage },
+          { name: "Draw", percentage: h2hStats.drawPercentage },
+          { name: "Away Win", percentage: h2hStats.awayWinPercentage },
+          { name: "BTTS Yes", percentage: h2hStats.bttsYesPercentage },
+          { name: "BTTS No", percentage: h2hStats.bttsNoPercentage },
+          { name: "Over 1.5 Goals", percentage: h2hStats.overs1_5Percentage },
+          { name: "Under 1.5 Goals", percentage: 100 - h2hStats.overs1_5Percentage },
+          { name: "Over 2.5 Goals", percentage: h2hStats.overs2_5Percentage },
+          { name: "Under 2.5 Goals", percentage: 100 - h2hStats.overs2_5Percentage },
+          { name: "Over 3.5 Goals", percentage: h2hStats.overs3_5Percentage },
+          { name: "Under 3.5 Goals", percentage: 100 - h2hStats.overs3_5Percentage }
+        ];
+
+        const bestMarket = getBestMarketWithForm(marketAnalysis, teamStats, IDEAL_THRESHOLD);
+
+    console.log(`teamStats:`, teamStats);
+    console.log(`marketAnalysis:`, marketAnalysis);
+        // Create HTML for H2H stats
+        const h2hHeadingHtml = `
+          <h4 style="text-align:center;">H2H ${eventsWithStats.length} matches</h4>
+          <div style="text-align:center;">
+            <strong>Best Market:</strong> ${bestMarket.name} (${bestMarket.percentage}%)
+          </div>
+        `;
+
+        const statsHtml = `
+          <div class="h2h-stats" style="text-align:center;">
+            <div style="display:flex;gap:5px;justify-content:center;">
+              Home:<span class="value">${h2hStats.homeWinPercentage}%</span>
+              Draws:<span class="value">${h2hStats.drawPercentage}%</span>
+              Away:<span class="value">${h2hStats.awayWinPercentage}%</span>
+            </div>
+            <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
+              BTTS Yes:<span class="value">${h2hStats.bttsYesPercentage}%</span>
+              BTTS No:<span class="value">${h2hStats.bttsNoPercentage}%</span>
+            </div>
+            <div class="stat-title" style="display:flex;gap:5px;justify-content:center;">
+              +1.5:<span class="value">${h2hStats.overs1_5Percentage}%</span>
+              +2.5:<span class="value">${h2hStats.overs2_5Percentage}%</span>
+              +3.5:<span class="value">${h2hStats.overs3_5Percentage}%</span>
+            </div>
+          </div>
+        `;
+
+        document.getElementById(elementId).innerHTML = h2hHeadingHtml + statsHtml;
+      } else {
+        // No H2H events found - fall back to team stats only
+        const bestMarket = getBestMarketWithForm([], teamStats, IDEAL_THRESHOLD);
+        
+        const statsHtml = `
+          <div style="text-align:center;">
+            <h4>Team Statistics Analysis</h4>
+            <div>
+              <strong>Best Market:</strong> ${bestMarket.name} (${bestMarket.percentage}%)
+            </div>
+            <div style="margin-top:10px;">
+              <em>No recent H2H matches available</em>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById(elementId).innerHTML = statsHtml;
+      }
+    } else {
+      // No events data at all - fall back to team stats only
+      const bestMarket = getBestMarketWithForm([], teamStats, IDEAL_THRESHOLD);
+      
+      const statsHtml = `
+        <div style="text-align:center;">
+          <h4>Team Statistics Analysis</h4>
+          <div>
+            <strong>Best Market:</strong> ${bestMarket.name} (${bestMarket.percentage}%)
+          </div>
+          <div style="margin-top:10px;">
+            <em>No H2H data available</em>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById(elementId).innerHTML = statsHtml;
+    }
+  } catch (error) {
+    console.error('Error fetching H2H events:', error.message);
+    document.getElementById(elementId).innerHTML = '<span style="text-align:center;">Error fetching H2H events.</span>';
+  }
 };
 
 // Helper function to calculate H2H stats
 function calculateH2HStats(events, teamId) {
-    const totalMatches = events.length;
-    let homeWins = 0, draws = 0, awayWins = 0, totalGoals = 0;
-    let bttsYes = 0, bttsNo = 0, overs1_5 = 0, overs2_5 = 0, overs3_5 = 0;
+  const totalMatches = events.length;
+  let homeWins = 0, draws = 0, awayWins = 0, totalGoals = 0;
+  let bttsYes = 0, overs1_5 = 0, overs2_5 = 0, overs3_5 = 0;
 
-    events.forEach(event => {
-        const homeTeam = event.homeTeam.id;
-        const awayTeam = event.awayTeam.id;
-        const homeScore = event.homeScore.current;
-        const awayScore = event.awayScore.current;
-        const goals = homeScore + awayScore;
+  events.forEach(event => {
+    const homeTeam = event.homeTeam.id;
+    const homeScore = event.homeScore.current;
+    const awayScore = event.awayScore.current;
+    const goals = homeScore + awayScore;
 
-        // Count wins, draws, and losses
-        if (homeScore > awayScore && homeTeam === teamId ) homeWins++;
-        else if (homeScore === awayScore) draws++;
-        else awayWins++;
+    // Count wins, draws, and losses
+    if (homeScore > awayScore && homeTeam === teamId) homeWins++;
+    else if (homeScore === awayScore) draws++;
+    else awayWins++;
 
-        // Count goals and BTTS
-        totalGoals += goals;
-        if (event.btts === "Yes") bttsYes++;
-        else bttsNo++;
+    // Count goals and BTTS
+    totalGoals += goals;
+    if (event.btts === "Yes") bttsYes++;
 
-        // Count Overs
-        if (goals > 1.5) overs1_5++;
-        if (goals > 2.5) overs2_5++;
-        if (goals > 3.5) overs3_5++;
-    });
+    // Count Overs
+    if (goals > 1.5) overs1_5++;
+    if (goals > 2.5) overs2_5++;
+    if (goals > 3.5) overs3_5++;
+  });
 
-    return {
-        homeWinPercentage: Math.round((homeWins / totalMatches) * 100),
-        drawPercentage: Math.round((draws / totalMatches) * 100),
-        awayWinPercentage: Math.round((awayWins / totalMatches) * 100),
-        averageGoals: Math.round(totalGoals / totalMatches),
-        bttsYesPercentage: Math.round((bttsYes / totalMatches) * 100),
-        bttsNoPercentage: Math.round((bttsNo / totalMatches) * 100),
-        overs1_5Percentage: Math.round((overs1_5 / totalMatches) * 100),
-        overs2_5Percentage: Math.round((overs2_5 / totalMatches) * 100),
-        overs3_5Percentage: Math.round((overs3_5 / totalMatches) * 100)
-    };
+  return {
+    homeWinPercentage: Math.round((homeWins / totalMatches) * 100),
+    drawPercentage: Math.round((draws / totalMatches) * 100),
+    awayWinPercentage: Math.round((awayWins / totalMatches) * 100),
+    averageGoals: (totalGoals / totalMatches).toFixed(2),
+    bttsYesPercentage: Math.round((bttsYes / totalMatches) * 100),
+    bttsNoPercentage: Math.round((1 - bttsYes / totalMatches) * 100),
+    overs1_5Percentage: Math.round((overs1_5 / totalMatches) * 100),
+    overs2_5Percentage: Math.round((overs2_5 / totalMatches) * 100),
+    overs3_5Percentage: Math.round((overs3_5 / totalMatches) * 100)
+  };
 }
 
 // Function to fetch odds changes data from the API
@@ -1551,6 +2700,440 @@ function calculatePercentageChange(oldOdds, newOdds) {
     return ((newOdds - oldOdds) / oldOdds) * 100;
 }
 
+// Utility function to fetch events data and filter for finished events excluding the current match
+const fetchEventsData = async (tournamentId, seasonId, currentMatchId) => {
+    const eventsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/events`;
+    const eventsData = await fetchJson(eventsUrl);
+
+    // Check if eventsData exists and contains events
+    if (!eventsData || !eventsData.events) return [];
+
+    // Filter only finished events and exclude the current match
+    const finishedEvents = eventsData.events.reverse().filter(event => 
+        event.status.type === 'finished' && event.id !== currentMatchId
+    );
+
+    return finishedEvents;
+};
+
+// Helper: Render form as colored spans
+function renderForm(formArr) {
+  if (!formArr || !formArr.length) return '';
+  return formArr.map(r => `<span class="form-span form-${r}">${r}</span>`).join('');
+}
+
+const promotionClasses = [
+    'promotion-to-x',
+    'promotion-to-x-playoff',
+    'promotion-to-y',
+    'promotion-to-y-playoff',
+    'promotion-to-z',
+    'promotion-to-z-playoff',
+    'promotion-to-z-playoff-secondary'
+];
+
+// Helper to get promotion class for each row
+function getPromotionClass(row, leagueTableId, currentPromotionTextObj) {
+    let classNames = [];
+    if (row.promotion && leagueTableId === 'total-league-table') {
+        const promotionText = row.promotion.text.toLowerCase();
+        if (promotionText.includes("relegation")) {
+            classNames.push(promotionText.replace(/\s+/g, '-')); // e.g. "relegation-playoff"
+        } else {
+            if (promotionText !== currentPromotionTextObj.currentPromotionText) {
+                currentPromotionTextObj.promotionTextIndex++;
+                currentPromotionTextObj.currentPromotionText = promotionText;
+            }
+            if (currentPromotionTextObj.promotionTextIndex < promotionClasses.length) {
+                classNames.push(promotionClasses[currentPromotionTextObj.promotionTextIndex]);
+            }
+        }
+    }
+    return classNames;
+}
+
+// Render Overall Table
+async function renderOverallTable(tournamentId, seasonId, currentHomeId = null, currentAwayId = null) {
+    const url = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/standings/total`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const rows = data.standings[0].rows;
+
+    // Track promotion context
+    let currentPromotionTextObj = { currentPromotionText: '', promotionTextIndex: -1 };
+
+    let html = `<table class="league-table" id="total-league-table">
+    <thead>
+      <tr>
+        <th>#</th><th>Team</th><th>MP</th><th>W</th><th>D</th><th>L</th>
+        <th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th width="80">Last 5 Overall</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(row => {
+        let highlightClass = '';
+        if (row.team.id === currentHomeId) highlightClass = 'highlight-home';
+        if (row.team.id === currentAwayId) highlightClass = 'highlight-away';
+
+        // Promotion/relegation class using your logic
+        const promoClasses = getPromotionClass(row, 'total-league-table', currentPromotionTextObj);
+
+        return `
+        <tr class="${[highlightClass, ...promoClasses].join(' ')}">
+          <td>${row.position}</td>
+          <td>${row.team.shortName || row.team.name}</td>
+          <td>${row.matches}</td>
+          <td>${row.wins}</td>
+          <td>${row.draws}</td>
+          <td>${row.losses}</td>
+          <td>${row.scoresFor}</td>
+          <td>${row.scoresAgainst}</td>
+          <td>${row.scoreDiffFormatted}</td>
+          <td>${row.points}</td>
+          <td id="form-overall-${row.team.id}"></td>
+        </tr>
+        `;
+      }).join('')}
+    </tbody>
+  </table>`;
+  document.getElementById('overall-table').innerHTML = html;
+
+  // Fetch and render last 5 overall form for each team
+  for (const row of rows) {
+  const events = await fetchEventsData(tournamentId, seasonId, null);
+  const teamEvents = events.filter(ev => ev.homeTeam.id === row.team.id || ev.awayTeam.id === row.team.id).slice(0, 5);
+  const form = teamEvents.map(ev => {
+    if (ev.homeTeam.id === row.team.id) {
+      if (ev.homeScore.current > ev.awayScore.current) return 'W';
+      if (ev.homeScore.current < ev.awayScore.current) return 'L';
+      return 'D';
+    } else {
+      if (ev.awayScore.current > ev.homeScore.current) return 'W';
+      if (ev.awayScore.current < ev.homeScore.current) return 'L';
+      return 'D';
+    }
+  });
+
+  // Tooltip-enhanced form rendering
+  const formDisplay = form.map((result, i) => {
+    const ev = teamEvents[i];
+    if (!ev) return '';
+    const score = `${ev.homeScore.current}:${ev.awayScore.current}`;
+    const teams = `${ev.homeTeam.shortName || ev.homeTeam.name} - ${ev.awayTeam.shortName || ev.awayTeam.name}`;
+    const dateObj = new Date(ev.startTimestamp * 1000);
+    const date = `${String(dateObj.getDate()).padStart(2, '0')}.${String(dateObj.getMonth() + 1).padStart(2, '0')}.${dateObj.getFullYear()}`;
+    const tooltip = `${score} (${teams})\n${date}`;
+    return `<span class="form-span form-${result}">${result}<span class="form-tooltip">${tooltip}</span></span>`;
+  }).join('');
+
+  document.getElementById(`form-overall-${row.team.id}`).innerHTML = formDisplay; 
+  }
+  renderPromotionKey(rows);
+}
+
+// Render Home/Away Table
+async function renderHomeAwayTable(tournamentId, seasonId, type, currentHomeId, currentAwayId, currentMatchId = null) {
+    const events = await fetchEventsData(tournamentId, seasonId, null);
+    const standingsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/standings/total`;
+    const standingsRes = await fetch(standingsUrl);
+    const standingsData = await standingsRes.json();
+    const rows = standingsData.standings[0].rows;
+
+    let currentPromotionTextObj = { currentPromotionText: '', promotionTextIndex: -1 };
+
+    const teamStats = rows.map((row) => {
+        let teamEvents;
+        if (type === 'home') {
+            teamEvents = events
+                .filter(ev => ev.homeTeam.id === row.team.id && ev.id !== currentMatchId)
+                .slice(0, 5);
+        } else {
+            teamEvents = events
+                .filter(ev => ev.awayTeam.id === row.team.id && ev.id !== currentMatchId)
+                .slice(0, 5);
+        }
+
+        // Calculate stats for these 5 games
+        let W = 0, D = 0, L = 0, GF = 0, GA = 0, Pts = 0;
+        const form = teamEvents.map(ev => {
+            let res;
+            if (type === 'home') {
+                GF += ev.homeScore.current;
+                GA += ev.awayScore.current;
+                if (ev.homeScore.current > ev.awayScore.current) { W++; Pts += 3; res = 'W'; }
+                else if (ev.homeScore.current < ev.awayScore.current) { L++; res = 'L'; }
+                else { D++; Pts += 1; res = 'D'; }
+            } else {
+                GF += ev.awayScore.current;
+                GA += ev.homeScore.current;
+                if (ev.awayScore.current > ev.homeScore.current) { W++; Pts += 3; res = 'W'; }
+                else if (ev.awayScore.current < ev.homeScore.current) { L++; res = 'L'; }
+                else { D++; Pts += 1; res = 'D'; }
+            }
+            return res;
+        });
+        const MP = teamEvents.length;
+        const GD = GF - GA;
+
+        // Promotion/relegation class using your logic
+        const promoClasses = getPromotionClass(row, 'total-league-table', currentPromotionTextObj);
+
+        return {
+            team: row.team,
+            MP, W, D, L, GF, GA, GD, Pts, form,
+            promoClasses,
+            teamEvents // <-- add this
+        };
+    });
+     
+    // Sort by points descending
+    teamStats.sort((a, b) => b.Pts - a.Pts);
+
+    let html = `<table class="league-table">
+<thead>
+  <tr>
+    <th>#</th><th>Team</th><th>MP</th><th>W</th><th>D</th><th>L</th>
+    <th>GF</th><th>GA</th><th>GD</th><th>Pts</th><th width="80">Last 5 ${type === 'home' ? 'Home' : 'Away'}</th>
+  </tr>
+</thead>
+<tbody>
+  ${teamStats.map((stat, idx) => {
+    let highlightClass = '';
+    if (stat.team.id === currentHomeId) highlightClass = 'highlight-home';
+    if (stat.team.id === currentAwayId) highlightClass = 'highlight-away';
+
+    // Tooltip-enhanced form rendering
+    let formDisplay = stat.form.map((result, i) => {
+      const ev = stat.teamEvents && stat.teamEvents[i];
+      if (!ev) return '';
+      const score = `${ev.homeScore.current}:${ev.awayScore.current}`;
+      const teams = `${ev.homeTeam.shortName || ev.homeTeam.name} - ${ev.awayTeam.shortName || ev.awayTeam.name}`;
+      const dateObj = new Date(ev.startTimestamp * 1000);
+      const date = `${String(dateObj.getDate()).padStart(2, '0')}.${String(dateObj.getMonth() + 1).padStart(2, '0')}.${dateObj.getFullYear()}`;
+      const tooltip = `${score} (${teams})\n${date}`;
+      return `<span class="form-span form-${result}">${result}<span class="form-tooltip">${tooltip}</span></span>`;
+    }).join('');
+
+    return `
+      <tr class="${[highlightClass, ...stat.promoClasses].join(' ')}">
+        <td>${idx + 1}</td>
+        <td>${stat.team.shortName || stat.team.name}</td>
+        <td>${stat.MP}</td>
+        <td>${stat.W}</td>
+        <td>${stat.D}</td>
+        <td>${stat.L}</td>
+        <td>${stat.GF}</td>
+        <td>${stat.GA}</td>
+        <td>${stat.GD >= 0 ? '+' + stat.GD : stat.GD}</td>
+        <td>${stat.Pts}</td>
+        <td id="form-overall-${stat.team.id}">${formDisplay}</td>
+      </tr>
+    `;
+  }).join('')}
+</tbody>
+</table>`;
+document.getElementById(`${type}-table`).innerHTML = html;
+}
+
+async function renderStatTable(tournamentId, seasonId, type, stat, currentHomeId, currentAwayId, currentMatchId = null) {
+    const events = await fetchEventsData(tournamentId, seasonId, currentMatchId);
+    const standingsUrl = `${baseURL}/tournament/${tournamentId}/season/${seasonId}/standings/total`;
+    const standingsRes = await fetch(standingsUrl);
+    const standingsData = await standingsRes.json();
+    const rows = standingsData.standings[0].rows;
+
+    let currentPromotionTextObj = { currentPromotionText: '', promotionTextIndex: -1 };
+
+    const teamStats = rows.map((row) => {
+    let teamEvents;
+    if (type === 'home') {
+        teamEvents = events.filter(ev => ev.homeTeam.id === row.team.id).slice(0, 5);
+    } else if (type === 'away') {
+        teamEvents = events.filter(ev => ev.awayTeam.id === row.team.id).slice(0, 5);
+    } else {
+        teamEvents = events.filter(ev => ev.homeTeam.id === row.team.id || ev.awayTeam.id === row.team.id).slice(0, 5);
+    }
+
+    let statCount = 0;
+    let formArr = [];
+    teamEvents.forEach(ev => {
+        let val = false;
+        if (stat === 'btts') {
+            val = (ev.homeScore.current > 0 && ev.awayScore.current > 0);
+        } else if (stat === 'over15') {
+            val = ((ev.homeScore.current + ev.awayScore.current) > 1.5);
+        } else if (stat === 'over25') {
+            val = ((ev.homeScore.current + ev.awayScore.current) > 2.5);
+        }
+        if (val) statCount++;
+        formArr.push(val);
+    });
+    const percent = teamEvents.length ? Math.round((statCount / teamEvents.length) * 100) : 0;
+
+    // Promotion/relegation class using your logic
+    const promoClasses = getPromotionClass(row, 'total-league-table', currentPromotionTextObj);
+
+    return {
+        team: row.team,
+        percent,
+        promoClasses,
+        stat,
+        formArr,
+        teamEvents
+    };
+});
+
+    // Sort by percentage descending
+    teamStats.sort((a, b) => b.percent - a.percent);
+
+    // Table title
+    let statLabel = stat === 'btts' ? 'BTTS %' : stat === 'over15' ? '+1.5 %' : '+2.5 %';
+
+    let html = `<table class="league-table">
+<thead>
+  <tr>
+    <th>#</th><th>Team</th><th>${statLabel} (Last 5)</th><th>Form</th>
+  </tr>
+</thead>
+<tbody>
+  ${teamStats.map((stat, idx) => {
+    let highlightClass = '';
+    if (stat.team.id === currentHomeId) highlightClass = 'highlight-home';
+    if (stat.team.id === currentAwayId) highlightClass = 'highlight-away';
+
+    // Show last 5 as Y/N for BTTS, +/– for overs, with color classes and tooltip
+    let formArr = stat.formArr || [];
+    let teamEvents = stat.teamEvents || [];
+    let formDisplay = '';
+    if (stat.stat === 'btts') {
+      formDisplay = formArr.map((v, i) => {
+        const ev = teamEvents[i];
+        if (!ev) return '';
+        const score = `${ev.homeScore.current}:${ev.awayScore.current}`;
+        const teams = `${ev.homeTeam.shortName || ev.homeTeam.name} - ${ev.awayTeam.shortName || ev.awayTeam.name}`;
+        const dateObj = new Date(ev.startTimestamp * 1000);
+const date = `${String(dateObj.getDate()).padStart(2, '0')}.${String(dateObj.getMonth() + 1).padStart(2, '0')}.${dateObj.getFullYear()}`;
+        const tooltip = `${score} (${teams})\n${date}`;
+        return `<span class="form-span ${v ? 'form-W' : 'form-L'}">
+          ${v ? 'Y' : 'N'}
+          <span class="form-tooltip">${tooltip}</span>
+        </span>`;
+      }).join(' ');
+    } else {
+      formDisplay = formArr.map((v, i) => {
+        const ev = teamEvents[i];
+        if (!ev) return '';
+        const score = `${ev.homeScore.current}:${ev.awayScore.current}`;
+        const teams = `${ev.homeTeam.shortName || ev.homeTeam.name} - ${ev.awayTeam.shortName || ev.awayTeam.name}`;
+        const dateObj = new Date(ev.startTimestamp * 1000);
+const date = `${String(dateObj.getDate()).padStart(2, '0')}.${String(dateObj.getMonth() + 1).padStart(2, '0')}.${dateObj.getFullYear()}`;
+        const tooltip = `${score} (${teams})\n${date}`;
+        return `<span class="form-span ${v ? 'form-W' : 'form-L'}">
+          ${v ? '+' : '–'}
+          <span class="form-tooltip">${tooltip}</span>
+        </span>`;
+      }).join(' ');
+    }
+
+    return `
+    <tr class="${[highlightClass, ...stat.promoClasses].join(' ')}">
+      <td>${idx + 1}</td>
+      <td>${stat.team.shortName || stat.team.name}</td>
+      <td>${stat.percent}%</td>
+      <td id="form-overall-${stat.team.id}">${formDisplay}</td>
+    </tr>
+    `;
+  }).join('')}
+</tbody>
+</table>`;
+document.getElementById(`${stat}-table`).innerHTML = html;
+}
+
+ function renderPromotionKey(rows) {
+    const keyDiv = document.getElementById('promotion-key');
+    if (!keyDiv) return;
+
+    // Collect unique promotion texts and their classes
+    const promotionClasses = [
+        'promotion-to-x',
+        'promotion-to-x-playoff',
+        'promotion-to-y',
+        'promotion-to-y-playoff',
+        'promotion-to-z',
+        'promotion-to-z-playoff',
+        'promotion-to-z-playoff-secondary'
+    ];
+    let currentPromotionText = '';
+    let promotionTextIndex = -1;
+    const keyItems = [];
+    const seen = new Set();
+
+    rows.forEach(row => {
+        if (row.promotion) {
+            let promoClass = '';
+            let promoText = row.promotion.text;
+            const promotionText = promoText.toLowerCase();
+            if (promotionText.includes("relegation")) {
+                promoClass = promotionText.replace(/\s+/g, '-');
+            } else {
+                if (promotionText !== currentPromotionText) {
+                    promotionTextIndex++;
+                    currentPromotionText = promotionText;
+                }
+                if (promotionTextIndex < promotionClasses.length) {
+                    promoClass = promotionClasses[promotionTextIndex];
+                }
+            }
+            // Only add unique keys
+            if (promoClass && !seen.has(promoClass)) {
+                keyItems.push({ promoClass, promoText });
+                seen.add(promoClass);
+            }
+        }
+    });
+
+    // Render the key
+    keyDiv.innerHTML = keyItems.map(item => `
+        <span class="promotion-key-item ${item.promoClass}">
+            <span class="promotion-key-color"></span>
+            <span>${item.promoText}</span>
+        </span>
+    `).join('');
+}
+
+// Tab navigation logic
+function setupLeagueTableTabs(tournamentId, seasonId, currentHomeId = null, currentAwayId = null, currentMatchId = null) {
+  const tabs = document.querySelectorAll('.league-table-tabs .tab');
+  const contents = {
+    overall: document.getElementById('overall-table'),
+    home: document.getElementById('home-table'),
+    away: document.getElementById('away-table'),
+    btts: document.getElementById('btts-table'),
+    over15: document.getElementById('over15-table'),
+    over25: document.getElementById('over25-table')
+  };
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      Object.keys(contents).forEach(key => {
+        contents[key].style.display = (tab.dataset.tab === key) ? '' : 'none';
+      });
+    });
+  });
+
+  // Initial render
+  renderOverallTable(tournamentId, seasonId, currentHomeId, currentAwayId);
+  renderHomeAwayTable(tournamentId, seasonId, 'home', currentHomeId, currentAwayId, currentMatchId);
+  renderHomeAwayTable(tournamentId, seasonId, 'away', currentHomeId, currentAwayId, currentMatchId);
+  renderStatTable(tournamentId, seasonId, 'overall', 'btts', currentHomeId, currentAwayId, currentMatchId);
+  renderStatTable(tournamentId, seasonId, 'overall', 'over15', currentHomeId, currentAwayId, currentMatchId);
+  renderStatTable(tournamentId, seasonId, 'overall', 'over25', currentHomeId, currentAwayId, currentMatchId);
+}
+
+// Usage: call this with the current tournamentId and seasonId
+// Example: setupLeagueTableTabs(17, 61627);
+
 async function displayEventDetails(event) {
 const bottomRightDetails = document.querySelector('.event-details');
 
@@ -1579,9 +3162,7 @@ const eventTime = new Date(event.startTimestamp * 1000).toLocaleString();
             ${formatOdds(fractionalToDecimal(odds.homeOdds), odds.homeChange)}
             ${formatOdds(fractionalToDecimal(odds.drawOdds), odds.drawChange)}
             ${formatOdds(fractionalToDecimal(odds.awayOdds), odds.awayChange)}
-        `;
-        console.log('Odds Data:', odds); // Debug: Log odds object
-        console.log('Odds Display:', oddsDisplay); // Debug: Log generated HTML
+        `; 
     } else {
         oddsDisplay = '<span>-</span><span>-</span><span>-</span>';
         console.warn(`No odds available for event ${event.id}`);
@@ -1621,7 +3202,7 @@ const eventDetailsHtml = `
 
         <div class="team duelParticipant__home">
             <img src="${baseURL}/team/${event.homeTeam.id}/image" width="16" height="16" alt="${event.homeTeam.shortName}" loading="lazy" class="team-logo">
-            <div class="team-name">${event.homeTeam.shortName}</div>
+            <div class="team-name">${event.homeTeam.shortName || event.homeTeam.name}</div>
             <div id="homePregameForm-${event.id}" class="pregame-form"></div>
             <div id="homeManagerInfo-${event.id}" class="manager-info"></div>  
         </div>
@@ -1629,9 +3210,9 @@ const eventDetailsHtml = `
         <div class="duelParticipant__score score">
             <div class="detailScore__matchInfo ${event.status.type}">
                 <div class="detailScore__wrapper" id="${event.status.type}">
-                    <span class="score" id="homeScores-${event.id}">${homeScore}</span>
+                    <span class="score" id="details-homeScores-${event.id}">${homeScore}</span>
                     <span class="detailScore__divider">-</span>
-                    <span class="score" id="awayScores-${event.id}">${awayScore}</span>
+                    <span class="score" id="details-awayScores-${event.id}">${awayScore}</span>
                 </div>
                 <div class="detailScore__status">
                     <span id="live-timer-${event.id}"></span>
@@ -1640,7 +3221,7 @@ const eventDetailsHtml = `
         </div>
         <div class="team duelParticipant__away">
             <img src="${baseURL}/team/${event.awayTeam.id}/image" width="16" height="16" alt="${event.awayTeam.shortName}" loading="lazy" class="team-logo">
-            <div class="team-name">${event.awayTeam.shortName}</div>
+            <div class="team-name">${event.awayTeam.shortName || event.awayTeam.name}</div>
             <div id="awayPregameForm-${event.id}" class="pregame-form"></div> 
             <div id="awayManagerInfo-${event.id}" class="manager-info"></div> 
         </div>
@@ -1652,11 +3233,11 @@ const eventDetailsHtml = `
             
                 <div id="change" class="flex _F_r _F_ac gT20">
                     <div id="odds-graph-change">
-                        <canvas id="odds-graph-canvas" style="height: 200px; width: 100%;"></canvas>
+                        <canvas id="odds-graph-canvas" style="height: 150px; width: 250px;"></canvas>
                     </div>
                     <div class="h2h-event" id="${uniqueEventId}"></div> 
-                </div> 
-                <div class="team-manager-h2h" id="${uniqueH2hContainer}"></div>  
+                </div>  
+                <div class="team-manager-h2h flex _F_r _F_ac gT20 _F_jC" id="${uniqueH2hContainer}"></div> 
 `;
 
 bottomRightDetails.innerHTML = eventDetailsHtml; 
@@ -1692,15 +3273,17 @@ bottomRightDetails.innerHTML = eventDetailsHtml;
         fetchHeadToHead(currentMatchId, uniqueH2hContainer);  // Pass the correct ID to fetchHeadToHead 
 
          // Fetch odds changes data
-     const oddsData = await fetchOddsChanges(event.id);
+     const oddsData = await fetchOddsChanges(currentMatchId);
     if (oddsData) { 
         drawOddsGraphs(oddsData);
     } else {
         console.error('No odds data available');
-    }
-
+    } 
+        setupLeagueTableTabs(tournamentId, seasonId, homeTeamId, awayTeamId, currentMatchId);
         // Fetch and display most recent H2H event for the current event
         fetchAndDisplayMostRecentH2HEvent(homeTeamId, customId, currentMatchId, uniqueEventId); 
+        // In your displayEventDetails(event), after rendering the details, call:
+setupLiveTimerAndScore(event);
 // Clear interval when navigating away from the event details
 const clearUpdateInterval = () => {
     clearInterval(scoreUpdateInterval);
