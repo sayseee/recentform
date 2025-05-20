@@ -9,770 +9,637 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+/* ============================= */
+/* 1. CSS VARIABLES & CONSTANTS  */
+/* ============================= */
 :root {
-    --color-b_0: #121212;
-    --color-w_0: white;
-    --color-w_1: #cdcdcd;
-    --color-w_2: #8eb1c5;
-    --color-gr_1: #727175;
-    --color-gr_2: #3c3c3c;
-    --color-gr_4: #191a1f80;
-    --color-gr_3: #191a1f;
-    --color-gr_5: #1e1c1d;
-    --color-gr_6: #181818;
-    --color-gr_7: #202020;
-    --color-g_1: #4e9e7b;
-    --color-g_2: #003c01;
-    --color-g_3: #274454;
-    --color-g_4: #002e00;
-    --color-g_5: #120915;
-    --color-r_1: #b37488;
-    --color-r_2: #d17092;
-    --color-r_3: #e11539;
-    --color-r_4: #710015;
-    --color-r_5: #550216;
-    --color-y_1: #FFA028;
-    --color-o_1: #e49d18;
-    --primary-color: #3498db;
-    --positive-color: #2ecc71;
-    --negative-color: #e74c3c;
-    --neutral-color: #f39c12;
-    --dark-color: #2c3e50;
-    --light-color: #ecf0f1;
-    --secondary-color: #2ecc71;
-    --danger-color: #e74c3c;
-    --warning-color: #f39c12;
-    --bg-dark-1: #3b3b3d;
-    --bg-dark-2: #1e1e1e;
-    --border-default: 1px solid #333;
-    --border-bottom: 1px solid #1f222b;
-    --light-color: #1f222b;
-    --dark-color: #303440;
-    --bg-overlay: rgba(6, 12, 26, 0.6);
-    --border-top: #000 1px solid;
-            --playoffs-promotion-to-x: rgb(18,110,81);
-            --playoffs-promotion-to-x-playoff: #49cb40;
-            --playoffs-promotion-to-y: #0056a3;
-            --playoffs-promotion-to-y-playoff: #0a8dff;
-            --playoffs-promotion-to-z: #016565;
-            --playoffs-promotion-to-z-playoff: #018e8d;
-            --playoffs-promotion-to-z-playoff-secondary: #01b7b6;
-            --playoffs-promotion-to-relegation: #c1262d;
-            --playoffs-promotion-to-relegation-playoff: rgba(229, 156, 3, 0.9);
-}
-
-/* ATL Light Theme */
-.theme-atl {
-  --color-b_0: #FFFFFF;
-  --color-w_0: #262626;
-  --color-w_1: #707070;
-  --color-w_2: #0072c9;
-  --color-gr_1: #e5e5e5;
-  --color-gr_2: #dddddd;
-  --color-gr_3: #f7f7f7;
-  --color-gr_4: #ffffff;
-  --color-gr_5: #efefef;
-  --color-gr_6: #f7f7f7;
-  --color-gr_7: #e2e2e2;
-  --color-g_1: #0078d4;
-  --color-g_2: #006cbe;
-  --color-g_3: #1683d8;
-  --color-g_4: #0078d4;
-  --color-g_5: #eef6fc;
-  --color-r_1: #e74c3c;
+  /* Base Colors */
+  --color-b_0: #121212;
+  --color-w_0: #ffffff;
+  --color-w_1: #cdcdcd;
+  --color-w_2: #8eb1c5;
+  --color-gr_1: #727175;
+  --color-gr_2: #3c3c3c;
+  --color-gr_3: #191a1f;
+  --color-gr_4: #191a1f80;
+  --color-gr_5: #1e1c1d;
+  --color-gr_6: #181818;
+  --color-gr_7: #202020;
+  --color-g_1: #4e9e7b;
+  --color-g_2: #003c01;
+  --color-g_3: #274454;
+  --color-g_4: #002e00;
+  --color-g_5: #120915;
+  --color-r_1: #b37488;
   --color-r_2: #d17092;
-  --color-r_3: #b6b6b6;
-  --color-r_4: #8f8f8f;
-  --color-r_5: #292929;
+  --color-r_3: #e11539;
+  --color-r_4: #710015;
+  --color-r_5: #550216;
   --color-y_1: #FFA028;
   --color-o_1: #e49d18;
-  --primary-color: #0078d4;
-    --positive-color: #2ecc71;
-    --negative-color: #e74c3c;
-    --neutral-color: #f39c12;
-  --dark-color: #262626;
-  --light-color: #ffffff;
-  --secondary-color: #0072c9;
+
+  /* Semantic Colors */
+  --primary-color: #3498db;
+  --positive-color: #2ecc71;
+  --negative-color: #e74c3c;
+  --neutral-color: #f39c12;
+  --secondary-color: #2ecc71;
   --danger-color: #e74c3c;
   --warning-color: #f39c12;
-  --bg-dark-1: #f7f7f7;
-  --bg-dark-2: #e5e5e5;
-  --border-default: 1px solid #e2e2e2;
-  --border-bottom: 1px solid #e2e2e2;
-  --bg-overlay: rgba(6, 12, 26, 0.06);
-  --border-top: #e2e2e2 1px solid;
-            --playoffs-promotion-to-x: rgb(18,110,81);
-            --playoffs-promotion-to-x-playoff: #49cb40;
-            --playoffs-promotion-to-y: #0056a3;
-            --playoffs-promotion-to-y-playoff: #0a8dff;
-            --playoffs-promotion-to-z: #016565;
-            --playoffs-promotion-to-z-playoff: #018e8d;
-            --playoffs-promotion-to-z-playoff-secondary: #01b7b6;
-            --playoffs-promotion-to-relegation: #c1262d;
-            --playoffs-promotion-to-relegation-playoff: rgba(229, 156, 3, 0.9);
+
+  /* UI Colors */
+  --header-bg: var(--color-b_0);
+  --header-shadow: rgba(0, 0, 0, 0.1);
+  --link-color: #ccc;
+  --link-active-color: var(--color-o_1);
+  --calendar-bg: #060c1a;
+  --calendar-active-bg: #007bff;
+  --calendar-active-color: #fff;
+  --calendar-hover-color: #fff;
+  --calendar-hover-bg1: rgba(12, 22, 20, .1);
+  --calendar-hover-bg2: #009969;
+  --calendar-hover-bg3: #0c1614;
+  --calendar-hover-bg4: #084436;
+  --calendar-days-bg: linear-gradient(var(--calendar-hover-bg1), transparent 20px), radial-gradient(122% 370px at center -220px, var(--calendar-hover-bg2) 0, transparent 100%), linear-gradient(to right bottom, #215349, var(--calendar-hover-bg4));
+  --calendar-days-color: #fff;
+  --scrollbar-thumb: #3d3d3d;
+  --scrollbar-track: #020001;
+  --border-default: 1px solid #333;
+  --border-bottom: 1px solid #1f222b;
+  --border-top: 1px solid #000;
+  --border-table: 1px solid var(--color-gr_7);
+  --star-color: #ccc;
+  --bet-list-bg: #232323;
+  --bet-list-header-bg: #181818;
+  --bet-list-item-bg: #222;
+  --bet-list-remove: var(--danger-color);
+  --bet-list-remove-hover: var(--danger-color);
+  --form-tooltip-bg: #222;
+  --form-tooltip-color: #fff;
+  --highlight-home-bg: #e3f6ff;
+  --highlight-away-bg: #ffe3e3;
+  --promotion-champions-league-bg: #d0eaff;
+  --promotion-europa-league-bg: #ffeecf;
+  --promotion-conference-league-bg: #e8ffe8;
+  --promotion-relegation-bg: #ffd6d6;
+  --league-table-th-bg: var(--color-gr_2);
+  --league-table-even-bg: var(--color-gr_3);
+  --league-table-odd-bg: transparent;
+  --form-W-bg: var(--positive-color);
+  --form-D-bg: var(--warning-color);
+  --form-L-bg: var(--negative-color);
+  --form-W-color: #fff;
+  --form-D-color: #fff;
+  --form-L-color: #fff;
+
+  /* Playoff/Promotion Colors */
+  --playoffs-promotion-to-x: rgb(18,110,81);
+  --playoffs-promotion-to-x-playoff: #49cb40;
+  --playoffs-promotion-to-y: #0056a3;
+  --playoffs-promotion-to-y-playoff: #0a8dff;
+  --playoffs-promotion-to-z: #016565;
+  --playoffs-promotion-to-z-playoff: #018e8d;
+  --playoffs-promotion-to-z-playoff-secondary: #01b7b6;
+  --playoffs-promotion-to-relegation: #c1262d;
+  --playoffs-promotion-to-relegation-playoff: rgba(229, 156, 3, 0.9);
 }
 
-/* Example usage: */
-body.theme-atl {
-  background: var(--color-b_0);
-  color: var(--color-w_0);
-    display: grid;
-    grid-template-rows: 50px auto;
-    height: 100vh;
-    min-height: 100vh;
-    min-width: 100vw;
-    overflow: hidden;
-    font-size: 0.6875rem;
-    gap: 2px;
+/* ============================= */
+/* 2. GLOBAL RESETS & BASICS     */
+/* ============================= */
+body.closure {
+  background-color: var(--color-b_0);
+  margin: 0;
+  padding: 0;
+  color: var(--color-w_1);
+  display: grid;
+  grid-template-rows: 50px auto;
+  height: 100vh;
+  min-height: 100vh;
+  min-width: 100vw;
+  overflow: hidden;
+  font-size: 0.6875rem;
+  gap: 2px;
 }
-.W, .D, .L {  
-    color: #000;
-    align-items: center; 
-    justify-content: center;
-    overflow: hidden;
-    position: relative; 
-    padding:2px 0;
-    font-weight: 700;
-    width: 20px; 
-} 
-.W, .win, .pos {
-    background-color: var(--positive-color);
+
+h2 {
+  color: var(--color-o_1);
+  margin-top: 0;
+  padding: 10px 10px 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
 }
-.D, .draw {
-    background-color: var(--color-gr_1);
+
+li {
+  display: flex;
+  align-items: flex-start;
 }
-.L, .loss, .neg {
-    background-color: var(--color-r_2);
+
+/* ============================= */
+/* 3. TYPOGRAPHY                 */
+/* ============================= */
+.rfr, .rcr {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
 }
+
+.rfr { font-weight: 400; font-style: normal; }
+.rcr { font-weight: 700; font-style: normal; }
+
+/* ============================= */
+/* 4. SCROLLBAR STYLES           */
+/* ============================= */
 ::-webkit-scrollbar {
-    width: 3px;
-    height: 3px;
+  width: 3px;
+  height: 3px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #3d3d3d;
+  background: #3d3d3d;
 }
 ::-webkit-scrollbar-track {
-    background: #020001;
-}
-/* Constants */
-.flex {
-    display: flex;
-}
-._F_r{
-    flex-direction: row !important;
-}
-._F_c{
-    flex-direction: column !important;
-}
-._F_ac {
-    align-items: center;
-}
-._F_jc {
-    justify-content: space-between;
+  background: #020001;
 }
 
-._F_jC {
-    justify-content: center;
-}
+/* ============================= */
+/* 5. FLEX & UTILITY CLASSES     */
+/* ============================= */
+.flex { display: flex; }
+._F_r { flex-direction: row !important; }
+._F_c { flex-direction: column !important; }
+._F_ac { align-items: center; }
+._F_jc { justify-content: space-between; }
+._F_jC { justify-content: center; }
+.gT5 { gap: 5px; }
+.gT10 { gap: 10px; }
+.gT20 { gap: 20px; }
 
-.gT5 {
-    gap: 5px;
-}
-.gT10 {
-    gap: 10px;
-}
-.gT20 {
-    gap: 20px;
-}
-body.closure {
-    background-color: var(--color-b_0);
-    margin: 0;
-    padding: 0;
-    color: var(--color-w_1);
-    display: grid;
-    grid-template-rows: 50px auto;
-    height: 100vh;
-    min-height: 100vh;
-    min-width: 100vw;
-    overflow: hidden;
-    font-size: 0.6875rem;
-    gap: 2px;
-}
-.rfr {
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.rcr {
-    font-family: "Inter", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
-}
-h2 {
-    color: var(--color-o_1);
-    margin-top: 0;
-    padding: 10px 10px 0;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 20px;
-}
-li {
-    display: flex;
-    align-items: flex-start;
-}
+/* ============================= */
+/* 6. HEADER & NAVIGATION        */
+/* ============================= */
 .header {
-    background-color: var(--light-color);
-    width: 100%;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    justify-content: space-between;
+  background-color: var(--light-color);
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
 }
+
 .filters__group {
-    list-style: none;
-    display: flex;
-    gap: 23px;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  display: flex;
+  gap: 23px;
+  padding: 0;
+  margin: 0;
 }
-
-.filters__group li {
-    min-width: 50px;
-}
-.filters__group li a.active, .filters__group li a:hover {
-    color: var(--color-o_1);
-}
+.filters__group li { min-width: 50px; }
 .filters__group li a {
-    text-decoration: none;
-    color: #ccc;
-    padding: 5px 10px;
-    width: 100%;
-    display: block;
-    text-align: center;
-    display: inline-flex;
-    flex-direction: column;
-    justify-content: center;
-    font-weight: 700;
+  text-decoration: none;
+  color: var(--color-link);
+  padding: 5px 10px;
+  width: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  font-weight: 700;
+}
+.filters__group li a.active,
+.filters__group li a:hover {
+  color: var(--color-o_1);
 }
 
+/* ============================= */
+/* 7. CALENDAR COMPONENT         */
+/* ============================= */
 .calendar {
-    display: flex;
-    gap: 5px;
-    position: relative;
-    background: rgb(6, 12, 26);
-    border-radius: 3px;
+  display: flex;
+  gap: 5px;
+  position: relative;
+  background: var(--calendar-bg);
+  border-radius: 3px;
 }
 .calendar__navigation {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
 }
 .calendar__datepicker {
-    align-items: center;
-    background-color: initial;
-    border: initial;
-    color: inherit;
-    cursor: pointer;
-    display: flex;
-    font-family: inherit;
-    font-weight: 700;
-    grid-area: datepicker;
-    height: 100%;
-    justify-content: space-between;
-    letter-spacing: .4px;
-    padding: 4px;
-    text-transform: uppercase;
-    flex: 1;
-    width: 100px;
-    gap: 10px;
-    font-size: 0.6875rem;
-    margin-top: 4px;
+  align-items: center;
+  background-color: initial;
+  border: initial;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  font-weight: 700;
+  grid-area: datepicker;
+  height: 100%;
+  justify-content: space-between;
+  letter-spacing: .4px;
+  padding: 4px;
+  text-transform: uppercase;
+  flex: 1;
+  width: 100px;
+  gap: 10px;
+  font-size: 0.6875rem;
+  margin-top: 4px;
 }
 .calendar__day {
-    background: none;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    color: inherit;
-    font-family: inherit;
-    width: inherit;
+  background: none;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  width: inherit;
 }
 .calendar__day--active {
-    background-color: #007bff;
-    color: #fff;
+  background-color: var(--calendar-active-bg);
+  color: var(--calendar-active-color);
 }
 .calendar__day:hover {
-    color: #fff;
-    background-size: 100% 100%;
-    background-image: linear-gradient(rgba(12, 22, 20, .1), transparent 20px), radial-gradient(122% 370px at center -220px, #009969 0, transparent 100%), linear-gradient(to right bottom, #0c1614, #084436);
+  color: var(--calendar-hover-color);
+  background-size: 100% 100%;
+  background-image: linear-gradient(var(--calendar-hover-bg1), transparent 20px),
+    radial-gradient(122% 370px at center -220px, var(--calendar-hover-bg2) 0, transparent 100%),
+    linear-gradient(to right bottom, var(--calendar-hover-bg3), var(--calendar-hover-bg4));
 }
 .calendar__days {
-    width: 100%;
-    color: #fff;
-    display: none;
-    position: absolute;
-    border: 0;
-    list-style: none;
-    padding: 0;
-    margin-top: 5px;
-    box-shadow: 2 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1;
-    top: 30px;
-    left: 0;
-    font-family: inherit;
-    background-size: 100% 100%;
-    background-image: linear-gradient(rgba(12, 22, 20, .1), transparent 20px), radial-gradient(122% 370px at center -220px, #009969 0, transparent 100%), linear-gradient(to right bottom, #215349, #084436);
+  width: 100%;
+color: var(--calendar-days-color);
+  display: none;
+  position: absolute;
+  border: 0;
+  list-style: none;
+  padding: 0;
+  margin-top: 5px;
+  box-shadow: 2 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  top: 30px;
+  left: 0;
+  font-family: inherit;
+  background-size: 100% 100%;
+  background-image: var(--calendar-days-bg);
 }
 .calendar__listItem {
-    display: flex;
-    justify-content: center;
-    width: inherit;
+  display: flex;
+  justify-content: center;
+  width: inherit;
 }
-.calendar__navigation svg {
-    width: 24px;
-    height: 24px;
-    fill: #fff;
-}
+.calendar__navigation svg,
 .calendar__datepicker svg {
-    width: 20px;
-    height: 20px;
-    fill: #fff;
-}
-.main-content {
-    display: grid;
-    grid-template-columns: 14% 26% 34% 25%;
+  width: 20px;
+  height: 20px;
+  fill: #fff;
 }
 
+/* ============================= */
+/* 8. MAIN LAYOUT                */
+/* ============================= */
+.main-content {
+  display: grid;
+  grid-template-columns: 14% 26% 34% 25%;
+}
+
+/* ============================= */
+/* 9. LEFT COLUMN: CATEGORIES    */
+/* ============================= */
 #categories {
-    background-color: var(--bg-column-1);
-    overflow-y: auto;
-    height: calc(100vh - 50px);
+  background-color: var(--bg-column-1);
+  overflow-y: auto;
+  height: calc(100vh - 50px);
 }
 .category-header {
-    cursor: pointer;
-    padding: 5px;
-    background-color: var(--color-gr_6);
-    border: 1px solid var(--color-gr_7);
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  background-color: var(--color-gr_6);
+  border: 1px solid var(--color-gr_7);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
 }
-.category-header img {
-    margin-right: 10px;
-}
-.category-tournaments, .tournament-list {
-    display: none;
-}
+.category-header img { margin-right: 10px; }
+.category-tournaments, .tournament-list { display: none; }
 ul.topTourn, ul.category-tournaments, ul.tournament-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 ul.topTourn li, ul.category-tournaments li, ul.tournament-list li {
-    padding: 5px;
-    border-bottom: 1px solid var(--color-gr_7);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
+  padding: 5px;
+  border-bottom: 1px solid var(--color-gr_7);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
-ul.topTourn li img, ul.category-tournaments li img, ul.tournament-list li img 
- {
-    margin-right: 10px;
+ul.topTourn li img, ul.category-tournaments li img, ul.tournament-list li img {
+  margin-right: 10px;
 }
-.category-header .event-count, .category-tournaments .event-count, .topTourn .event-count {
-    margin-left: auto;
-    font-weight: bold;
-    color: var(--color-w_2);
+.category-header .event-count,
+.category-tournaments .event-count,
+.topTourn .event-count {
+  margin-left: auto;
+  font-weight: bold;
+  color: var(--color-w_2);
 }
+
+/* ============================= */
+/* 10. EVENTS COLUMN             */
+/* ============================= */
 #events-column {
-    background-color: var(--color-gr_3);
-    overflow-y: auto;
-    height: 100vh;
+  background-color: var(--color-gr_3);
+  overflow-y: auto;
+  height: 100vh;
 }
-.top-right {
-    overflow-x: auto;
-}
+.top-right { overflow-x: auto; }
 ul.tournamentEvents {
-    display: flex;
-    flex-direction: column;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 ul.tournamentEvents li {
-    display: flex;
-    cursor: pointer;
+  display: flex;
+  cursor: pointer;
 }
 ul.tournamentEvents li:not(:first-child) {
-    border-top: #3f3f3f 1px solid;
+  border-top: var(--tournament-border);
 }
 ul.tournamentEvents li:last-child {
-    border-bottom: #3f3f3f 1px solid;
+  border-bottom: var(--tournament-border);
 }
-/* ...existing code... */
 ul.tournamentEvents li.match-list {
-    display: grid;
-    grid-template-columns: 38px 1fr 20px 110px 20px;
-    align-items: stretch;
-    gap: 0;
-    box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 38px 1fr 20px 110px 20px;
+  align-items: stretch;
+  gap: 0;
+  box-sizing: border-box;
 }
-
 ul.tournamentEvents li.match-list .date {
-    grid-column: 1;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 0 2px;
-    font-size: 0.95em;
-    border-right: 1px solid #232323;
-    min-width: 30px;
-    max-width: 30px;
-    margin-right: 4px;
+  grid-column: 1;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 2px;
+  font-size: 0.95em;
+  border-right: 1px solid #232323;
+  min-width: 30px;
+  max-width: 30px;
+  margin-right: 4px;
 }
-
 ul.tournamentEvents li.match-list .team-info {
-    grid-column: 2;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: stretch; 
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
 }
-
 ul.tournamentEvents li.match-list .match-score {
-    grid-column: 3;
-    min-width: 20px;
-    max-width: 20px;
-    text-align: center;
-    border-right: 1px solid #232323;
+  grid-column: 3;
+  min-width: 20px;
+  max-width: 20px;
+  text-align: center;
+  border-right: 1px solid #232323;
 }
-
 ul.tournamentEvents li.match-list .winning-odds {
-    grid-column: 4;
-    min-width: 105px;
-    max-width: 105px; 
-    display: flex;
-    flex-direction: column; 
+  grid-column: 4;
+  min-width: 105px;
+  max-width: 105px;
+  display: flex;
+  flex-direction: column;
+}
+ul.tournamentEvents li.match-list .star-icon {
+  grid-column: 5;
+  min-width: 20px;
+  max-width: 20px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-left: 1px solid #232323;
+  cursor: pointer;
+  background: none;
+  padding: 0;
 }
 
-ul.tournamentEvents li.match-list .star-icon {
-    grid-column: 5;
-    min-width: 20px;
-    max-width: 20px;
-    text-align: center;
-    justify-content: center;
-    align-items: center;
-    border-left: 1px solid #232323;
-    cursor: pointer;
-    background: none;
-    padding: 0;
-}
-/* ...existing code... */
+/* ============================= */
+/* 11. MATCH & TEAM INFO         */
+/* ============================= */
 .info-wrapper {
-    display: flex;
-    flex: 1;
-    align-items: stretch;
+  display: flex;
+  flex: 1;
+  align-items: stretch;
 }
 .date {
-    display: flex;
-    flex-direction: column;
-    padding-right: 8px;
-    text-align: center;
-    flex: 0 0 35px;
-    -webkit-box-flex: 0;
-    color: #555;
-    border-right: 1px solid var();
-    justify-content: center;
-} 
+  display: flex;
+  flex-direction: column;
+  padding-right: 8px;
+  text-align: center;
+  flex: 0 0 35px;
+  color: #555;
+  border-right: 1px solid var();
+  justify-content: center;
+}
 .teams-info {
-    display: flex;
-    flex-direction: column;
-    overflow-x: clip;
-    gap: 3px;
-    justify-content: center;
-    padding: 5px 0;
-    flex: 1 1 130px;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  gap: 3px;
+  justify-content: center;
+  padding: 5px 0;
+  flex: 1 1 130px;
 }
 .team {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    line-height: 1.51429;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  line-height: 1.51429;
 }
-.winning-odds { 
-    gap: 1px;
-    display: flex;
-    flex-direction: column;
+.winning-odds {
+  gap: 1px;
+  display: flex;
+  flex-direction: column;
 }
 .match-score {
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    font-size: 0.75rem;
-    font-weight: 700;
-    justify-content: space-around;
-    color: var(--color-gr_1);
-    border-right: 1px solid #020001;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  justify-content: space-around;
+  color: var(--color-gr_1);
+  border-right: 1px solid #020001;
 }
-.match-score div:not(:last-child) {
-    border-bottom: 1px solid #020001;
-}
-.match-score div:last-child {
-    border-top: 1px solid #313030;
-}
+.match-score div:not(:last-child) { border-bottom: 1px solid #020001; }
+.match-score div:last-child { border-top: 1px solid #313030; }
 .match-score div {
-    display: flex;
-    height: 100%;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    border-left: 1px solid #020001;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #020001;
 }
 .star-icon {
-    color: #ccc;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center; 
-    border-left: 1px solid #313030;
+  color: var(--color-link);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #313030;
 }
 
-#details-column {
-    background-color: var(--color-gr_4);
-}
-.event-details {
-    border-top: 1px solid #212121;
-}
-.duelParticipant {
-    --spacer: 17px;
-    display: grid;
-    grid-template:
-        "home time away" max-content
-        "home score away" max-content
-        ". . . " 5px / var(--width, minmax(110px, 250px)) var(--width, minmax(80px, 180px)) var(--width, minmax(110px, 250px));
-    justify-content: center;
-    padding: 10px 0 0;
-    text-align: center;
-}
-.duelParticipant .match-time {
-    display: grid;
-    grid-area: time;
-    text-align: center;
-}
-.duelParticipant__home {
-    display: flex;
-    justify-content: center;
-    grid-area: home;
-    font-weight: 700;
-    text-align: center;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.duelParticipant__away {
-    display: flex;
-    justify-content: center;
-    grid-area: away;
-    font-weight: 700;
-    text-align: center;
-    flex-direction: column;
-    gap: 10px;
-}
-.duelParticipant__home img, .duelParticipant__away img {
-    height: 38px;
-    width: 38px;
-}
-.duelParticipant__score {
-    display: grid;
-    justify-content: center;
-    grid-area: score;
-    flex-flow: row wrap;
-}
-.detailScore__wrapper {
-    font-size: 40px;
-    font-weight: 700;
-}
-.form-display {
-    display: inline-flex;
-    gap: 2px;
-}
-.form-display span {
-    flex: 1;
-}
-
-
-#match-odds {
-    justify-content: center;
-    gap: 5px;    
-    font-weight: 700;
-    margin-bottom: 15px;
-}    
-#match-odds span {
-    padding: 4px 8px;
-    background-color: var(--color-gr_5); /* Replace with a variable */
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-.positive {
-    background-color: rgba(46, 204, 113, 0.1) !important;
-    color: var(--positive-color);
-}
-
-.negative {
-    background-color: rgba(231, 76, 60, 0.1) !important;
-    color: var(--negative-color);
-}
-
-.actual-home, .actual-away {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 5px;
-    position: relative;
-} 
-
-.actual-home::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: -7px;
-    width: 7px;
-    height: 7px; 
-    background-color: var(--color-g_2); /* or your preferred color */
-}
-
-.actual-away::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: -7px;
-    width: 7px;
-    height: 7px; 
-    background-color: var(--color-r_3); /* or your preferred color */
-} 
-.allOut {
-    display: flex;
-    flex-direction: row;
-    flex: 0 0 70px;
-}
-.allOut > div {
-    flex: 0 0 50%;
-    padding: 4px 0;
-    text-align: center;
-}
-.allOutOdd {
-    flex: 0 0 30px;
-    text-align: center;
-}
-.exWin, .default {
-    color: var(--color-w_0); /* Replace with a variable */
-    font-weight: 600; 
-}
-
-.default {
-    background-color: var(--color-gr_1); /* Replace with a variable */
-}
-
-.exWin {
-    background-color: var(--color-o_1); /* Replace with a variable */
-} 
-.team-manager-h2h > div {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-}
-.team-manager-h2h > div > div{
-    display: flex; 
-    flex-direction: row;
-    justify-content: center;
-    text-align: center;
-}
-.team-manager-h2h > div > div p{
-    flex: 1;
-}
-
+/* ============================= */
+/* 12. BET LIST MODAL            */
+/* ============================= */
 #bet-list-container {
-    display: none;
-    position: fixed;
-    top: 60px;
+  display: none;
+  position: fixed;
+    bottom: 60px;
     right: 40px;
-    width: 340px;
-    max-width: 95vw;
-    background: #232323;
-    color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
-    z-index: 9999;
-    padding: 0 0 10px 0;
-    transition: opacity 0.2s;
-    opacity: 0;
+    width: 50%;
+  max-width: 95vw;
+  background: var(--bet-list-bg);
+  color: var(--color-w_0);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  z-index: 9999;
+  padding: 0 0 10px 0;
+  transition: opacity 0.2s;
+  opacity: 0;
 }
 #bet-list-container.show {
-    display: block;
-    opacity: 1;
+  display: block;
+  opacity: 1;
 }
 .bet-list-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #181818;
-    padding: 10px 16px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; 
+  padding: 10px 16px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;   
+  background: var(--bet-list-header-bg);
+  border-bottom: var(--border-default);
 }
 .bet-list-items {
-    max-height: 320px;
-    overflow-y: auto;
-    padding: 10px 16px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 10px 16px;
 }
+.bet-item-teams { flex: 1; font-weight: 600; }
+.bet-item-stats { margin-left: 10px; font-size: 0.95em; }
+.bet-item-remove {
+  margin-left: 10px;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+/* Improved Bet List Item Styles */
 .bet-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #222;
-    margin-bottom: 8px;
-    padding: 8px 10px;
-    border-radius: 4px;
-    font-size: 1em;
+  display: flex;
+  align-items: stretch;
+  background: var(--color-gr_6);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  margin-bottom: 14px;
+  padding: 0;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 1px solid var(--color-gr_2);
+}
+.bet-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  transform: translateY(-2px) scale(1.01);
 }
 .bet-item-teams {
-    flex: 1;
-    font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  background: var(--color-gr_7);
+  padding: 16px 18px;
+  min-width: 120px;
+  border-right: 1px solid var(--color-gr_2);
 }
-.bet-item-stats {
-    margin-left: 10px;
-    font-size: 0.95em;
+.bet-item-teams .team-names {
+  font-weight: 700;
+  font-size: 1.08em;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bet-item-teams img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  margin-right: 6px;
+  border: 1px solid var(--color-gr_2);
+}
+.bet-item-summary {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 0.98em;
+  background: var(--color-gr_5);
+}
+.bet-item-summary table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.97em;
+}
+.bet-item-summary th, .bet-item-summary td {
+  padding: 3px 6px;
+  text-align: center;
+  border: none;
+}
+.bet-item-summary th {
+  color: var(--color-o_1);
+  font-weight: 600;
+  background: none;
+}
+.bet-item-summary tr:not(:last-child) td {
+  border-bottom: 1px solid var(--color-gr_2);
 }
 .bet-item-remove {
-    margin-left: 10px;
-    color: #e74c3c;
-    cursor: pointer;
-    font-size: 1.2em;
-    font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  font-size: 1.6em;
+  color: var(--danger-color);
+  background: transparent;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, color 0.15s;
+}
+.bet-item-remove:hover {
+  background: var(--danger-color);
+  color: #fff;
 }
 .clear-bet-list, .close-bet-list {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 1.1em;
-    cursor: pointer;
-    margin-left: 8px;
+  background: none;
+  border: none;
+  color: var(--color-w_0);
+  font-size: 1.1em;
+  cursor: pointer;
+  margin-left: 8px;
 }
-.clear-bet-list:hover, .close-bet-list:hover {
-    color: #e74c3c;
-}
+.clear-bet-list:hover, .close-bet-list:hover { color: #e74c3c; }
 
-/* Add to your CSS */
+/* ============================= */
+/* 13. LEAGUE TABLE TABS         */
+/* ============================= */
 .league-table-tabs .tabs {
   display: flex;
   gap: 8px;
@@ -800,37 +667,30 @@ ul.tournamentEvents li.match-list .star-icon {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.95em;
-} 
+}
 .league-table th {
   background: var(--color-gr_2, #f7f7f7);
 }
-
 .league-table th, .league-table td {
   padding: 3px 4px;
-  /* border-bottom: 1px solid #eee; */ /* Remove the bottom border */
   text-align: center;
 }
+.league-table tbody tr:nth-child(even) { background-color: var(--color-gr_3); }
+.league-table tbody tr:nth-child(odd) { background-color: transparent; }
 
-/* Add even/odd row background for better readability */
-.league-table tbody tr:nth-child(even) {
-  background-color: var(--color-gr_3);
-}
-.league-table tbody tr:nth-child(odd) {
-  background-color: transparent;
-}
-.form-span { 
-    display: flex;
-    width: 15px;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.85em;
-    padding: 2px 0;
-}
+/* ============================= */
+/* 14. FORM & TOOLTIP STYLES     */
+/* ============================= */
 .form-span {
+  display: flex;
+  width: 15px;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.85em;
+  padding: 2px 0;
   position: relative;
   cursor: pointer;
 }
-
 .form-tooltip {
   visibility: hidden;
   opacity: 0;
@@ -843,7 +703,7 @@ ul.tournamentEvents li.match-list .star-icon {
   padding: 6px 10px;
   position: absolute;
   z-index: 10;
-  top: 120%;           /* Show below the form item */
+  top: 120%;
   left: 50%;
   transform: translateX(-50%);
   font-size: 0.95em;
@@ -852,11 +712,10 @@ ul.tournamentEvents li.match-list .star-icon {
   transition: opacity 0.15s;
   box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
-
 .form-tooltip::before {
   content: "";
   position: absolute;
-  top: -8px; /* Position above the tooltip box */
+  top: -8px;
   left: 50%;
   transform: translateX(-50%);
   border-width: 0 8px 8px 8px;
@@ -866,24 +725,44 @@ ul.tournamentEvents li.match-list .star-icon {
   height: 0;
   z-index: 11;
 }
-
 .form-span:hover .form-tooltip,
 .form-span:focus .form-tooltip {
   visibility: visible;
   opacity: 1;
 }
-
 [id^="form-overall-"] {
-    display: flex;
-    flex-direction: row; 
-    justify-content: center;
-    align-items: center;
-    gap: 1px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
 }
-.form-W { background: #2ecc71; color: #fff; }
-.form-D { background: #f1c40f; color: #fff; }
-.form-L { background: #e74c3c; color: #fff; }
+[id^="live-timer-"] {
+  color: var(--danger-color);
+  font-weight: 600;
+}
+/* Form Spans */
+.form-W {
+  background: var(--form-W-bg);
+  color: var(--form-W-color);
+}
+.form-D {
+  background: var(--form-D-bg);
+  color: var(--form-D-color);
+}
+.form-L {
+  background: var(--form-L-bg);
+  color: var(--form-L-color);
+}
 
+/* Win/Draw/Loss Badges */
+.W, .D, .L {
+  color: var(--color-b_0);
+}
+ 
+/* ============================= */
+/* 15. HIGHLIGHT ROWS            */
+/* ============================= */
 .highlight-home {
   background: #e3f6ff !important;
   color: var(--color-b_0);
@@ -893,164 +772,70 @@ ul.tournamentEvents li.match-list .star-icon {
   color: var(--color-b_0);
 }
 
-.promotion-champions-league {
-  background: #d0eaff !important;
-}
-.promotion-europa-league {
-  background: #ffeecf !important;
-}
-.promotion-conference-league {
-  background: #e8ffe8 !important;
-}
-.promotion-relegation {
-  background: #ffd6d6 !important;
-}
+/* ============================= */
+/* 16. PROMOTION/RELEGATION ROWS */
+/* ============================= */
+.promotion-champions-league { background: #d0eaff !important; }
+.promotion-europa-league { background: #ffeecf !important; }
+.promotion-conference-league { background: #e8ffe8 !important; }
+.promotion-relegation { background: #ffd6d6 !important; }
 
+.promotion-to-x td:first-child { background-color: var(--playoffs-promotion-to-x); }
+.promotion-to-x-playoff td:first-child { background-color: var(--playoffs-promotion-to-x-playoff); }
+.promotion-to-y td:first-child { background-color: var(--playoffs-promotion-to-y); }
+.promotion-to-y-playoff td:first-child { background-color: var(--playoffs-promotion-to-y-playoff); }
+.promotion-to-z td:first-child { background-color: var(--playoffs-promotion-to-z); }
+.promotion-to-z-playoff td:first-child { background-color: var(--playoffs-promotion-to-z-playoff); }
+.promotion-to-z-playoff-secondary td:first-child { background-color: var(--playoffs-promotion-to-z-playoff-secondary); }
+.relegation td:first-child { background-color: var(--playoffs-promotion-to-relegation); }
+.relegation-playoff td:first-child { background-color: var(--playoffs-promotion-to-relegation-playoff); }
 
-.promotion-to-x td:first-child {
-    content: '';
-    background-color: var(--playoffs-promotion-to-x); 
+.promotion span.promotion-to-x::before,
+.promotion span.promotion-to-x-playoff::before,
+.promotion span.promotion-to-y::before,
+.promotion span.promotion-to-y-playoff::before,
+.promotion span.promotion-to-z::before,
+.promotion span.promotion-to-z-playoff::before,
+.promotion span.promotion-to-z-playoff-secondary::before,
+.promotion span.relegation::before,
+.promotion span.relegation-playoff::before {
+  content: '';
+  display: flex;
+  width: 100%;
+  height: 5px;
+  margin-bottom: 4px;
 }
+.promotion span.promotion-to-x::before { background-color: var(--playoffs-promotion-to-x); }
+.promotion span.promotion-to-x-playoff::before { background-color: var(--playoffs-promotion-to-x-playoff); }
+.promotion span.promotion-to-y::before { background-color: var(--playoffs-promotion-to-y); }
+.promotion span.promotion-to-y-playoff::before { background-color: var(--playoffs-promotion-to-y-playoff); }
+.promotion span.promotion-to-z::before { background-color: var(--playoffs-promotion-to-z); }
+.promotion span.promotion-to-z-playoff::before { background-color: var(--playoffs-promotion-to-z-playoff); }
+.promotion span.promotion-to-z-playoff-secondary::before { background-color: var(--playoffs-promotion-to-z-playoff-secondary); }
+.promotion span.relegation::before { background-color: var(--playoffs-promotion-to-relegation); }
+.promotion span.relegation-playoff::before { background-color: var(--playoffs-promotion-to-relegation-playoff); }
 
-.promotion-to-x-playoff td:first-child {
-    content: '';
-    background-color: var(--playoffs-promotion-to-x-playoff); 
-}
-    
-.promotion-to-y td:first-child {
-    content: '';
-    background-color: var(--playoffs-promotion-to-y); 
-}
-
-.promotion-to-y-playoff td:first-child {
-    content: '';
-    background-color: var(--playoffs-promotion-to-y-playoff); 
-}  
-.promotion-to-z td:first-child {
-    content: '';
-    background-color: var(--playoffs-promotion-to-z); 
-}
-
-.promotion-to-z-playoff td:first-child {
-    content: '';
-    background-color: var(--playoffs-promotion-to-z-playoff); 
-}
-.promotion-to-z-playoff-secondary td:first-child {
-    content: '';
-    background-color: var(--playoffs-promotion-to-z-playoff-secondary); 
-}
-
-.relegation td:first-child {
-    content: '';
-    background-color: var(--playoffs-promotion-to-relegation); 
-}
- 
+.promotion-to-x td:first-child,
+.promotion-to-x-playoff td:first-child,
+.promotion-to-y td:first-child,
+.promotion-to-y-playoff td:first-child,
+.promotion-to-z td:first-child,
+.promotion-to-z-playoff td:first-child,
+.promotion-to-z-playoff-secondary td:first-child,
+.relegation td:first-child,
 .relegation-playoff td:first-child {
-    content: ''; 
-    background-color: var(--playoffs-promotion-to-relegation-playoff); 
-}  
-
-
-.promotion span.promotion-to-x::before {
-    content: '';
-    display: flex;
-    width: 100%;
-    height: 5px;
-    margin-bottom: 4px;
-    background-color: var(--playoffs-promotion-to-x); 
+  font-weight: 600;
+  color: var(--color-greyE4);
 }
 
-.promotion span.promotion-to-x-playoff::before {
-    content: '';
-    display: flex;
-    width: 100%;
-    height: 5px;
-    margin-bottom: 4px;
-    background-color: var(--playoffs-promotion-to-x-playoff); 
-}
-    
-.promotion span.promotion-to-y::before {
-    content: '';
-    display: flex;
-    width: 100%;
-    height: 5px;
-    margin-bottom: 4px;
-    background-color: var(--playoffs-promotion-to-y); 
-}
-
-.promotion span.promotion-to-y-playoff::before {
-    content: '';
-    display: flex;
-    width: 100%;
-    height: 5px;
-    margin-bottom: 4px;
-    background-color: var(--playoffs-promotion-to-y-playoff); 
-}  
-.promotion span.promotion-to-z::before {
-    content: '';
-    display: flex;
-    width: 100%;
-    height: 5px;
-    margin-bottom: 4px;
-    background-color: var(--playoffs-promotion-to-z); 
-}
-
- 
-.promotion span.promotion-to-z-playoff::before { 
-    content: '';
-    display: flex;
-    width: 100%;
-    height: 5px;
-    margin-bottom: 4px;
-    background-color: var(--playoffs-promotion-to-z-playoff);
-}  
-.promotion span.promotion-to-z-playoff-secondary::before { 
-    content: '';
-    display: flex;
-    width: 100%;
-    background-color: var(--playoffs-promotion-to-z-playoff-secondary);
-    height: 5px;
-    margin-bottom: 4px;
-} 
-.promotion span.relegation::before { 
-    content: '';
-    display: flex;
-    width: 100%;
-    background-color: var(--playoffs-promotion-to-relegation);
-    height: 5px;
-    margin-bottom: 4px;
-}
-
- 
-.promotion span.relegation-playoff::before { 
-    content: '';
-    display: flex;
-    width: 100%;
-    background-color: var(--playoffs-promotion-to-relegation-playoff);
-    height: 5px;
-    margin-bottom: 4px;
-}
-
-.promotion-to-x td:first-child, 
-.promotion-to-x-playoff td:first-child, 
-.promotion-to-y td:first-child, 
-.promotion-to-y-playoff td:first-child, 
-.promotion-to-z td:first-child, 
-.promotion-to-z-playoff td:first-child, 
-.promotion-to-z-playoff-secondary td:first-child, 
-.relegation td:first-child, 
-.relegation-playoff td:first-child {
-    font-weight: 600;
-    color: var(--color-greyE4);
-} 
-
+/* Promotion Key */
 .promotion-key {
   display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    font-size: 0.95em;
-    flex-direction: column;
-    margin: 20px;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-size: 0.95em;
+  flex-direction: column;
+  margin: 20px;
 }
 .promotion-key-item {
   display: flex;
@@ -1059,19 +844,168 @@ ul.tournamentEvents li.match-list .star-icon {
   margin-right: 10px;
 }
 .promotion-key-color {
-    width: 10px;
-    height: 10px;
+  width: 10px;
+  height: 10px;
   display: inline-block;
 }
-.promotion-to-x      .promotion-key-color { background: var(--playoffs-promotion-to-x); }
+.promotion-to-x .promotion-key-color { background: var(--playoffs-promotion-to-x); }
 .promotion-to-x-playoff .promotion-key-color { background: var(--playoffs-promotion-to-x-playoff); }
-.promotion-to-y      .promotion-key-color { background: var(--playoffs-promotion-to-y); }
+.promotion-to-y .promotion-key-color { background: var(--playoffs-promotion-to-y); }
 .promotion-to-y-playoff .promotion-key-color { background: var(--playoffs-promotion-to-y-playoff); }
-.promotion-to-z      .promotion-key-color { background: var(--playoffs-promotion-to-z); }
+.promotion-to-z .promotion-key-color { background: var(--playoffs-promotion-to-z); }
 .promotion-to-z-playoff .promotion-key-color { background: var(--playoffs-promotion-to-z-playoff); }
 .promotion-to-z-playoff-secondary .promotion-key-color { background: var(--playoffs-promotion-to-z-playoff-secondary); }
-.relegation          .promotion-key-color { background: var(--playoffs-promotion-to-relegation); }
-.relegation-playoff  .promotion-key-color { background: var(--playoffs-promotion-to-relegation-playoff); }
+.relegation .promotion-key-color { background: var(--playoffs-promotion-to-relegation); }
+.relegation-playoff .promotion-key-color { background: var(--playoffs-promotion-to-relegation-playoff); }
+
+/* ============================= */
+/* 17. WIN/LOSS/DRAW BADGES      */
+/* ============================= */
+.W, .D, .L { 
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  padding: 2px 0;
+  font-weight: 700;
+  width: 20px;
+}
+.W, .win, .pos { background-color: var(--positive-color); }
+.D, .draw { background-color: var(--color-gr_1); }
+.L, .loss, .neg { background-color: var(--color-r_2); }
+
+/* ============================= */
+/* 18. ODDS & SCORE COMPONENTS   */
+/* ============================= */
+#match-odds {
+  justify-content: center;
+  gap: 5px;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+#match-odds span {
+  padding: 4px 8px;
+  background-color: var(--color-gr_5);
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+.positive {
+  background-color: rgba(46, 204, 113, 0.1) !important;
+  color: var(--positive-color);
+}
+.negative {
+  background-color: rgba(231, 76, 60, 0.1) !important;
+  color: var(--negative-color);
+}
+.actual-home, .actual-away {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+}
+.actual-home::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -7px;
+  width: 7px;
+  height: 7px;
+  background-color: var(--color-g_2);
+}
+.actual-away::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: -7px;
+  width: 7px;
+  height: 7px;
+  background-color: var(--color-r_3);
+}
+.allOut {
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 70px;
+}
+.allOut > div {
+  flex: 0 0 50%;
+  padding: 4px 0;
+  text-align: center;
+}
+.allOutOdd {
+  flex: 0 0 30px;
+  text-align: center;
+}
+.exWin, .default {
+  color: var(--color-w_0);
+  font-weight: 600;
+}
+.default { background-color: var(--color-gr_1); }
+.exWin { background-color: var(--color-o_1); }
+
+/* ============================= */
+/* 19. DUEL PARTICIPANT & DETAILS*/
+/* ============================= */
+#details-column { background-color: var(--color-gr_4); }
+.event-details { border-top: 1px solid #212121; }
+.duelParticipant {
+  --spacer: 17px;
+  display: grid;
+  grid-template:
+    "home time away" max-content
+    "home score away" max-content
+    ". . . " 5px / var(--width, minmax(110px, 250px)) var(--width, minmax(80px, 180px)) var(--width, minmax(110px, 250px));
+  justify-content: center;
+  padding: 10px 0 0;
+  text-align: center;
+}
+.duelParticipant .match-time {
+  display: grid;
+  grid-area: time;
+  text-align: center;
+}
+.duelParticipant__home, .duelParticipant__away {
+  display: flex;
+  justify-content: center;
+  font-weight: 700;
+  text-align: center;
+  flex-direction: column;
+  gap: 10px;
+}
+.duelParticipant__home { grid-area: home; }
+.duelParticipant__away { grid-area: away; }
+.duelParticipant__home img, .duelParticipant__away img {
+  height: 38px;
+  width: 38px;
+}
+.duelParticipant__score {
+  display: grid;
+  justify-content: center;
+  grid-area: score;
+  flex-flow: row wrap;
+}
+.detailScore__wrapper { font-size: 40px; font-weight: 700; }
+.form-display { display: inline-flex; gap: 2px; }
+.form-display span { flex: 1; }
+
+/* ============================= */
+/* 20. TEAM MANAGER H2H          */
+/* ============================= */
+.team-manager-h2h > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.team-manager-h2h > div > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+}
+.team-manager-h2h > div > div p { flex: 1; }
         </style>
     </head>
     <body class="closure rfr"> 
@@ -1197,6 +1131,118 @@ ul.tournamentEvents li.match-list .star-icon {
                 return null;
             }
         };
+
+     
+
+const formatTime = (time) => {
+        return time < 10 ? `0${time}` : time; // Add leading zero if less than 10
+    };
+
+    const calculateElapsedTime = (event) => {
+        const now = Math.floor(Date.now() / 1000);
+        let elapsedSeconds = now - event.time.currentPeriodStartTimestamp;
+            //console.log(event.time.currentPeriodStartTimestamp);
+        // Check for match status descriptions
+        if (event.status.description === 'Halftime') {
+            return "HT"; // Display Halftime when it's halftime
+        } else if (event.status.description === 'Ended') {
+            return "Ended"; // Display Ended when the match has ended
+        } else if (event.status.description === '1st half') {
+            if (elapsedSeconds < 2700) {
+                const minutes = Math.floor(elapsedSeconds / 60);
+                const seconds = elapsedSeconds % 60;
+                return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
+            }
+            return "HT"; // Full time for 1st half
+        } else if (event.status.description === '2nd half') {
+            if (elapsedSeconds < 5400) {
+                const minutes = Math.floor((elapsedSeconds + 2700) / 60); // Add 2700 seconds for the 1st half
+                const seconds = (elapsedSeconds + 2700) % 60;
+                return `${formatTime(minutes)}:${formatTime(seconds)}`; // Format as MM:SS
+            }
+            return "FT"; // Full time for 2nd half
+        } 
+        return "00:00"; // Default if not in progress
+    };
+
+let liveTimerInterval = null;
+let liveScoreInterval = null;
+
+// Call this in displayEventDetails(event)
+function setupLiveTimerAndScore(event) {
+    if (liveTimerInterval) clearInterval(liveTimerInterval);
+    if (liveScoreInterval) clearInterval(liveScoreInterval);
+
+    if (event.status && event.status.type === "inprogress") {
+        liveTimerInterval = setInterval(() => {
+            const timerElement = document.getElementById(`live-timer-${event.id}`);
+            if (timerElement) {
+                timerElement.innerHTML = calculateElapsedTime(event);
+            }
+        }, 1000);
+
+        liveScoreInterval = setInterval(async () => {
+            const url = `${baseURL}/event/${event.id}`;
+            const updatedEventData = await fetchJson(url);
+            if (!updatedEventData || !updatedEventData.event) return;
+
+            const updatedEvent = updatedEventData.event;
+
+            // Update scheduled events list
+            const homeScoreElemList = document.getElementById(`homeScores-${event.id}`);
+            const awayScoreElemList = document.getElementById(`awayScores-${event.id}`);
+            if (homeScoreElemList && awayScoreElemList) {
+                homeScoreElemList.textContent = updatedEvent.homeScore.current;
+                awayScoreElemList.textContent = updatedEvent.awayScore.current;
+            }
+
+            // Update event details view
+            const homeScoreElemDetails = document.getElementById(`details-homeScores-${event.id}`);
+            const awayScoreElemDetails = document.getElementById(`details-awayScores-${event.id}`);
+            if (homeScoreElemDetails && awayScoreElemDetails) {
+                homeScoreElemDetails.textContent = updatedEvent.homeScore.current;
+                awayScoreElemDetails.textContent = updatedEvent.awayScore.current;
+            }
+
+            // Update timer/status if needed
+            const timerElement = document.getElementById(`live-timer-${event.id}`);
+            if (timerElement) {
+                timerElement.innerHTML = calculateElapsedTime(updatedEvent);
+            }
+
+            if (updatedEvent.status.type !== "inprogress") {
+                clearInterval(liveTimerInterval);
+                clearInterval(liveScoreInterval);
+            }
+        }, 10000);
+    }
+}
+
+
+
+// When navigating away or switching events, always clear intervals:
+function clearLiveIntervals() {
+    if (liveTimerInterval) clearInterval(liveTimerInterval);
+    if (liveScoreInterval) clearInterval(liveScoreInterval);
+}
+// Function to refresh match time div when the match starts
+const scheduleMatchStartRefresh = (event) => {
+    const matchStartTime = event.startTimestamp * 1000; // Convert to milliseconds
+    const currentTime = Date.now(); // Current time in milliseconds
+    const timeUntilStart = matchStartTime - currentTime;
+
+    if (timeUntilStart > 0) {
+        // Schedule the update at the match start time
+        setTimeout(() => {
+            const matchTimeElement = document.querySelector(`.match-time[data-event-id="${event.id}"]`);
+            if (matchTimeElement) {
+                matchTimeElement.innerHTML = `<span class="live-status">Live</span>`;
+                startLiveTimer(event); // Start the live timer
+            }
+        }, timeUntilStart);
+    }
+};
+
     
 // Helper function to convert fractional odds to decimal
 function fractionalToDecimal(fractionalOdds) {
@@ -1274,48 +1320,57 @@ async function updateBetListDisplay() {
         html += `
         <div class="bet-item" data-event-id="${item.eventId}">
             <div class="bet-item-teams">
-                <strong>${item.homeTeam}</strong> vs <strong>${item.awayTeam}</strong>
+                <div class="team-names">
+                <img src="${baseURL}/team/${item.homeTeamId}/image" alt="${item.homeTeam}" />
+                <span>${item.homeTeam}</span>
+                <span style="color:var(--color-o_1);font-weight:400;">vs</span>
+                <img src="${baseURL}/team/${item.awayTeamId}/image" alt="${item.awayTeam}" />
+                <span>${item.awayTeam}</span>
+                </div>
+                <div style="font-size:0.92em;color:var(--color-w_2);margin-top:2px;">
+                ${item.matchTime || ""}
+                </div>
             </div>
-            <div class="bet-item-summary" style="font-size:0.95em; margin: 8px 0;">
-                <table style="width:100%; border-collapse:collapse;">
-                    <tr>
-                        <th></th>
-                        <th>${item.homeTeam}</th>
-                        <th>${item.awayTeam}</th>
-                    </tr>
-                    <tr>
-                        <td>Form</td>
-                        <td>${stats.home.form}</td>
-                        <td>${stats.away.form}</td>
-                    </tr>
-                    <tr>
-                        <td>BTTS %</td>
-                        <td>${stats.home.btts}%</td>
-                        <td>${stats.away.btts}%</td>
-                    </tr>
-                    <tr>
-                        <td>+1.5 %</td>
-                        <td>${stats.home.over15}%</td>
-                        <td>${stats.away.over15}%</td>
-                    </tr>
-                    <tr>
-                        <td>+2.5 %</td>
-                        <td>${stats.home.over25}%</td>
-                        <td>${stats.away.over25}%</td>
-                    </tr>
-                    <tr>
-                        <td>Table Pos</td>
-                        <td>${stats.home.position}</td>
-                        <td>${stats.away.position}</td>
-                    </tr>
-                    <tr>
-                        <td>Points</td>
-                        <td>${stats.home.points}</td>
-                        <td>${stats.away.points}</td>
-                    </tr>
+            <div class="bet-item-summary">
+                <table>
+                <tr>
+                    <th></th>
+                    <th>${item.homeTeam}</th>
+                    <th>${item.awayTeam}</th>
+                </tr>
+                <tr>
+                    <td>Form</td>
+                    <td>${stats.home.form}</td>
+                    <td>${stats.away.form}</td>
+                </tr>
+                <tr>
+                    <td>BTTS %</td>
+                    <td>${stats.home.btts}%</td>
+                    <td>${stats.away.btts}%</td>
+                </tr>
+                <tr>
+                    <td>+1.5 %</td>
+                    <td>${stats.home.over15}%</td>
+                    <td>${stats.away.over15}%</td>
+                </tr>
+                <tr>
+                    <td>+2.5 %</td>
+                    <td>${stats.home.over25}%</td>
+                    <td>${stats.away.over25}%</td>
+                </tr>
+                <tr>
+                    <td>Table Pos</td>
+                    <td>${stats.home.position}</td>
+                    <td>${stats.away.position}</td>
+                </tr>
+                <tr>
+                    <td>Points</td>
+                    <td>${stats.home.points}</td>
+                    <td>${stats.away.points}</td>
+                </tr>
                 </table>
             </div>
-            <div class="bet-item-remove" data-event-id="${item.eventId}">×</div>
+            <button class="bet-item-remove" data-event-id="${item.eventId}" title="Remove">×</button>
         </div>
         `;
     }
@@ -1486,8 +1541,8 @@ function displayScheduledEvents(events) {
 </div>
                     </div>
                     <div class="match-score rcr">
-                        <div class="score" id="homeScore-${event.id}">${homeScore}</div>
-                        <div class="score" id="awayScore-${event.id}">${awayScore}</div>
+                        <div class="score" id="homeScores-${event.id}">${homeScore}</div>
+                        <div class="score" id="awayScores-${event.id}">${awayScore}</div>
                     </div> 
                 <div class="winning-odds rcr" id="odds-${event.id}">${oddsHtml}</div>
                 <div class="star-icon ${isInBetList ? 'active' : ''}" data-event-id="${event.id}">★</div> 
@@ -3155,9 +3210,9 @@ const eventDetailsHtml = `
         <div class="duelParticipant__score score">
             <div class="detailScore__matchInfo ${event.status.type}">
                 <div class="detailScore__wrapper" id="${event.status.type}">
-                    <span class="score" id="homeScores-${event.id}">${homeScore}</span>
+                    <span class="score" id="details-homeScores-${event.id}">${homeScore}</span>
                     <span class="detailScore__divider">-</span>
-                    <span class="score" id="awayScores-${event.id}">${awayScore}</span>
+                    <span class="score" id="details-awayScores-${event.id}">${awayScore}</span>
                 </div>
                 <div class="detailScore__status">
                     <span id="live-timer-${event.id}"></span>
@@ -3227,6 +3282,8 @@ bottomRightDetails.innerHTML = eventDetailsHtml;
         setupLeagueTableTabs(tournamentId, seasonId, homeTeamId, awayTeamId, currentMatchId);
         // Fetch and display most recent H2H event for the current event
         fetchAndDisplayMostRecentH2HEvent(homeTeamId, customId, currentMatchId, uniqueEventId); 
+        // In your displayEventDetails(event), after rendering the details, call:
+setupLiveTimerAndScore(event);
 // Clear interval when navigating away from the event details
 const clearUpdateInterval = () => {
     clearInterval(scoreUpdateInterval);
